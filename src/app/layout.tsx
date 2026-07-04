@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { promises as fs } from "fs";
 import path from "path";
-import AnnaChatWidget from "@/components/AnnaChatWidget";
+import ChatWidgetWrapper from "@/components/ChatWidgetWrapper";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -47,8 +47,8 @@ export default async function RootLayout({
         
         {children}
 
-        {/* Anna chat widget — visible on every page */}
-        <AnnaChatWidget />
+        {/* Anna chat widget — hidden on admin pages */}
+        <ChatWidgetWrapper />
 
         {/* Inject Custom JS before body end */}
         {customJs && <script dangerouslySetInnerHTML={{ __html: customJs }} />}

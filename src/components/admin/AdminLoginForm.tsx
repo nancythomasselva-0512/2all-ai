@@ -1,22 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { signIn, signOut } from "next-auth/react";
-import { Shield, Lock, Mail, Loader2, Key } from "lucide-react";
+import { Lock, Mail, Loader2, Key } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 
 export default function AdminLoginForm({ errorMsg }: { errorMsg?: string }) {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(errorMsg || "");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    // Clear any active customer session (like nancy) to prevent session lock conflicts
-    signOut({ redirect: false });
-  }, []);
 
   const handleAutoFill = () => {
     setEmail("aiadmin@gmail.com");
@@ -35,6 +28,9 @@ export default function AdminLoginForm({ errorMsg }: { errorMsg?: string }) {
     setError("");
 
     try {
+      // Sign out any existing session first (customer etc.)
+      await signOut({ redirect: false });
+
       const res = await signIn("credentials", {
         email: email.trim().toLowerCase(),
         password,
@@ -42,11 +38,10 @@ export default function AdminLoginForm({ errorMsg }: { errorMsg?: string }) {
       });
 
       if (res?.error) {
-        setError("Invalid email or password.");
+        setError("Invalid email or password. Please try again.");
       } else {
-        // Successful login, redirect to admin panel
-        router.push("/admin");
-        router.refresh();
+        // Full page reload so server reads the new admin session cookie
+        window.location.href = "/admin/dashboard";
       }
     } catch (err) {
       setError("An unexpected error occurred.");
@@ -56,20 +51,18 @@ export default function AdminLoginForm({ errorMsg }: { errorMsg?: string }) {
   };
 
   return (
-    <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl relative z-10 text-left">
+    <div className="max-w-md w-full bg-white border border-blue-100 rounded-3xl p-8 shadow-xl shadow-blue-100/50 relative z-10 text-left">
 
       {/* Title */}
       <div className="flex flex-col items-center text-center space-y-3 mb-6 select-none">
         <Logo height={50} className="self-center" />
-        <h2 className="text-xl font-black text-white tracking-tight mt-3">Admin Portal</h2>
-        <div>
-          <p className="text-xs text-slate-500 font-semibold mt-1">Sign in to manage website settings & users</p>
-        </div>
+        <h2 className="text-xl font-black text-slate-800 tracking-tight mt-3">Admin Portal</h2>
+        <p className="text-xs text-slate-500 font-semibold mt-1">Sign in to manage website settings &amp; users</p>
       </div>
 
-      {/* Access Denied / Error Alerts */}
+      {/* Error Alert */}
       {error && (
-        <div className="mb-5 p-4 rounded-2xl bg-red-950/40 border border-red-900/60 text-red-400 text-xs font-semibold leading-relaxed">
+        <div className="mb-5 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold leading-relaxed">
           {error}
         </div>
       )}
@@ -77,17 +70,18 @@ export default function AdminLoginForm({ errorMsg }: { errorMsg?: string }) {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
 
-        {/* Email Address */}
+        {/* Email */}
         <div className="space-y-1.5">
           <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider">Email Address</label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="email"
               placeholder="aiadmin@gmail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-11 pr-4 py-2.5 text-xs font-bold text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
+              autoComplete="off"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-2.5 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all"
             />
           </div>
         </div>
@@ -96,13 +90,14 @@ export default function AdminLoginForm({ errorMsg }: { errorMsg?: string }) {
         <div className="space-y-1.5">
           <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider">Password</label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-11 pr-4 py-2.5 text-xs font-bold text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
+              autoComplete="new-password"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-2.5 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all"
             />
           </div>
         </div>
@@ -111,12 +106,12 @@ export default function AdminLoginForm({ errorMsg }: { errorMsg?: string }) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-500 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/10 transition-all cursor-pointer border-none uppercase tracking-wider"
+          className="w-full mt-2 flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-200 transition-all cursor-pointer border-none uppercase tracking-wider"
         >
           {loading ? (
             <>
-              <Loader2 className="w-4.5 h-4.5 animate-spin" />
-              Verifying credentials...
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Verifying...
             </>
           ) : (
             "Authenticate Admin"
@@ -125,24 +120,24 @@ export default function AdminLoginForm({ errorMsg }: { errorMsg?: string }) {
 
       </form>
 
-      {/* Auto-fill Helper Banner */}
-      <div className="mt-6 pt-5 border-t border-slate-800/80 text-left">
-        <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3 relative overflow-hidden">
+      {/* Auto-fill Helper */}
+      <div className="mt-6 pt-5 border-t border-slate-100 text-left">
+        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 space-y-3">
           <div className="flex items-start gap-2.5">
-            <Key className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+            <Key className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <span className="block text-[9px] font-black text-slate-400 uppercase tracking-wider">Test Credentials</span>
-              <p className="text-[10px] text-slate-500 font-bold leading-normal">
-                Email: <span className="text-slate-300 select-all">aiadmin@gmail.com</span> <br />
-                Password: <span className="text-slate-300 select-all">admin123</span>
+              <span className="block text-[9px] font-black text-blue-400 uppercase tracking-wider">Test Credentials</span>
+              <p className="text-[10px] text-slate-600 font-bold leading-normal">
+                Email: <span className="text-slate-800 select-all">aiadmin@gmail.com</span> <br />
+                Password: <span className="text-slate-800 select-all">admin123</span>
               </p>
             </div>
           </div>
           <button
             onClick={handleAutoFill}
-            className="w-full py-2 bg-slate-900 hover:bg-slate-800/80 text-amber-400 hover:text-amber-300 font-extrabold text-[10px] rounded-xl border border-amber-500/20 hover:border-amber-500/40 transition-all cursor-pointer uppercase tracking-wider select-none focus:outline-none"
+            className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-[10px] rounded-xl border-none transition-all cursor-pointer uppercase tracking-wider select-none focus:outline-none"
           >
-            One-Click Auto fill
+            One-Click Auto Fill
           </button>
         </div>
       </div>
