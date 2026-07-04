@@ -82,33 +82,33 @@ export default function Showcase() {
     // Left Screen
     if ((phase === 0 && screenIndex === 1) || (phase === 1 && screenIndex === 2) || (phase === 2 && screenIndex === 0)) {
       return {
-        x: "-45%",
-        scale: 0.75,
-        opacity: 0.35,
+        x: -380,
+        scale: 0.8,
+        opacity: 0.6,
         zIndex: 10,
-        filter: "blur(2px)",
+        filter: "blur(1px)",
       };
     }
 
     // Right Screen
     return {
-      x: "45%",
-      scale: 0.75,
-      opacity: 0.35,
+      x: 380,
+      scale: 0.8,
+      opacity: 0.6,
       zIndex: 10,
-      filter: "blur(2px)",
+      filter: "blur(1px)",
     };
   };
 
   return (
-    <section className="py-24 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden select-none">
+    <section className="pt-12 pb-24 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden select-none">
       {/* Decorative Blur Blobs */}
       <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-blue-100/30 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-indigo-100/30 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-12 flex flex-col items-center">
         {/* Title Section */}
-        <div className="text-center max-w-3xl mx-auto mb-16 relative z-20">
+        <div className="text-center max-w-3xl mx-auto mb-8 relative z-20">
           <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-6">
             See AI Remediation in <span className="text-blue-600">Real-Time</span>
           </h2>
@@ -148,7 +148,7 @@ export default function Showcase() {
                 <img
                   src="/images/white_puffer_jacket.png"
                   alt="Ski Puffer Jacket"
-                  className="w-[85%] h-auto object-contain mix-blend-multiply"
+                  className="w-[85%] h-[85%] object-contain"
                 />
 
                 {/* AI Overlay Frame */}
@@ -202,7 +202,7 @@ export default function Showcase() {
                   )}
                 </AnimatePresence>
 
-                <h3 className={`text-md font-bold transition-colors ${mobileTextFixed ? "text-slate-900" : "text-slate-300"}`}>
+                <h3 className={`text-md font-bold transition-colors ${mobileTextFixed ? "text-slate-900" : "text-slate-400"}`}>
                   Ski Puffer Jacket
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">Premium Winter Outerwear</p>
@@ -396,8 +396,8 @@ export default function Showcase() {
                 initial={{ x: 500, y: 350, opacity: 0 }}
                 animate={
                   cursorClicked
-                    ? { x: 575, y: 395, opacity: 1, scale: 0.85 } // Clicks the button
-                    : { x: 450, y: 300, opacity: 1, scale: 1 }    // Hovering towards it
+                    ? { x: 615, y: 405, opacity: 1, scale: 0.85 } // Clicks the button
+                    : { x: 480, y: 280, opacity: 1, scale: 1 }    // Hovering towards it
                 }
                 transition={{ duration: 1.2, ease: "easeInOut" }}
                 className="absolute z-50 pointer-events-none w-5 h-5 bg-white border border-slate-900 shadow-md rounded-full origin-top-left"
