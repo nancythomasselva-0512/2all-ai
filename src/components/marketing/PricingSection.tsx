@@ -53,8 +53,8 @@ export default function PricingSection() {
           <span className="text-xs font-bold uppercase tracking-widest text-[#004bff] block">
             A Solution for Every Budget
           </span>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
-            Plans customized to fit your<br />
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
+            Plans customized to fit your<br className="hidden md:block" />
             web accessibility needs
           </h2>
         </div>

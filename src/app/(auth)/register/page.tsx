@@ -123,9 +123,9 @@ function RegisterForm() {
     <div className="min-h-screen bg-[#f4f7f9] flex flex-col justify-between relative overflow-x-hidden font-sans text-slate-900 select-none">
 
       {/* HEADER BAR */}
-      <header className="w-full max-w-7xl mx-auto px-6 sm:px-12 py-6 grid grid-cols-3 items-center z-10">
+      <header className="w-full max-w-7xl mx-auto px-4 sm:px-12 py-6 flex items-center justify-between z-10">
         {/* Left: Back button (visible only in step 2) */}
-        <div className="flex justify-start">
+        <div className="flex-1 flex justify-start">
           <AnimatePresence>
             {step === 2 && (
               <motion.button
@@ -136,27 +136,28 @@ function RegisterForm() {
                   setStep(1);
                   setShowPasswordPopup(false);
                 }}
-                className="flex items-center gap-1 text-slate-500 hover:text-slate-800 font-extrabold text-sm transition-colors cursor-pointer"
+                className="flex items-center gap-1 text-slate-500 hover:text-slate-800 font-extrabold text-xs sm:text-sm transition-colors cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
-                Back
+                <span className="hidden sm:inline">Back</span>
               </motion.button>
             )}
           </AnimatePresence>
         </div>
 
         {/* Center: Centered Logo */}
-        <div className="flex justify-center">
-          <Link href="/" className="flex items-center gap-2 group shrink-0">
-            <Logo height={64} className="self-center" />
+        <div className="flex justify-center shrink-0">
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="hidden md:block"><Logo height={52} className="self-center" /></div>
+            <div className="block md:hidden"><Logo height={32} className="self-center" /></div>
           </Link>
         </div>
 
         {/* Right: Log in link */}
-        <div className="flex justify-end">
-          <span className="text-sm font-medium text-slate-500">
-            Already have an account?{" "}
-            <Link href="/login" className="font-extrabold text-blue-600 hover:text-blue-700 transition-colors ml-1">
+        <div className="flex-1 flex justify-end text-right">
+          <span className="text-xs sm:text-sm font-medium text-slate-500">
+            <span className="hidden sm:inline">Already have an account?{" "}</span>
+            <Link href="/login" className="font-extrabold text-blue-600 hover:text-blue-700 transition-colors sm:ml-1">
               Log in
             </Link>
           </span>
@@ -164,12 +165,12 @@ function RegisterForm() {
       </header>
 
       {/* CENTER CARD CONTAINER */}
-      <main className="flex-1 flex items-center justify-center px-4 sm:px-6 py-6 z-10">
+      <main className="flex-1 flex flex-col px-4 sm:px-6 py-8 sm:py-12 z-10 w-full max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="bg-white rounded-[32px] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border border-slate-100/80 max-w-4xl w-full p-8 md:p-14 grid md:grid-cols-2 gap-10 md:gap-16 items-start"
+          className="mt-0 mb-auto md:my-auto mx-auto bg-white rounded-[32px] shadow-[0_15px_40px_rgba(0,0,0,0.03)] border border-slate-100/80 max-w-4xl w-full p-6 sm:p-8 md:p-14 grid md:grid-cols-2 gap-8 md:gap-16 items-start"
         >
           {/* LEFT COLUMN: Features & Steps */}
           <div className="flex flex-col justify-between h-full min-h-[220px]">
@@ -181,7 +182,7 @@ function RegisterForm() {
               </div>
 
               {/* Step Heading */}
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-[1.2] tracking-tight mb-6">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 leading-[1.2] tracking-tight mb-6">
                 {step === 1 ? (
                   "Whatever your accessibility needs, we've got you covered"
                 ) : (
@@ -206,7 +207,7 @@ function RegisterForm() {
                   <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
                     <Check className="w-3.5 h-3.5 text-emerald-500 stroke-[3]" />
                   </div>
-                  <span className="text-sm font-semibold text-slate-500">
+                  <span className="text-xs sm:text-sm font-semibold text-slate-500 leading-snug">
                     Free 7-day trial - no credit card required
                   </span>
                 </div>
@@ -253,9 +254,9 @@ function RegisterForm() {
                       Enter your website <span className="text-red-500">*</span>
                     </label>
                     <div className="flex rounded-xl border border-slate-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 overflow-hidden shadow-sm transition-all bg-white">
-                      <div className="bg-slate-50 border-r border-slate-100 px-4 flex items-center gap-1.5 text-slate-400 font-bold text-xs select-none shrink-0">
+                      <div className="bg-slate-50 border-r border-slate-100 px-3 sm:px-4 flex items-center gap-1.5 text-slate-400 font-bold text-xs select-none shrink-0">
                         <Globe className="w-4 h-4 text-slate-400" />
-                        <span>www.</span>
+                        <span className="hidden sm:inline">www.</span>
                       </div>
                       <input
                         type="text"
@@ -405,10 +406,10 @@ function RegisterForm() {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 10, scale: 0.98 }}
                           transition={{ duration: 0.15 }}
-                          className="absolute left-0 md:left-auto md:-right-8 top-full mt-3 bg-white border border-slate-200/80 rounded-2xl shadow-[0_12px_45px_rgba(0,0,0,0.08)] p-5 z-30 w-full max-w-[380px] text-left"
+                          className="absolute left-0 right-0 md:left-auto md:-right-8 top-full mt-3 bg-white border border-slate-200/80 rounded-2xl shadow-[0_12px_45px_rgba(0,0,0,0.08)] p-5 z-30 w-full max-w-[calc(100vw-50px)] sm:max-w-[380px] text-left mx-auto md:mx-0"
                         >
                           {/* Triangle Speech bubble arrow */}
-                          <div className="w-3 h-3 bg-white rotate-45 border-l border-t border-slate-200/80 -mt-[25.5px] left-10 md:left-auto md:right-16 absolute z-30" />
+                          <div className="w-3 h-3 bg-white rotate-45 border-l border-t border-slate-200/80 -mt-[25.5px] left-8 md:left-auto md:right-16 absolute z-30" />
 
                           <div className="flex items-start gap-3 relative z-31">
                             {/* Colorful Key Icon */}
@@ -503,7 +504,7 @@ function RegisterForm() {
       </footer>
 
       {/* FLOATING ACTION ICONS IN BOTTOM-RIGHT */}
-      <div className="fixed bottom-6 right-6 flex items-center gap-3.5 z-50">
+      <div className="fixed bottom-6 right-6 hidden md:flex items-center gap-3.5 z-50">
         {/* Chat circle */}
         <button className="w-12 h-12 rounded-full bg-slate-900 text-white shadow-lg shadow-slate-900/10 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer">
           <MessageSquare className="w-5 h-5 fill-none stroke-current" />
