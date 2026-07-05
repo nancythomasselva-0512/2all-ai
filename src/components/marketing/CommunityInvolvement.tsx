@@ -60,7 +60,7 @@ export default function CommunityInvolvement() {
         {/* Header */}
         <div className="max-w-4xl mx-auto text-center mb-16 space-y-4">
           <span className="text-xs font-bold uppercase tracking-widest text-[#004bff] block">Making an Impact</span>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
+          <h2 className="text-3xl md:text-[52px] font-black tracking-tight text-slate-900 leading-tight">
             When you work with <span className="text-[#004bff]">2all.ai</span>,<br />
             you work with the disability community
           </h2>

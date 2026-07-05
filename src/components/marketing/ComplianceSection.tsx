@@ -44,7 +44,7 @@ export default function ComplianceSection() {
           <span className="text-xs font-bold uppercase tracking-widest text-[#004bff] block">
             WCAG-Based Remediation
           </span>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
             Mitigate legal risk.<br />
             Comply with global regulations.
           </h2>

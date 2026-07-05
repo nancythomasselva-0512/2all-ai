@@ -39,7 +39,7 @@ export default function Home() {
     <div className="min-h-screen w-full bg-white relative overflow-x-hidden selection:bg-slate-100">
       
       {/* SECTION 1: Intro Screen (First Viewport) */}
-      <div className="min-h-[100dvh] w-full flex flex-col justify-between relative overflow-hidden bg-white pb-8">
+      <div className="w-full flex flex-col justify-start md:justify-between md:min-h-screen relative overflow-hidden bg-white pb-8 md:pb-0">
         
         {/* Header Navigation */}
         <header 
@@ -209,7 +209,7 @@ export default function Home() {
         </div>
 
         {/* Center Presentation Stage */}
-        <div className="flex-1 relative flex flex-col justify-start gap-10 pt-0 pb-8 px-6 max-w-7xl mx-auto w-full z-10">
+        <div className="flex-1 relative flex flex-col justify-start gap-10 pt-16 md:pt-0 pb-8 px-6 max-w-7xl mx-auto w-full z-10">
 
           {/* Soft central gradient accent behind text */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-pink-100/25 via-orange-100/10 to-blue-100/25 rounded-full blur-[100px] pointer-events-none" />

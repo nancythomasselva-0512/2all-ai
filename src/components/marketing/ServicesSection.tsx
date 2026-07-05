@@ -138,7 +138,7 @@ export default function ServicesSection() {
         <div className="max-w-4xl mb-16 space-y-4">
           <span className="text-xs font-bold uppercase tracking-widest text-blue-600 block">Unmatched Partnership Benefits</span>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
-            Compliance Built on <span className="text-blue-600 whitespace-nowrap">Expertise & Support</span>
+            Compliance Built on <span className="text-blue-600">Expertise & Support</span>
           </h2>
           <p className="text-slate-700 text-lg font-normal leading-relaxed">
             We provide agencies, developers, and legal departments with all the assets, hands-on support, and compliance infrastructure needed to succeed.

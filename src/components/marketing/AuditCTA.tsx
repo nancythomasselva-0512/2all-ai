@@ -151,7 +151,7 @@ export default function AuditCTA() {
                     <div className="absolute -inset-1 bg-gradient-to-r from-violet-500/20 to-cyan-500/20 rounded-[24px] blur-md opacity-0 hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
                     {/* Input wrapper */}
-                    <div className="relative bg-zinc-900/60 border border-zinc-800 rounded-[20px] p-2 flex items-center justify-between shadow-inner backdrop-blur-md">
+                    <div className="relative bg-zinc-900/60 border border-zinc-800 rounded-[20px] p-2 flex flex-col sm:flex-row items-center justify-between shadow-inner backdrop-blur-md gap-2 sm:gap-0">
                       <div className="flex-1 flex items-center pl-4 gap-3">
                         <Globe className="w-5 h-5 text-zinc-500 shrink-0" />
                         <input
@@ -166,7 +166,7 @@ export default function AuditCTA() {
                       {/* Submit */}
                       <button
                         type="submit"
-                        className="bg-white hover:bg-slate-100 text-black rounded-xl px-6 py-3.5 text-xs md:text-sm font-black tracking-wider uppercase flex items-center gap-2 transition-all shadow-md shrink-0 shadow-black/10 hover:shadow-black/20"
+                        className="w-full sm:w-auto justify-center bg-white hover:bg-slate-100 text-black rounded-xl px-6 py-3.5 text-xs md:text-sm font-black tracking-wider uppercase flex items-center gap-2 transition-all shadow-md shrink-0 shadow-black/10 hover:shadow-black/20"
                       >
                         Get Audit
                         <ArrowRight className="w-4 h-4 stroke-[2.5]" />
