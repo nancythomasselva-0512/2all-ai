@@ -44,19 +44,19 @@ export default function Home() {
         {/* Header Navigation */}
         <header 
           onMouseLeave={() => setActiveHoverMenu(null)}
-          className="w-full py-2 px-10 z-30 shrink-0 bg-transparent relative"
+          className="w-full py-2 px-4 md:px-10 z-30 shrink-0 bg-transparent relative"
         >
-          <div className="w-full flex items-center gap-4">
+          <div className="w-full flex items-center justify-between gap-2 md:gap-4">
 
             {/* Left Capsule (Logo, Nav links, Login) */}
-            <div className="bg-transparent px-4 py-1.5 flex items-center justify-between flex-grow">
+            <div className="bg-transparent md:px-4 py-1.5 flex items-center justify-between flex-grow">
 
               {/* Logo */}
-              <Link href="/" className="flex items-center group mr-6 shrink-0">
+              <Link href="/" className="flex items-center group mr-2 md:mr-6 shrink-0">
                 <img
                   src="/images/logo.jpeg"
                   alt="2all.ai Logo"
-                  className="h-16 w-auto object-contain mix-blend-multiply"
+                  className="h-10 md:h-16 w-auto object-contain mix-blend-multiply"
                 />
               </Link>
 
@@ -100,23 +100,23 @@ export default function Home() {
               {/* Login Link */}
               <Link
                 href="/login"
-                className="text-[13px] font-bold text-[#0a1e3f] hover:text-blue-600 tracking-wider mr-2"
+                className="hidden md:block text-[13px] font-bold text-[#0a1e3f] hover:text-blue-600 tracking-wider mr-2"
               >
                 LOGIN
               </Link>
             </div>
 
             {/* Right Capsule (Book a demo & Start trial) */}
-            <div className="bg-transparent py-1.5 pl-6 flex items-center gap-5 shrink-0">
+            <div className="bg-transparent py-1.5 md:pl-6 flex items-center gap-3 md:gap-5 shrink-0">
               <button
                 onClick={() => setIsDemoOpen(true)}
-                className="text-[13px] font-bold text-blue-600 hover:text-blue-700 tracking-wider border-none bg-transparent cursor-pointer"
+                className="hidden md:block text-[13px] font-bold text-blue-600 hover:text-blue-700 tracking-wider border-none bg-transparent cursor-pointer"
               >
                 BOOK A DEMO
               </button>
               <Link
                 href="/register"
-                className="flex items-center gap-2 bg-[#004bff] hover:bg-[#003edd] text-white rounded-xl px-6 py-3 text-[12px] font-extrabold tracking-wider transition-all shadow-md shadow-blue-500/20"
+                className="flex items-center gap-1 md:gap-2 bg-[#004bff] hover:bg-[#003edd] text-white rounded-xl px-4 md:px-6 py-2 md:py-3 text-[10px] md:text-[12px] font-extrabold tracking-wider transition-all shadow-md shadow-blue-500/20 whitespace-nowrap"
               >
                 START FREE TRIAL
                 <svg viewBox="0 0 24 24" className="w-3 h-3 stroke-[3] stroke-current fill-none">
