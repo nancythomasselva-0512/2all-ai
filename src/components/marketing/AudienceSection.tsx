@@ -40,14 +40,14 @@ export default function AudienceSection() {
   ];
 
   return (
-    <section className="pt-10 pb-24 bg-white relative overflow-hidden select-none">
+    <section className="pt-10 pb-10 md:pb-20 bg-white relative overflow-hidden select-none">
       {/* Decorative background shapes */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-slate-50 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 sm:px-12 relative z-10">
         
         {/* Section Heading */}
-        <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+        <div className="text-center max-w-2xl mx-auto mb-10 md:mb-16 space-y-4">
           <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Solutions for Everyone</span>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
             How Can We Help <span className="text-blue-600">You?</span>

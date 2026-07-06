@@ -50,7 +50,7 @@ export default function CommunityInvolvement() {
   ];
 
   return (
-    <section className="py-24 bg-slate-50 relative overflow-hidden select-none font-sans">
+    <section className="py-10 md:py-24 bg-slate-50 relative overflow-hidden select-none font-sans">
       {/* Soft background glow orbs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-200/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-sky-200/20 rounded-full blur-[120px] pointer-events-none" />
@@ -58,7 +58,7 @@ export default function CommunityInvolvement() {
       <div className="max-w-7xl mx-auto px-6 sm:px-12 relative z-10">
         
         {/* Header */}
-        <div className="max-w-4xl mx-auto text-center mb-16 space-y-4">
+        <div className="max-w-4xl mx-auto text-center mb-10 md:mb-16 space-y-4">
           <span className="text-xs font-bold uppercase tracking-widest text-[#004bff] block">Making an Impact</span>
           <h2 className="text-3xl md:text-[52px] font-black tracking-tight text-slate-900 leading-tight">
             When you work with <span className="text-[#004bff]">2all.ai</span>,<br />

@@ -177,14 +177,20 @@ export default function Home() {
                   { name: "RESOURCES", href: "#" },
                   { name: "PRICING", href: "/pricing" },
                 ].map((link) => (
-                  <Link
+                  <button
                     key={link.name}
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-[14px] font-bold text-[#374b6c] hover:text-blue-600 transition-colors"
+                    onClick={() => {
+                      if (["SOLUTIONS", "COMPANY", "PARTNERS", "RESOURCES"].includes(link.name)) {
+                        setActiveHoverMenu(link.name);
+                        setIsMobileMenuOpen(false);
+                      } else {
+                        window.location.href = link.href;
+                      }
+                    }}
+                    className="text-[14px] font-bold text-[#374b6c] hover:text-blue-600 transition-colors text-left"
                   >
                     {link.name}
-                  </Link>
+                  </button>
                 ))}
                 <Link
                   href="/login"

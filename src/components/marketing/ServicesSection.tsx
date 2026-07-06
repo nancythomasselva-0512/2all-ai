@@ -127,7 +127,7 @@ export default function ServicesSection() {
   ];
 
   return (
-    <section className="pt-10 pb-24 bg-slate-50 relative overflow-hidden select-none">
+    <section className="pt-10 pb-10 md:pb-20 bg-slate-50 relative overflow-hidden select-none">
       {/* Background soft blur visual assets */}
       <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-blue-100/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 left-0 w-[400px] h-[400px] bg-violet-100/20 rounded-full blur-[120px] pointer-events-none" />
@@ -135,7 +135,7 @@ export default function ServicesSection() {
       <div className="max-w-7xl mx-auto px-6 sm:px-12 relative z-10">
         
         {/* Section Heading */}
-        <div className="max-w-4xl mb-16 space-y-4">
+        <div className="max-w-4xl mb-10 md:mb-16 space-y-4">
           <span className="text-xs font-bold uppercase tracking-widest text-blue-600 block">Unmatched Partnership Benefits</span>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
             Compliance Built on <span className="text-blue-600">Expertise & Support</span>

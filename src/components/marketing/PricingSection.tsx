@@ -40,7 +40,7 @@ export default function PricingSection() {
   ];
 
   return (
-    <section className="py-24 bg-white relative overflow-hidden select-none font-sans border-t border-slate-100">
+    <section className="py-10 md:py-24 bg-white relative overflow-hidden select-none font-sans border-t border-slate-100">
       
       {/* Background Technical Grid Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#f8fafc_1px,transparent_1px),linear-gradient(to_bottom,#f8fafc_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
@@ -49,7 +49,7 @@ export default function PricingSection() {
       <div className="max-w-7xl mx-auto px-6 sm:px-12 relative z-10 text-center">
         
         {/* Header */}
-        <div className="max-w-3xl mx-auto space-y-4 mb-20">
+        <div className="max-w-3xl mx-auto space-y-4 mb-10 md:mb-20">
           <span className="text-xs font-bold uppercase tracking-widest text-[#004bff] block">
             A Solution for Every Budget
           </span>

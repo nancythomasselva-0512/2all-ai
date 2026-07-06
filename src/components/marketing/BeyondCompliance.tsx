@@ -51,7 +51,7 @@ export default function BeyondCompliance() {
   };
 
   return (
-    <section className="py-24 bg-white relative overflow-hidden select-none font-sans">
+    <section className="py-10 md:py-24 bg-white relative overflow-hidden select-none font-sans">
       {/* Background accents */}
       <div className="absolute top-1/3 left-10 w-80 h-80 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/3 right-10 w-80 h-80 bg-blue-600/5 rounded-full blur-[100px] pointer-events-none" />
@@ -60,7 +60,7 @@ export default function BeyondCompliance() {
         <div className="grid lg:grid-cols-12 gap-16 items-center">
           
           {/* LEFT COLUMN: Header & Animated Rings SVG */}
-          <div className="lg:col-span-5 space-y-8 text-left">
+          <div className="lg:col-span-5 space-y-6 md:space-y-8 text-left">
             <div className="space-y-4">
               <span className="px-3.5 py-1.5 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold text-[#004bff] uppercase tracking-widest inline-block font-sans">
                 Beyond Legal Standards

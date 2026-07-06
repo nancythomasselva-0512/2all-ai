@@ -99,7 +99,7 @@ export default function AuditCTA() {
   };
 
   return (
-    <section className="py-20 bg-white relative overflow-hidden select-none">
+    <section className="py-10 md:py-20 bg-white relative overflow-hidden select-none">
       <div className="max-w-7xl mx-auto px-6 sm:px-12 relative z-10">
         
         {/* Sleek Matte Black Card Container */}
