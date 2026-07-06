@@ -490,7 +490,7 @@ function RegisterForm() {
       </main>
 
       {/* FOOTER: TRUST LOGOS */}
-      <footer className="w-full pb-8 pt-4 z-10 shrink-0">
+      <footer className="w-full pb-8 pt-4 relative z-10 shrink-0">
         <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center mb-6">
           Trusted by over 100,000 businesses worldwide
         </h3>
@@ -502,18 +502,6 @@ function RegisterForm() {
           <span className="font-sans font-extrabold text-md text-slate-900 uppercase tracking-tight">Panasonic</span>
         </div>
       </footer>
-
-      {/* FLOATING ACTION ICONS IN BOTTOM-RIGHT */}
-      <div className="fixed bottom-6 right-6 hidden md:flex items-center gap-3.5 z-50">
-        {/* Chat circle */}
-        <button className="w-12 h-12 rounded-full bg-slate-900 text-white shadow-lg shadow-slate-900/10 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer">
-          <MessageSquare className="w-5 h-5 fill-none stroke-current" />
-        </button>
-        {/* Accessibility circle */}
-        <button className="w-12 h-12 rounded-full bg-blue-600 text-white shadow-lg shadow-blue-500/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer">
-          <Accessibility className="w-5 h-5 fill-none stroke-current stroke-[2]" />
-        </button>
-      </div>
 
     </div>
   );

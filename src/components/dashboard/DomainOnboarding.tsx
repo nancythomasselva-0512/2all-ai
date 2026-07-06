@@ -416,8 +416,8 @@ export default function DomainOnboarding({
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
-            <span className="px-4 py-2 rounded-full bg-slate-100/80 border border-slate-200/60 text-xs font-extrabold text-slate-600">
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <span className="px-4 py-2 rounded-full bg-slate-100/80 border border-slate-200/60 text-xs font-extrabold text-slate-600 whitespace-nowrap">
               Total domains: {domains.length}
             </span>
             {/* STEP 1: Add Domain button triggers SaaS modal */}
@@ -430,7 +430,7 @@ export default function DomainOnboarding({
                 setNotes("");
                 setActiveModal({ type: "add" });
               }}
-              className="px-6 py-2.5 rounded-xl bg-[#0052ff] hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition-all cursor-pointer border-none flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl bg-[#0052ff] hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition-all cursor-pointer border-none flex items-center gap-2 whitespace-nowrap shrink-0"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
               Add Domain

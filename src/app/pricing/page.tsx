@@ -97,17 +97,17 @@ export default function PricingPage() {
       {/* HEADER SECTION */}
       <header 
         onMouseLeave={() => setActiveHoverMenu(null)}
-        className="w-full py-2 px-10 z-30 shrink-0 bg-white border-b border-slate-100 relative"
+        className="w-full py-2 px-4 md:px-10 z-30 shrink-0 bg-white border-b border-slate-100 relative"
       >
-        <div className="w-full flex items-center gap-4">
+        <div className="w-full flex items-center justify-between gap-2 md:gap-4">
 
           {/* Left Capsule */}
-          <div className="bg-transparent px-4 py-1.5 flex items-center justify-between flex-grow">
-            <Link href="/" className="flex items-center group mr-6 shrink-0">
+          <div className="bg-transparent md:px-4 py-1.5 flex items-center justify-between flex-grow">
+            <Link href="/" className="flex items-center group mr-2 md:mr-6 shrink-0">
               <img
                 src="/images/logo.jpeg"
                 alt="2all.ai Logo"
-                className="h-16 w-auto object-contain mix-blend-multiply"
+                className="h-10 md:h-16 w-auto object-contain mix-blend-multiply"
               />
             </Link>
 
@@ -287,11 +287,11 @@ export default function PricingPage() {
       </section>
 
       {/* PRICING CARDS */}
-      <section className="py-20 max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <section className="py-12 md:py-20 max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           
           {/* Card 1: Micro */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between hover:shadow-xl transition-all text-left">
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-xl transition-all text-left">
             <div className="space-y-6">
               <div>
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Micro</span>
@@ -335,7 +335,7 @@ export default function PricingPage() {
           </div>
 
           {/* Card 2: Business */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between hover:shadow-xl transition-all text-left">
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-xl transition-all text-left">
             <div className="space-y-6">
               <div>
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Business</span>
@@ -379,8 +379,8 @@ export default function PricingPage() {
           </div>
 
           {/* Card 3: Advanced */}
-          <div className="bg-white border-2 border-blue-600 rounded-3xl p-8 flex flex-col justify-between hover:shadow-xl transition-all relative text-left">
-            <span className="absolute top-0 right-6 -translate-y-1/2 bg-blue-600 text-white font-black text-[9px] uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1">
+          <div className="bg-white border-2 border-blue-600 rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-xl transition-all relative text-left">
+            <span className="absolute top-0 right-4 lg:right-6 -translate-y-1/2 bg-blue-600 text-white font-black text-[9px] uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
               <Star className="w-3 h-3 fill-white" />
               Most Popular
             </span>
@@ -427,7 +427,7 @@ export default function PricingPage() {
           </div>
 
           {/* Card 4: Enterprise */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between hover:shadow-xl transition-all text-left">
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-xl transition-all text-left">
             <div className="space-y-6">
               <div>
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Enterprise</span>
@@ -473,8 +473,8 @@ export default function PricingPage() {
       </section>
 
       {/* FEATURE COMPARISON TABLE */}
-      <section className="py-20 max-w-7xl mx-auto px-6">
-        <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-8 text-left">
+      <section className="py-12 md:py-20 max-w-7xl mx-auto px-4 sm:px-6 pb-32">
+        <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-6 md:mb-8 text-left">
           Compare all plan features
         </h2>
 
@@ -501,11 +501,11 @@ export default function PricingPage() {
           </button>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border border-slate-200/80 shadow-sm">
-          <table className="w-full border-collapse text-left text-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200/80 shadow-sm relative">
+          <table className="w-full min-w-[900px] lg:min-w-full border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-slate-200">
-                <th className="p-5 text-xs font-black text-slate-500 uppercase tracking-wider bg-white w-1/3">Features</th>
+                <th className="p-5 text-xs font-black text-slate-500 uppercase tracking-wider bg-white w-1/3 sticky left-0 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Features</th>
                 {[
                   { name: "Micro", volume: "Up to 1k monthly visits", price: getPrice(49), href: `/checkout?plan=micro&billing=${billingPeriod}`, highlight: false },
                   { name: "Growth", volume: "Up to 30k monthly visits", price: getPrice(149), href: `/checkout?plan=business&billing=${billingPeriod}`, highlight: true },
@@ -577,12 +577,12 @@ export default function PricingPage() {
                 { feature: "Dedicated account manager", values: [false, false, true, true] },
                 { feature: "Custom legal terms", values: [false, false, false, true] },
               ].map((row, ri) => (
-                <tr key={ri} className={`border-t border-slate-100 ${ri % 2 === 0 ? "bg-white" : "bg-slate-50/40"}`}>
-                  <td className="px-5 py-4 font-semibold text-slate-700">{row.feature}</td>
+                <tr key={ri} className={`border-t border-slate-100 ${ri % 2 === 0 ? "bg-white" : "bg-slate-50"}`}>
+                  <td className="px-5 py-4 font-semibold text-slate-700 sticky left-0 z-10 bg-inherit shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">{row.feature}</td>
                   {row.values.map((val, vi) => (
                     <td
                       key={vi}
-                      className={`px-5 py-4 text-center ${vi === 1 ? "bg-blue-50/40" : ""}`}
+                      className={`px-5 py-4 text-center ${vi === 1 ? "bg-blue-50/60" : ""}`}
                     >
                       {val === true ? (
                         <Check className="w-4 h-4 text-blue-600 mx-auto stroke-[2.5]" />

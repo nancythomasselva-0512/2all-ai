@@ -449,13 +449,13 @@ export default function DomainDetails({ domain: initialDomain, userName }: Domai
             <button
               key={card.label}
               onClick={card.onClick}
-              className="text-left p-4 bg-white border border-slate-200/80 rounded-2xl hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer"
+              className="text-left p-3 sm:p-4 bg-white border border-slate-200/80 rounded-2xl hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer overflow-hidden flex flex-col justify-between"
             >
-              <div className="flex items-start justify-between">
-                <span className="text-xs text-slate-500 font-medium">{card.label}</span>
-                <span className="text-[10px] font-bold text-[#0052ff] hover:underline">{card.sub}</span>
+              <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-1 w-full overflow-hidden">
+                <span className="text-[11px] sm:text-xs text-slate-500 font-medium truncate">{card.label}</span>
+                <span className="text-[9px] sm:text-[10px] font-bold text-[#0052ff] truncate xl:text-right">{card.sub}</span>
               </div>
-              <p className={`mt-1 ${card.bold ? "text-base font-black text-slate-800" : "text-2xl font-black text-slate-900"}`}>{card.value}</p>
+              <p className={`mt-2 ${card.bold ? "text-sm sm:text-base font-black text-slate-800" : "text-xl sm:text-2xl font-black text-slate-900"} truncate w-full`}>{card.value}</p>
             </button>
           ))}
         </div>

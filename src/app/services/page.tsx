@@ -38,17 +38,17 @@ export default function ServicesPage() {
       {/* HEADER SECTION (Same as home page for consistency) */}
       <header 
         onMouseLeave={() => setActiveHoverMenu(null)}
-        className="w-full py-2 px-10 z-30 shrink-0 bg-white border-b border-slate-100 relative"
+        className="w-full py-2 px-4 md:px-10 z-30 shrink-0 bg-white border-b border-slate-100 relative"
       >
-        <div className="w-full flex items-center gap-4">
+        <div className="w-full flex items-center justify-between gap-2 md:gap-4">
 
           {/* Left Capsule */}
-          <div className="bg-transparent px-4 py-1.5 flex items-center justify-between flex-grow">
-            <Link href="/" className="flex items-center group mr-6 shrink-0">
+          <div className="bg-transparent md:px-4 py-1.5 flex items-center justify-between flex-grow">
+            <Link href="/" className="flex items-center group mr-2 md:mr-6 shrink-0">
               <img
                 src="/images/logo.jpeg"
                 alt="2all.ai Logo"
-                className="h-16 w-auto object-contain mix-blend-multiply"
+                className="h-10 md:h-16 w-auto object-contain mix-blend-multiply"
               />
             </Link>
 
