@@ -28,10 +28,21 @@ export default function PartnersMegamenu({ isOpen, onMouseEnter, onMouseLeave }:
           transition={{ duration: 0.2, ease: "easeOut" }}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          className="absolute top-[72px] left-[25%] right-[25%] max-w-2xl mx-auto bg-white border border-slate-200/80 rounded-3xl shadow-2xl z-40 flex text-left select-none overflow-hidden"
+          className="absolute top-[72px] left-4 right-4 md:left-[25%] md:right-[25%] max-w-2xl mx-auto bg-white border border-slate-200/80 rounded-3xl shadow-2xl z-40 flex flex-col lg:flex-row text-left select-none overflow-y-auto lg:overflow-hidden max-h-[85vh] lg:max-h-none"
         >
+          {/* MOBILE CLOSE HEADER */}
+          <div className="flex lg:hidden justify-between items-center p-4 border-b border-slate-100">
+            <h3 className="font-black text-slate-900 text-lg">Partners</h3>
+            <button 
+              onClick={onMouseLeave}
+              className="p-2 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-600 shrink-0"
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-[2] stroke-current fill-none"><path d="M18 6L6 18M6 6l12 12" /></svg>
+            </button>
+          </div>
+
           {/* LEFT PANEL: PROGRAMS (w-1/2) */}
-          <div className="w-1/2 p-8 space-y-6">
+          <div className="w-full lg:w-1/2 p-4 md:p-8 space-y-6">
             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none border-b border-slate-100 pb-2">
               Programs
             </h4>
@@ -66,7 +77,7 @@ export default function PartnersMegamenu({ isOpen, onMouseEnter, onMouseLeave }:
           </div>
 
           {/* RIGHT PANEL: PROMO CARD (w-1/2) */}
-          <div className="w-1/2 bg-indigo-900 text-white p-8 relative overflow-hidden flex flex-col justify-between h-[360px]">
+          <div className="w-full lg:w-1/2 bg-indigo-900 text-white p-4 md:p-8 relative overflow-hidden flex flex-col justify-between h-[360px] lg:h-auto">
             {/* Visual design accent */}
             <div className="absolute top-0 right-0 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" />
             

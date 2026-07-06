@@ -37,10 +37,21 @@ export default function ResourcesMegamenu({ isOpen, onMouseEnter, onMouseLeave }
           transition={{ duration: 0.2, ease: "easeOut" }}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          className="absolute top-[72px] left-10 right-10 max-w-7xl mx-auto bg-white border border-slate-200/80 rounded-3xl shadow-2xl z-40 p-8 grid grid-cols-12 gap-8 text-left select-none"
+          className="absolute top-[72px] left-4 right-4 md:left-10 md:right-10 max-w-7xl mx-auto bg-white border border-slate-200/80 rounded-3xl shadow-2xl z-40 p-4 md:p-8 flex flex-col lg:grid lg:grid-cols-12 gap-6 md:gap-8 text-left select-none max-h-[85vh] overflow-y-auto lg:overflow-visible"
         >
+          {/* MOBILE CLOSE HEADER */}
+          <div className="flex lg:hidden justify-between items-center pb-4 mb-2 border-b border-slate-100">
+            <h3 className="font-black text-slate-900 text-lg">Resources</h3>
+            <button 
+              onClick={onMouseLeave}
+              className="p-2 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-600 shrink-0"
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-[2] stroke-current fill-none"><path d="M18 6L6 18M6 6l12 12" /></svg>
+            </button>
+          </div>
+
           {/* COLUMN 1: LEARN (cols 3) */}
-          <div className="col-span-3 space-y-5">
+          <div className="lg:col-span-3 space-y-5">
             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none border-b border-slate-100 pb-2">
               Learn
             </h4>
@@ -76,8 +87,8 @@ export default function ResourcesMegamenu({ isOpen, onMouseEnter, onMouseLeave }
             </div>
           </div>
 
-          {/* COLUMN 2: EXPLORE (cols 3) */}
-          <div className="col-span-3 space-y-5">
+          {/* COLUMN 2: GUIDES (cols 3) */}
+          <div className="lg:col-span-3 space-y-5">
             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none border-b border-slate-100 pb-2">
               Explore
             </h4>
@@ -113,7 +124,7 @@ export default function ResourcesMegamenu({ isOpen, onMouseEnter, onMouseLeave }
           </div>
 
           {/* COLUMN 3: SUPPORT (cols 3) */}
-          <div className="col-span-3 space-y-5">
+          <div className="lg:col-span-3 space-y-5">
             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none border-b border-slate-100 pb-2">
               Support
             </h4>
@@ -148,7 +159,7 @@ export default function ResourcesMegamenu({ isOpen, onMouseEnter, onMouseLeave }
           </div>
 
           {/* COLUMN 4: PROMO CARD (cols 3) */}
-          <div className="col-span-3 bg-blue-600 text-white rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between shadow-lg h-[400px]">
+          <div className="lg:col-span-3 bg-blue-600 text-white p-4 md:p-5 rounded-2xl relative overflow-hidden flex flex-col justify-between shadow-lg h-[400px] lg:h-auto">
             {/* Background design accents */}
             <div className="absolute top-0 right-0 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" />
             
