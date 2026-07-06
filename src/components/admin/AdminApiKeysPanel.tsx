@@ -329,7 +329,7 @@ export default function AdminApiKeysPanel() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full min-w-[800px] text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50/70 border-b border-slate-100 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                   <th className="py-4 px-6">PUBLIC KEY</th>

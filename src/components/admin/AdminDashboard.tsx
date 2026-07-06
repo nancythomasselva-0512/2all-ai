@@ -33,7 +33,8 @@ import {
   Eye,
   Menu,
   Loader2,
-  KeyRound
+  KeyRound,
+  X
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import DomainOnboarding from "@/components/dashboard/DomainOnboarding";
@@ -128,6 +129,7 @@ export default function AdminDashboard({
   const [searchQuery, setSearchQuery] = useState("");
   const [statusMessage, setStatusMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Demo requests states
   const [demoRequests, setDemoRequests] = useState<any[]>([]);
@@ -230,13 +232,26 @@ export default function AdminDashboard({
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-800 antialiased font-sans select-none">
 
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* SIDEBAR: BLUE & WHITE STYLING */}
-      <aside className="w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between shrink-0 select-none">
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between shrink-0 select-none transform transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="overflow-y-auto flex-grow max-h-[calc(100vh-70px)]">
           {/* Logo */}
-          <div className="p-5 border-b border-slate-100 flex items-center gap-3">
-            <Logo height={36} className="self-center" />
-            <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase mt-2.5 block leading-none">Console</span>
+          <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Logo height={36} className="self-center" />
+              <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase mt-2.5 block leading-none">Console</span>
+            </div>
+            <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-500 transition-colors">
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Navigation Links Group 1: System Panel */}
@@ -253,7 +268,10 @@ export default function AdminDashboard({
               return (
                 <button
                   key={tab.id}
-                  onClick={() => handleTabChange(tab.id)}
+                  onClick={() => {
+                    handleTabChange(tab.id);
+                    setIsSidebarOpen(false);
+                  }}
                   className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left text-xs font-black transition-all cursor-pointer border-none ${activeTab === tab.id
                       ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                       : "bg-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50/50"
@@ -319,8 +337,15 @@ export default function AdminDashboard({
       <div className="flex-grow flex flex-col min-w-0">
 
         {/* TOP HEADER */}
-        <header className="sticky top-0 z-20 h-16 bg-white border-b border-slate-200/80 px-8 flex items-center justify-between select-none">
-          <h2 className="text-xs font-black text-slate-700 tracking-wider uppercase">
+        <header className="sticky top-0 z-20 h-16 bg-white border-b border-slate-200/80 px-4 md:px-8 flex items-center justify-between gap-3 select-none">
+          <div className="flex items-center gap-3 min-w-0">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="lg:hidden p-2 -ml-2 shrink-0 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h2 className="text-[10px] md:text-xs font-black text-slate-700 tracking-wider uppercase truncate">
             {activeTab === "overview" && "Telemetry Overview Panel"}
             {activeTab === "users" && "System User Profiles Registry"}
             {activeTab === "payments" && "Backend Payment Systems Integrations"}
@@ -328,16 +353,17 @@ export default function AdminDashboard({
             {activeTab === "theme" && "Global Theme & Color manager"}
             {activeTab === "cssjs" && "Custom CSS / JS / Tracking script manager"}
             {["website", "navigation", "landing", "cms", "features", "dashboard", "form", "auth", "whitelabel", "media", "translation"].includes(activeTab) && `${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Module`}
-          </h2>
+            </h2>
+          </div>
 
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-slate-400">Admin Mode</span>
-            <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
+          <div className="flex items-center gap-2 md:gap-3 shrink-0">
+            <span className="text-[10px] md:text-xs font-bold text-slate-400 whitespace-nowrap">Admin Mode</span>
+            <div className="w-2 md:w-2.5 h-2 md:h-2.5 rounded-full bg-blue-500 animate-pulse shrink-0" />
           </div>
         </header>
 
         {/* CONTENT VIEW */}
-        <main className="flex-grow p-8 overflow-y-auto">
+        <main className="flex-grow p-4 md:p-8 overflow-y-auto">
 
           {/* TOAST TO NOTIFY SUCCESS/ERROR */}
           {statusMessage && (
@@ -387,28 +413,28 @@ export default function AdminDashboard({
                     <TrendingUp className="w-4 h-4 text-slate-400" />
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-xs font-medium text-slate-600">
+                    <table className="w-full min-w-[500px] text-xs font-medium text-slate-600">
                       <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400 tracking-widest border-b border-slate-200/60">
                         <tr>
-                          <th className="px-6 py-3 text-left">User</th>
-                          <th className="px-6 py-3 text-left">Role</th>
-                          <th className="px-6 py-3 text-left">Joined</th>
+                          <th className="px-4 md:px-6 py-3 text-left whitespace-nowrap">User</th>
+                          <th className="px-4 md:px-6 py-3 text-left whitespace-nowrap">Role</th>
+                          <th className="px-4 md:px-6 py-3 text-left whitespace-nowrap">Joined</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {users.slice(0, 5).map((user) => (
                           <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="px-6 py-3.5">
+                            <td className="px-4 md:px-6 py-3.5 whitespace-nowrap">
                               <span className="block font-black text-slate-800">{user.name || "Unnamed"}</span>
                               <span className="block text-[10px] text-slate-400 font-bold">{user.email}</span>
                             </td>
-                            <td className="px-6 py-3.5">
+                            <td className="px-4 md:px-6 py-3.5 whitespace-nowrap">
                               <span className={`px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider ${user.role === "ADMIN" ? "bg-purple-50 text-purple-600 border border-purple-100" : "bg-blue-50 text-blue-600 border border-blue-100"
                                 }`}>
                                 {user.role}
                               </span>
                             </td>
-                            <td className="px-6 py-3.5 text-slate-400 font-bold">
+                            <td className="px-4 md:px-6 py-3.5 text-slate-400 font-bold whitespace-nowrap">
                               {new Date(user.createdAt).toLocaleDateString()}
                             </td>
                           </tr>
@@ -425,7 +451,7 @@ export default function AdminDashboard({
                     <Globe className="w-4 h-4 text-slate-400" />
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-xs font-medium text-slate-600">
+                    <table className="w-full min-w-[400px] text-xs font-medium text-slate-600">
                       <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400 tracking-widest border-b border-slate-200/60">
                         <tr>
                           <th className="px-6 py-3 text-left">Domain</th>
@@ -466,7 +492,7 @@ export default function AdminDashboard({
                 </div>
 
                 <form onSubmit={handleSaveConfig} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Brand Name</label>
                       <input
@@ -497,7 +523,7 @@ export default function AdminDashboard({
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Demo Button CTA</label>
                       <input
@@ -519,7 +545,7 @@ export default function AdminDashboard({
                   </div>
 
                   {/* Toggle switches for sections */}
-                  <div className="flex items-center gap-6 pt-2 border-t border-slate-100">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 pt-2 border-t border-slate-100">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                       <button
                         type="button"
@@ -844,23 +870,23 @@ export default function AdminDashboard({
               {/* Users registry list */}
               <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-xs font-medium text-slate-600">
+                  <table className="w-full min-w-[650px] text-xs font-medium text-slate-600">
                     <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400 tracking-widest border-b border-slate-200/60">
                       <tr>
-                        <th className="px-6 py-3.5 text-left">User details</th>
-                        <th className="px-6 py-3.5 text-left">Security Role</th>
-                        <th className="px-6 py-3.5 text-left">Date registered</th>
-                        <th className="px-6 py-3.5 text-center">Actions</th>
+                        <th className="px-4 md:px-6 py-3.5 text-left whitespace-nowrap">User details</th>
+                        <th className="px-4 md:px-6 py-3.5 text-left whitespace-nowrap">Security Role</th>
+                        <th className="px-4 md:px-6 py-3.5 text-left whitespace-nowrap">Date registered</th>
+                        <th className="px-4 md:px-6 py-3.5 text-center whitespace-nowrap">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {filteredUsers.map((user) => (
                         <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="px-6 py-4">
+                          <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                             <span className="block font-black text-slate-800">{user.name || "Unnamed"}</span>
                             <span className="block text-[10px] text-slate-400 font-bold">{user.email}</span>
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                             <select
                               value={user.role}
                               onChange={(e) => handleRoleChange(user.id, e.target.value)}
@@ -870,10 +896,10 @@ export default function AdminDashboard({
                               <option value="ADMIN">ADMIN</option>
                             </select>
                           </td>
-                          <td className="px-6 py-4 text-slate-400 font-bold">
+                          <td className="px-4 md:px-6 py-4 text-slate-400 font-bold whitespace-nowrap">
                             {new Date(user.createdAt).toLocaleDateString()}
                           </td>
-                          <td className="px-6 py-4 text-center">
+                          <td className="px-4 md:px-6 py-4 text-center whitespace-nowrap">
                             <button
                               onClick={() => handleDeleteUser(user.id)}
                               className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition-all cursor-pointer border-none bg-transparent"
@@ -911,7 +937,7 @@ export default function AdminDashboard({
               ) : (
                 <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
                   <div className="overflow-x-auto">
-                    <table className="w-full text-xs font-medium text-slate-600">
+                    <table className="w-full min-w-[750px] text-xs font-medium text-slate-600">
                       <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400 tracking-widest border-b border-slate-200/60">
                         <tr>
                           <th className="px-6 py-3.5 text-left">Customer Name</th>
@@ -962,16 +988,16 @@ export default function AdminDashboard({
 
           {/* OTHER MOCK BUILDER MODULES */}
           {["navigation", "landing", "cms", "features", "dashboard", "auth", "whitelabel", "media", "translation"].includes(activeTab) && (
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-8 shadow-sm text-left animate-in fade-in duration-200 max-w-3xl space-y-6">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 md:p-8 shadow-sm text-left animate-in fade-in duration-200 max-w-3xl space-y-6 mx-auto md:mx-0">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center text-blue-600">
+                <div className="w-12 h-12 shrink-0 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center text-blue-600">
                   <Settings className="w-6 h-6 animate-spin" style={{ animationDuration: '4s' }} />
                 </div>
-                <div>
-                  <h3 className="text-base font-black text-slate-800 tracking-tight">
+                <div className="min-w-0">
+                  <h3 className="text-base font-black text-slate-800 tracking-tight truncate">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Module Active
                   </h3>
-                  <p className="text-xs text-slate-400 font-bold mt-0.5">
+                  <p className="text-xs text-slate-400 font-bold mt-0.5 max-w-full break-words">
                     This platform builder module is fully synchronized with the 2all.ai backend database.
                   </p>
                 </div>

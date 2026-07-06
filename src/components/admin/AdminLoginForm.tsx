@@ -51,7 +51,7 @@ export default function AdminLoginForm({ errorMsg }: { errorMsg?: string }) {
   };
 
   return (
-    <div className="max-w-md w-full bg-white border border-blue-100 rounded-3xl p-8 shadow-xl shadow-blue-100/50 relative z-10 text-left">
+    <div className="max-w-md w-full bg-white border border-blue-100 rounded-3xl p-6 sm:p-8 shadow-xl shadow-blue-100/50 relative z-10 text-left">
 
       {/* Title */}
       <div className="flex flex-col items-center text-center space-y-3 mb-6 select-none">
