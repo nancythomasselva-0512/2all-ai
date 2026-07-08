@@ -57,17 +57,17 @@ export default function ResourcesMegamenu({ isOpen, onMouseEnter, onMouseLeave }
             </h4>
             <div className="space-y-3.5">
               {[
-                { title: "Compliance", desc: "Explore accessibility regulations", icon: ShieldCheck },
-                { title: "Why choose 2all.ai", desc: "Compare us to competitors", icon: ArrowLeftRight },
-                { title: "Artificial intelligence", desc: "How AI works in accessibility", icon: Sparkles },
-                { title: "Glossary", desc: "Define accessibility terms", icon: Book },
-                { title: "Accessibility Interface", desc: "Discover the full scope", icon: Accessibility },
+                { title: "Compliance", desc: "Explore accessibility regulations", icon: ShieldCheck, href: "/compliance" },
+                { title: "Why choose 2all.ai", desc: "Compare us to competitors", icon: ArrowLeftRight, href: "/why-choose-2all-ai" },
+                { title: "Artificial intelligence", desc: "How AI works in accessibility", icon: Sparkles, href: "/artificial-intelligence" },
+                { title: "Glossary", desc: "Define accessibility terms", icon: Book, href: "/glossary" },
+                { title: "Accessibility Interface", desc: "Discover the full scope", icon: Accessibility, href: "/accessibility-interface" },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link 
                     key={item.title} 
-                    href="/register" 
+                    href={item.href} 
                     className="flex gap-3 group/item hover:bg-slate-50/60 p-2 rounded-xl transition-all"
                   >
                     <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/50">
@@ -94,16 +94,16 @@ export default function ResourcesMegamenu({ isOpen, onMouseEnter, onMouseLeave }
             </h4>
             <div className="space-y-4">
               {[
-                { title: "Blog", desc: "Accessibility education & trends", icon: BookOpen },
-                { title: "Industry reports", desc: "Research, data, and impact", icon: FileText },
-                { title: "Case Studies", desc: "Discover how real clients benefit", icon: BadgeCheck },
-                { title: "Customer Examples", desc: "See 2all.ai in action", icon: Star },
+                { title: "Blog", desc: "Accessibility education & trends", icon: BookOpen, href: "/blog" },
+                { title: "Industry reports", desc: "Research, data, and impact", icon: FileText, href: "/industry-reports" },
+                { title: "Case Studies", desc: "Discover how real clients benefit", icon: BadgeCheck, href: "/case-studies" },
+                { title: "Customer Examples", desc: "See 2all.ai in action", icon: Star, href: "/customer-examples" },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link 
                     key={item.title} 
-                    href="/register" 
+                    href={item.href} 
                     className="flex gap-3 group/item hover:bg-slate-50/60 p-2 rounded-xl transition-all"
                   >
                     <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/50">
@@ -130,15 +130,15 @@ export default function ResourcesMegamenu({ isOpen, onMouseEnter, onMouseLeave }
             </h4>
             <div className="space-y-4">
               {[
-                { title: "Help center", desc: "Check out guides & resources", icon: HelpCircle },
-                { title: "Contact Us", desc: "Get in touch", icon: Mail },
-                { title: "Security & Privacy", desc: "How your privacy is protected", icon: Lock },
+                { title: "Help center", desc: "Check out guides & resources", icon: HelpCircle, href: "/help-center" },
+                { title: "Contact Us", desc: "Get in touch", icon: Mail, href: "/contact-us" },
+                { title: "Security & Privacy", desc: "How your privacy is protected", icon: Lock, href: "/security-and-privacy" },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link 
                     key={item.title} 
-                    href="/register" 
+                    href={item.href} 
                     className="flex gap-3 group/item hover:bg-slate-50/60 p-2 rounded-xl transition-all"
                   >
                     <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/50">
@@ -201,7 +201,7 @@ export default function ResourcesMegamenu({ isOpen, onMouseEnter, onMouseLeave }
               </h5>
               
               <Link
-                href="/register"
+                href="/webinar"
                 className="w-full py-2.5 bg-white hover:bg-slate-100 text-blue-600 font-extrabold text-[11px] rounded-xl flex items-center justify-center gap-2 tracking-wider uppercase transition-all shadow-sm"
               >
                 Watch Recording

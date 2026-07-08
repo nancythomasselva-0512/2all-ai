@@ -40,7 +40,20 @@ export default function AudienceSection() {
   ];
 
   return (
-    <section className="pt-10 pb-10 md:pb-20 bg-white relative overflow-hidden select-none">
+    <motion.section 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+        }
+      }}
+      className="pt-10 pb-10 md:pb-20 bg-white relative overflow-hidden select-none"
+    >
       {/* Decorative background shapes */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-slate-50 rounded-full blur-[120px] pointer-events-none" />
 
@@ -48,13 +61,13 @@ export default function AudienceSection() {
         
         {/* Section Heading */}
         <div className="text-center max-w-2xl mx-auto mb-10 md:mb-16 space-y-4">
-          <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Solutions for Everyone</span>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
+          <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-xs font-bold uppercase tracking-widest text-slate-500 block">Solutions for Everyone</motion.span>
+          <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
             How Can We Help <span className="text-blue-600">You?</span>
-          </h2>
-          <p className="text-slate-700 text-lg font-normal">
+          </motion.h2>
+          <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-slate-700 text-lg font-normal">
             Select the path that fits your goals. We have tailor-made tools for businesses of all sizes and partner agencies.
-          </p>
+          </motion.p>
         </div>
 
         {/* Dual Cards Grid */}
@@ -62,11 +75,8 @@ export default function AudienceSection() {
           {cards.map((card, index) => (
             <motion.div
               key={card.pill}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.15 }}
-              className={`bg-gradient-to-br ${card.bgGradient} border border-slate-200/60 rounded-[32px] p-6 sm:p-8 md:p-10 flex flex-col justify-between transition-all duration-300 ${card.borderHover} hover:-translate-y-1.5 shadow-sm hover:shadow-xl`}
+              variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }}
+              className={`card-premium bg-gradient-to-br ${card.bgGradient} border border-slate-200/60 rounded-[32px] p-6 sm:p-8 md:p-10 flex flex-col justify-between shadow-sm`}
             >
               <div className="space-y-6">
                 {/* Header Row */}
@@ -104,7 +114,7 @@ export default function AudienceSection() {
               <div className="mt-10">
                 <a
                   href={card.ctaLink}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-slate-950 hover:bg-slate-900 text-white rounded-2xl px-6 py-4 text-sm font-extrabold tracking-wide transition-all shadow-md hover:shadow-slate-950/20 group"
+                  className="btn-premium w-full inline-flex items-center justify-center gap-2 bg-slate-950 hover:bg-slate-900 text-white rounded-2xl px-6 py-4 text-sm font-extrabold tracking-wide shadow-md group"
                 >
                   {card.ctaText}
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 stroke-[2.5]" />
@@ -115,6 +125,6 @@ export default function AudienceSection() {
         </div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }

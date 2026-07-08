@@ -105,7 +105,7 @@ export default function PricingPage() {
           <div className="bg-transparent md:px-4 py-1.5 flex items-center justify-between flex-grow">
             <Link href="/" className="flex items-center group mr-2 md:mr-6 shrink-0">
               <img
-                src="/images/logo.jpeg"
+                src="/images/logo.png"
                 alt="2all.ai Logo"
                 className="h-10 md:h-16 w-auto object-contain mix-blend-multiply"
               />
@@ -640,16 +640,85 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* RATINGS & BADGES BANNER */}
-      <section className="bg-slate-900 text-white py-16">
-        <div className="max-w-5xl mx-auto px-6 text-center space-y-6">
-          <h3 className="text-2xl font-black tracking-tight">The #1 rated web accessibility solution for ADA & EAA compliance</h3>
-          <div className="flex flex-wrap justify-center gap-8 pt-4 opacity-80">
-            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">G2 Leader</span>
-            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Capterra Best Value</span>
-            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">GetApp Category Leader</span>
-            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">SoftwareAdvice Highly Rated</span>
+      {/* G2 BADGES SECTION */}
+      <section className="bg-[#0a0f1e] text-white py-24 overflow-hidden relative">
+        {/* Subtle blue glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-6 relative z-10 space-y-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="text-center space-y-4"
+          >
+            <p className="text-xs font-black uppercase tracking-[0.25em] text-blue-400">Industry Recognition</p>
+            <h3 className="text-3xl md:text-4xl font-black tracking-tight">
+              The <span className="text-blue-400">#1 rated</span> web accessibility solution
+            </h3>
+            <p className="text-slate-400 text-base max-w-xl mx-auto">Recognized by leading software review platforms for usability, ROI, and impact for businesses of all sizes.</p>
+          </motion.div>
+
+          {/* G2 Badges Row */}
+          <div className="flex flex-wrap justify-center gap-6 md:gap-8">
+            {[
+              { season: "SUMMER 2026", label: "Most\nImplementable", sub: "" },
+              { season: "SUMMER 2026", label: "Best\nUsability", sub: "" },
+              { season: "SUMMER 2026", label: "Best\nEst. ROI", sub: "ENTERPRISE" },
+              { season: "SUMMER 2026", label: "Leader", sub: "" },
+              { season: "SUMMER 2026", label: "Best Meets\nRequirements", sub: "SMALL BUSINESS" },
+            ].map((badge, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 40, scale: 0.85 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: i * 0.1, ease: "easeOut" }}
+                whileHover={{ scale: 1.08, y: -6 }}
+                className="flex flex-col items-center group cursor-default"
+              >
+                {/* Badge Shell */}
+                <div className="relative w-[120px] h-[148px] flex flex-col items-center">
+                  {/* Pentagon SVG Badge */}
+                  <svg viewBox="0 0 120 148" className="absolute inset-0 w-full h-full drop-shadow-xl" xmlns="http://www.w3.org/2000/svg">
+                    {/* Outer gold border */}
+                    <polygon points="60,4 116,38 116,110 60,144 4,110 4,38" fill="#1a1a2e" stroke="#f59e0b" strokeWidth="3" />
+                    {/* Inner gold accent */}
+                    <polygon points="60,10 110,42 110,106 60,138 10,106 10,42" fill="none" stroke="#fbbf24" strokeWidth="1" strokeOpacity="0.4" />
+                  </svg>
+
+                  {/* Badge content */}
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full pt-3 pb-2 px-2 text-center">
+                    <span className="text-[8px] font-black uppercase tracking-[0.15em] text-amber-400 mb-1">{badge.season}</span>
+                    {/* G2 Logo */}
+                    <div className="w-8 h-8 bg-[#FF492C] rounded-md flex items-center justify-center mb-1.5 shadow-md">
+                      <span className="text-white font-black text-[14px] leading-none">G2</span>
+                    </div>
+                    <p className="text-white font-black text-[11px] leading-tight whitespace-pre-line">{badge.label}</p>
+                    {badge.sub && (
+                      <p className="text-amber-400 font-black text-[7px] uppercase tracking-wider mt-1">{badge.sub}</p>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
+
+          {/* Bottom Trust Row */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="flex flex-wrap justify-center gap-8 md:gap-12 pt-4 border-t border-white/10"
+          >
+            {["Capterra Best Value", "GetApp Category Leader", "SoftwareAdvice Highly Rated"].map((label) => (
+              <div key={label} className="flex items-center gap-2 text-slate-400">
+                <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                <span className="text-xs font-black uppercase tracking-widest">{label}</span>
+              </div>
+            ))}
+          </motion.div>
         </div>
       </section>
 

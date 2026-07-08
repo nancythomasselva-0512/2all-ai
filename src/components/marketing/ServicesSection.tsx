@@ -13,8 +13,8 @@ export default function ServicesSection() {
       transition: { duration: 0.6, delay }
     }),
     hover: {
-      y: -10,
-      scale: 1.015,
+      y: -6,
+      scale: 1.01,
       transition: { type: "spring", stiffness: 150, damping: 15 }
     }
   };
@@ -127,7 +127,20 @@ export default function ServicesSection() {
   ];
 
   return (
-    <section className="pt-10 pb-10 md:pb-20 bg-slate-50 relative overflow-hidden select-none">
+    <motion.section 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+        }
+      }}
+      className="pt-10 pb-10 md:pb-20 bg-slate-50 relative overflow-hidden select-none"
+    >
       {/* Background soft blur visual assets */}
       <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-blue-100/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 left-0 w-[400px] h-[400px] bg-violet-100/20 rounded-full blur-[120px] pointer-events-none" />
@@ -136,13 +149,13 @@ export default function ServicesSection() {
         
         {/* Section Heading */}
         <div className="max-w-4xl mb-10 md:mb-16 space-y-4">
-          <span className="text-xs font-bold uppercase tracking-widest text-blue-600 block">Unmatched Partnership Benefits</span>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
+          <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-xs font-bold uppercase tracking-widest text-blue-600 block">Unmatched Partnership Benefits</motion.span>
+          <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
             Compliance Built on <span className="text-blue-600">Expertise & Support</span>
-          </h2>
-          <p className="text-slate-700 text-lg font-normal leading-relaxed">
+          </motion.h2>
+          <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-slate-700 text-lg font-normal leading-relaxed">
             We provide agencies, developers, and legal departments with all the assets, hands-on support, and compliance infrastructure needed to succeed.
-          </p>
+          </motion.p>
         </div>
 
         {/* Coordinated 3-Card Grid */}
@@ -156,7 +169,7 @@ export default function ServicesSection() {
               whileHover="hover"
               viewport={{ once: true }}
               variants={cardVariants as any}
-              className={`bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between transition-all duration-300 shadow-sm cursor-pointer relative overflow-hidden ${svc.hoverBorder}`}
+              className={`card-premium bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between shadow-sm cursor-pointer relative overflow-hidden ${svc.hoverBorder}`}
             >
               <div className="space-y-6">
                 
@@ -207,6 +220,6 @@ export default function ServicesSection() {
         </div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }

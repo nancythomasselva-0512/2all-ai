@@ -7,8 +7,13 @@ import prisma from "@/lib/db";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "placeholder-google-client-id",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "placeholder-google-client-secret",
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      authorization: {
+        params: {
+          redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+        },
+      },
     }),
     CredentialsProvider({
       name: "credentials",

@@ -48,15 +48,15 @@ export default function PartnersMegamenu({ isOpen, onMouseEnter, onMouseLeave }:
             </h4>
             <div className="space-y-4">
               {[
-                { title: "Agency", desc: "Explore your agency's offering", icon: Building2 },
-                { title: "Platform", desc: "Customized accessibility solutions", icon: Cpu },
-                { title: "Non-profit", desc: "Build a more inclusive world", icon: Globe2 },
+                { title: "Agency", desc: "Explore your agency's offering", icon: Building2, href: "/agency" },
+                { title: "Platform", desc: "Customized accessibility solutions", icon: Cpu, href: "/platform" },
+                { title: "Non-profit", desc: "Build a more inclusive world", icon: Globe2, href: "/non-profit" },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link 
                     key={item.title} 
-                    href="/register" 
+                    href={item.href} 
                     className="flex gap-3 group/item hover:bg-slate-50/60 p-2 rounded-xl transition-all"
                   >
                     <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/50">
@@ -119,7 +119,7 @@ export default function PartnersMegamenu({ isOpen, onMouseEnter, onMouseLeave }:
               </h5>
               
               <Link
-                href="/register"
+                href="/webinar"
                 className="w-full py-2.5 bg-white hover:bg-slate-100 text-indigo-900 font-extrabold text-[11px] rounded-xl flex items-center justify-center gap-2 tracking-wider uppercase transition-all shadow-sm"
               >
                 Watch Recording

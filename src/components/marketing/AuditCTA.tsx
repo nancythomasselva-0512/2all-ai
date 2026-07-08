@@ -99,7 +99,20 @@ export default function AuditCTA() {
   };
 
   return (
-    <section className="py-10 md:py-20 bg-white relative overflow-hidden select-none">
+    <motion.section 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+        }
+      }}
+      className="py-10 md:py-20 bg-white relative overflow-hidden select-none"
+    >
       <div className="max-w-7xl mx-auto px-6 sm:px-12 relative z-10">
         
         {/* Sleek Matte Black Card Container */}
@@ -126,12 +139,12 @@ export default function AuditCTA() {
             
             {/* Left Headline */}
             <div className="lg:col-span-7 space-y-4 text-left">
-              <h2 className="text-4xl md:text-5xl lg:text-[48px] font-black text-white leading-[1.15] tracking-tight">
+              <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl lg:text-[48px] font-black text-white leading-[1.15] tracking-tight">
                 {siteConfig.auditBannerTitle}
-              </h2>
-              <p className="text-zinc-400 text-base md:text-lg font-light max-w-lg leading-relaxed">
+              </motion.h2>
+              <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-zinc-400 text-base md:text-lg font-light max-w-lg leading-relaxed">
                 One compliance gap can expose your business to costly accessibility lawsuits. Scan your site instantly.
-              </p>
+              </motion.p>
             </div>
 
             {/* Right Form & Progress Container */}
@@ -166,7 +179,7 @@ export default function AuditCTA() {
                       {/* Submit */}
                       <button
                         type="submit"
-                        className="w-full sm:w-auto justify-center bg-white hover:bg-slate-100 text-black rounded-xl px-6 py-3.5 text-xs md:text-sm font-black tracking-wider uppercase flex items-center gap-2 transition-all shadow-md shrink-0 shadow-black/10 hover:shadow-black/20"
+                        className="btn-premium w-full sm:w-auto justify-center bg-white hover:bg-slate-100 text-black rounded-xl px-6 py-3.5 text-xs md:text-sm font-black tracking-wider uppercase flex items-center gap-2 shadow-md shrink-0 shadow-black/10"
                       >
                         Get Audit
                         <ArrowRight className="w-4 h-4 stroke-[2.5]" />
@@ -296,6 +309,6 @@ export default function AuditCTA() {
         </div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }

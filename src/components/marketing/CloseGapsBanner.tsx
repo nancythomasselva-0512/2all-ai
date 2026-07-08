@@ -14,7 +14,20 @@ export default function CloseGapsBanner() {
   };
 
   return (
-    <section className="py-16 bg-white relative overflow-hidden select-none font-sans">
+    <motion.section 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+        }
+      }}
+      className="py-16 bg-white relative overflow-hidden select-none font-sans"
+    >
       <div className="max-w-7xl mx-auto px-6 sm:px-12 relative z-10">
         
         {/* Main Blue Banner Container */}
@@ -41,7 +54,7 @@ export default function CloseGapsBanner() {
               
               <button
                 type="submit"
-                className="w-full sm:w-auto justify-center bg-white hover:bg-slate-50 text-[#004bff] rounded-full px-6 py-3.5 text-xs md:text-sm font-black tracking-wider uppercase flex items-center gap-2 transition-all shadow-md hover:scale-[1.03] shrink-0"
+                className="btn-premium w-full sm:w-auto justify-center bg-white hover:bg-slate-50 text-[#004bff] rounded-full px-6 py-3.5 text-xs md:text-sm font-black tracking-wider uppercase flex items-center gap-2 shadow-md shrink-0"
               >
                 GET AUDIT
                 <ArrowRight className="w-4 h-4 text-[#004bff] stroke-[3]" />
@@ -52,6 +65,6 @@ export default function CloseGapsBanner() {
         </div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }

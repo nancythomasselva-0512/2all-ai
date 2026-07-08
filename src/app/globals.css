@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -66,4 +67,208 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Premium Animations (Added for Micro-Interactions) */
+.btn-premium {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-premium:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 15px rgba(0, 75, 255, 0.4);
+}
+
+.card-premium {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-premium:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(0, 75, 255, 0.12);
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+.nav-link-premium {
+  position: relative;
+}
+
+.nav-link-premium::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #004bff;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.nav-link-premium:hover::after {
+  width: 100%;
+}
+
+@keyframes slow-float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-slow-float {
+  animation: slow-float 6s ease-in-out infinite;
+}
+
+@keyframes subtle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.icon-premium {
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.icon-premium:hover {
+  transform: rotate(4deg) translateY(-2px);
+  filter: drop-shadow(0 0 8px rgba(0, 75, 255, 0.4));
+}
+
+/* ==================================================
+   ACCESSIBILITY CENTER GLOBAL STYLES
+   ================================================== */
+
+/* Contrast Modes */
+html.a11y-high-contrast {
+  filter: contrast(150%) saturate(150%) !important;
+}
+
+html.a11y-dark-mode {
+  filter: invert(1) hue-rotate(180deg) !important;
+  background-color: #121212 !important;
+}
+html.a11y-dark-mode img, 
+html.a11y-dark-mode video, 
+html.a11y-dark-mode svg,
+html.a11y-dark-mode iframe {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+html.a11y-light-mode {
+  filter: invert(0) !important;
+  background-color: #ffffff !important;
+}
+
+/* Fonts */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://opendyslexic.org/fonts/OpenDyslexic-Regular.otf') format('opentype');
+}
+
+.a11y-font-dyslexic, .a11y-font-dyslexic * {
+  font-family: 'OpenDyslexic', sans-serif !important;
+}
+.a11y-font-lexend, .a11y-font-lexend * {
+  font-family: 'Lexend', sans-serif !important;
+}
+.a11y-font-readable, .a11y-font-readable * {
+  font-family: Tahoma, Verdana, sans-serif !important;
+}
+
+/* Highlights */
+.a11y-highlight-links a {
+  background-color: yellow !important;
+  color: black !important;
+  text-decoration: underline !important;
+  text-decoration-thickness: 3px !important;
+}
+
+.a11y-highlight-headings h1, .a11y-highlight-headings h2, 
+.a11y-highlight-headings h3, .a11y-highlight-headings h4, 
+.a11y-highlight-headings h5, .a11y-highlight-headings h6 {
+  border: 3px solid #004bff !important;
+  padding: 4px !important;
+  border-radius: 4px !important;
+}
+
+.a11y-highlight-buttons button, .a11y-highlight-buttons .btn, .a11y-highlight-buttons [role="button"] {
+  outline: 4px solid #ff492c !important;
+  outline-offset: 2px !important;
+}
+
+/* Motion */
+.a11y-reduce-motion *, .a11y-stop-animations * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* Cursors */
+.a11y-cursor-large {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="2"><path d="M4 4l16 16-6 1-4 6-6-23z"/></svg>'), auto !important;
+}
+.a11y-cursor-large * {
+  cursor: inherit !important;
+}
+
+.a11y-cursor-huge {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="2"><path d="M4 4l16 16-6 1-4 6-6-23z"/></svg>'), auto !important;
+}
+.a11y-cursor-huge * {
+  cursor: inherit !important;
+}
+
+/* Color Blindness Filters (SVG applied in layout or simple CSS filter approximations) */
+.a11y-cb-protanopia {
+  filter: url('#cb-protanopia') !important;
+}
+.a11y-cb-deuteranopia {
+  filter: url('#cb-deuteranopia') !important;
+}
+.a11y-cb-tritanopia {
+  filter: url('#cb-tritanopia') !important;
+}
+.a11y-cb-achromatopsia {
+  filter: grayscale(100%) !important;
+}
+
+/* Reading Ruler & Mask Overlays */
+#a11y-reading-ruler {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 20vh;
+  background-color: rgba(255, 255, 0, 0.2);
+  border-top: 2px solid rgba(255, 200, 0, 0.8);
+  border-bottom: 2px solid rgba(255, 200, 0, 0.8);
+  pointer-events: none;
+  z-index: 999998;
+  transform: translateY(-50%);
+  display: none;
+}
+
+#a11y-reading-mask-top, #a11y-reading-mask-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+  z-index: 999998;
+  display: none;
+}
+
+/* Accessibility Center Animations */
+@keyframes draw-svg {
+  0% { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.a11y-spring-up {
+  animation: springUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes springUp {
+  0% { opacity: 0; transform: translateY(50px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }

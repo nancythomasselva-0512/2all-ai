@@ -33,7 +33,20 @@ export default function ComplianceSection() {
   ];
 
   return (
-    <section className="py-24 bg-white relative overflow-hidden select-none font-sans border-t border-slate-100">
+    <motion.section 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+        }
+      }}
+      className="py-24 bg-white relative overflow-hidden select-none font-sans border-t border-slate-100"
+    >
       {/* Background radial flare */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
 
@@ -41,23 +54,23 @@ export default function ComplianceSection() {
         
         {/* Header */}
         <div className="max-w-3xl mx-auto space-y-4 mb-10">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#004bff] block">
+          <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-xs font-bold uppercase tracking-widest text-[#004bff] block">
             WCAG-Based Remediation
-          </span>
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
+          </motion.span>
+          <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
             Mitigate legal risk.<br />
             Comply with global regulations.
-          </h2>
-          <p className="text-slate-500 text-base md:text-lg font-light max-w-xl mx-auto leading-relaxed">
+          </motion.h2>
+          <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-slate-500 text-base md:text-lg font-light max-w-xl mx-auto leading-relaxed">
             Our solutions evolve with regulations and industry requirements, supporting businesses in compliance.
-          </p>
+          </motion.p>
         </div>
 
         {/* CTA Button */}
         <div className="mb-20">
           <a
             href="#call"
-            className="inline-flex items-center gap-2 bg-[#02183a] hover:bg-[#06224e] text-white rounded-full px-8 py-4 text-sm font-extrabold tracking-wide transition-all shadow-md hover:shadow-lg shadow-slate-900/10 hover:shadow-slate-900/20 group"
+            className="btn-premium inline-flex items-center gap-2 bg-[#02183a] hover:bg-[#06224e] text-white rounded-full px-8 py-4 text-sm font-extrabold tracking-wide transition-all shadow-md group"
           >
             BOOK A CALL
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 stroke-[2.5]" />
@@ -80,11 +93,11 @@ export default function ComplianceSection() {
               }}
               whileHover={{ 
                 y: -10, 
-                rotate: [0, -3, 3, 0], 
+                rotate: [0, -4, 4, 0], 
                 scale: 1.03,
                 transition: { duration: 0.4 }
               }}
-              className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 flex flex-col items-center justify-center cursor-pointer group"
+              className="icon-premium relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 flex flex-col items-center justify-center cursor-pointer group"
             >
               {/* Jagged Stamp/Seal Background Shape */}
               <svg 
@@ -109,6 +122,6 @@ export default function ComplianceSection() {
         </div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }

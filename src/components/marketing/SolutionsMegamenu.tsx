@@ -15,7 +15,8 @@ import {
   LayoutGrid, 
   ChevronRight,
   TrendingUp,
-  Play
+  Play,
+  ClipboardCheck
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -56,16 +57,16 @@ export default function SolutionsMegamenu({ isOpen, onMouseEnter, onMouseLeave }
             </h4>
             <div className="space-y-4">
               {[
-                { title: "VPAT", desc: "Document your compliance", icon: FileText },
-                { title: "Litigation Support", desc: "Get support from dedicated experts", icon: ShieldCheck },
-                { title: "User testing", desc: "Test with real end-users", icon: Users },
-                { title: "Expert audit", desc: "Conduct a manual accessibility audit", icon: ShieldCheck },
+                { title: "VPAT", desc: "Document your compliance", icon: FileText, href: "/vpat" },
+                { title: "Litigation Support", desc: "Get support from dedicated experts", icon: ShieldCheck, href: "/litigation-support" },
+                { title: "User testing", desc: "Test with real end-users", icon: Users, href: "/user-testing" },
+                { title: "Expert audit", desc: "Conduct a manual accessibility audit", icon: ClipboardCheck, href: "/expert-audit" },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link 
                     key={item.title} 
-                    href="/register" 
+                    href={item.href} 
                     className="flex gap-3 group/item hover:bg-slate-50/60 p-2 rounded-xl transition-all"
                   >
                     <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/50">
@@ -99,16 +100,16 @@ export default function SolutionsMegamenu({ isOpen, onMouseEnter, onMouseLeave }
             </h4>
             <div className="space-y-4">
               {[
-                { title: "Automated website accessibility", desc: "accessWidget", icon: Sparkles },
-                { title: "Assess your accessibility", desc: "accessScan", icon: Search },
-                { title: "Develop accessible code", desc: "accessFlow", icon: Code },
-                { title: "Integrate with your CMS", desc: "Integrations", icon: Globe },
+                { title: "Automated website accessibility", desc: "accessWidget", icon: Sparkles, href: "/access-widget" },
+                { title: "Assess your accessibility", desc: "accessScan", icon: Search, href: "/access-scan" },
+                { title: "Develop accessible code", desc: "accessFlow", icon: Code, href: "/develop-accessible-code" },
+                { title: "Integrate with your CMS", desc: "Integrations", icon: Globe, href: "/integrate-with-your-cms" },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link 
                     key={item.title} 
-                    href="/register" 
+                    href={item.href} 
                     className="flex gap-3 group/item hover:bg-slate-50/60 p-2 rounded-xl transition-all"
                   >
                     <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/50">
@@ -135,16 +136,16 @@ export default function SolutionsMegamenu({ isOpen, onMouseEnter, onMouseLeave }
             </h4>
             <div className="space-y-4">
               {[
-                { title: "Small business", desc: "Streamline web accessibility", icon: User },
-                { title: "Mid-large business", desc: "Get a customized solution", icon: Activity },
-                { title: "Enterprise", desc: "Scale with hybrid accessibility", icon: Globe },
-                { title: "Industries", desc: "Explore solutions designed for your field", icon: LayoutGrid },
+                { title: "Small business", desc: "Streamline web accessibility", icon: User, href: "/small-business" },
+                { title: "Mid-large business", desc: "Get a customized solution", icon: Activity, href: "/mid-large-business" },
+                { title: "Enterprise", desc: "Scale with hybrid accessibility", icon: Globe, href: "/enterprise" },
+                { title: "Industries", desc: "Explore solutions designed for your field", icon: LayoutGrid, href: "/industries" },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link 
                     key={item.title} 
-                    href="/register" 
+                    href={item.href} 
                     className="flex gap-3 group/item hover:bg-slate-50/60 p-2 rounded-xl transition-all"
                   >
                     <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/50">

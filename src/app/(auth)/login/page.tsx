@@ -1,5 +1,6 @@
 "use client";
 
+// Force Turbopack rebuild
 import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -103,7 +104,7 @@ function LoginForm() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
             
             {error && (
               <div className="p-3 bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-xl">
@@ -113,33 +114,37 @@ function LoginForm() {
 
             {/* Email Field */}
             <div className="space-y-1">
-              <label htmlFor="email" className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">
+              <label htmlFor="auth-email" className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">
                 Email address <span className="text-red-500 font-bold">*</span>
               </label>
               <input
-                id="email"
+                id="auth-email"
+                name="auth-email"
                 type="email"
                 required
                 placeholder="name@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="off"
                 className="w-full border border-slate-200/80 bg-slate-50 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
               />
             </div>
 
             {/* Password Field */}
             <div className="space-y-1">
-              <label htmlFor="password" className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">
+              <label htmlFor="auth-password" className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">
                 Password <span className="text-red-500 font-bold">*</span>
               </label>
               <div className="relative">
                 <input
-                  id="password"
+                  id="auth-password"
+                  name="auth-password"
                   type={showPassword ? "text" : "password"}
                   required
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password"
                   className="w-full border border-slate-200/80 bg-slate-50 rounded-xl pl-4 pr-10 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
                 />
                 <button

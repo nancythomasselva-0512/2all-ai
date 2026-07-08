@@ -40,7 +40,20 @@ export default function PricingSection() {
   ];
 
   return (
-    <section className="py-10 md:py-24 bg-white relative overflow-hidden select-none font-sans border-t border-slate-100">
+    <motion.section 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+        }
+      }}
+      className="py-10 md:py-24 bg-white relative overflow-hidden select-none font-sans border-t border-slate-100"
+    >
       
       {/* Background Technical Grid Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#f8fafc_1px,transparent_1px),linear-gradient(to_bottom,#f8fafc_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
@@ -50,13 +63,13 @@ export default function PricingSection() {
         
         {/* Header */}
         <div className="max-w-3xl mx-auto space-y-4 mb-10 md:mb-20">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#004bff] block">
+          <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-xs font-bold uppercase tracking-widest text-[#004bff] block">
             A Solution for Every Budget
-          </span>
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
+          </motion.span>
+          <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
             Plans customized to fit your<br className="hidden md:block" />
             web accessibility needs
-          </h2>
+          </motion.h2>
         </div>
 
         {/* Pricing Cards Grid */}
@@ -64,15 +77,12 @@ export default function PricingSection() {
           {plans.map((plan) => (
             <motion.div
               key={plan.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.5, delay: plan.delay }}
-              whileHover={{ y: -8 }}
-              className={`relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer bg-white border ${
+              className={`card-premium relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between cursor-pointer bg-white border ${
                 plan.isRecommended
                   ? "border-[#004bff] shadow-xl shadow-blue-500/5 ring-1 ring-[#004bff]/20"
-                  : "border-slate-200/80 hover:border-slate-300 shadow-sm hover:shadow-md"
+                  : "border-slate-200/80 shadow-sm"
               }`}
             >
               {/* Recommended Top Banner */}
@@ -111,12 +121,12 @@ export default function PricingSection() {
               {/* Action Button */}
               <div className="pt-8 w-full">
                 {plan.isRecommended ? (
-                  <button className="w-full flex items-center justify-center gap-2 bg-[#004bff] hover:bg-[#003edd] text-white rounded-2xl py-4 text-xs font-extrabold tracking-wider transition-all shadow-md shadow-blue-500/20 group">
+                  <button className="btn-premium w-full flex items-center justify-center gap-2 bg-[#004bff] hover:bg-[#003edd] text-white rounded-2xl py-4 text-xs font-extrabold tracking-wider transition-all shadow-md shadow-blue-500/20 group">
                     SEE FULL PLANS
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 stroke-[3]" />
                   </button>
                 ) : (
-                  <button className="w-full flex items-center justify-center gap-2 border-2 border-slate-200 hover:border-[#004bff] text-[#02183a] hover:text-[#004bff] bg-transparent hover:bg-[#004bff]/5 rounded-2xl py-4 text-xs font-extrabold tracking-wider transition-all group">
+                  <button className="btn-premium w-full flex items-center justify-center gap-2 border-2 border-slate-200 hover:border-[#004bff] text-[#02183a] hover:text-[#004bff] bg-transparent hover:bg-[#004bff]/5 rounded-2xl py-4 text-xs font-extrabold tracking-wider transition-all group">
                     SEE FULL PLANS
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 stroke-[3]" />
                   </button>
@@ -128,6 +138,6 @@ export default function PricingSection() {
         </div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }

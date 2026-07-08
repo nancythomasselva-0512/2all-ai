@@ -50,16 +50,16 @@ export default function CompanyMegamenu({ isOpen, onMouseEnter, onMouseLeave }: 
             </h4>
             <div className="space-y-4">
               {[
-                { title: "About us", desc: "Find out what makes us different", icon: Info },
-                { title: "Why choose 2all.ai", desc: "Compare us to competitors", icon: ArrowLeftRight },
-                { title: "Careers", desc: "Work at 2all.ai", icon: Briefcase },
-                { title: "Community", desc: "Join the 2all.ai community", icon: Heart },
+                { title: "About us", desc: "Find out what makes us different", icon: Info, href: "/about-us" },
+                { title: "Why choose 2all.ai", desc: "Compare us to competitors", icon: ArrowLeftRight, href: "/why-choose-2all-ai" },
+                { title: "Careers", desc: "Work at 2all.ai", icon: Briefcase, href: "/careers" },
+                { title: "Community", desc: "Join the 2all.ai community", icon: Heart, href: "/community" },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link 
                     key={item.title} 
-                    href="/register" 
+                    href={item.href} 
                     className="flex gap-3 group/item hover:bg-slate-50/60 p-2 rounded-xl transition-all"
                   >
                     <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/50">
@@ -122,7 +122,7 @@ export default function CompanyMegamenu({ isOpen, onMouseEnter, onMouseLeave }: 
               </h5>
               
               <Link
-                href="/register"
+                href="/webinar"
                 className="w-full py-2.5 bg-white hover:bg-slate-100 text-blue-600 font-extrabold text-[11px] rounded-xl flex items-center justify-center gap-2 tracking-wider uppercase transition-all shadow-sm"
               >
                 Watch Recording

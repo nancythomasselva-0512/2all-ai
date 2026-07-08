@@ -51,7 +51,20 @@ export default function BeyondCompliance() {
   };
 
   return (
-    <section className="py-10 md:py-24 bg-white relative overflow-hidden select-none font-sans">
+    <motion.section 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+        }
+      }}
+      className="py-10 md:py-24 bg-white relative overflow-hidden select-none font-sans"
+    >
       {/* Background accents */}
       <div className="absolute top-1/3 left-10 w-80 h-80 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/3 right-10 w-80 h-80 bg-blue-600/5 rounded-full blur-[100px] pointer-events-none" />
@@ -62,15 +75,15 @@ export default function BeyondCompliance() {
           {/* LEFT COLUMN: Header & Animated Rings SVG */}
           <div className="lg:col-span-5 space-y-6 md:space-y-8 text-left">
             <div className="space-y-4">
-              <span className="px-3.5 py-1.5 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold text-[#004bff] uppercase tracking-widest inline-block font-sans">
+              <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="px-3.5 py-1.5 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold text-[#004bff] uppercase tracking-widest inline-block font-sans">
                 Beyond Legal Standards
-              </span>
-              <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight tracking-tight font-sans">
+              </motion.span>
+              <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black text-slate-900 leading-tight tracking-tight font-sans">
                 More than <span className="text-[#004bff]">compliance</span>
-              </h2>
-              <p className="text-slate-500 text-lg font-normal leading-relaxed font-sans">
+              </motion.h2>
+              <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-slate-500 text-lg font-normal leading-relaxed font-sans">
                 Web accessibility is the right thing to do and good for business. Achieve real inclusion while driving growth.
-              </p>
+              </motion.p>
             </div>
 
             {/* High-fidelity overlapping Rings SVG illustrating brand value convergence */}
@@ -211,12 +224,9 @@ export default function BeyondCompliance() {
             {points.map((pt) => (
               <motion.div
                 key={pt.num}
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+                variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }}
                 transition={{ duration: 0.5, delay: pt.delay }}
-                whileHover={{ x: 6, y: -2 }}
-                className="bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-blue-200 rounded-3xl p-6 flex gap-6 items-start transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 cursor-pointer group"
+                className="card-premium bg-slate-50/50 hover:bg-white border border-slate-100 rounded-3xl p-6 flex gap-6 items-start shadow-sm cursor-pointer group"
               >
                 {/* Number & Icon Container */}
                 <div className="flex flex-col items-center shrink-0 space-y-3">
@@ -246,6 +256,6 @@ export default function BeyondCompliance() {
 
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

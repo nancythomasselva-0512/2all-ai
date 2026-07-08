@@ -46,7 +46,7 @@ export default function ServicesPage() {
           <div className="bg-transparent md:px-4 py-1.5 flex items-center justify-between flex-grow">
             <Link href="/" className="flex items-center group mr-2 md:mr-6 shrink-0">
               <img
-                src="/images/logo.jpeg"
+                src="/images/logo.png"
                 alt="2all.ai Logo"
                 className="h-10 md:h-16 w-auto object-contain mix-blend-multiply"
               />

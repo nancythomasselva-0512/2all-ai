@@ -11,7 +11,20 @@ export default function SecuritySection() {
   ];
 
   return (
-    <section className="py-24 bg-slate-950 text-white relative overflow-hidden select-none font-sans">
+    <motion.section 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+        }
+      }}
+      className="py-24 bg-slate-950 text-white relative overflow-hidden select-none font-sans"
+    >
       {/* Background glowing gradients */}
       <div className="absolute top-1/4 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-[130px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-emerald-500/5 rounded-full blur-[130px] pointer-events-none" />
@@ -22,16 +35,16 @@ export default function SecuritySection() {
           {/* LEFT COLUMN: Headings & Copy */}
           <div className="lg:col-span-6 space-y-8 text-left">
             <div className="space-y-4">
-              <span className="px-3.5 py-1.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full text-xs font-bold uppercase tracking-widest inline-block font-sans">
+              <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="px-3.5 py-1.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full text-xs font-bold uppercase tracking-widest inline-block font-sans">
                 Highest Security Standards
-              </span>
-              <h2 className="text-4xl md:text-5xl font-black text-white leading-tight tracking-tight font-sans">
+              </motion.span>
+              <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black text-white leading-tight tracking-tight font-sans">
                 Uncompromising security <br />
                 and privacy <span className="text-blue-500">you can trust</span>
-              </h2>
-              <p className="text-slate-400 text-lg font-light leading-relaxed font-sans max-w-xl">
+              </motion.h2>
+              <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-slate-400 text-lg font-light leading-relaxed font-sans max-w-xl">
                 Your business and customers are in good hands. 2all.ai upholds stringent security standards, with regular testing and monitoring as part of SOC2 compliance.
-              </p>
+              </motion.p>
             </div>
 
             {/* Interactive Link */}
@@ -67,7 +80,7 @@ export default function SecuritySection() {
               <div className="space-y-6 relative z-10">
                 {/* Shield Header */}
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center relative">
+                  <div className="icon-premium w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center relative">
                     <Shield className="w-6 h-6 text-blue-400" />
                     <motion.div
                       animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
@@ -85,7 +98,7 @@ export default function SecuritySection() {
                 <div className="space-y-4 pt-4 border-t border-slate-800">
                   {securityFeatures.map((feat) => (
                     <div key={feat.name} className="flex gap-4 items-start text-left group">
-                      <div className="w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5 transition-colors group-hover:bg-emerald-500/20">
+                      <div className="icon-premium w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5 transition-colors group-hover:bg-emerald-500/20">
                         <ShieldCheck className="w-4 h-4 text-emerald-400" />
                       </div>
                       <div className="space-y-0.5">
@@ -102,7 +115,7 @@ export default function SecuritySection() {
 
                 {/* Bottom Lock Capsule */}
                 <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-between mt-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 icon-premium">
                     <Lock className="w-4 h-4 text-blue-400" />
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                       GDPR & CCPA COMPLIANT
@@ -119,6 +132,6 @@ export default function SecuritySection() {
 
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

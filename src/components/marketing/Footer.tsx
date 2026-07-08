@@ -9,74 +9,74 @@ export default function Footer() {
     {
       title: "SOLUTIONS",
       links: [
-        { name: "2allWidget", href: "#" },
-        { name: "2allFlow", href: "#" },
-        { name: "2allServices", href: "#" },
-        { name: "VPAT", href: "#" },
-        { name: "User testing", href: "#" },
-        { name: "Expert audit", href: "#" },
-        { name: "File & PDF accessibility", href: "#" }
+        { name: "2allWidget", href: "/access-widget" },
+        { name: "2allFlow", href: "/develop-accessible-code" },
+        { name: "2allServices", href: "/services" },
+        { name: "VPAT", href: "/vpat" },
+        { name: "User testing", href: "/user-testing" },
+        { name: "Expert audit", href: "/expert-audit" },
+        { name: "File & PDF accessibility", href: "/file-pdf-accessibility" }
       ]
     },
     {
       title: "INTEGRATIONS",
       links: [
-        { name: "WordPress", href: "#" },
-        { name: "Shopify", href: "#" },
-        { name: "BigCommerce", href: "#" },
-        { name: "WooCommerce", href: "#" },
-        { name: "Wix", href: "#" },
-        { name: "Webflow", href: "#" },
-        { name: "Squarespace", href: "#" }
+        { name: "WordPress", href: "/wordpress" },
+        { name: "Shopify", href: "/shopify" },
+        { name: "BigCommerce", href: "/bigcommerce" },
+        { name: "WooCommerce", href: "/woocommerce" },
+        { name: "Wix", href: "/wix" },
+        { name: "Webflow", href: "/webflow" },
+        { name: "Squarespace", href: "/squarespace" }
       ]
     },
     {
       title: "COMPLIANCE",
       links: [
-        { name: "ADA", href: "#" },
-        { name: "ADA Checklist", href: "#" },
-        { name: "EAA", href: "#" },
-        { name: "WCAG", href: "#" },
-        { name: "WCAG Checklist", href: "#" },
-        { name: "AODA", href: "#" },
-        { name: "Section 508", href: "#" },
-        { name: "Lawsuit guide", href: "#" },
-        { name: "Demand letter guide", href: "#" }
+        { name: "ADA", href: "/ada" },
+        { name: "ADA Checklist", href: "/ada-checklist" },
+        { name: "EAA", href: "/eaa" },
+        { name: "WCAG", href: "/wcag" },
+        { name: "WCAG Checklist", href: "/wcag-checklist" },
+        { name: "AODA", href: "/aoda" },
+        { name: "Section 508", href: "/section-508" },
+        { name: "Lawsuit guide", href: "/lawsuit-guide" },
+        { name: "Demand letter guide", href: "/demand-letter-guide" }
       ]
     },
     {
       title: "ACCESSIBILITY FOR",
       links: [
-        { name: "Small business", href: "#" },
-        { name: "Mid – Large businesses", href: "#" },
-        { name: "Enterprise", href: "#" },
-        { name: "Industries", href: "#" },
-        { name: "Industry reports", href: "#" },
-        { name: "Agency Partners", href: "#" },
-        { name: "Platform Partners", href: "#" },
-        { name: "California businesses", href: "#" },
-        { name: "Free accessibility scan", href: "#" }
+        { name: "Small business", href: "/small-business" },
+        { name: "Mid – Large businesses", href: "/mid-large-business" },
+        { name: "Enterprise", href: "/enterprise" },
+        { name: "Industries", href: "/industries" },
+        { name: "Industry reports", href: "/industry-reports" },
+        { name: "Agency Partners", href: "/agency-partners" },
+        { name: "Platform Partners", href: "/platform-partners" },
+        { name: "California businesses", href: "/california-businesses" },
+        { name: "Free accessibility scan", href: "/access-scan" }
       ]
     },
     {
       title: "COMPANY",
       links: [
-        { name: "About 2all.ai", href: "#" },
-        { name: "Contact Us", href: "#" },
-        { name: "Careers", href: "#" },
-        { name: "Why choose 2all.ai", href: "#" },
-        { name: "Submit Media Inquiry", href: "#" },
-        { name: "GAAD 2026", href: "#" }
+        { name: "About 2all.ai", href: "/about-us" },
+        { name: "Contact Us", href: "/contact-us" },
+        { name: "Careers", href: "/careers" },
+        { name: "Why choose 2all.ai", href: "/why-choose-2all-ai" },
+        { name: "Submit Media Inquiry", href: "/submit-media-inquiry" },
+        { name: "GAAD 2026", href: "/gaad-2026" }
       ]
     },
     {
       title: "SUPPORT",
       links: [
-        { name: "My account", href: "#" },
-        { name: "Litigation support", href: "#" },
-        { name: "Tech support", href: "#" },
-        { name: "Partners", href: "#" },
-        { name: "Trust center", href: "#" }
+        { name: "My account", href: "/my-account" },
+        { name: "Litigation support", href: "/litigation-support" },
+        { name: "Tech support", href: "/tech-support" },
+        { name: "Partners", href: "/partners" },
+        { name: "Trust center", href: "/trust-center" }
       ]
     }
   ];

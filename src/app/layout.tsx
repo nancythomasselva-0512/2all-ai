@@ -4,6 +4,8 @@ import "./globals.css";
 import { promises as fs } from "fs";
 import path from "path";
 import ChatWidgetWrapper from "@/components/ChatWidgetWrapper";
+import { AccessibilityProvider } from "@/context/AccessibilityContext";
+import AccessibilityWidget from "@/components/accessibility/AccessibilityWidget";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -59,7 +61,10 @@ export default async function RootLayout({
         {/* Inject Tracking Scripts */}
         {trackingScripts && <div dangerouslySetInnerHTML={{ __html: trackingScripts }} style={{ display: "none" }} />}
         
-        {children}
+        <AccessibilityProvider>
+          {children}
+          <AccessibilityWidget />
+        </AccessibilityProvider>
 
         {/* Anna chat widget — hidden on admin pages */}
         <ChatWidgetWrapper />

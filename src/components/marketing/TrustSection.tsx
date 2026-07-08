@@ -1,9 +1,38 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import { Accessibility, Check, Star, Globe, Shield, Sparkles, Award } from "lucide-react";
 import siteConfig from "@/data/site-config.json";
+
+function Counter({ value, suffix }: { value: number, suffix: string }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+
+  useEffect(() => {
+    if (inView) {
+      let start = 0;
+      const end = value;
+      const duration = 1500;
+      let startTime: number | null = null;
+      
+      const step = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        setCount(Math.floor(progress * end));
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        } else {
+          setCount(end);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+  }, [inView, value]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
+}
 
 const colorMap = {
   blue: { bg: "bg-blue-600", text: "text-blue-500", ping: "bg-blue-600", shadow: "shadow-blue-500/50" },
@@ -79,7 +108,20 @@ export default function TrustSection() {
   ];
 
   return (
-    <section className="pt-10 pb-24 bg-slate-950 text-white relative overflow-hidden">
+    <motion.section 
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+        }
+      }}
+      className="pt-10 pb-24 bg-slate-950 text-white relative overflow-hidden"
+    >
       {/* Background Orbs */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px]" />
@@ -165,30 +207,30 @@ export default function TrustSection() {
           
           {/* Header */}
           <div className="space-y-4">
-            <span className={`${colorMap[siteConfig.primaryColor as keyof typeof colorMap]?.text || "text-blue-500"} text-xs font-bold uppercase tracking-widest`}>Global Compliance Standard</span>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+            <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className={`${colorMap[siteConfig.primaryColor as keyof typeof colorMap]?.text || "text-blue-500"} text-xs font-bold uppercase tracking-widest block`}>Global Compliance Standard</motion.span>
+            <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
               Trusted by Businesses & Industry Leaders
-            </h2>
-            <p className="text-slate-400 text-md font-light leading-relaxed">
+            </motion.h2>
+            <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-slate-400 text-md font-light leading-relaxed">
               We empower compliance and deliver measurable business value, minimizing risks while optimizing conversion rates for enterprises worldwide.
-            </p>
+            </motion.p>
           </div>
 
           {/* Grid Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 border-y border-slate-800 py-8">
             {[
-              { val: "100%", label: "Response rate" },
-              { val: "120x", label: "ROI" },
-              { val: "10x", label: "Cost reduction" },
+              { val: 100, suffix: "%", label: "Response rate" },
+              { val: 120, suffix: "x", label: "ROI" },
+              { val: 10, suffix: "x", label: "Cost reduction" },
             ].map((stat) => (
-              <div key={stat.label} className="text-left space-y-1">
-                <span className="text-3xl md:text-4xl font-extrabold text-white block">
-                  {stat.val}
+              <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} key={stat.label} className="text-left space-y-1 card-premium p-2 rounded-xl">
+                <span className="text-3xl md:text-4xl font-extrabold text-white block drop-shadow-[0_0_10px_rgba(0,75,255,0.4)]">
+                  <Counter value={stat.val} suffix={stat.suffix} />
                 </span>
                 <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider block">
                   {stat.label}
                 </span>
-              </div>
+              </motion.div>
             ))}
           </div>
 
@@ -229,6 +271,6 @@ export default function TrustSection() {
         </div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }
