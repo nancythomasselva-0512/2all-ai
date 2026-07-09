@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 
-export default function AnnaChatWidget() {
+export default function AlexChatWidget() {
   const [open, setOpen] = useState(false);
   const [showBubble, setShowBubble] = useState(true);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<{ from: "anna" | "user"; text: string }[]>([
-    { from: "anna", text: "Ask me a question or select one of the following options below." },
+  const [messages, setMessages] = useState<{ from: "alex" | "user"; text: string }[]>([
+    { from: "alex", text: "Ask me a question or select one of the following options below." },
   ]);
   const [quickReplied, setQuickReplied] = useState(false);
 
@@ -20,7 +20,7 @@ export default function AnnaChatWidget() {
     setMessages((prev) => [
       ...prev,
       { from: "user", text },
-      { from: "anna", text: "Thanks! Let me connect you with the right support. A team member will be with you shortly." },
+      { from: "alex", text: "Thanks! Let me connect you with the right support. A team member will be with you shortly." },
     ]);
   };
 
@@ -29,16 +29,16 @@ export default function AnnaChatWidget() {
     setMessages((prev) => [
       ...prev,
       { from: "user", text: message.trim() },
-      { from: "anna", text: "Thanks for your message! Our team will get back to you soon." },
+      { from: "alex", text: "Thanks for your message! Our team will get back to you soon." },
     ]);
     setMessage("");
   };
 
   return (
     <>
-      {/* Floating Chat Button & Anna Popover (Right side) */}
-      <div className="fixed bottom-4 right-20 md:bottom-6 md:right-[88px] z-[99990] flex flex-col items-end gap-3 select-none">
-        {/* Anna bubble popover (shown when chat is closed) */}
+      {/* Floating Chat Button & Alex Popover (Right side) */}
+      <div className="fixed bottom-4 right-20 md:bottom-6 md:right-[88px] z-[2147483646] flex flex-col items-end gap-3 select-none">
+        {/* Alex bubble popover (shown when chat is closed) */}
         {showBubble && !open && (
           <div
             className="bg-white border border-slate-200/80 rounded-2xl p-2.5 md:p-3 shadow-xl max-w-[200px] md:max-w-[220px] flex items-center gap-2 md:gap-3 mr-1 md:mr-2 relative cursor-pointer"
@@ -46,14 +46,14 @@ export default function AnnaChatWidget() {
           >
             <div className="absolute right-4 md:right-6 -bottom-1.5 w-3 h-3 bg-white border-r border-b border-slate-200/80 rotate-45" />
             <div className="relative w-7 h-7 md:w-8 md:h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200 overflow-hidden">
-              <img src="/images/avatar.jpg" alt="Anna" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
+              <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
               <svg viewBox="0 0 24 24" className="w-5 h-5 md:w-6 md:h-6 text-slate-400 absolute inset-0 m-auto z-0">
                 <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
               </svg>
             </div>
             <div className="text-left flex-1 min-w-0">
-              <span className="block text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest truncate">Anna</span>
-              <p className="text-xs text-slate-700 font-bold leading-snug break-words">Hi, I&apos;m Anna! I&apos;m your 24 hour virtual assistant.</p>
+              <span className="block text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest truncate">Alex</span>
+              <p className="text-xs text-slate-700 font-bold leading-snug break-words">Hi, I&apos;m Alex! I&apos;m your 24 hour virtual assistant.</p>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
@@ -97,7 +97,7 @@ export default function AnnaChatWidget() {
             </button>
             <div className="flex items-center gap-2">
               <div className="relative w-7 h-7 rounded-full bg-slate-400 overflow-hidden shrink-0">
-                 <img src="/images/avatar.jpg" alt="Anna" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
+                 <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
                  <svg viewBox="0 0 24 24" className="w-5 h-5 text-slate-100 absolute inset-0 m-auto z-0">
                   <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                 </svg>
@@ -128,14 +128,14 @@ export default function AnnaChatWidget() {
             {messages.map((msg, i) => (
               <div key={i} className={`flex flex-col ${msg.from === "user" ? "items-end" : "items-start"}`}>
                 
-                {msg.from === "anna" && (
-                  <p className="text-[11px] font-medium text-slate-500 mb-1 ml-10">Anna</p>
+                {msg.from === "alex" && (
+                  <p className="text-[11px] font-medium text-slate-500 mb-1 ml-10">Alex</p>
                 )}
                 
                 <div className={`flex items-end gap-2 ${msg.from === "user" ? "flex-row-reverse" : ""}`}>
-                  {msg.from === "anna" && (
+                  {msg.from === "alex" && (
                     <div className="relative w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center shrink-0 overflow-hidden border border-slate-200 shadow-sm">
-                       <img src="/images/avatar.jpg" alt="Anna" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
+                       <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
                        <svg viewBox="0 0 24 24" className="w-6 h-6 text-slate-400 absolute inset-0 m-auto z-0">
                         <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                       </svg>
@@ -143,7 +143,7 @@ export default function AnnaChatWidget() {
                   )}
                   
                   <div className={`rounded-3xl px-4 py-2.5 max-w-[230px] text-sm text-slate-800 ${
-                    msg.from === "anna"
+                    msg.from === "alex"
                       ? "bg-[#f3f4f6]"
                       : "bg-[#f3f4f6] text-right"
                   }`}>
@@ -151,7 +151,7 @@ export default function AnnaChatWidget() {
                   </div>
                 </div>
 
-                {msg.from === "anna" && (
+                {msg.from === "alex" && (
                   <p className="text-[10px] font-medium text-slate-400 mt-1 ml-10">Just now</p>
                 )}
               </div>
@@ -192,3 +192,4 @@ export default function AnnaChatWidget() {
     </>
   );
 }
+

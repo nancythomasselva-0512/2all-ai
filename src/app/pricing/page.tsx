@@ -25,6 +25,7 @@ import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
 import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function PricingPage() {
   const [isDemoOpen, setIsDemoOpen] = useState(false);
@@ -257,6 +258,7 @@ export default function PricingPage() {
       {/* TITLE & TOGGLES */}
       <section className="relative bg-[#f8fafc] pt-20 pb-16 overflow-hidden text-center border-b border-slate-100">
         <div className="max-w-5xl mx-auto px-6 space-y-6">
+          <Breadcrumbs theme="light" items={[ { label: "Home", href: "/" }, { label: "Pricing" } ]} />
           <h1 className="text-4xl sm:text-5xl font-black text-slate-900 leading-[1.15] tracking-tight max-w-3xl mx-auto">
             <span className="text-blue-600 italic font-serif">Plans</span> scale with your website's growth and accessibility needs
           </h1>

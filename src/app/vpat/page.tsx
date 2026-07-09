@@ -10,6 +10,7 @@ import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
 import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function VPATPage() {
   const [activeHoverMenu, setActiveHoverMenu] = useState<string | null>(null);
@@ -137,9 +138,7 @@ export default function VPATPage() {
               transition={{ duration: 0.8 }}
               className="text-white space-y-6 max-w-xl"
             >
-              <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/70 mb-2">
-                <FileText className="w-4 h-4" /> VPAT / ACR
-              </div>
+              <Breadcrumbs items={[ { label: "Home", href: "/" }, { label: "Services" }, { label: "VPAT" } ]} />
               <h1 className="text-4xl md:text-5xl lg:text-[64px] font-black leading-[1.05] tracking-tight text-white">
                 Secure more business<br/>with a <span className="italic font-serif text-cyan-300">VPAT</span>
               </h1>

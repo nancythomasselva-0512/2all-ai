@@ -9,6 +9,7 @@ import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
 import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function MidLargeBusinessPage() {
   const [activeHoverMenu, setActiveHoverMenu] = useState<string | null>(null);
@@ -107,7 +108,8 @@ export default function MidLargeBusinessPage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 relative z-10">
           <div className="flex-1 text-white max-w-xl">
             <div className="text-[10px] font-bold tracking-[0.2em] uppercase mb-4 text-blue-100">For mid-large businesses</div>
-            <h1 className="text-4xl md:text-5xl font-black mb-6 leading-[1.1] tracking-tight">
+            <Breadcrumbs items={[ { label: "Home", href: "/" }, { label: "Business Size" }, { label: "Mid-Large Business" } ]} />
+              <h1 className="text-4xl md:text-5xl font-black mb-6 leading-[1.1] tracking-tight">
               Your website's<br />
               accessibility. Our<br />
               custom <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff87] to-[#60efff] italic font-serif font-light">expertise</span>.

@@ -14,6 +14,7 @@ import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
 import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -128,9 +129,8 @@ export default function LitigationSupportPage() {
         <section className="w-full pt-40 pb-20 px-6 md:px-10 overflow-hidden">
           <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
             <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-6">
-              <motion.div variants={fadeUp} className="text-sm font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                Services <ChevronDown className="w-4 h-4 -rotate-90" /> Litigation Support
-              </motion.div>
+              
+              <Breadcrumbs theme="light" items={[ { label: "Home", href: "/" }, { label: "Services" }, { label: "Litigation Support" } ]} />
               <motion.h1 variants={fadeUp} className="text-4xl md:text-5xl lg:text-6xl font-black text-[#0a1e3f] leading-[1.1] tracking-tight">
                 Comprehensive<br/>litigation support<br/>you can depend on
               </motion.h1>

@@ -52,11 +52,11 @@ export default function AccessibilityWidget() {
 
       {/* Floating Button */}
       <motion.button
-        initial={{ scale: 0, opacity: 0 }}
+        initial={{ scale: 1, opacity: 1 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.5 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
         onClick={togglePanel}
-        className="fixed bottom-6 right-6 z-[99999] w-14 h-14 bg-[#004bff] hover:bg-[#003edd] text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,75,255,0.4)] transition-colors group border-2 border-white/20"
+        className="fixed bottom-6 right-6 z-[2147483647] w-14 h-14 bg-[#004bff] hover:bg-[#003edd] text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,75,255,0.4)] transition-colors group border-2 border-white/20"
         aria-label="Open Accessibility Center"
       >
         <div className="absolute inset-0 rounded-full border border-[#004bff] animate-ping opacity-20 group-hover:opacity-40" />

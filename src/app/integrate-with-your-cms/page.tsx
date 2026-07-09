@@ -9,6 +9,7 @@ import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
 import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function CMSIntegrationsPage() {
   const [activeHoverMenu, setActiveHoverMenu] = useState<string | null>(null);
@@ -106,7 +107,8 @@ export default function CMSIntegrationsPage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1 max-w-xl relative z-10">
             <div className="text-[10px] font-bold tracking-[0.2em] uppercase mb-4 text-[#004bff]">CMS Integrations</div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.1] tracking-tight text-[#0a1e3f]">
+            <Breadcrumbs theme="light" items={[ { label: "Home", href: "/" }, { label: "Products" }, { label: "CMS Integrations" } ]} />
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.1] tracking-tight text-[#0a1e3f]">
               Connect natively with your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#004bff] to-[#00ff87] italic font-serif font-light">favorite CMS</span>.
             </h1>
             <p className="text-lg text-slate-600 mb-10 leading-relaxed font-medium">

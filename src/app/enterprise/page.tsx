@@ -9,6 +9,7 @@ import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
 import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function EnterprisePage() {
   const [activeHoverMenu, setActiveHoverMenu] = useState<string | null>(null);
@@ -117,7 +118,8 @@ export default function EnterprisePage() {
                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-blue-300">Enterprise Accessibility</span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-black mb-6 leading-[1.1] tracking-tight text-white">
+            <Breadcrumbs items={[ { label: "Home", href: "/" }, { label: "Business Size" }, { label: "Enterprise" } ]} />
+              <h1 className="text-4xl md:text-5xl lg:text-7xl font-black mb-6 leading-[1.1] tracking-tight text-white">
               Accessibility at <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#004bff] to-[#00ff87] italic font-serif font-light">massive scale</span>.
             </h1>
             <p className="text-lg text-slate-300 mb-10 leading-relaxed font-medium">

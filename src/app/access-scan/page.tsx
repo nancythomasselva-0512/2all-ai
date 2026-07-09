@@ -14,6 +14,7 @@ import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
 import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -134,6 +135,7 @@ export default function AccessScanPage() {
             </div>
 
             <div className="relative z-10 space-y-10 max-w-4xl w-full">
+              <Breadcrumbs items={[ { label: "Home", href: "/" }, { label: "Products" }, { label: "accessScan" } ]} />
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
                 Check if your website is<br/>accessible and ADA compliant<br/><span className="italic font-serif text-cyan-300">in seconds</span>
               </h1>

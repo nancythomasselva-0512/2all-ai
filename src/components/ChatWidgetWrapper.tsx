@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import AnnaChatWidget from "@/components/AnnaChatWidget";
+import AlexChatWidget from "@/components/AlexChatWidget";
 
 export default function ChatWidgetWrapper() {
   const pathname = usePathname();
@@ -9,5 +9,6 @@ export default function ChatWidgetWrapper() {
   // Hide chat widget on admin pages
   if (pathname?.startsWith("/admin")) return null;
 
-  return <AnnaChatWidget />;
+  return <AlexChatWidget />;
 }
+

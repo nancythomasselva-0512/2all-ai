@@ -489,14 +489,14 @@ function AccessibilityStatementContent({ domain }: { domain: string }) {
   );
 }
 
-/* ── Anna Chat Widget ── */
-function AnnaChatWidget() {
+/* ── Alex Chat Widget ── */
+function AlexChatWidget() {
   const [open, setOpen] = useState(false);
   const [showBubble, setShowBubble] = useState(true);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<{ from: "anna" | "user"; text: string }[]>([
-    { from: "anna", text: "Hi, I'm Anna! I'm your 24 hour virtual assistant." },
-    { from: "anna", text: "Ask me a question or select one of the following options below." },
+  const [messages, setMessages] = useState<{ from: "alex" | "user"; text: string }[]>([
+    { from: "alex", text: "Hi, I'm Alex! I'm your 24 hour virtual assistant." },
+    { from: "alex", text: "Ask me a question or select one of the following options below." },
   ]);
   const [quickReplied, setQuickReplied] = useState(false);
 
@@ -509,7 +509,7 @@ function AnnaChatWidget() {
     setMessages((prev) => [
       ...prev,
       { from: "user", text },
-      { from: "anna", text: "Thanks! Let me connect you with the right support. A team member will be with you shortly." },
+      { from: "alex", text: "Thanks! Let me connect you with the right support. A team member will be with you shortly." },
     ]);
   };
 
@@ -518,7 +518,7 @@ function AnnaChatWidget() {
     setMessages((prev) => [
       ...prev,
       { from: "user", text: message.trim() },
-      { from: "anna", text: "Thanks for your message! Our team will get back to you soon." },
+      { from: "alex", text: "Thanks for your message! Our team will get back to you soon." },
     ]);
     setMessage("");
   };
@@ -527,7 +527,7 @@ function AnnaChatWidget() {
     <>
       {/* Floating buttons */}
       <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 select-none">
-        {/* Anna bubble popover (shown when chat is closed) */}
+        {/* Alex bubble popover (shown when chat is closed) */}
         {showBubble && !open && (
           <div
             className="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-xl max-w-[220px] flex items-center gap-3 mr-2 relative cursor-pointer"
@@ -540,8 +540,8 @@ function AnnaChatWidget() {
               </svg>
             </div>
             <div className="text-left flex-1">
-              <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Anna</span>
-              <p className="text-[10px] text-slate-700 font-bold leading-normal">Hi, I&apos;m Anna! I&apos;m your 24 hour virtual assistant.</p>
+              <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Alex</span>
+              <p className="text-[10px] text-slate-700 font-bold leading-normal">Hi, I&apos;m Alex! I&apos;m your 24 hour virtual assistant.</p>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
@@ -559,7 +559,7 @@ function AnnaChatWidget() {
               <path d="M12 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7.5 12h9M12 8v8M10 22v-6h4v6" strokeLinecap="round" />
             </svg>
           </button>
-          {/* Chat button — opens Anna panel */}
+          {/* Chat button — opens Alex panel */}
           <button
             onClick={() => { setOpen(true); setShowBubble(false); }}
             className="w-12 h-12 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center shadow-lg shadow-slate-900/30 hover:scale-105 transition-all cursor-pointer border-none"
@@ -616,7 +616,7 @@ function AnnaChatWidget() {
 
             {messages.map((msg, i) => (
               <div key={i} className={`flex items-start gap-2 ${msg.from === "user" ? "flex-row-reverse" : ""}`}>
-                {msg.from === "anna" && (
+                {msg.from === "alex" && (
                   <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center shrink-0 border border-slate-200 overflow-hidden mt-0.5">
                     <svg viewBox="0 0 24 24" className="w-5 h-5 text-slate-500">
                       <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
@@ -624,9 +624,9 @@ function AnnaChatWidget() {
                   </div>
                 )}
                 <div>
-                  {msg.from === "anna" && <p className="text-[9px] font-black text-slate-400 mb-1 ml-1">Anna</p>}
+                  {msg.from === "alex" && <p className="text-[9px] font-black text-slate-400 mb-1 ml-1">Alex</p>}
                   <div className={`rounded-2xl px-3 py-2 max-w-[200px] text-xs font-semibold leading-relaxed ${
-                    msg.from === "anna"
+                    msg.from === "alex"
                       ? "bg-slate-100 text-slate-700 rounded-tl-sm"
                       : "bg-blue-600 text-white rounded-tr-sm ml-auto"
                   }`}>
@@ -818,8 +818,8 @@ function InstallPageInner() {
         {renderContent()}
       </div>
 
-      {/* Floating Anna chat widget */}
-      <AnnaChatWidget />
+      {/* Floating Alex chat widget */}
+      <AlexChatWidget />
 
 
     </div>
@@ -833,3 +833,4 @@ export default function InstallPage() {
     </Suspense>
   );
 }
+

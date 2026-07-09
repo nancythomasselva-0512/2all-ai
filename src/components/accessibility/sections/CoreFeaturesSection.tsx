@@ -148,7 +148,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
                       {item.label}
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      {item.options?.map(opt => (
+                      {item.options?.map((opt: any) => (
                         <button
                           key={opt.value}
                           onClick={() => updateSetting(item.id as any, opt.value)}

@@ -9,6 +9,7 @@ import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
 import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function IndustriesPage() {
   const [activeHoverMenu, setActiveHoverMenu] = useState<string | null>(null);
@@ -151,7 +152,8 @@ export default function IndustriesPage() {
         <div className="absolute inset-0 bg-blue-50/50 -z-10" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <div className="text-[10px] font-bold tracking-[0.2em] uppercase mb-4 text-[#004bff]">Industries</div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.1] tracking-tight text-[#0a1e3f] max-w-4xl mx-auto">
+          <Breadcrumbs theme="light" items={[ { label: "Home", href: "/" }, { label: "Business Size" }, { label: "Industries" } ]} />
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.1] tracking-tight text-[#0a1e3f] max-w-4xl mx-auto">
             Web accessibility solutions tailored for <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#004bff] to-[#00ff87] italic font-serif font-light">every sector</span>.
           </h1>
           <p className="text-lg text-slate-600 mb-10 leading-relaxed font-medium max-w-2xl mx-auto">

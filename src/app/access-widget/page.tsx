@@ -13,6 +13,7 @@ import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
 import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -115,9 +116,7 @@ export default function AccessWidgetPage() {
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
           <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center relative z-10">
             <motion.div initial="hidden" animate="visible" variants={stagger} className="text-white space-y-7">
-              <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/20 border border-blue-400/30 rounded-full text-xs font-bold uppercase tracking-widest text-blue-200">
-                <Zap className="w-3.5 h-3.5" /> accessWidget
-              </motion.div>
+              <Breadcrumbs items={[ { label: "Home", href: "/" }, { label: "Products" }, { label: "accessWidget" } ]} />
               <motion.h1 variants={fadeUp} className="text-4xl md:text-5xl lg:text-[62px] font-black leading-[1.05] tracking-tight">
                 Automate web<br />accessibility and<br /><span className="text-cyan-300 italic font-serif font-semibold">compliance</span> at scale
               </motion.h1>
