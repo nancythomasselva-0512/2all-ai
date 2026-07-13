@@ -1,38 +1,17 @@
 "use client";
+import Navbar from "@/components/marketing/Navbar";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronRight, ShoppingCart, HeartPulse, GraduationCap, Building2, Scale, Search } from "lucide-react";
 import Footer from "@/components/marketing/Footer";
-import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
-import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
-import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
-import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function IndustriesPage() {
-  const [activeHoverMenu, setActiveHoverMenu] = useState<string | null>(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
-  const openMenu = (menu: string) => setActiveHoverMenu(menu);
-  const closeMenuWithDelay = () => {
-    setTimeout(() => {
-      const isHovering = document.querySelector(':hover')?.closest('.megamenu-container');
-      if (!isHovering) setActiveHoverMenu(null);
-    }, 100);
-  };
 
-  const navTextClass = isScrolled ? "text-[#374b6c]" : "text-[#0a1e3f]";
-  const navHoverClass = isScrolled ? "hover:text-[#004bff]" : "hover:text-blue-600";
-  const logoClass = "mix-blend-multiply";
 
   const industries = [
     {
@@ -82,73 +61,10 @@ export default function IndustriesPage() {
   return (
     <div className="min-h-screen w-full bg-slate-50 relative font-sans text-[#0a1e3f]">
       {/* Header */}
-      <header 
-        onMouseLeave={() => setActiveHoverMenu(null)}
-        className={`w-full py-3 px-4 md:px-10 z-50 shrink-0 fixed top-0 transition-all duration-300 ease-out border-b ${isScrolled ? 'bg-white shadow-sm border-slate-200/50' : 'bg-transparent border-transparent'}`}
-      >
-        <div className="w-full flex items-center justify-between gap-4 max-w-[1600px] mx-auto">
-          <div className="md:px-4 py-1.5 flex items-center justify-between flex-grow">
-            <Link href="/" className="flex items-center mr-2 md:mr-6 shrink-0">
-              <img src="/images/logo.png" alt="2all.ai Logo" className={`h-10 md:h-14 w-auto object-contain transition-all ${logoClass}`} />
-            </Link>
-            <nav className="hidden lg:flex items-center gap-8">
-              {[
-                { name: "SOLUTIONS", hasDropdown: true },
-                { name: "COMPANY", hasDropdown: true },
-                { name: "PARTNERS", hasDropdown: true },
-                { name: "RESOURCES", hasDropdown: true },
-                { name: "PRICING", hasDropdown: false },
-              ].map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.name === "PRICING" ? "/pricing" : "#"}
-                  onMouseEnter={() => {
-                    if (link.hasDropdown) openMenu(link.name);
-                    else setActiveHoverMenu(null);
-                  }}
-                  className={`text-[12px] font-bold ${navTextClass} ${navHoverClass} transition-colors flex items-center gap-1.5 tracking-widest pb-1`}
-                >
-                  <span className="relative">
-                    {link.name}
-                    {activeHoverMenu === link.name && link.hasDropdown && (
-                      <motion.span layoutId="nav-underline" className={`absolute left-0 right-0 -bottom-1 h-0.5 rounded-full ${isScrolled ? 'bg-[#004bff]' : 'bg-blue-600'}`} />
-                    )}
-                  </span>
-                  {link.hasDropdown && (
-                    <motion.svg animate={{ rotate: activeHoverMenu === link.name ? 180 : 0 }} transition={{ duration: 0.2 }} viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-[3.5] stroke-current fill-none">
-                      <path d="M19 9l-7 7-7-7" />
-                    </motion.svg>
-                  )}
-                </Link>
-              ))}
-            </nav>
-            <Link href="/login" className={`hidden md:block text-[12px] font-bold ${navTextClass} ${navHoverClass} tracking-widest mr-2`}>
-              LOGIN
-            </Link>
-          </div>
-          <div className="py-1.5 md:pl-6 flex items-center gap-2 sm:gap-3 md:gap-5 shrink-0">
-            <button className={`hidden sm:flex text-[12px] font-bold px-6 py-2.5 rounded-full transition-all tracking-widest bg-transparent text-[#004bff] hover:bg-blue-50`}>
-              BOOK A DEMO
-            </button>
-            <Link href="/register" className={`hidden sm:flex items-center gap-2 px-6 py-2.5 rounded-full text-[12px] font-bold transition-all shadow-sm tracking-widest bg-[#004bff] text-white hover:bg-blue-700`}>
-              START FREE TRIAL <ChevronRight className="w-4 h-4" />
-            </Link>
-            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="lg:hidden p-2 rounded-lg hover:bg-slate-200 text-slate-800 transition-colors">
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-
-        <div className="megamenu-container">
-          <SolutionsMegamenu isOpen={activeHoverMenu === "SOLUTIONS"} onMouseEnter={() => openMenu("SOLUTIONS")} onMouseLeave={closeMenuWithDelay} />
-          <CompanyMegamenu isOpen={activeHoverMenu === "COMPANY"} onMouseEnter={() => openMenu("COMPANY")} onMouseLeave={closeMenuWithDelay} />
-          <PartnersMegamenu isOpen={activeHoverMenu === "PARTNERS"} onMouseEnter={() => openMenu("PARTNERS")} onMouseLeave={closeMenuWithDelay} />
-          <ResourcesMegamenu isOpen={activeHoverMenu === "RESOURCES"} onMouseEnter={() => openMenu("RESOURCES")} onMouseLeave={closeMenuWithDelay} />
-        </div>
-      </header>
+      <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 md:pt-48 md:pb-32 px-4 relative">
+      <section className="pt-16 pb-20 md:pt-24 md:pb-32 px-4 relative">
         <div className="absolute inset-0 bg-blue-50/50 -z-10" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <div className="text-[10px] font-bold tracking-[0.2em] uppercase mb-4 text-[#004bff]">Industries</div>

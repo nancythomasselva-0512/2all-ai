@@ -4,7 +4,9 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 
 export type ColorBlindMode = "none" | "protanopia" | "deuteranopia" | "tritanopia" | "achromatopsia";
 export type CursorSize = "normal" | "large" | "huge";
-export type ProfileType = "none" | "dyslexia" | "adhd" | "low-vision" | "blind" | "motor-impaired" | "cognitive" | "reading" | "night";
+export type SaturationMode = "normal" | "high" | "low" | "monochrome";
+export type TextAlignment = "default" | "left" | "right" | "center" | "justify";
+export type ProfileType = "none" | "dyslexia" | "adhd" | "low-vision" | "blind" | "motor-impaired" | "cognitive" | "reading" | "night" | "seizure";
 
 interface AccessibilityState {
   isPanelOpen: boolean;
@@ -28,6 +30,12 @@ interface AccessibilityState {
   cursorSize: CursorSize;
   colorBlindMode: ColorBlindMode;
   activeProfile: ProfileType;
+  // Advanced features
+  saturationMode: SaturationMode;
+  highlightFocus: boolean;
+  textToSpeech: boolean;
+  textMagnifier: boolean;
+  textAlignment: TextAlignment;
 }
 
 interface AccessibilityContextProps {
@@ -60,7 +68,12 @@ const defaultState: AccessibilityState = {
   muteSounds: false,
   cursorSize: "normal",
   colorBlindMode: "none",
-  activeProfile: "none"
+  activeProfile: "none",
+  saturationMode: "normal",
+  highlightFocus: false,
+  textToSpeech: false,
+  textMagnifier: false,
+  textAlignment: "default"
 };
 
 const AccessibilityContext = createContext<AccessibilityContextProps | undefined>(undefined);
@@ -103,10 +116,15 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     body.style.lineHeight = s.lineHeight !== 1.5 ? `${s.lineHeight}` : "";
     body.style.wordSpacing = s.wordSpacing ? `${s.wordSpacing}em` : "";
 
-    // Classes for boolean toggles
+    // Classes for boolean toggles - apply to both HTML and BODY
     const toggleClass = (className: string, condition: boolean) => {
-      if (condition) body.classList.add(className);
-      else body.classList.remove(className);
+      if (condition) {
+        body.classList.add(className);
+        html.classList.add(className);
+      } else {
+        body.classList.remove(className);
+        html.classList.remove(className);
+      }
     };
 
     toggleClass("a11y-high-contrast", s.isHighContrast);
@@ -123,6 +141,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     toggleClass("a11y-highlight-links", s.highlightLinks);
     toggleClass("a11y-highlight-headings", s.highlightHeadings);
     toggleClass("a11y-highlight-buttons", s.highlightButtons);
+    toggleClass("a11y-highlight-focus", s.highlightFocus);
     
     // Motion
     toggleClass("a11y-reduce-motion", s.reduceMotion);
@@ -130,14 +149,38 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Cursor
     body.classList.remove("a11y-cursor-large", "a11y-cursor-huge");
+    html.classList.remove("a11y-cursor-large", "a11y-cursor-huge");
     if (s.cursorSize !== "normal") {
       body.classList.add(`a11y-cursor-${s.cursorSize}`);
+      html.classList.add(`a11y-cursor-${s.cursorSize}`);
     }
 
     // Color Blind
     body.classList.remove("a11y-cb-protanopia", "a11y-cb-deuteranopia", "a11y-cb-tritanopia", "a11y-cb-achromatopsia");
+    html.classList.remove("a11y-cb-protanopia", "a11y-cb-deuteranopia", "a11y-cb-tritanopia", "a11y-cb-achromatopsia");
     if (s.colorBlindMode !== "none") {
       body.classList.add(`a11y-cb-${s.colorBlindMode}`);
+      html.classList.add(`a11y-cb-${s.colorBlindMode}`);
+    }
+
+    // Saturation
+    body.classList.remove("a11y-sat-high", "a11y-sat-low", "a11y-sat-mono");
+    html.classList.remove("a11y-sat-high", "a11y-sat-low", "a11y-sat-mono");
+    if (s.saturationMode === "high") {
+      body.classList.add("a11y-sat-high");
+      html.classList.add("a11y-sat-high");
+    } else if (s.saturationMode === "low") {
+      body.classList.add("a11y-sat-low");
+      html.classList.add("a11y-sat-low");
+    } else if (s.saturationMode === "monochrome") {
+      body.classList.add("a11y-sat-mono");
+      html.classList.add("a11y-sat-mono");
+    }
+
+    // Text Alignment
+    body.classList.remove("a11y-align-left", "a11y-align-right", "a11y-align-center", "a11y-align-justify");
+    if (s.textAlignment !== "default") {
+      body.classList.add(`a11y-align-${s.textAlignment}`);
     }
   };
 
@@ -163,13 +206,19 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         newSettings = { fontSize: 150, isHighContrast: true, cursorSize: "huge", highlightHeadings: true };
         break;
       case "blind":
-        newSettings = { highlightLinks: true, highlightHeadings: true, muteSounds: false };
+        newSettings = { highlightLinks: true, highlightHeadings: true, textToSpeech: true };
         break;
       case "reading":
         newSettings = { readingRuler: true, fontFamily: "lexend", letterSpacing: 0.5 };
         break;
       case "night":
         newSettings = { isDarkMode: true, isHighContrast: false, reduceMotion: true };
+        break;
+      case "seizure":
+        newSettings = { reduceMotion: true, stopAnimations: true, saturationMode: "low" };
+        break;
+      case "motor-impaired":
+        newSettings = { cursorSize: "large", highlightFocus: true, highlightButtons: true, highlightLinks: true };
         break;
       // other profiles...
     }

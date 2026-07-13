@@ -4,7 +4,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { 
   BookOpen, EyeOff, BrainCircuit, ScanFace, 
-  Glasses, MonitorSpeaker, GraduationCap, Moon 
+  Glasses, MonitorSpeaker, GraduationCap, Moon,
+  ZapOff, Accessibility
 } from "lucide-react";
 import { useAccessibility, ProfileType } from "@/context/AccessibilityContext";
 
@@ -25,7 +26,9 @@ const profiles = [
   { id: "blind", label: "Screen Reader", icon: MonitorSpeaker, desc: "Optimized for screen readers" },
   { id: "cognitive", label: "Cognitive Disability", icon: ScanFace, desc: "Simplifies reading experience" },
   { id: "reading", label: "Reading Mode", icon: GraduationCap, desc: "Improves reading comprehension" },
-  { id: "night", label: "Night Mode", icon: Moon, desc: "Reduces eye strain in low light" }
+  { id: "night", label: "Night Mode", icon: Moon, desc: "Reduces eye strain in low light" },
+  { id: "seizure", label: "Seizure Safe", icon: ZapOff, desc: "Reduces flash risks & desaturates colors" },
+  { id: "motor-impaired", label: "Keyboard Nav / Motor Impaired", icon: Accessibility, desc: "Optimizes focus & keyboard controls" }
 ];
 
 export default function ProfilesSection({ searchQuery }: { searchQuery: string }) {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Check, ArrowRight, Heart, Sparkles, Shield, Users, Eye, Info,
   ChevronDown, HelpCircle, Activity, Globe, Scale
@@ -197,81 +197,7 @@ export default function AboutUsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             
             {/* Visual Column: Animated Touch Hands */}
-            <div className="relative h-[480px] rounded-[2rem] bg-blue-50/50 border border-slate-200/60 overflow-hidden shadow-inner flex items-center justify-center">
-              <div className="absolute -inset-4 bg-blue-50/30 rounded-[2.5rem] -rotate-2 z-0" />
-              
-              {/* Animation Stage */}
-              <div className="relative w-full h-full max-w-[500px] mx-auto overflow-hidden flex items-center justify-center">
-                {/* Left/Human Hand */}
-                <motion.div
-                  initial={{ x: -160, y: 30, rotate: -5, opacity: 0.8 }}
-                  animate={{ 
-                    x: [-160, -85, -160],
-                    y: [30, 15, 30],
-                    rotate: [-5, 0, -5]
-                  }}
-                  transition={{ 
-                    duration: 6, 
-                    repeat: Infinity, 
-                    ease: "easeInOut" 
-                  }}
-                  className="absolute left-0 w-[55%] h-auto pointer-events-none origin-right z-10"
-                >
-                  <img 
-                    src="/images/hands_collaboration.png" 
-                    alt="Human hand" 
-                    className="w-full h-auto object-contain [clip-path:polygon(0%_0%,65%_0%,65%_100%,0%_100%)] scale-[1.7]"
-                  />
-                </motion.div>
-
-                {/* Right/Robotic Hand */}
-                <motion.div
-                  initial={{ x: 160, y: -30, rotate: 5, opacity: 0.8 }}
-                  animate={{ 
-                    x: [160, 85, 160],
-                    y: [-30, -15, -30],
-                    rotate: [5, 0, 5]
-                  }}
-                  transition={{ 
-                    duration: 6, 
-                    repeat: Infinity, 
-                    ease: "easeInOut" 
-                  }}
-                  className="absolute right-0 w-[55%] h-auto pointer-events-none origin-left z-10"
-                >
-                  <img 
-                    src="/images/hands_collaboration.png" 
-                    alt="Robotic hand" 
-                    className="w-full h-auto object-contain [clip-path:polygon(55%_0%,100%_0%,100%_100%,55%_100%)] scale-[1.7] translate-x-[-10%]"
-                  />
-                </motion.div>
-
-                {/* Interaction Pulse Sparkle */}
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ 
-                    scale: [0, 1.5, 0],
-                    opacity: [0, 0.8, 0]
-                  }}
-                  transition={{ 
-                    duration: 6, 
-                    repeat: Infinity, 
-                    ease: "easeInOut",
-                    times: [0, 0.5, 1]
-                  }}
-                  className="absolute z-20 w-8 h-8 rounded-full bg-blue-400/40 blur-sm flex items-center justify-center"
-                  style={{ x: -2, y: -4 }}
-                >
-                  <div className="w-3 h-3 rounded-full bg-white shadow-[0_0_10px_#fff]" />
-                </motion.div>
-              </div>
-
-              {/* Floating Compliance Stats card */}
-              <div className="absolute bottom-6 right-6 z-20 bg-blue-600 text-white p-6 rounded-2xl shadow-lg max-w-xs hidden sm:block">
-                <p className="text-2xl font-black mb-1">99.9%</p>
-                <p className="text-xs font-semibold uppercase tracking-wider text-blue-200">Compliance accuracy with WCAG standards</p>
-              </div>
-            </div>
+            <AboutUsAnimation />
 
             {/* Content Column */}
             <div className="space-y-8">
@@ -432,6 +358,32 @@ export default function AboutUsPage() {
 
       {/* DEMO MODAL */}
       <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
+    </div>
+  );
+}
+
+function AboutUsAnimation() {
+  return (
+    <div className="relative h-[340px] sm:h-[380px] md:h-[420px] w-full rounded-[2.5rem] bg-blue-50/50 border border-slate-200/60 flex items-center justify-center select-none overflow-hidden">
+      <div className="absolute -inset-4 bg-blue-50/30 rounded-[2.5rem] -rotate-2 z-0" />
+      
+      {/* Animation Stage: Video Player */}
+      <div className="relative w-full h-full overflow-hidden flex items-center justify-center rounded-[2.5rem] z-10">
+        <video
+          src="/images/hand%20animation.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-contain"
+        />
+      </div>
+
+      {/* Floating Compliance Stats card */}
+      <div className="absolute bottom-6 right-6 z-20 bg-blue-600 text-white p-6 rounded-2xl shadow-lg max-w-xs hidden sm:block">
+        <p className="text-2xl font-black mb-1">99.9%</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-blue-200">Compliance accuracy with WCAG standards</p>
+      </div>
     </div>
   );
 }

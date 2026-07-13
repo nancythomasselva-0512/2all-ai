@@ -10,20 +10,107 @@ export default function AccessibilityWidget() {
   const { state, togglePanel } = useAccessibility();
   const [mounted, setMounted] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [magnifierText, setMagnifierText] = useState("");
 
   useEffect(() => {
     setMounted(true);
     
-    // Track mouse for reading mask/ruler
+    // Track mouse for reading mask/ruler/magnifier
     const handleMouseMove = (e: MouseEvent) => {
-      if (state.readingMask || state.readingRuler) {
+      if (state.readingMask || state.readingRuler || state.textMagnifier) {
         setMousePos({ x: e.clientX, y: e.clientY });
       }
     };
     
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [state.readingMask, state.readingRuler]);
+  }, [state.readingMask, state.readingRuler, state.textMagnifier]);
+
+  // Hover Text Magnifier Effect
+  useEffect(() => {
+    if (!state.textMagnifier) {
+      setMagnifierText("");
+      return;
+    }
+    
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target) return;
+      if (target.closest('.fixed.bottom-24.right-6') || target.closest('.fixed.bottom-6.right-6')) return;
+      
+      const text = target.innerText || target.getAttribute('alt') || target.getAttribute('aria-label');
+      if (text && text.trim() && text.length < 300) {
+        setMagnifierText(text.trim());
+      } else {
+        setMagnifierText("");
+      }
+    };
+    
+    const handleMouseOut = () => {
+      setMagnifierText("");
+    };
+
+    window.addEventListener("mouseover", handleMouseOver);
+    window.addEventListener("mouseout", handleMouseOut);
+    return () => {
+      window.removeEventListener("mouseover", handleMouseOver);
+      window.removeEventListener("mouseout", handleMouseOut);
+    };
+  }, [state.textMagnifier]);
+
+  // Text-To-Speech (Read Aloud) Effect
+  useEffect(() => {
+    if (!state.textToSpeech) return;
+    
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target) return;
+      
+      if (target.closest('.fixed.bottom-24.right-6') || target.closest('.fixed.bottom-6.right-6')) return;
+      
+      const text = target.innerText || target.getAttribute('alt') || target.getAttribute('aria-label');
+      if (text && text.trim()) {
+        target.style.outline = "2px dashed #004bff";
+        target.style.outlineOffset = "2px";
+      }
+    };
+
+    const handleMouseOut = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target) {
+        target.style.outline = "";
+        target.style.outlineOffset = "";
+      }
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target) return;
+      if (target.closest('.fixed.bottom-24.right-6') || target.closest('.fixed.bottom-6.right-6')) return;
+
+      const text = target.innerText || target.getAttribute('alt') || target.getAttribute('aria-label');
+      if (text && text.trim()) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text.trim().substring(0, 500));
+        window.speechSynthesis.speak(utterance);
+      }
+    };
+
+    window.addEventListener("mouseover", handleMouseOver);
+    window.addEventListener("mouseout", handleMouseOut);
+    window.addEventListener("click", handleClick, true);
+    
+    return () => {
+      window.removeEventListener("mouseover", handleMouseOver);
+      window.removeEventListener("mouseout", handleMouseOut);
+      window.removeEventListener("click", handleClick, true);
+      window.speechSynthesis.cancel();
+    };
+  }, [state.textToSpeech]);
 
   if (!mounted) return null;
 
@@ -48,6 +135,20 @@ export default function AccessibilityWidget() {
             style={{ display: "block", top: `${mousePos.y + 100}px`, bottom: 0 }}
           />
         </>
+      )}
+
+      {/* Hover text magnifier overlay */}
+      {state.textMagnifier && magnifierText && (
+        <div 
+          className="fixed z-[2147483647] pointer-events-none p-4 rounded-2xl bg-slate-900/95 text-white border border-blue-500/50 shadow-2xl font-sans max-w-sm text-lg font-bold leading-normal transition-all duration-75"
+          style={{ 
+            top: `${mousePos.y + 25}px`, 
+            left: `${mousePos.x + 25}px`,
+          }}
+        >
+          <div className="text-[10px] text-blue-400 mb-1 font-bold uppercase tracking-widest">Accessibility Reader Magnifier</div>
+          {magnifierText}
+        </div>
       )}
 
       {/* Floating Button */}
@@ -103,6 +204,21 @@ export default function AccessibilityWidget() {
       <AnimatePresence>
         {state.isPanelOpen && <AccessibilityPanel />}
       </AnimatePresence>
+
+      {/* SVG Filters for Color Blindness Simulation */}
+      <svg style={{ display: "none" }} xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="cb-protanopia" colorInterpolationFilters="sRGB">
+            <feColorMatrix type="matrix" values="0.567, 0.433, 0, 0, 0, 0.558, 0.442, 0, 0, 0, 0, 0.242, 0.758, 0, 0, 0, 0, 0, 1, 0" />
+          </filter>
+          <filter id="cb-deuteranopia" colorInterpolationFilters="sRGB">
+            <feColorMatrix type="matrix" values="0.625, 0.375, 0, 0, 0, 0.7, 0.3, 0, 0, 0, 0, 0.3, 0.7, 0, 0, 0, 0, 0, 1, 0" />
+          </filter>
+          <filter id="cb-tritanopia" colorInterpolationFilters="sRGB">
+            <feColorMatrix type="matrix" values="0.95, 0.05, 0, 0, 0, 0, 0.433, 0.567, 0, 0, 0, 0.475, 0.525, 0, 0, 0, 0, 0, 1, 0" />
+          </filter>
+        </defs>
+      </svg>
     </>
   );
 }

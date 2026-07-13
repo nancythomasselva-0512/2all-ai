@@ -1,4 +1,5 @@
 "use client";
+import Navbar from "@/components/marketing/Navbar";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -9,10 +10,6 @@ import {
 } from "lucide-react";
 import Footer from "@/components/marketing/Footer";
 import DemoModal from "@/components/marketing/DemoModal";
-import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
-import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
-import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
-import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const fadeUp = {
@@ -26,92 +23,24 @@ const stagger = {
 };
 
 export default function SmallBusinessPage() {
-  const [activeHoverMenu, setActiveHoverMenu] = useState<string | null>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
 
   const closeMenuTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const openMenu = (name: string | null) => {
-    if (closeMenuTimer.current) clearTimeout(closeMenuTimer.current);
-    setActiveHoverMenu(name);
-  };
-  const closeMenuWithDelay = () => {
-    closeMenuTimer.current = setTimeout(() => setActiveHoverMenu(null), 200);
-  };
 
-  useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
-  const navTextClass = isScrolled ? "text-[#374b6c]" : "text-white/90";
-  const navHoverClass = isScrolled ? "hover:text-blue-600" : "hover:text-white";
-  const logoClass = isScrolled ? "mix-blend-multiply" : "brightness-0 invert";
 
   return (
     <div className="min-h-screen w-full bg-white relative overflow-x-hidden font-sans">
 
       {/* NAVBAR */}
-      <header
-        onMouseLeave={closeMenuWithDelay}
-        className={`w-full py-2 px-4 md:px-10 z-50 fixed top-0 transition-all duration-500 ease-out border-b ${isScrolled ? "bg-white/90 backdrop-blur-xl shadow-sm border-slate-200/50" : "bg-transparent border-transparent"}`}
-      >
-        <div className="w-full flex items-center justify-between gap-4 max-w-[1600px] mx-auto">
-          <div className="md:px-4 py-1.5 flex items-center justify-between flex-grow">
-            <Link href="/" className="flex items-center mr-2 md:mr-6 shrink-0">
-              <img src="/images/logo.png" alt="2all.ai Logo" className={`h-10 md:h-16 w-auto object-contain transition-all ${logoClass}`} />
-            </Link>
-            <nav className="hidden lg:flex items-center gap-8">
-              {[
-                { name: "SOLUTIONS", hasDropdown: true },
-                { name: "COMPANY", hasDropdown: true },
-                { name: "PARTNERS", hasDropdown: true },
-                { name: "RESOURCES", hasDropdown: true },
-                { name: "PRICING", hasDropdown: false },
-              ].map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.name === "PRICING" ? "/pricing" : "#"}
-                  onMouseEnter={() => link.name !== "PRICING" ? openMenu(link.name) : openMenu(null)}
-                  className={`text-[13px] font-bold ${navTextClass} ${navHoverClass} transition-colors flex items-center gap-1.5 tracking-wider pb-1`}
-                >
-                  <span className="relative">
-                    {link.name}
-                    {activeHoverMenu === link.name && link.hasDropdown && (
-                      <motion.span layoutId="aw-nav-underline" className={`absolute left-0 right-0 -bottom-1 h-0.5 rounded-full ${isScrolled ? "bg-blue-600" : "bg-white"}`} />
-                    )}
-                  </span>
-                  {link.hasDropdown && (
-                    <motion.svg animate={{ rotate: activeHoverMenu === link.name ? 180 : 0 }} transition={{ duration: 0.2 }} viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-[3.5] stroke-current fill-none">
-                      <path d="M19 9l-7 7-7-7" />
-                    </motion.svg>
-                  )}
-                </Link>
-              ))}
-            </nav>
-            <Link href="/login" className={`hidden md:block text-[13px] font-bold ${navTextClass} ${navHoverClass} tracking-wider mr-2`}>LOGIN</Link>
-          </div>
-          <div className="py-1.5 md:pl-6 flex items-center gap-3 md:gap-5 shrink-0">
-            <button onClick={() => setIsDemoOpen(true)} className={`hidden md:block text-[13px] font-bold ${navTextClass} ${navHoverClass} tracking-wider border-none bg-transparent cursor-pointer pb-1`}>BOOK A DEMO</button>
-            <Link href="/register" className={`flex items-center gap-2 rounded-xl px-4 md:px-6 py-2 md:py-3 text-[10px] md:text-[12px] font-extrabold tracking-wider whitespace-nowrap transition-all ${isScrolled ? "bg-[#004bff] hover:bg-[#003edd] text-white shadow-md shadow-blue-500/20" : "bg-white hover:bg-slate-100 text-[#0f2d6b]"}`}>
-              START FREE TRIAL
-              <svg viewBox="0 0 24 24" className="w-3 h-3 stroke-[3] stroke-current fill-none"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </Link>
-          </div>
-        </div>
-        <SolutionsMegamenu isOpen={activeHoverMenu === "SOLUTIONS"} onMouseEnter={() => openMenu("SOLUTIONS")} onMouseLeave={closeMenuWithDelay} />
-        <CompanyMegamenu isOpen={activeHoverMenu === "COMPANY"} onMouseEnter={() => openMenu("COMPANY")} onMouseLeave={closeMenuWithDelay} />
-        <PartnersMegamenu isOpen={activeHoverMenu === "PARTNERS"} onMouseEnter={() => openMenu("PARTNERS")} onMouseLeave={closeMenuWithDelay} />
-        <ResourcesMegamenu isOpen={activeHoverMenu === "RESOURCES"} onMouseEnter={() => openMenu("RESOURCES")} onMouseLeave={closeMenuWithDelay} />
-      </header>
+      <Navbar />
 
       <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
 
       <main>
         {/* ── HERO ── */}
-        <section className="w-full min-h-[92vh] bg-gradient-to-br from-[#0a1e3f] via-[#10316b] to-[#0052cc] flex items-center pt-32 pb-20 px-6 md:px-10 relative overflow-hidden">
+        <section className="w-full min-h-[92vh] bg-gradient-to-br from-[#0a1e3f] via-[#10316b] to-[#0052cc] flex items-center pt-16 pb-20 px-6 md:px-10 relative overflow-hidden">
           <div className="absolute -top-40 -right-40 w-[700px] h-[700px] bg-blue-500/20 rounded-full blur-[120px] pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
           

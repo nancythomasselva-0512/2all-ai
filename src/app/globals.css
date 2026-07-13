@@ -145,22 +145,26 @@ body {
    ================================================== */
 
 /* Contrast Modes */
-html.a11y-high-contrast {
+html.a11y-high-contrast, body.a11y-high-contrast {
   filter: contrast(150%) saturate(150%) !important;
 }
 
-html.a11y-dark-mode {
+html.a11y-dark-mode, body.a11y-dark-mode {
   filter: invert(1) hue-rotate(180deg) !important;
   background-color: #121212 !important;
 }
 html.a11y-dark-mode img, 
 html.a11y-dark-mode video, 
 html.a11y-dark-mode svg,
-html.a11y-dark-mode iframe {
+html.a11y-dark-mode iframe,
+body.a11y-dark-mode img, 
+body.a11y-dark-mode video, 
+body.a11y-dark-mode svg,
+body.a11y-dark-mode iframe {
   filter: invert(1) hue-rotate(180deg) !important;
 }
 
-html.a11y-light-mode {
+html.a11y-light-mode, body.a11y-light-mode {
   filter: invert(0) !important;
   background-color: #ffffff !important;
 }
@@ -209,22 +213,16 @@ html.a11y-light-mode {
   transition-duration: 0.001ms !important;
 }
 
-/* Cursors */
-.a11y-cursor-large {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="2"><path d="M4 4l16 16-6 1-4 6-6-23z"/></svg>'), auto !important;
-}
-.a11y-cursor-large * {
-  cursor: inherit !important;
+/* Cursors - Base64 encoded SVGs to work properly in modern browsers */
+.a11y-cursor-large, .a11y-cursor-large * {
+  cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJibGFjayIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNCA0bDE2IDE2LTYgMS00IDYtNi0yM3oiLz48L3N2Zz4='), auto !important;
 }
 
-.a11y-cursor-huge {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="2"><path d="M4 4l16 16-6 1-4 6-6-23z"/></svg>'), auto !important;
-}
-.a11y-cursor-huge * {
-  cursor: inherit !important;
+.a11y-cursor-huge, .a11y-cursor-huge * {
+  cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJibGFjayIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNCA0bDE2IDE2LTYgMS00IDYtNi0yM3oiLz48L3N2Zz4='), auto !important;
 }
 
-/* Color Blindness Filters (SVG applied in layout or simple CSS filter approximations) */
+/* Color Blindness Filters (SVG definitions embedded in layout) */
 .a11y-cb-protanopia {
   filter: url('#cb-protanopia') !important;
 }
@@ -236,6 +234,38 @@ html.a11y-light-mode {
 }
 .a11y-cb-achromatopsia {
   filter: grayscale(100%) !important;
+}
+
+/* Saturation Modes */
+html.a11y-sat-high, body.a11y-sat-high {
+  filter: saturate(200%) !important;
+}
+html.a11y-sat-low, body.a11y-sat-low {
+  filter: saturate(50%) !important;
+}
+html.a11y-sat-mono, body.a11y-sat-mono {
+  filter: grayscale(100%) !important;
+}
+
+/* Text Alignments */
+.a11y-align-left, .a11y-align-left * {
+  text-align: left !important;
+}
+.a11y-align-right, .a11y-align-right * {
+  text-align: right !important;
+}
+.a11y-align-center, .a11y-align-center * {
+  text-align: center !important;
+}
+.a11y-align-justify, .a11y-align-justify * {
+  text-align: justify !important;
+}
+
+/* Focus Highlights */
+.a11y-highlight-focus *:focus {
+  outline: 5px solid #004bff !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 0 10px rgba(0, 75, 255, 0.3) !important;
 }
 
 /* Reading Ruler & Mask Overlays */

@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { useAccessibility } from "@/context/AccessibilityContext";
 import { 
   Type, AlignLeft, Search, Link, MousePointer2,
-  Video, Maximize, Target, Hash, Expand, BetweenHorizonalEnd
+  Video, Maximize, Target, Hash, Expand, BetweenHorizonalEnd,
+  MonitorSpeaker, ShieldAlert
 } from "lucide-react";
 
 const stagger = {
@@ -23,7 +24,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
 
   const groups = [
     {
-      title: "Typography",
+      title: "Typography & Alignment",
       items: [
         { 
           id: "fontSize", label: "Font Size", type: "range", 
@@ -54,26 +55,39 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
             { value: "lexend", label: "Lexend" },
             { value: "readable", label: "Readable (Verdana)" },
           ]
+        },
+        { 
+          id: "textAlignment", label: "Text Alignment", type: "select",
+          value: state.textAlignment,
+          options: [
+            { value: "default", label: "Default" },
+            { value: "left", label: "Left" },
+            { value: "center", label: "Center" },
+            { value: "justify", label: "Justify" },
+          ]
         }
       ]
     },
     {
-      title: "Reading & Focus",
+      title: "Reading, Focus & Assistive Reading",
       items: [
         { id: "readingMask", label: "Reading Mask", type: "toggle", value: state.readingMask, icon: <Maximize className="w-5 h-5" /> },
         { id: "readingRuler", label: "Reading Ruler", type: "toggle", value: state.readingRuler, icon: <Target className="w-5 h-5" /> },
+        { id: "textMagnifier", label: "Text Magnifier", type: "toggle", value: state.textMagnifier, icon: <Search className="w-5 h-5" /> },
+        { id: "textToSpeech", label: "Read Aloud (TTS)", type: "toggle", value: state.textToSpeech, icon: <MonitorSpeaker className="w-5 h-5" /> },
       ]
     },
     {
-      title: "Highlights",
+      title: "Highlights & Outlines",
       items: [
         { id: "highlightLinks", label: "Highlight Links", type: "toggle", value: state.highlightLinks, icon: <Link className="w-5 h-5" /> },
         { id: "highlightHeadings", label: "Highlight Headings", type: "toggle", value: state.highlightHeadings, icon: <Hash className="w-5 h-5" /> },
         { id: "highlightButtons", label: "Highlight Buttons", type: "toggle", value: state.highlightButtons, icon: <MousePointer2 className="w-5 h-5" /> },
+        { id: "highlightFocus", label: "Focus Highlight", type: "toggle", value: state.highlightFocus, icon: <ShieldAlert className="w-5 h-5" /> },
       ]
     },
     {
-      title: "Interaction",
+      title: "Navigation & Saturation",
       items: [
         { id: "reduceMotion", label: "Reduce Motion", type: "toggle", value: state.reduceMotion, icon: <Video className="w-5 h-5" /> },
         { 
@@ -82,6 +96,15 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
             { value: "normal", label: "Normal" },
             { value: "large", label: "Large" },
             { value: "huge", label: "Huge" },
+          ]
+        },
+        { 
+          id: "saturationMode", label: "Saturation Control", type: "select", value: state.saturationMode, icon: <Target className="w-5 h-5" />,
+          options: [
+            { value: "normal", label: "Normal" },
+            { value: "high", label: "High" },
+            { value: "low", label: "Low" },
+            { value: "monochrome", label: "Monochrome" },
           ]
         }
       ]
