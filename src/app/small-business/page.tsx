@@ -51,7 +51,7 @@ export default function SmallBusinessPage() {
                 Web accessibility <br/>made simple for<br /><span className="text-cyan-300 italic font-serif font-semibold">small businesses</span>
               </motion.h1>
               <motion.p variants={fadeUp} className="text-blue-100 text-lg md:text-xl leading-relaxed max-w-lg">
-                Protect your business from lawsuits and open your doors to everyone. Our automated solution handles ADA & WCAG compliance effortlessly.
+                Protect your business from lawsuits and open your doors to everyone. Our automated solution makes improving ADA & WCAG accessibility straightforward.
               </motion.p>
               <motion.div variants={fadeUp} className="flex flex-wrap gap-4 pt-2">
                 <Link href="/register" className="bg-white hover:bg-slate-100 text-[#0a3580] px-8 py-4 rounded-full font-extrabold text-sm tracking-widest uppercase transition-all shadow-xl group flex items-center gap-2">

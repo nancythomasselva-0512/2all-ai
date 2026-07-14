@@ -29,7 +29,7 @@ export default function AIWorkflow() {
             How our <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">AI Workflow</span> operates.
           </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium">
-            A seamless, fully automated pipeline that transforms any website into an accessible, compliant, and inclusive experience in real-time.
+            A seamless, automated pipeline that helps make any website accessible and inclusive in real-time.
           </p>
         </motion.div>
 

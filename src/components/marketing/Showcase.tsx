@@ -212,7 +212,7 @@ export default function Showcase() {
                   Smart Touch Target Correction
                 </h4>
                 <p className="text-[9.5px] text-slate-500 mt-1.5 leading-relaxed">
-                  2all.ai tracks finger taps in real-time, dynamically expanding interactive button boundaries to guarantee they meet contrast and hit-size guidelines.
+                  2all.ai tracks finger taps in real-time, dynamically expanding interactive button boundaries to help meet contrast and hit-size guidelines.
                 </p>
                 <div className="mt-2.5 flex items-center gap-2">
                   <span className="px-2 py-0.5 rounded text-[8px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/10 uppercase font-mono flex items-center gap-0.5">

@@ -58,7 +58,7 @@ export default function ModernFooter() {
               <span className="absolute inset-0 bg-blue-500/30 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-full pointer-events-none" />
             </Link>
             <p className="text-sm leading-relaxed mb-8 max-w-sm text-slate-400">
-              The next-generation AI platform for fully automated web accessibility and WCAG compliance.
+              The next-generation AI platform for automated web accessibility scanning and alignment with WCAG guidelines.
             </p>
             <div className="flex gap-4">
               <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white hover:-translate-y-1 transition-all">

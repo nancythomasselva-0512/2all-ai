@@ -64,7 +64,7 @@ export default function AboutUsPage() {
     {
       icon: Shield,
       title: "Trust & Compliance",
-      desc: "We guarantee standard compliance under ADA, WCAG 2.2, Section 508, and EAA, protecting your brand and ensuring digital safety.",
+      desc: "We help you work toward accessibility alignment under ADA, WCAG 2.2, Section 508, and EAA standards, protecting your brand and improving digital inclusion.",
     },
     {
       icon: Users,
@@ -332,7 +332,7 @@ export default function AboutUsPage() {
                 Ready to make your website accessible to all?
               </h2>
               <p className="text-blue-100 max-w-xl mx-auto leading-relaxed">
-                Join thousands of businesses who use 2all.ai to automatically guarantee WCAG compliance and open their platforms to everyone.
+                Join thousands of businesses who use 2all.ai to automate accessibility scanning aligned with WCAG standards and open their platforms to everyone.
               </p>
               <div className="pt-4 flex flex-wrap justify-center gap-4">
                 <Link 

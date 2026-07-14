@@ -109,7 +109,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                 {/* Header */}
                 <div className="pb-1">
                   <h3 className="text-lg font-black text-slate-900 tracking-tight">Schedule an Accessibility Demo</h3>
-                  <p className="text-xs text-slate-400 font-semibold mt-0.5">Let our experts walk you through full WCAG compliance.</p>
+                  <p className="text-xs text-slate-400 font-semibold mt-0.5">Let our experts walk you through our WCAG scanning and alignment features.</p>
                 </div>
 
                 {error && (

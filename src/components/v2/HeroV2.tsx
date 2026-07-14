@@ -63,7 +63,7 @@ export default function HeroV2() {
             </h1>
             
             <p className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium">
-              We combine advanced AI technology with human expertise to help businesses achieve compliance, improve usability, and create inclusive digital experiences seamlessly.
+              We combine advanced AI technology with human expertise to help businesses improve accessibility alignment, enhance usability, and create inclusive digital experiences seamlessly.
             </p>
 
             {/* CTA Buttons */}

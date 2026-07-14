@@ -254,7 +254,7 @@ export default function LitigationSupportPage() {
                 <div className="p-8 flex-1 flex flex-col justify-between">
                    <div>
                       <h3 className="text-xl font-black text-white mb-3">AI-Powered Accessibility for Websites</h3>
-                      <p className="text-slate-400 text-sm leading-relaxed mb-6">Fully automated solution that installs in minutes and ensures WCAG and ADA compliance without modifying your source code.</p>
+                      <p className="text-slate-400 text-sm leading-relaxed mb-6">Fully automated solution that installs in minutes and helps improve WCAG and ADA accessibility alignment without modifying your source code.</p>
                    </div>
                    <Link href="/access-widget" className="text-cyan-400 font-bold text-sm hover:text-cyan-300 uppercase tracking-wider inline-flex items-center gap-1">Read more <ArrowRight className="w-4 h-4" /></Link>
                 </div>

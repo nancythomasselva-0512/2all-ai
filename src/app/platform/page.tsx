@@ -84,8 +84,8 @@ export default function PlatformPage() {
       icon: Layers
     },
     {
-      title: "Compliance Guarantee",
-      desc: "All client installations are fully backed by standard accessibility certificates, monthly scanning, and litigation audit support.",
+      title: "Compliance Support",
+      desc: "All client installations are supported by standard accessibility logs, monthly scanning, and litigation audit documentation.",
       icon: ShieldCheck
     }
   ];
@@ -107,8 +107,8 @@ export default function PlatformPage() {
       icon: LineChart
     },
     {
-      title: "Compliance Guarantee",
-      desc: "We take full responsibility for layout accessibility, providing continuous regression tests and compliance statement updates.",
+      title: "Continuous Monitoring Alignment",
+      desc: "We provide automated tools to monitor layout accessibility, offering continuous regression tests and accessibility alignment updates.",
       icon: CheckCircle2
     }
   ];

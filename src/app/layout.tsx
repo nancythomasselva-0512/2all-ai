@@ -14,7 +14,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "2all.ai | Next-Gen AI Web Accessibility & Compliance Platform",
-  description: "Modern AI Accessibility SaaS Platform to scan, monitor, and auto-fix website accessibility issues with dynamic floating widgets and automated WCAG 2.1 compliance.",
+  description: "Modern AI Accessibility SaaS Platform to scan, monitor, and suggest fixes for website accessibility issues aligned with WCAG 2.1 standards.",
   keywords: ["accessibility", "WCAG", "AI widget", "web compliance", "2all.ai", "SaaS", "disability inclusion"],
 
   openGraph: {
@@ -62,7 +62,9 @@ export default async function RootLayout({
         {trackingScripts && <div dangerouslySetInnerHTML={{ __html: trackingScripts }} style={{ display: "none" }} />}
         
         <AccessibilityProvider>
-          {children}
+          <div id="app-content">
+            {children}
+          </div>
           <AccessibilityWidget />
         </AccessibilityProvider>
 

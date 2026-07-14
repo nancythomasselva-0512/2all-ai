@@ -54,7 +54,7 @@ export async function sendPaymentSuccessEmail(toEmail: string, userName: string,
       </div>
 
       <p style="font-size: 14px; line-height: 1.5; color: #475569;">
-        You can now access full WCAG compliance crawling and expert remediation options directly from your user dashboard.
+        You can now access automated accessibility scanning aligned with WCAG standards and expert remediation options directly from your user dashboard.
       </p>
       
       <div style="margin: 28px 0; text-align: center;">
@@ -425,7 +425,7 @@ export async function sendWelcomeEmail(toEmail: string, userName: string, websit
               </td>
               <td valign="top">
                 <div class="card-title">Mitigate legal risk</div>
-                <div class="card-text">2all's role in web accessibility helps businesses meet strict legal requirements and WCAG compliance instantly.</div>
+                <div class="card-text">2all's role in web accessibility helps businesses identify accessibility gaps and align with WCAG standards.</div>
                 <a href="${process.env.NEXTAUTH_URL || "http://localhost:3000"}/solutions/legal" class="card-link">Learn More &rarr;</a>
               </td>
             </tr>

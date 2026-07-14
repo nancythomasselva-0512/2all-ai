@@ -424,7 +424,7 @@ export default function ServicesPage() {
               A solution for every accessibility challenge
             </h2>
             <p className="text-[15px] text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
-              2all.ai offers an end-to-end suite of accessibility tools and services designed to help you achieve full compliance while integrating seamlessly into your development processes.
+              2all.ai offers an end-to-end suite of accessibility tools and services designed to help you align with WCAG standards while integrating seamlessly into your development processes.
             </p>
           </div>
 

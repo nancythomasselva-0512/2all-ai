@@ -24,7 +24,7 @@ export default function IndustriesPage() {
     {
       title: "Healthcare",
       icon: HeartPulse,
-      desc: "Meet strict Section 1557 requirements. Guarantee that patient portals, appointment scheduling, and telemedicine platforms are fully usable by all patients.",
+      desc: "Meet Section 1557 requirements. Help make patient portals, appointment scheduling, and telemedicine platforms more usable for all patients.",
       color: "bg-rose-100 text-rose-600",
       dot: "bg-rose-500"
     },

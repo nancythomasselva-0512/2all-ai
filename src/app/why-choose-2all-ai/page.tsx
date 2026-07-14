@@ -80,7 +80,7 @@ export default function WhyChoose2allAiPage() {
           </h1>
           
           <p className="text-slate-200 text-lg md:text-xl font-light max-w-2xl leading-relaxed">
-            Join thousands of businesses that trust 2all.ai to automate WCAG 2.2, ADA, Section 508, and global web accessibility compliance.
+            Join thousands of businesses that trust 2all.ai to help improve alignment with WCAG 2.2, ADA, Section 508, and global web accessibility standards.
           </p>
           
           <div className="pt-4">
@@ -173,10 +173,10 @@ export default function WhyChoose2allAiPage() {
         <div className="max-w-4xl mx-auto flex flex-col items-center space-y-12">
           
           <div className="space-y-4">
-            <span className="text-xs font-black tracking-widest text-[#0b3c96] uppercase">Compliance Guarantee</span>
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Full Compliance Support</h2>
+            <span className="text-xs font-black tracking-widest text-[#0b3c96] uppercase">Compliance Support</span>
+            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Comprehensive Accessibility Alignment</h2>
             <p className="text-slate-500 text-md max-w-xl mx-auto leading-relaxed">
-              We dynamically monitor legislation changes to guarantee continuous protection across international standards.
+              We dynamically monitor legislation changes to help align with international accessibility standards.
             </p>
           </div>
 
@@ -264,7 +264,7 @@ export default function WhyChoose2allAiPage() {
               },
               {
                 title: "Regular testing & verification",
-                desc: "Runs automated daily accessibility scans ensuring compliance keeps pace with your layout changes and CMS updates.",
+                desc: "Runs automated daily accessibility scans to help identify new accessibility issues as layouts change.",
                 bg: "from-amber-600/5 to-orange-500/5 border-amber-100/50"
               },
               {
