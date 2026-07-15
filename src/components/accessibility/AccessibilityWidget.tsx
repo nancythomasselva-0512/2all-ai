@@ -206,7 +206,11 @@ export default function AccessibilityWidget() {
       </AnimatePresence>
 
       {/* SVG Filters for Color Blindness Simulation */}
-      <svg style={{ display: "none" }} xmlns="http://www.w3.org/2000/svg">
+      <svg 
+        style={{ position: "absolute", width: 0, height: 0, overflow: "hidden", pointerEvents: "none" }} 
+        aria-hidden="true" 
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <defs>
           <filter id="cb-protanopia" colorInterpolationFilters="sRGB">
             <feColorMatrix type="matrix" values="0.567, 0.433, 0, 0, 0, 0.558, 0.442, 0, 0, 0, 0, 0.242, 0.758, 0, 0, 0, 0, 0, 1, 0" />

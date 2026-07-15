@@ -161,7 +161,6 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     body.classList.remove("a11y-cb-protanopia", "a11y-cb-deuteranopia", "a11y-cb-tritanopia", "a11y-cb-achromatopsia");
     html.classList.remove("a11y-cb-protanopia", "a11y-cb-deuteranopia", "a11y-cb-tritanopia", "a11y-cb-achromatopsia");
     if (s.colorBlindMode !== "none") {
-      body.classList.add(`a11y-cb-${s.colorBlindMode}`);
       html.classList.add(`a11y-cb-${s.colorBlindMode}`);
     }
 
@@ -169,13 +168,10 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     body.classList.remove("a11y-sat-high", "a11y-sat-low", "a11y-sat-mono");
     html.classList.remove("a11y-sat-high", "a11y-sat-low", "a11y-sat-mono");
     if (s.saturationMode === "high") {
-      body.classList.add("a11y-sat-high");
       html.classList.add("a11y-sat-high");
     } else if (s.saturationMode === "low") {
-      body.classList.add("a11y-sat-low");
       html.classList.add("a11y-sat-low");
     } else if (s.saturationMode === "monochrome") {
-      body.classList.add("a11y-sat-mono");
       html.classList.add("a11y-sat-mono");
     }
 
