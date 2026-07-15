@@ -11,6 +11,63 @@ export async function GET() {
   const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN";
 
   const db = getDb();
+
+  // Auto-sync domains and default API keys from user's projects if they don't have any domain records yet
+  if (!isAdmin) {
+    try {
+      const domainCount = await db.domain.count({ where: { userId } });
+      if (domainCount === 0) {
+        const projects = await db.project.findMany({ where: { userId } });
+        for (const proj of projects) {
+          let cleanDomain = proj.url.trim().toLowerCase();
+          cleanDomain = cleanDomain.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "");
+          
+          if (cleanDomain) {
+            const verificationToken = `2all-verify-${Math.random().toString(36).substring(2, 15)}-${Math.random().toString(36).substring(2, 15)}`;
+            const newDom = await db.domain.create({
+              data: {
+                userId,
+                websiteName: proj.name || cleanDomain,
+                domain: cleanDomain,
+                canonicalDomain: cleanDomain,
+                environment: "PRODUCTION",
+                verificationMethod: "META",
+                verificationToken,
+                status: "ACTIVE",
+                verified: true,
+              }
+            });
+
+            // Auto-generate default active key for the domain
+            const hex1 = Math.floor(Math.random() * 0xffffffff).toString(16).toUpperCase().padStart(8, "0");
+            const hex2 = Math.floor(Math.random() * 0xffffffff).toString(16).toUpperCase().padStart(8, "0");
+            const hex3 = Math.floor(Math.random() * 0xffff).toString(16).toUpperCase().padStart(4, "0");
+            const generatedKey = `PUB_${hex1}${hex2}${hex3}`;
+
+            await db.apiKey.create({
+              data: {
+                userId,
+                name: `Widget Key for ${cleanDomain}`,
+                key: generatedKey,
+                status: "ACTIVE",
+                domainId: newDom.id,
+                domainName: cleanDomain,
+              }
+            });
+
+            await logAudit({
+              userId,
+              action: "REGISTERED_DOMAIN",
+              details: { domainId: newDom.id, domain: cleanDomain, websiteName: newDom.websiteName },
+            });
+          }
+        }
+      }
+    } catch (syncErr) {
+      console.warn("Could not sync projects to domains:", syncErr);
+    }
+  }
+
   const domains = await db.domain.findMany({
     where: isAdmin ? {} : { userId },
     orderBy: { createdAt: "desc" },
