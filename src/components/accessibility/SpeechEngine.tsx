@@ -320,6 +320,16 @@ export default function SpeechEngine() {
   const triggerPageReading = () => {
     if (typeof document === "undefined") return;
 
+    // Stop any current speech first
+    if (synthRef.current) {
+      synthRef.current.cancel();
+    }
+    restoreOriginalElement();
+
+    // Set status BEFORE crawling so Pause/Stop buttons enable immediately
+    updateSetting("speechStatus", "playing");
+    updateSetting("readingMode", "page");
+
     // Crawl DOM tree
     const container = document.body;
     const elements: HTMLElement[] = [];
@@ -380,6 +390,10 @@ export default function SpeechEngine() {
 
     if (elements.length > 0) {
       readNextPageElement();
+    } else {
+      // Nothing to read
+      updateSetting("speechStatus", "stopped");
+      updateSetting("readingMode", "none");
     }
   };
 
