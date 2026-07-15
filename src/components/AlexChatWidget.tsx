@@ -15,23 +15,68 @@ export default function AlexChatWidget() {
   const startedAt = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   const startedLabel = `Started ${now.toLocaleString("en-US", { month: "short" })} ${now.getDate()} at ${startedAt}`;
 
+  const getAlexReply = (text: string): string => {
+    const q = text.toLowerCase();
+
+    if (q.match(/hi|hello|hey|hii|good morning|good evening/)) {
+      return "Hi there! 👋 I'm Alex, your 2all.ai virtual assistant. How can I help you today?";
+    }
+    if (q.match(/how.*(work|does it|it work|this work)/)) {
+      return "2all.ai works in 3 simple steps:\n1️⃣ Paste a small code snippet onto your website\n2️⃣ Our AI scans your site for accessibility issues\n3️⃣ The widget auto-fixes them for your visitors — all in real time!\nWant me to show you how to install it?";
+    }
+    if (q.match(/pric|cost|how much|plan|subscri|pay|free trial|trial/)) {
+      return "We have plans starting from $49/month. You can start a 7-day free trial with no credit card required! 🎉\nVisit our Pricing page for full details, or I can connect you with our team for a custom quote.";
+    }
+    if (q.match(/install|snippet|widget|code|script|embed/)) {
+      return "Installing the 2all.ai widget is super easy! Just:\n1. Log in to your dashboard\n2. Go to 'Install Widget'\n3. Copy the script snippet and paste it in your website's <head>\nNeed help? Our team can walk you through it!";
+    }
+    if (q.match(/ada|wcag|compliance|legal|lawsuit|eaa|section 508/)) {
+      return "2all.ai helps your website comply with ADA, WCAG 2.1/2.2 AA, Section 508, and EAA standards. Our AI continuously scans and remediates accessibility barriers automatically. Want to learn more about compliance?";
+    }
+    if (q.match(/demo|book|schedule|call|meeting/)) {
+      return "I'd love to set up a demo for you! 📅\nYou can book a free demo at 2all.ai/demo — our team will walk you through the platform live and answer all your questions.";
+    }
+    if (q.match(/contact|email|phone|support|help|team|reach/)) {
+      return "You can reach our team at support@2all.ai or book a call via 2all.ai/demo. Our support team is available Monday–Friday, 9am–6pm IST. 💬";
+    }
+    if (q.match(/cancel|refund|money back|guarantee/)) {
+      return "We offer a 7-day free trial so you can test everything risk-free. If you're not happy after subscribing, reach out to support@2all.ai and we'll sort it out for you!";
+    }
+    if (q.match(/feature|what.*do|capability|can it|does it/)) {
+      return "2all.ai offers:\n✅ AI-powered accessibility widget\n✅ WCAG 2.2 AA auto-remediation\n✅ Accessibility scanning & reports\n✅ Screen reader optimisation\n✅ VPAT & audit documentation\n✅ Dashboard for all your websites\nWant details on any specific feature?";
+    }
+    if (q.match(/agency|partner|resell|white label|enterprise/)) {
+      return "We have special agency and enterprise plans with white-label options, bulk pricing, and a dedicated account manager. Visit 2all.ai/agency or contact us at partners@2all.ai!";
+    }
+    if (q.match(/non.?profit|charity|ngo|education|school/)) {
+      return "We offer special discounted plans for non-profits, schools, and NGOs! 🌟 Visit 2all.ai/non-profit or reach out to our team for special pricing.";
+    }
+    if (q.match(/thank|thanks|great|perfect|awesome|ok|okay|got it|understood/)) {
+      return "You're welcome! 😊 Is there anything else I can help you with?";
+    }
+
+    // Default fallback
+    return "Thanks for your message! Our team will get back to you shortly. In the meantime, you can explore our website or book a demo at 2all.ai/demo. 😊";
+  };
+
+  const handleSend = () => {
+    if (!message.trim()) return;
+    const userText = message.trim();
+    setMessages((prev) => [
+      ...prev,
+      { from: "user", text: userText },
+      { from: "alex", text: getAlexReply(userText) },
+    ]);
+    setMessage("");
+  };
+
   const handleQuickReply = (text: string) => {
     setQuickReplied(true);
     setMessages((prev) => [
       ...prev,
       { from: "user", text },
-      { from: "alex", text: "Thanks! Let me connect you with the right support. A team member will be with you shortly." },
+      { from: "alex", text: getAlexReply(text) },
     ]);
-  };
-
-  const handleSend = () => {
-    if (!message.trim()) return;
-    setMessages((prev) => [
-      ...prev,
-      { from: "user", text: message.trim() },
-      { from: "alex", text: "Thanks for your message! Our team will get back to you soon." },
-    ]);
-    setMessage("");
   };
 
   return (
@@ -147,7 +192,7 @@ export default function AlexChatWidget() {
                       ? "bg-[#f3f4f6]"
                       : "bg-[#f3f4f6] text-right"
                   }`}>
-                    {msg.text}
+                    <span style={{ whiteSpace: "pre-wrap" }}>{msg.text}</span>
                   </div>
                 </div>
 
