@@ -2,13 +2,14 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { X, Globe, Check } from "lucide-react";
+import { X, Globe, Check, Loader2 } from "lucide-react";
 
 export default function FreeTrialModal() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [website, setWebsite] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("trial") === "1") {
@@ -27,11 +28,41 @@ export default function FreeTrialModal() {
     window.history.replaceState({}, "", url.pathname);
   };
 
-  const handleStartTrial = (e: React.FormEvent) => {
+  const handleStartTrial = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!website.trim()) return;
-    setIsOpen(false);
-    router.push("/dashboard/install");
+    const cleanSite = website.trim();
+    if (!cleanSite) return;
+
+    try {
+      setSubmitting(true);
+      const targetUrl = cleanSite.startsWith("http") ? cleanSite : `https://${cleanSite}`;
+      const targetName = cleanSite.replace(/^(https?:\/\/)?(www\.)?/, "");
+
+      // Check if project already exists
+      const projectsRes = await fetch("/api/projects");
+      if (projectsRes.ok) {
+        const projects = await projectsRes.json();
+        const exists = projects.some((p: any) => {
+          const pName = p.url.replace(/^(https?:\/\/)?(www\.)?/, "").toLowerCase();
+          const tName = targetUrl.replace(/^(https?:\/\/)?(www\.)?/, "").toLowerCase();
+          return pName === tName;
+        });
+
+        if (!exists) {
+          await fetch("/api/projects", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: targetName, url: targetUrl }),
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Error creating project from modal:", err);
+    } finally {
+      setSubmitting(false);
+      setIsOpen(false);
+      router.push("/dashboard/install");
+    }
   };
 
   if (!isOpen) return null;
@@ -118,12 +149,22 @@ export default function FreeTrialModal() {
               </button>
               <button
                 type="submit"
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold transition-colors border-none cursor-pointer flex items-center justify-center gap-2"
+                disabled={submitting}
+                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-xs font-extrabold transition-colors border-none cursor-pointer flex items-center justify-center gap-2"
               >
-                Start free trial
-                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-[3] stroke-current fill-none">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Starting...
+                  </>
+                ) : (
+                  <>
+                    Start free trial
+                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-[3] stroke-current fill-none">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </>
+                )}
               </button>
             </div>
           </form>

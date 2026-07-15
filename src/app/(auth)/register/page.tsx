@@ -297,7 +297,12 @@ function RegisterForm() {
                   {/* Continue with Google */}
                   <button
                     type="button"
-                    onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+                    onClick={() => {
+                      const callback = website.trim() 
+                        ? `/dashboard?trial=1&site=${encodeURIComponent(website.trim())}` 
+                        : "/dashboard";
+                      signIn("google", { callbackUrl: callback });
+                    }}
                     className="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all text-sm cursor-pointer"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24">
