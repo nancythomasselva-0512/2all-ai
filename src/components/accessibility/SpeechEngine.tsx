@@ -25,6 +25,12 @@ export default function SpeechEngine() {
   const currentElementIndexRef = useRef<number>(-1);
   const originalHtmlRef = useRef<{ element: HTMLElement; html: string } | null>(null);
 
+  // Always-current ref so speech callbacks never use stale state (closure issue fix)
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
   // Initialize Speech Synthesis and load voices
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -155,7 +161,7 @@ export default function SpeechEngine() {
 
   // Helper: Smoothly scroll to element
   const scrollToElement = (el: HTMLElement) => {
-    if (state.autoScroll) {
+    if (stateRef.current.autoScroll) {
       el.scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -177,21 +183,21 @@ export default function SpeechEngine() {
     utteranceRef.current = utterance;
 
     // Apply voice settings
-    if (state.voice) {
-      const selectedVoice = voices.find((v) => v.name === state.voice);
+    if (stateRef.current.voice) {
+      const selectedVoice = voices.find((v) => v.name === stateRef.current.voice);
       if (selectedVoice) {
         utterance.voice = selectedVoice;
       }
     }
 
     // Set properties
-    utterance.rate = state.speed;
-    utterance.volume = state.volume / 100;
+    utterance.rate = stateRef.current.speed;
+    utterance.volume = stateRef.current.volume / 100;
     
     // Pitch configuration mapping
-    if (state.pitch === "low") {
+    if (stateRef.current.pitch === "low") {
       utterance.pitch = 0.5;
-    } else if (state.pitch === "high") {
+    } else if (stateRef.current.pitch === "high") {
       utterance.pitch = 1.5;
     } else {
       utterance.pitch = 1.0;
@@ -202,7 +208,7 @@ export default function SpeechEngine() {
     let selectionOverlay: HTMLElement | null = null;
     let wordSpans: HTMLElement[] = [];
 
-    if (mode === "selected" && (state.highlightWord || state.highlightSentence)) {
+    if (mode === "selected" && (stateRef.current.highlightWord || stateRef.current.highlightSentence)) {
       try {
         const sel = window.getSelection();
         if (sel && sel.rangeCount > 0) {
@@ -278,7 +284,7 @@ export default function SpeechEngine() {
             }
           });
 
-          if (bestSpan && state.highlightWord) {
+          if (bestSpan && stateRef.current.highlightWord) {
             (bestSpan as HTMLElement).style.background = "#2563eb";
             (bestSpan as HTMLElement).style.color = "white";
           }
@@ -424,15 +430,15 @@ export default function SpeechEngine() {
     utteranceRef.current = utterance;
 
     // Apply voice settings
-    if (state.voice) {
-      const selectedVoice = voices.find((v) => v.name === state.voice);
+    if (stateRef.current.voice) {
+      const selectedVoice = voices.find((v) => v.name === stateRef.current.voice);
       if (selectedVoice) utterance.voice = selectedVoice;
     }
-    utterance.rate = state.speed;
-    utterance.volume = state.volume / 100;
-    if (state.pitch === "low") {
+    utterance.rate = stateRef.current.speed;
+    utterance.volume = stateRef.current.volume / 100;
+    if (stateRef.current.pitch === "low") {
       utterance.pitch = 0.5;
-    } else if (state.pitch === "high") {
+    } else if (stateRef.current.pitch === "high") {
       utterance.pitch = 1.5;
     } else {
       utterance.pitch = 1.0;
@@ -469,17 +475,17 @@ export default function SpeechEngine() {
         });
 
         if (activeWordSpan) {
-          if (state.highlightWord) {
+          if (stateRef.current.highlightWord) {
             (activeWordSpan as HTMLElement).classList.add("bg-blue-600", "text-white", "px-0.5", "rounded");
           }
 
           // Highlight corresponding sentence containing this word
           const parentSentence = (activeWordSpan as HTMLElement).closest(".a11y-speak-sentence") as HTMLElement;
           if (parentSentence) {
-            if (state.highlightSentence) {
+            if (stateRef.current.highlightSentence) {
               parentSentence.classList.add("bg-blue-100/50", "rounded");
             }
-            if (state.autoScroll) {
+            if (stateRef.current.autoScroll) {
               parentSentence.scrollIntoView({
                 behavior: "smooth",
                 block: "center",
