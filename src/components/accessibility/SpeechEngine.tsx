@@ -511,14 +511,14 @@ export default function SpeechEngine() {
   };
 
   const pauseSpeech = () => {
-    if (synthRef.current && state.speechStatus === "playing") {
+    if (synthRef.current && stateRef.current.speechStatus === "playing") {
       synthRef.current.pause();
       updateSetting("speechStatus", "paused");
     }
   };
 
   const resumeSpeech = () => {
-    if (synthRef.current && state.speechStatus === "paused") {
+    if (synthRef.current && stateRef.current.speechStatus === "paused") {
       synthRef.current.resume();
       updateSetting("speechStatus", "playing");
     }
@@ -562,7 +562,7 @@ export default function SpeechEngine() {
         delete (window as any).__a11yStopReading;
       }
     };
-  }, [state.selectedText, state.voice, state.speed, state.pitch, state.volume, voices, state.highlightWord, state.highlightSentence, state.autoScroll]);
+  }, [state.selectedText, state.voice, state.speed, state.pitch, state.volume, state.speechStatus, voices, state.highlightWord, state.highlightSentence, state.autoScroll]);
 
   // Voice configurations helper to filter active language
   const getFilteredVoices = () => {
