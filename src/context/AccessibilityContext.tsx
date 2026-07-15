@@ -237,10 +237,54 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         newSettings = { fontSize: 150, isHighContrast: true, cursorSize: "huge", highlightHeadings: true };
         break;
       case "blind":
-        newSettings = { highlightLinks: true, highlightHeadings: true, textToSpeech: true };
+        // Screen Reader profile — optimises the page for screen reader users
+        // Highlights interactive elements, enables TTS, uses a readable font,
+        // and boosts letter/line spacing for braille display compatibility
+        newSettings = {
+          highlightLinks: true,
+          highlightHeadings: true,
+          highlightButtons: true,
+          highlightFocus: true,
+          textToSpeech: true,
+          fontFamily: "readable",
+          fontSize: 110,
+          lineHeight: 1.8,
+          letterSpacing: 0.5,
+        };
+        break;
+      case "cognitive":
+        // Cognitive Disability profile — simplifies the visual experience
+        // Uses a readable font, increases spacing, slows/stops animations,
+        // highlights navigation elements, and applies a reading ruler to guide focus
+        newSettings = {
+          fontFamily: "lexend",
+          fontSize: 115,
+          lineHeight: 1.9,
+          letterSpacing: 0.5,
+          wordSpacing: 0.1,
+          reduceMotion: true,
+          stopAnimations: true,
+          highlightLinks: true,
+          highlightButtons: true,
+          readingRuler: true,
+          textAlignment: "left",
+        };
         break;
       case "reading":
-        newSettings = { readingRuler: true, fontFamily: "lexend", letterSpacing: 0.5 };
+        // Reading Mode profile — maximises reading comfort
+        // Uses Lexend font (proven to improve reading speed), reading ruler for tracking,
+        // increased line & word spacing, and auto-reads selections on click
+        newSettings = {
+          readingRuler: true,
+          fontFamily: "lexend",
+          letterSpacing: 0.5,
+          wordSpacing: 0.15,
+          lineHeight: 1.9,
+          fontSize: 108,
+          textAlignment: "left",
+          highlightHeadings: true,
+          autoReadSelection: true,
+        };
         break;
       case "night":
         newSettings = { isDarkMode: true, isHighContrast: false, reduceMotion: true };
@@ -251,7 +295,6 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
       case "motor-impaired":
         newSettings = { cursorSize: "large", highlightFocus: true, highlightButtons: true, highlightLinks: true };
         break;
-      // other profiles...
     }
     
     setState(prev => ({ ...defaultState, ...newSettings, isPanelOpen: prev.isPanelOpen, activeProfile: profile }));
