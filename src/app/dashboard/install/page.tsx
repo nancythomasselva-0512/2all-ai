@@ -682,14 +682,38 @@ function InstallPageInner() {
   const initialTab = (searchParams.get("tab") as Tab) || "install";
   const [activeTab, setActiveTab] = useState<Tab>(initialTab);
 
+  // Real domain & API key dynamic data
+  const [domains, setDomains] = useState<any[]>([]);
+  const [selectedDomain, setSelectedDomain] = useState("yourwebsite.com");
+  const [loading, setLoading] = useState(true);
+
   // Sync if URL changes (e.g. when navigated from billing link)
   useEffect(() => {
     const t = searchParams.get("tab") as Tab;
     if (t) setActiveTab(t);
   }, [searchParams]);
 
-  // These would come from server in a real app; using mock here
-  const domain = "yourwebsite.com";
+  useEffect(() => {
+    async function fetchDomains() {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/domains");
+        if (res.ok) {
+          const data = await res.json();
+          setDomains(data);
+          if (data.length > 0) {
+            setSelectedDomain(data[0].domain);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch domains:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDomains();
+  }, []);
+
   const expDate = new Date();
   expDate.setDate(expDate.getDate() + 7);
   const formattedExpDate = expDate.toLocaleDateString("en-US", {
@@ -727,7 +751,7 @@ function InstallPageInner() {
 
             {/* Code Block & Tabs Component */}
             <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
-              <InstallCodeBlock domain={domain} />
+              <InstallCodeBlock domain={selectedDomain} onDomainChange={setSelectedDomain} />
             </div>
 
             {/* Need Help footer banner */}
@@ -744,7 +768,7 @@ function InstallPageInner() {
           </div>
         );
       case "statement":
-        return <AccessibilityStatementContent domain={domain} />;
+        return <AccessibilityStatementContent domain={selectedDomain} />;
       case "remediation":
         return <RemediationReportContent />;
       case "audit":
@@ -774,19 +798,30 @@ function InstallPageInner() {
         </Link>
 
         {/* Domain Selector Dropdown Card */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between cursor-pointer hover:border-slate-300 transition-colors">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100 text-blue-600">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between hover:border-slate-300 transition-colors">
+          <div className="flex items-center gap-2.5 w-full">
+            <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100 text-blue-600 shrink-0">
               <Globe className="w-4 h-4 stroke-[2.5]" />
             </div>
-            <div>
+            <div className="flex-1 min-w-0">
               <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Domain</span>
-              <span className="block text-xs font-black text-slate-800">{domain}</span>
+              {domains.length > 0 ? (
+                <select
+                  value={selectedDomain}
+                  onChange={(e) => setSelectedDomain(e.target.value)}
+                  className="block w-full bg-transparent text-xs font-black text-slate-800 focus:outline-none cursor-pointer border-none p-0 mt-0.5"
+                >
+                  {domains.map((d) => (
+                    <option key={d.id} value={d.domain}>
+                      {d.domain}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span className="block text-xs font-black text-slate-800">yourwebsite.com</span>
+              )}
             </div>
           </div>
-          <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-[2.5] stroke-slate-400 fill-none">
-            <path d="M19 9l-7 7-7-7" />
-          </svg>
         </div>
 
         {/* Sidebar Tab Nav */}

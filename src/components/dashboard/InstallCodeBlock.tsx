@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Check, Copy, Code, Sparkles, Maximize2, Minimize2, Globe, ShieldCheck, AlertCircle, RefreshCw, Eye, Palette, Layout, Sliders, Save, Send, ShieldAlert } from "lucide-react";
+import { Check, Copy, Code, Sparkles, Maximize2, Minimize2, Globe, ShieldCheck, AlertCircle, RefreshCw, Eye, Palette, Layout, Sliders, Save, Send, ShieldAlert, Loader2 } from "lucide-react";
 
 interface ApiKey {
   id: string;
   name: string;
   key: string;
   status: string;
+  domainId?: string | null;
+  domainName?: string | null;
 }
 
 interface Domain {
@@ -17,7 +19,13 @@ interface Domain {
   status: string;
 }
 
-export default function InstallCodeBlock({ domain }: { domain: string }) {
+export default function InstallCodeBlock({ 
+  domain, 
+  onDomainChange 
+}: { 
+  domain: string; 
+  onDomainChange?: (d: string) => void;
+}) {
   const [activeTab, setActiveTab] = useState<"install" | "customize" | "domain">("install");
   const [copied, setCopied] = useState(false);
   const [copiedToken, setCopiedToken] = useState(false);
@@ -29,6 +37,9 @@ export default function InstallCodeBlock({ domain }: { domain: string }) {
   const [domains, setDomains] = useState<Domain[]>([]);
   const [selectedDomain, setSelectedDomain] = useState<string>(domain || "example.com");
   const [newDomainInput, setNewDomainInput] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [generatingKey, setGeneratingKey] = useState(false);
 
   // Status & Verification State
   const [installStatus, setInstallStatus] = useState<"IDLE" | "CHECKING" | "VERIFIED" | "PENDING">("IDLE");
@@ -50,27 +61,53 @@ export default function InstallCodeBlock({ domain }: { domain: string }) {
     fetchInitialData();
   }, []);
 
+  useEffect(() => {
+    if (domain) {
+      setSelectedDomain(domain);
+      const matchingKey = apiKeys.find((k) => k.domainName === domain);
+      if (matchingKey) {
+        setSelectedKey(matchingKey.key);
+      } else {
+        setSelectedKey("");
+      }
+    }
+  }, [domain, apiKeys]);
+
   const fetchInitialData = async () => {
     try {
-      // Fetch API Keys
-      const keysRes = await fetch("/api/api-keys");
-      if (keysRes.ok) {
-        const keysData: ApiKey[] = await keysRes.json();
-        const activeKeys = keysData.filter((k) => k.status === "ACTIVE");
-        setApiKeys(activeKeys);
-        if (activeKeys.length > 0 && !selectedKey) {
-          setSelectedKey(activeKeys[0].key);
-        }
-      }
+      setLoading(true);
+      setError("");
 
       // Fetch Domains
       const domsRes = await fetch("/api/domains");
-      if (domsRes.ok) {
-        const domsData: Domain[] = await domsRes.json();
-        setDomains(domsData);
-        if (domsData.length > 0) {
-          setSelectedDomain(domsData[0].domain);
-        }
+      if (!domsRes.ok) throw new Error("Failed to load domains");
+      const domsData: Domain[] = await domsRes.json();
+      setDomains(domsData);
+      
+      let targetDomain = domain || "example.com";
+      if (domsData.length > 0) {
+        const defaultDomObj = domsData.find((d) => d.status === "VERIFIED") || domsData[0];
+        targetDomain = defaultDomObj.domain;
+        setSelectedDomain(targetDomain);
+        if (onDomainChange) onDomainChange(targetDomain);
+      } else {
+        setSelectedDomain(targetDomain);
+      }
+
+      // Fetch API Keys
+      const keysRes = await fetch("/api/api-keys");
+      if (!keysRes.ok) throw new Error("Failed to load API keys");
+      const keysData: ApiKey[] = await keysRes.json();
+      const activeKeys = keysData.filter((k) => k.status === "ACTIVE");
+      setApiKeys(activeKeys);
+
+      const matchingKey = activeKeys.find((k) => k.domainName === targetDomain);
+      if (matchingKey) {
+        setSelectedKey(matchingKey.key);
+      } else if (activeKeys.length > 0) {
+        setSelectedKey(activeKeys[0].key);
+      } else {
+        setSelectedKey("");
       }
 
       // Fetch Widget Config
@@ -81,8 +118,47 @@ export default function InstallCodeBlock({ domain }: { domain: string }) {
           setConfig((prev) => ({ ...prev, ...confData.draftConfig }));
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error("Error loading widget data:", e);
+      setError(e.message || "Failed to load installation details.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateKey = async () => {
+    try {
+      setGeneratingKey(true);
+      const domainObj = domains.find((d) => d.domain === selectedDomain);
+      const res = await fetch("/api/api-keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: `Widget Key for ${selectedDomain}`,
+          domainId: domainObj?.id || null,
+          domainName: selectedDomain,
+        }),
+      });
+
+      if (res.ok) {
+        const newKey = await res.json();
+        // Refresh API Keys
+        const keysRes = await fetch("/api/api-keys");
+        if (keysRes.ok) {
+          const keysData: ApiKey[] = await keysRes.json();
+          const activeKeys = keysData.filter((k) => k.status === "ACTIVE");
+          setApiKeys(activeKeys);
+          setSelectedKey(newKey.key);
+        }
+      } else {
+        const err = await res.json();
+        alert(err.message || "Failed to generate API Key");
+      }
+    } catch (err: any) {
+      console.error("Error generating API key:", err);
+      alert("Failed to generate API Key");
+    } finally {
+      setGeneratingKey(false);
     }
   };
 
@@ -188,10 +264,14 @@ export default function InstallCodeBlock({ domain }: { domain: string }) {
     }
   };
 
-  const currentKey = selectedKey || (apiKeys.length > 0 ? apiKeys[0].key : "2all_live_YOUR_API_KEY");
-  const originUrl = typeof window !== "undefined" ? window.location.origin : "https://cdn.2all.ai";
+  const currentKey = selectedKey || (apiKeys.length > 0 ? apiKeys[0].key : "");
+  const originUrl = typeof window !== "undefined" ? window.location.origin : "https://YOUR_PLATFORM_DOMAIN";
 
-  const codeSnippet = `<script src="${originUrl}/loader.js" data-api-key="${currentKey}" data-domain="${selectedDomain}" async></script>`;
+  const codeSnippet = `<script
+    src="${originUrl}/loader.js"
+    data-api-key="${currentKey || "2all_live_YOUR_API_KEY"}"
+    data-domain="${selectedDomain}">
+</script>`;
 
   const handleCopy = async () => {
     try {
@@ -202,6 +282,30 @@ export default function InstallCodeBlock({ domain }: { domain: string }) {
       console.error("Failed to copy code:", err);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-12 flex flex-col items-center justify-center gap-3">
+        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider font-sans">Loading installation dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-12 flex flex-col items-center justify-center gap-3 text-red-500 text-center">
+        <ShieldAlert className="w-8 h-8" />
+        <p className="text-sm font-bold font-sans">{error}</p>
+        <button
+          onClick={fetchInitialData}
+          className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 shadow-sm cursor-pointer font-sans"
+        >
+          Retry Load
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 select-none bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
@@ -246,21 +350,37 @@ export default function InstallCodeBlock({ domain }: { domain: string }) {
                   🔑
                 </div>
                 <div>
-                  <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Select API Key</label>
-                  {apiKeys.length > 0 ? (
+                  <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider font-sans">Select API Key</label>
+                  {selectedKey ? (
                     <select
                       value={selectedKey}
                       onChange={(e) => setSelectedKey(e.target.value)}
-                      className="bg-transparent text-slate-800 text-xs font-bold focus:outline-none cursor-pointer mt-0.5 border-none"
+                      className="bg-transparent text-slate-800 text-xs font-bold focus:outline-none cursor-pointer mt-0.5 border-none font-sans"
                     >
                       {apiKeys.map((k) => (
                         <option key={k.id} value={k.key}>
-                          {k.name} ({k.key.slice(0, 15)}...)
+                          {k.name} ({k.key.substring(0, 15)}...)
                         </option>
                       ))}
                     </select>
                   ) : (
-                    <span className="text-xs font-bold text-amber-600">No active keys. Create one in API Keys tab.</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[11px] font-semibold text-amber-600 font-sans">No active key.</span>
+                      <button
+                        onClick={handleGenerateKey}
+                        disabled={generatingKey}
+                        className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-[10px] font-black rounded-lg transition-all cursor-pointer border-none uppercase tracking-wider font-sans flex items-center gap-1 shadow-sm"
+                      >
+                        {generatingKey ? (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          "Generate API Key"
+                        )}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -271,13 +391,33 @@ export default function InstallCodeBlock({ domain }: { domain: string }) {
                 </div>
                 <div>
                   <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Target Domain</label>
-                  <input
-                    type="text"
-                    value={selectedDomain}
-                    onChange={(e) => setSelectedDomain(e.target.value)}
-                    placeholder="example.com"
-                    className="bg-transparent text-slate-800 text-xs font-bold focus:outline-none w-36 border-none mt-0.5"
-                  />
+                  {domains.length > 0 ? (
+                    <select
+                      value={selectedDomain}
+                      onChange={(e) => {
+                        setSelectedDomain(e.target.value);
+                        if (onDomainChange) onDomainChange(e.target.value);
+                      }}
+                      className="bg-transparent text-slate-800 text-xs font-bold focus:outline-none cursor-pointer mt-0.5 border-none"
+                    >
+                      {domains.map((d) => (
+                        <option key={d.id} value={d.domain}>
+                          {d.domain}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={selectedDomain}
+                      onChange={(e) => {
+                        setSelectedDomain(e.target.value);
+                        if (onDomainChange) onDomainChange(e.target.value);
+                      }}
+                      placeholder="example.com"
+                      className="bg-transparent text-slate-800 text-xs font-bold focus:outline-none w-36 border-none mt-0.5"
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -297,10 +437,10 @@ export default function InstallCodeBlock({ domain }: { domain: string }) {
               </div>
 
               <div className="bg-[#0f172a] border border-slate-800 rounded-2xl p-5 space-y-4 shadow-lg">
-                <div className="flex items-center justify-between gap-4">
-                  <code className="font-mono text-xs text-blue-300 truncate flex-1 text-left select-all">
+                <div className="flex items-center justify-between gap-4 overflow-x-auto">
+                  <pre className="font-mono text-xs text-blue-300 text-left select-all whitespace-pre">
                     {codeSnippet}
-                  </code>
+                  </pre>
                 </div>
 
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
