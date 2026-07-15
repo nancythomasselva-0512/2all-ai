@@ -182,16 +182,6 @@ export default function SpeechEngine() {
       if (selectedVoice) {
         utterance.voice = selectedVoice;
       }
-    } else {
-      // Auto voice selection by language setting
-      let langCode = "";
-      if (state.activeProfile !== "none" && !langCode) {
-        // check if profile has custom rules
-      }
-      // Explicit language setting logic
-      if (state.fontFamily === "dyslexic") {
-        // checks
-      }
     }
 
     // Set properties
@@ -207,18 +197,102 @@ export default function SpeechEngine() {
       utterance.pitch = 1.0;
     }
 
-    // Set utterance boundaries highlighting
-    // For selected text, we highlight elements if they contain the words or use browser standard selections.
-    // For page mode, we highlight on boundaries using elements indexes.
+    // For "selected" mode: build a temporary overlay element to highlight words/sentences
+    // We inject a floating highlight box near the browser selection
+    let selectionOverlay: HTMLElement | null = null;
+    let wordSpans: HTMLElement[] = [];
+
+    if (mode === "selected" && (state.highlightWord || state.highlightSentence)) {
+      try {
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0) {
+          const range = sel.getRangeAt(0);
+          const rect = range.getBoundingClientRect();
+
+          // Build word-wrapped overlay
+          selectionOverlay = document.createElement("div");
+          selectionOverlay.id = "a11y-selection-overlay";
+          selectionOverlay.style.cssText = `
+            position: fixed;
+            top: ${rect.top - 60}px;
+            left: ${Math.max(8, rect.left)}px;
+            max-width: ${Math.min(600, window.innerWidth - 16)}px;
+            background: rgba(15,23,42,0.95);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.6;
+            z-index: 2147483646;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            pointer-events: none;
+            border: 1px solid rgba(96,165,250,0.4);
+          `;
+
+          // Split into words preserving whitespace
+          const words = textToRead.split(/(\s+)/);
+          let charOffset = 0;
+          words.forEach((w) => {
+            if (w.trim()) {
+              const span = document.createElement("span");
+              span.textContent = w;
+              span.setAttribute("data-offset", String(charOffset));
+              span.style.cssText = "transition: background 0.1s ease; border-radius: 3px; padding: 0 2px;";
+              selectionOverlay!.appendChild(span);
+              wordSpans.push(span);
+            } else {
+              selectionOverlay!.appendChild(document.createTextNode(w));
+            }
+            charOffset += w.length;
+          });
+
+          document.body.appendChild(selectionOverlay);
+        }
+      } catch (e) {
+        // Skip overlay if selection range fails
+      }
+    }
+
+    // Boundary handler — highlights the current word/sentence during reading
     utterance.onboundary = (event) => {
-      if (event.name === "word" && (state.highlightWord || state.highlightSentence)) {
-        // Highlighting logic goes here
+      if (event.name === "word") {
+        const charIdx = event.charIndex;
+
+        if (mode === "selected" && wordSpans.length > 0) {
+          // Reset all word styles
+          wordSpans.forEach((ws) => {
+            ws.style.background = "transparent";
+            ws.style.color = "white";
+          });
+
+          // Find nearest word span to charIndex
+          let bestSpan: HTMLElement | null = null;
+          let minDiff = Infinity;
+          wordSpans.forEach((ws) => {
+            const off = parseInt(ws.getAttribute("data-offset") || "0");
+            const diff = Math.abs(off - charIdx);
+            if (diff < minDiff) {
+              minDiff = diff;
+              bestSpan = ws;
+            }
+          });
+
+          if (bestSpan && state.highlightWord) {
+            (bestSpan as HTMLElement).style.background = "#2563eb";
+            (bestSpan as HTMLElement).style.color = "white";
+          }
+        }
       }
     };
 
     utterance.onend = () => {
+      // Remove selection overlay
+      if (selectionOverlay) {
+        selectionOverlay.remove();
+        selectionOverlay = null;
+      }
       if (mode === "page") {
-        // Read next element if in page mode
         readNextPageElement();
       } else {
         stopSpeech();
@@ -226,6 +300,10 @@ export default function SpeechEngine() {
     };
 
     utterance.onerror = () => {
+      if (selectionOverlay) {
+        selectionOverlay.remove();
+        selectionOverlay = null;
+      }
       stopSpeech();
     };
 
