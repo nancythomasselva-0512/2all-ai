@@ -6,7 +6,7 @@ import { useAccessibility } from "@/context/AccessibilityContext";
 import { 
   Type, AlignLeft, Search, Link, MousePointer2,
   Video, Maximize, Target, Hash, Expand, BetweenHorizonalEnd,
-  MonitorSpeaker, ShieldAlert
+  MonitorSpeaker, ShieldAlert, Play, Pause, Square, Settings, BookOpen
 } from "lucide-react";
 
 const stagger = {
@@ -65,6 +65,104 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
             { value: "center", label: "Center" },
             { value: "justify", label: "Justify" },
           ]
+        }
+      ]
+    },
+    {
+      title: "🔊 Speech & Reading",
+      items: [
+        {
+          id: "readSelectedText",
+          label: "Read Selected Text",
+          type: "action",
+          onClick: () => {
+            if (typeof window !== "undefined" && (window as any).__a11yStartSelectedReading) {
+              (window as any).__a11yStartSelectedReading();
+            }
+          },
+          icon: <Play className="w-5 h-5 text-blue-600" />
+        },
+        {
+          id: "autoReadSelection",
+          label: "Auto Read Selection",
+          type: "toggle",
+          value: state.autoReadSelection,
+          icon: <MousePointer2 className="w-5 h-5" />
+        },
+        {
+          id: "readEntirePage",
+          label: "Read Entire Page",
+          type: "action",
+          onClick: () => {
+            if (typeof window !== "undefined" && (window as any).__a11yStartPageReading) {
+              (window as any).__a11yStartPageReading();
+            }
+          },
+          icon: <BookOpen className="w-5 h-5 text-blue-600" />
+        },
+        {
+          id: "pauseReading",
+          label: "Pause Reading",
+          type: "action",
+          onClick: () => {
+            if (typeof window !== "undefined" && (window as any).__a11yPauseReading) {
+              (window as any).__a11yPauseReading();
+            }
+          },
+          icon: <Pause className="w-5 h-5 text-amber-600" />,
+          disabled: state.speechStatus !== "playing"
+        },
+        {
+          id: "resumeReading",
+          label: "Resume Reading",
+          type: "action",
+          onClick: () => {
+            if (typeof window !== "undefined" && (window as any).__a11yResumeReading) {
+              (window as any).__a11yResumeReading();
+            }
+          },
+          icon: <Play className="w-5 h-5 text-emerald-600" />,
+          disabled: state.speechStatus !== "paused"
+        },
+        {
+          id: "stopReading",
+          label: "Stop Reading",
+          type: "action",
+          onClick: () => {
+            if (typeof window !== "undefined" && (window as any).__a11yStopReading) {
+              (window as any).__a11yStopReading();
+            }
+          },
+          icon: <Square className="w-5 h-5 text-rose-600" />,
+          disabled: state.speechStatus === "stopped"
+        },
+        {
+          id: "highlightWord",
+          label: "Highlight Word",
+          type: "toggle",
+          value: state.highlightWord,
+          icon: <Target className="w-5 h-5" />
+        },
+        {
+          id: "highlightSentence",
+          label: "Highlight Sentence",
+          type: "toggle",
+          value: state.highlightSentence,
+          icon: <Hash className="w-5 h-5" />
+        },
+        {
+          id: "autoScroll",
+          label: "Auto Scroll",
+          type: "toggle",
+          value: state.autoScroll,
+          icon: <Expand className="w-5 h-5" />
+        },
+        {
+          id: "voiceSettings",
+          label: "Voice Settings",
+          type: "action",
+          onClick: () => updateSetting("isVoiceSettingsOpen", true),
+          icon: <Settings className="w-5 h-5 text-slate-600" />
         }
       ]
     },
@@ -128,6 +226,20 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
           <div className="grid grid-cols-2 gap-3">
             {group.items.map((item, iIdx) => {
               
+              if (item.type === "action") {
+                return (
+                  <button
+                    key={item.id}
+                    onClick={item.onClick}
+                    disabled={item.disabled}
+                    className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all duration-300 bg-slate-50 border-slate-200 text-slate-700 hover:border-blue-300 active:bg-slate-100 ${item.disabled ? 'opacity-40 cursor-not-allowed hover:border-slate-200' : 'cursor-pointer'}`}
+                  >
+                    {item.icon}
+                    <span className="text-[11px] font-bold text-center leading-tight">{item.label}</span>
+                  </button>
+                );
+              }
+
               if (item.type === "toggle") {
                 const isActive = item.value as boolean;
                 return (

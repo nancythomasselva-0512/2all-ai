@@ -81,6 +81,10 @@ export default function NonProfitPage() {
     }
   ];
 
+  const toggleFaq = (idx: number) => {
+    setActiveFaq(activeFaq === idx ? null : idx);
+  };
+
   const handleScan = (e: React.FormEvent) => {
     e.preventDefault();
     if (!scanUrl) return;

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import SpeechEngine from "@/components/accessibility/SpeechEngine";
 
 export type ColorBlindMode = "none" | "protanopia" | "deuteranopia" | "tritanopia" | "achromatopsia";
 export type CursorSize = "normal" | "large" | "huge";
@@ -36,6 +37,19 @@ interface AccessibilityState {
   textToSpeech: boolean;
   textMagnifier: boolean;
   textAlignment: TextAlignment;
+  // Speech & Reading
+  speechStatus: "stopped" | "playing" | "paused";
+  selectedText: string;
+  voice: string;
+  speed: number;
+  pitch: "low" | "normal" | "high";
+  volume: number;
+  highlightWord: boolean;
+  highlightSentence: boolean;
+  autoScroll: boolean;
+  autoReadSelection: boolean;
+  readingMode: "selected" | "page" | "none";
+  isVoiceSettingsOpen: boolean;
 }
 
 interface AccessibilityContextProps {
@@ -73,37 +87,25 @@ const defaultState: AccessibilityState = {
   highlightFocus: false,
   textToSpeech: false,
   textMagnifier: false,
-  textAlignment: "default"
+  textAlignment: "default",
+  // Speech & Reading Defaults
+  speechStatus: "stopped",
+  selectedText: "",
+  voice: "",
+  speed: 1,
+  pitch: "normal",
+  volume: 100,
+  highlightWord: true,
+  highlightSentence: true,
+  autoScroll: true,
+  autoReadSelection: false,
+  readingMode: "none",
+  isVoiceSettingsOpen: false
 };
 
 const AccessibilityContext = createContext<AccessibilityContextProps | undefined>(undefined);
 
 export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<AccessibilityState>(defaultState);
-  const [mounted, setMounted] = useState(false);
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("2all_accessibility");
-      if (saved) {
-        setState({ ...defaultState, ...JSON.parse(saved), isPanelOpen: false }); // keep closed on load
-      }
-    } catch (e) {
-      console.error("Failed to load accessibility settings");
-    }
-    setMounted(true);
-  }, []);
-
-  // Save to localStorage when state changes (except isPanelOpen)
-  useEffect(() => {
-    if (mounted) {
-      const { isPanelOpen, ...stateToSave } = state;
-      localStorage.setItem("2all_accessibility", JSON.stringify(stateToSave));
-      applyDOMChanges(state);
-    }
-  }, [state, mounted]);
-
   const applyDOMChanges = (s: AccessibilityState) => {
     const html = document.documentElement;
     const body = document.body;
@@ -184,6 +186,39 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const [state, setState] = useState<AccessibilityState>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("2all_accessibility");
+        if (saved) {
+          return { ...defaultState, ...JSON.parse(saved), isPanelOpen: false };
+        }
+      } catch {
+        console.error("Failed to load accessibility settings");
+      }
+    }
+    return defaultState;
+  });
+  const [mounted, setMounted] = useState(false);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Save to localStorage when state changes (except isPanelOpen)
+  useEffect(() => {
+    if (mounted) {
+      const stateToSave = { ...state };
+      delete (stateToSave as any).isPanelOpen;
+      localStorage.setItem("2all_accessibility", JSON.stringify(stateToSave));
+      applyDOMChanges(state);
+    }
+  }, [state, mounted]);
+
   const togglePanel = () => setState(prev => ({ ...prev, isPanelOpen: !prev.isPanelOpen }));
   
   const resetSettings = () => setState(defaultState);
@@ -229,6 +264,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <AccessibilityContext.Provider value={{ state, setState, togglePanel, resetSettings, applyProfile, updateSetting }}>
       {children}
+      {mounted && <SpeechEngine />}
     </AccessibilityContext.Provider>
   );
 };
