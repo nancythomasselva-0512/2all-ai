@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/db";
+import { sendInitialWelcomeEmail, sendWelcomeEmail } from "@/lib/mail";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -64,6 +65,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const email = user.email.trim().toLowerCase();
         
+        // Check if user is new before upserting
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        const isNewUser = !existingUser;
+        
         // Use upsert to prevent race conditions during first sign-in
         const dbUser = await prisma.user.upsert({
           where: { email },
@@ -107,6 +112,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             session_state: account.session_state as string,
           },
         });
+
+        // Send welcome and script emails if this is a brand new user
+        if (isNewUser) {
+          try {
+            await sendInitialWelcomeEmail(email, dbUser.name || "Customer");
+            await sendWelcomeEmail(email, dbUser.name || "Customer", "");
+          } catch (e) {
+            console.error("Failed to send welcome emails on Google signup", e);
+          }
+        }
 
         // Attach database user attributes to NextAuth session object
         user.id = dbUser.id;
