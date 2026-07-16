@@ -13,11 +13,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       authorization: {
         params: {
           redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-          prompt: "select_account",
+          prompt: "consent select_account",
           access_type: "offline",
           response_type: "code",
         },
       },
+      checks: ['none'],
     }),
     CredentialsProvider({
       name: "credentials",
