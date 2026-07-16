@@ -195,10 +195,8 @@ export async function sendInitialWelcomeEmail(toEmail: string, userName: string)
       <h1>Welcome to 2all.ai!</h1>
       <a href="${dashboardUrl}" class="btn-white">START FREE TRIAL</a>
       
-      <div class="hero-graphic">
-        <div style="position: absolute; top: 20px; left: 20px; width: 60%; height: 20px; background: rgba(255,255,255,0.2); border-radius: 4px;"></div>
-        <div style="position: absolute; top: 55px; left: 20px; width: 30%; height: 60px; background: rgba(255,255,255,0.15); border-radius: 8px;"></div>
-        <div style="position: absolute; top: 55px; left: 35%; width: 55%; height: 60px; background: rgba(255,255,255,0.1); border-radius: 8px;"></div>
+      <div style="margin-top: 30px;">
+        <img src="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/images/email-hero.png" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-radius: 12px; display: block; border: 1px solid rgba(255,255,255,0.2);" />
       </div>
     </div>
 
@@ -376,11 +374,8 @@ export async function sendWelcomeEmail(toEmail: string, userName: string, websit
       <h1>Welcome to 2all.ai</h1>
       <a href="${dashboardUrl}" class="btn-primary">GO TO YOUR ACCOUNT</a>
       
-      <div class="hero-graphic">
-        <!-- Decorative elements to mimic dashboard graphic -->
-        <div style="position: absolute; top: 20px; left: 20px; width: 60%; height: 20px; background: rgba(255,255,255,0.2); border-radius: 4px;"></div>
-        <div style="position: absolute; top: 55px; left: 20px; width: 40%; height: 60px; background: rgba(255,255,255,0.15); border-radius: 8px;"></div>
-        <div style="position: absolute; top: 55px; left: 45%; width: 50%; height: 60px; background: rgba(255,255,255,0.1); border-radius: 8px;"></div>
+      <div style="margin-top: 30px;">
+        <img src="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/images/email-hero.png" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 75, 255, 0.3); display: block;" />
       </div>
     </div>
 
