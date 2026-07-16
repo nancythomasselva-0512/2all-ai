@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>2all.ai Platform Workflow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #004bff;
+      --primary-dark: #003edd;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --emerald-600: #059669;
+      --emerald-50: #ecfdf5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--slate-800);
+      background-color: var(--slate-50);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 30px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+      border-radius: 16px;
+    }
+
+    header {
+      border-bottom: 2px solid var(--slate-100);
+      padding-bottom: 30px;
+      margin-bottom: 35px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-container h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--slate-900);
+      letter-spacing: -0.5px;
+    }
+
+    .logo-container h1 span {
+      color: var(--primary);
+    }
+
+    .doc-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      background-color: rgba(0, 75, 255, 0.06);
+      padding: 6px 14px;
+      border-radius: 50px;
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-cols: 2fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .intro-text h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin-bottom: 12px;
+    }
+
+    .intro-text p {
+      font-size: 14px;
+      color: var(--slate-700);
+      line-height: 1.6;
+    }
+
+    .tech-stack-card {
+      background-color: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .tech-stack-card h3 {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--slate-900);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .tech-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tech-tag {
+      font-size: 11px;
+      font-weight: 600;
+      background-color: #ffffff;
+      border: 1px solid var(--slate-200);
+      padding: 4px 8px;
+      border-radius: 6px;
+      color: var(--slate-700);
+    }
+
+    .section-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--slate-900);
+      border-left: 4px solid var(--primary);
+      padding-left: 12px;
+      margin: 35px 0 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-number {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--slate-700);
+      background-color: var(--slate-100);
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-right: 8px;
+    }
+
+    .workflow-card {
+      background-color: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .step-list {
+      list-style-type: none;
+    }
+
+    .step-item {
+      position: relative;
+      padding-left: 30px;
+      padding-bottom: 24px;
+    }
+
+    .step-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .step-item::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 24px;
+      bottom: 0;
+      width: 2px;
+      background-color: var(--slate-200);
+    }
+
+    .step-item:last-child::before {
+      display: none;
+    }
+
+    .step-badge {
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50px;
+      background-color: var(--primary);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 6px;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--slate-700);
+      line-height: 1.5;
+    }
+
+    .step-file {
+      display: inline-block;
+      margin-top: 6px;
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--primary);
+      background-color: rgba(0, 75, 255, 0.05);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Diagram Styles */
+    .flow-diagram {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 25px;
+      margin: 20px 0;
+    }
+
+    .diagram-node {
+      background-color: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 12px;
+      width: 135px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .diagram-node-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .diagram-node-desc {
+      font-size: 9px;
+      color: var(--slate-700);
+    }
+
+    .diagram-arrow {
+      color: var(--slate-700);
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .highlight-box {
+      background-color: var(--emerald-50);
+      border: 1px dashed var(--emerald-600);
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .highlight-box h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--emerald-600);
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .highlight-box p {
+      font-size: 12px;
+      color: var(--slate-700);
+      line-height: 1.5;
+    }
+
+    /* Footer styling */
+    footer {
+      border-top: 1px solid var(--slate-200);
+      padding-top: 20px;
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--slate-700);
+    }
+
+    /* Print settings */
+    @media print {
+      body {
+        background-color: #ffffff;
+        font-size: 12px;
+      }
+      .container {
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      @page {
+        size: A4;
+        margin: 1.6cm 1.4cm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <h1>2all<span>.ai</span></h1>
+      </div>
+      <div class="doc-title">System Workflow Guide</div>
+    </header>
+
+    <!-- Page 1 Section -->
+    <div class="intro-grid">
+      <div class="intro-text">
+        <h2>Technical Architecture & Workflows</h2>
+        <p>
+          2all.ai is an enterprise-grade web accessibility platform built on Next.js. It features static and dynamic WCAG 2.2 evaluation engines, client verification procedures, customized user setups, and an interactive visitor interface injected directly onto customer websites.
+        </p>
+      </div>
+      <div class="tech-stack-card">
+        <h3>Core Stack</h3>
+        <div class="tech-tag-list">
+          <div class="tech-tag">Next.js 16 (App Router)</div>
+          <div class="tech-tag">Prisma Client</div>
+          <div class="tech-tag">SQLite / DB</div>
+          <div class="tech-tag">Cheerio Parser</div>
+          <div class="tech-tag">NextAuth (Beta)</div>
+          <div class="tech-tag">Tailwind & Vanilla CSS</div>
+          <div class="tech-tag">TypeScript</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="section-title">
+      <div><span class="section-number">01</span>Onboarding & Domain Verification</div>
+    </div>
+    <div class="workflow-card">
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-badge">1</div>
+          <div class="step-title">Account Registration & Login</div>
+          <div class="step-desc">Users sign up or sign in to verify credentials. Password hashing is enforced via bcryptjs.</div>
+          <div class="step-file">src/app/(auth)/register/page.tsx</div>
+        </li>
+        <li class="step-item">
+          <div class="step-badge">2</div>
+          <div class="step-title">Domain Registration</div>
+          <div class="step-desc">The user registers their website. The backend normalizes URLs, checks for duplicates, generates a verification token, and stores the domain state.</div>
+          <div class="step-file">src/app/api/domains/route.ts</div>
+        </li>
+        <li class="step-item">
+          <div class="step-badge">3</div>
+          <div class="step-title">Verification Execution</div>
+          <div class="step-desc">The user selects a validation route (HTML upload, DNS TXT, or Meta tags). The backend fetches the live domain and verifies if the token exists, updating status to ACTIVE.</div>
+          <div class="step-file">src/app/api/domains/verify/route.ts</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Page Break -->
+    <div class="page-break"></div>
+
+    <!-- Section 2 -->
+    <div class="section-title">
+      <div><span class="section-number">02</span>Accessibility Scanner Workflow</div>
+    </div>
+    
+    <div class="flow-diagram">
+      <div class="diagram-node">
+        <div class="diagram-node-title">1. Trigger API</div>
+        <div class="diagram-node-desc">POST /api/scan with project ID</div>
+      </div>
+      <div class="diagram-arrow">&rarr;</div>
+      <div class="diagram-node">
+        <div class="diagram-node-title">2. Crawl & Fetch</div>
+        <div class="diagram-node-desc">Get raw website HTML response</div>
+      </div>
+      <div class="diagram-arrow">&rarr;</div>
+      <div class="diagram-node">
+        <div class="diagram-node-title">3. Parse & Check</div>
+        <div class="diagram-node-desc">Cheerio evaluates WCAG criteria</div>
+      </div>
+      <div class="diagram-arrow">&rarr;</div>
+      <div class="diagram-node">
+        <div class="diagram-node-title">4. Save & Score</div>
+        <div class="diagram-node-desc">Calculate score, save issues to DB</div>
+      </div>
+    </div>
+
+    <div class="workflow-card">
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-badge">1</div>
+          <div class="step-title">Crawl & Fetch Execution</div>
+          <div class="step-desc">The target URL is requested in the background. A database Scan is logged as PENDING.</div>
+          <div class="step-file">src/lib/scanner/crawler.ts</div>
+        </li>
+        <li class="step-item">
+          <div class="step-badge">2</div>
+          <div class="step-title">WCAG Rule Evaluation</div>
+          <div class="step-desc">HTML parser examines nodes against WCAG criteria: missing image alt tags (1.1.1), empty form input labels (1.3.1), poor contrast (1.4.3), and missing skip links (2.4.1).</div>
+          <div class="step-file">src/lib/scanner/rules.ts</div>
+        </li>
+        <li class="step-item">
+          <div class="step-badge">3</div>
+          <div class="step-title">Reporting & UI Suggestions</div>
+          <div class="step-desc">Scan metrics are calculated. Identified issues are saved in DB with severities and specific suggestions, allowing users to view them instantly in their dashboard.</div>
+          <div class="step-file">src/components/dashboard/IssueList.tsx</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="section-title">
+      <div><span class="section-number">03</span>Widget Embedding & Loading Flow</div>
+    </div>
+    <div class="workflow-card">
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-badge">1</div>
+          <div class="step-title">Snippet Placement</div>
+          <div class="step-desc">Customers inject a universal HTML script tag pointing to loader.js, supplying their data-api-key.</div>
+          <div class="step-file">src/components/dashboard/InstallCodeBlock.tsx</div>
+        </li>
+        <li class="step-item">
+          <div class="step-badge">2</div>
+          <div class="step-title">Widget Bootstrapping</div>
+          <div class="step-desc">On host load, loader.js requests a validation handshake from the server. The api verifies API keys, active domain configuration, user plan limits, and logs usage stats.</div>
+          <div class="step-file">src/app/api/widget/bootstrap/route.ts</div>
+        </li>
+        <li class="step-item">
+          <div class="step-badge">3</div>
+          <div class="step-title">Asset Loading</div>
+          <div class="step-desc">Once validated, loader.js dynamically injects widget-core.js and the customized settings (colors, options, layout position) onto the host website.</div>
+          <div class="step-file">public/loader.js</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Page Break -->
+    <div class="page-break"></div>
+
+    <!-- Section 4 -->
+    <div class="section-title">
+      <div><span class="section-number">04</span>End-User Accessibility Runtime adjustments</div>
+    </div>
+    <div class="workflow-card">
+      <p style="font-size: 13px; color: var(--slate-700); margin-bottom: 20px; line-height: 1.6;">
+        The widget loads client-side as a floating button. When clicked, it renders an Accessibility Panel built on React which uses state parameters from a global context provider to apply runtime styling and logic directly to the host webpage.
+      </p>
+      
+      <ul class="step-list">
+        <li class="step-item">
+          <div class="step-badge">1</div>
+          <div class="step-title">State & Settings Storage</div>
+          <div class="step-desc">Adjustments are managed in a central state provider, immediately synced, and saved locally inside the browser's localStorage.</div>
+          <div class="step-file">src/context/AccessibilityContext.tsx</div>
+        </li>
+        <li class="step-item">
+          <div class="step-badge">2</div>
+          <div class="step-title">On-demand UI Alteration</div>
+          <div class="step-desc">CSS variables are applied to scale typography sizes, increase line/letter spacing, override elements with high contrast, or apply visual filters (Protanopia / Monochromatic / Deuteranopia).</div>
+          <div class="step-file">src/components/accessibility/AccessibilityPanel.tsx</div>
+        </li>
+        <li class="step-item">
+          <div class="step-badge">3</div>
+          <div class="step-title">Advanced Assistive Logic</div>
+          <div class="step-desc">
+            Enables active utilities: 
+            <strong>Text Magnifier</strong> (zooms hovered characters), 
+            <strong>Text-to-Speech</strong> (uses speech synthesis on-click), and 
+            <strong>Read Aids</strong> (adds highlighted guide rule or mask).
+          </div>
+          <div class="step-file">src/components/accessibility/AccessibilityWidget.tsx</div>
+        </li>
+      </ul>
+
+      <div class="highlight-box">
+        <h4>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: var(--emerald-600);"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          Tailored Visual Profiles
+        </h4>
+        <p>
+          Profiles (Dyslexia, Seizure Safe, Night Mode, Motor-Impaired, ADHD-friendly) bundle specific configurations together for a simplified, one-click accessibility fix that instantly adapts the DOM state to user preferences.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div>2all.ai Technical Documentation &bull; System Workflow Manual</div>
+      <div>Confidential &copy; 2026</div>
+    </footer>
+  </div>
+
+</body>
+</html>

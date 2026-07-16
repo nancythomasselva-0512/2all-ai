@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>2all.ai Comprehensive Platform Workflow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #004bff;
+      --primary-dark: #003edd;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --emerald-600: #059669;
+      --emerald-50: #ecfdf5;
+      --indigo-600: #4f46e5;
+      --indigo-50: #eef2ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--slate-800);
+      background-color: var(--slate-50);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 40px rgba(0, 0, 0, 0.04);
+      border-radius: 20px;
+    }
+
+    header {
+      border-bottom: 2px solid var(--slate-100);
+      padding-bottom: 25px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-container h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--slate-900);
+      letter-spacing: -0.8px;
+    }
+
+    .logo-container h1 span {
+      color: var(--primary);
+    }
+
+    .doc-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      background-color: rgba(0, 75, 255, 0.06);
+      padding: 6px 14px;
+      border-radius: 50px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-cols: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 35px;
+      background-color: var(--slate-50);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--slate-200);
+    }
+
+    .meta-item {
+      font-size: 13px;
+    }
+
+    .meta-label {
+      font-weight: 800;
+      color: var(--slate-900);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      color: var(--slate-700);
+    }
+
+    .section-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--slate-900);
+      border-left: 5px solid var(--primary);
+      padding-left: 14px;
+      margin: 40px 0 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-number {
+      font-size: 12px;
+      font-weight: 800;
+      color: #ffffff;
+      background-color: var(--primary);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .flow-journey-card {
+      background-color: var(--indigo-50);
+      border: 1px solid rgba(79, 70, 229, 0.2);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 25px;
+    }
+
+    .flow-journey-card h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--indigo-600);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .journey-steps {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .journey-step {
+      background-color: #ffffff;
+      border: 1px solid var(--slate-200);
+      padding: 6px 12px;
+      border-radius: 8px;
+      color: var(--slate-800);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .journey-arrow {
+      color: var(--slate-700);
+      font-weight: bold;
+    }
+
+    .pages-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+
+    .pages-table th {
+      background-color: var(--slate-800);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: left;
+      padding: 12px 16px;
+    }
+
+    .pages-table th:first-child {
+      border-top-left-radius: 8px;
+    }
+
+    .pages-table th:last-child {
+      border-top-right-radius: 8px;
+    }
+
+    .pages-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--slate-200);
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    .pages-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pages-table tr:nth-child(even) {
+      background-color: var(--slate-50);
+    }
+
+    .page-route {
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .page-name {
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 4px;
+    }
+
+    .page-desc {
+      color: var(--slate-700);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .page-file {
+      font-family: monospace;
+      font-size: 10px;
+      color: var(--slate-700);
+      background-color: var(--slate-200);
+      padding: 1px 4px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    footer {
+      border-top: 2px solid var(--slate-100);
+      padding-top: 25px;
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--slate-700);
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    @media print {
+      body {
+        background-color: #ffffff;
+      }
+      .container {
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .pages-table th {
+        background-color: #334155 !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .pages-table tr:nth-child(even) {
+        background-color: #f8fafc !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .flow-journey-card {
+        background-color: #f0f4ff !important;
+        border: 1px solid #c7d2fe !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      @page {
+        size: A4;
+        margin: 1.6cm 1.4cm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <h1>2all<span>.ai</span></h1>
+      </div>
+      <div class="doc-title">Full System Walkthrough</div>
+    </header>
+
+    <div class="meta-grid">
+      <div class="meta-item">
+        <div class="meta-label">Document Name</div>
+        <div class="meta-value">End-to-End Page Workflow & Navigation Guide</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">System Type</div>
+        <div class="meta-value">Next.js Web Accessibility Platform</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Generated Date</div>
+        <div class="meta-value">July 13, 2026</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Target Audience</div>
+        <div class="meta-value">Development, Engineering & Integration Teams</div>
+      </div>
+    </div>
+
+    <!-- Section: User Journeys -->
+    <div class="section-title">
+      <span class="section-number">A</span> Core User Journeys & Navigation Paths
+    </div>
+
+    <div class="flow-journey-card">
+      <h3>1. Anonymous Visitor to Customer Signup</h3>
+      <div class="journey-steps">
+        <div class="journey-step">/ (Home)</div>
+        <div class="journey-arrow">&rarr;</div>
+        <div class="journey-step">/platform</div>
+        <div class="journey-arrow">&rarr;</div>
+        <div class="journey-step">/access-scan (Demo scan)</div>
+        <div class="journey-arrow">&rarr;</div>
+        <div class="journey-step">/pricing</div>
+        <div class="journey-arrow">&rarr;</div>
+        <div class="journey-step">/register (Sign up)</div>
+      </div>
+    </div>
+
+    <div class="flow-journey-card">
+      <h3>2. Client Portal & Onboarding Operations</h3>
+      <div class="journey-steps">
+        <div class="journey-step">/login</div>
+        <div class="journey-arrow">&rarr;</div>
+        <div class="journey-step">/dashboard</div>
+        <div class="journey-arrow">&rarr;</div>
+        <div class="journey-step">/dashboard/domains (Add domain)</div>
+        <div class="journey-arrow">&rarr;</div>
+        <div class="journey-step">/dashboard/domains/[id] (Verify)</div>
+        <div class="journey-arrow">&rarr;</div>
+        <div class="journey-step">/dashboard/install (Install Widget)</div>
+      </div>
+    </div>
+
+    <div class="flow-journey-card">
+      <h3>3. Website Audit & Remediation Cycle</h3>
+      <div class="journey-steps">
+        <div class="journey-step">/dashboard/projects/new</div>
+        <div class="journey-arrow">&rarr;</div>
+        <div class="journey-step">/dashboard/projects (Select project)</div>
+        <div class="journey-arrow">&rarr;</div>
+        <div class="journey-step">/dashboard/projects/[id] (View scan results)</div>
+        <div class="journey-arrow">&rarr;</div>
+        <div class="journey-step">/dashboard/reports (Aggregated Issues)</div>
+      </div>
+    </div>
+
+    <!-- Page Break -->
+    <div class="page-break"></div>
+
+    <!-- Section 1: Public Core Pages -->
+    <div class="section-title">
+      <span class="section-number">01</span> Public Core & Marketing Pages
+    </div>
+    
+    <table class="pages-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Route</th>
+          <th style="width: 35%;">Page Details</th>
+          <th style="width: 40%;">File Source / Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="page-route">/</td>
+          <td>
+            <div class="page-name">Home Landing Page</div>
+            <div class="page-desc">Hero, pricing teaser, client stats, customizable widget demo modal.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/platform</td>
+          <td>
+            <div class="page-name">Platform Product Page</div>
+            <div class="page-desc">Comprehensive layout outlining AI capabilities and user-facing tools.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/platform/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/pricing</td>
+          <td>
+            <div class="page-name">Plans & Pricing</div>
+            <div class="page-desc">Plan comparison (None, Micro, Business, Enterprise) and checkout options.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/pricing/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/checkout</td>
+          <td>
+            <div class="page-name">Checkout Portal</div>
+            <div class="page-desc">Interactive checkout integration utilizing Razorpay interface endpoints.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/checkout/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/why-choose-2all-ai</td>
+          <td>
+            <div class="page-name">Value Proposition</div>
+            <div class="page-desc">Visual summaries detailing benefits of hybrid AI and specialist audits.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/why-choose-2all-ai/page.tsx</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Section 2: Interactive Demos -->
+    <div class="section-title">
+      <span class="section-number">02</span> Public Interactive Tools & Sandboxes
+    </div>
+    
+    <table class="pages-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Route</th>
+          <th style="width: 35%;">Page Details</th>
+          <th style="width: 40%;">File Source / Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="page-route">/access-scan</td>
+          <td>
+            <div class="page-name">Public Scan Demo Tool</div>
+            <div class="page-desc">Allows users to submit a website URL to scan and test compliance checks.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/access-scan/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/access-widget</td>
+          <td>
+            <div class="page-name">Live Widget Demo Area</div>
+            <div class="page-desc">Provides a playground sandbox displaying custom accessibility profiles.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/access-widget/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/accessibility-interface</td>
+          <td>
+            <div class="page-name">Accessibility Interface</div>
+            <div class="page-desc">Informational hub directing users back to product solutions.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/accessibility-interface/page.tsx</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Page Break -->
+    <div class="page-break"></div>
+
+    <!-- Section 3: Client Dashboard Pages -->
+    <div class="section-title">
+      <span class="section-number">03</span> Client Portal (Dashboard) Pages
+    </div>
+    
+    <table class="pages-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Route</th>
+          <th style="width: 35%;">Page Details</th>
+          <th style="width: 40%;">File Source / Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="page-route">/dashboard</td>
+          <td>
+            <div class="page-name">Main Hub</div>
+            <div class="page-desc">Plan status overview, setup indicators, and links to training articles.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/dashboard/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/dashboard/domains</td>
+          <td>
+            <div class="page-name">Domain Overview</div>
+            <div class="page-desc">List of domains registered under user key, tracking verify status.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/dashboard/domains/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/dashboard/domains/[id]</td>
+          <td>
+            <div class="page-name">Domain Verification Panel</div>
+            <div class="page-desc">Details ownership verification parameters, supporting sandbox simulation.</div>
+          </td>
+          <td>
+            <div class="page-file">src/components/dashboard/DomainDetails.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/dashboard/projects</td>
+          <td>
+            <div class="page-name">Project Audits</div>
+            <div class="page-desc">List of audited websites, displaying current scan counts.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/dashboard/projects/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/dashboard/projects/new</td>
+          <td>
+            <div class="page-name">Create Audit Project</div>
+            <div class="page-desc">Form wizard interface to trigger dynamic crawler scans on new domains.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/dashboard/projects/new/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/dashboard/projects/[id]</td>
+          <td>
+            <div class="page-name">Scan Results Dashboard</div>
+            <div class="page-desc">Reports error occurrences (headings, contrast, alt attributes) and lists suggestions.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/dashboard/projects/[id]/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/dashboard/reports</td>
+          <td>
+            <div class="page-name">Aggregated Reports</div>
+            <div class="page-desc">Summarized report dashboard illustrating trends and general compliance fixes.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/dashboard/reports/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/dashboard/install</td>
+          <td>
+            <div class="page-name">Embed Code Center</div>
+            <div class="page-desc">Script generator with ping diagnostics checking loader execution.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/dashboard/install/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/dashboard/api-keys</td>
+          <td>
+            <div class="page-name">Developer Keys Management</div>
+            <div class="page-desc">Allows keys generation, last-used logs, and active status control.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/dashboard/api-keys/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/dashboard/billing</td>
+          <td>
+            <div class="page-name">Billing & Subscriptions</div>
+            <div class="page-desc">Manage current pricing levels, active trial logs, and invoice records.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/dashboard/billing/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/dashboard/settings</td>
+          <td>
+            <div class="page-name">Account Settings</div>
+            <div class="page-desc">Manages profile editing, secure password rotation, and workspace options.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/dashboard/settings/page.tsx</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Page Break -->
+    <div class="page-break"></div>
+
+    <!-- Section 4: Admin Dashboard Pages -->
+    <div class="section-title">
+      <span class="section-number">04</span> Administrative Dashboard (Internal Management)
+    </div>
+    
+    <table class="pages-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Route</th>
+          <th style="width: 35%;">Page Details</th>
+          <th style="width: 40%;">File Source / Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="page-route">/admin/login</td>
+          <td>
+            <div class="page-name">Admin Login Gate</div>
+            <div class="page-desc">Secure authorization page for system administrators.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/admin/login/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/admin/dashboard</td>
+          <td>
+            <div class="page-name">Global System Dashboard</div>
+            <div class="page-desc">Main control room showing system-wide active domains, users, and widget pings.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/admin/dashboard/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/admin/api-keys</td>
+          <td>
+            <div class="page-name">Keys Administration</div>
+            <div class="page-desc">Inspect, revoke, and track key generation metrics across the application.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/admin/api-keys/page.tsx</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Section 5: Services & Legal Support -->
+    <div class="section-title">
+      <span class="section-number">05</span> Professional Services, Security & Compliance
+    </div>
+    
+    <table class="pages-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Route</th>
+          <th style="width: 35%;">Page Details</th>
+          <th style="width: 40%;">File Source / Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="page-route">/services</td>
+          <td>
+            <div class="page-name">Expert Services</div>
+            <div class="page-desc">Details manual review, hybrid remediation options, and pricing quotes.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/services/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/expert-audit</td>
+          <td>
+            <div class="page-name">Expert Manual Audit Request</div>
+            <div class="page-desc">Onboarding wizard to schedule complete human reviews.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/expert-audit/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/litigation-support</td>
+          <td>
+            <div class="page-name">Litigation Shield & Support</div>
+            <div class="page-desc">Outlines legal documentation defense and certificate of compliance options.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/litigation-support/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/vpat</td>
+          <td>
+            <div class="page-name">VPAT Operations</div>
+            <div class="page-desc">Guides clients on creating Voluntary Product Accessibility Templates.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/vpat/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/compliance</td>
+          <td>
+            <div class="page-name">Compliance Framework</div>
+            <div class="page-desc">Guides detailing ADA Title III, Section 508, and EAA guidelines.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/compliance/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/security-and-privacy</td>
+          <td>
+            <div class="page-name">Security & Privacy Standards</div>
+            <div class="page-desc">Details on secure TLS connections, hosting layers, and GDPR data handling.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/security-and-privacy/page.tsx</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Page Break -->
+    <div class="page-break"></div>
+
+    <!-- Section 6: Target Markets & Verticals -->
+    <div class="section-title">
+      <span class="section-number">06</span> Target Verticals & Business Solutions
+    </div>
+    
+    <table class="pages-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Route</th>
+          <th style="width: 35%;">Page Details</th>
+          <th style="width: 40%;">File Source / Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="page-route">/small-business</td>
+          <td>
+            <div class="page-name">Small Business Solutions</div>
+            <div class="page-desc">Tailored tools designed for lightweight sites, blogs, and local vendors.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/small-business/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/mid-large-business</td>
+          <td>
+            <div class="page-name">Mid-Large Solutions</div>
+            <div class="page-desc">Scaling plans offering custom widget positions and multiple domains.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/mid-large-business/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/enterprise</td>
+          <td>
+            <div class="page-name">Enterprise-Grade Accessibility</div>
+            <div class="page-desc">Unlimited traffic, single sign-on (SSO), and custom service level agreements.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/enterprise/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/non-profit</td>
+          <td>
+            <div class="page-name">Non-Profit Services</div>
+            <div class="page-desc">Remediation options custom-packaged for charities and community networks.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/non-profit/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/agency</td>
+          <td>
+            <div class="page-name">Agency & Developer Program</div>
+            <div class="page-desc">Multi-site administration consoles, developer credits, and white-label widget packages.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/agency/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/industries</td>
+          <td>
+            <div class="page-name">Industry Solutions Directory</div>
+            <div class="page-desc">Overview of vertical integrations (education, e-commerce, banking, public sector).</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/industries/page.tsx</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Section 7: Knowledge Base & Resource Centers -->
+    <div class="section-title">
+      <span class="section-number">07</span> Resource Centers & Developer Guides
+    </div>
+    
+    <table class="pages-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Route</th>
+          <th style="width: 35%;">Page Details</th>
+          <th style="width: 40%;">File Source / Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="page-route">/help-center</td>
+          <td>
+            <div class="page-name">Help Center & FAQ</div>
+            <div class="page-desc">Common integration queries, API configuration, and setup guides.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/help-center/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/develop-accessible-code</td>
+          <td>
+            <div class="page-name">Developer Reference Guide</div>
+            <div class="page-desc">Guidelines on accessible HTML tags, widget API hooks, and CLI options.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/develop-accessible-code/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/integrate-with-your-cms</td>
+          <td>
+            <div class="page-name">CMS Integration Guides</div>
+            <div class="page-desc">Integration steps for WordPress, Wix, Webflow, Squarespace, and Shopify.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/integrate-with-your-cms/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/glossary</td>
+          <td>
+            <div class="page-name">Accessibility Glossary</div>
+            <div class="page-desc">Detailed index of accessibility terminology (WCAG, ARIA, screen readers, contrast metrics).</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/glossary/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/blog</td>
+          <td>
+            <div class="page-name">Corporate Blog</div>
+            <div class="page-desc">Latest news in accessibility standards, lawsuit developments, and product announcements.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/blog/page.tsx</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="page-route">/webinar</td>
+          <td>
+            <div class="page-name">Training Webinars</div>
+            <div class="page-desc">Registration gateway for virtual lessons and accessibility audits.</div>
+          </td>
+          <td>
+            <div class="page-file">src/app/webinar/page.tsx</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Footer -->
+    <footer>
+      <div>2all.ai Complete Site Workflow Manual</div>
+      <div>Confidential &copy; 2026</div>
+    </footer>
+  </div>
+
+</body>
+</html>

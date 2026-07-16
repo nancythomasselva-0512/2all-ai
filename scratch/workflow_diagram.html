@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>2all.ai Accessibility Platform Workflow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;800&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #004bff;
+      --primary-dark: #003edd;
+      --primary-glow: rgba(0, 75, 255, 0.08);
+      --bg-canvas: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #cbd5e1;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-400: #94a3b8;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      
+      /* Theme Accents */
+      --color-domain: #0d9488;
+      --bg-domain: #f0fdfa;
+      --color-api: #4f46e5;
+      --bg-api: #f5f3ff;
+      --color-widget: #0284c7;
+      --bg-widget: #f0f9ff;
+      --color-ai: #7c3aed;
+      --bg-ai: #faf5ff;
+      --color-audit: #16a34a;
+      --bg-audit: #f0fdf4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--slate-800);
+      line-height: 1.5;
+      padding: 40px 20px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .workflow-container {
+      max-width: 820px;
+      margin: 0 auto;
+      background-color: var(--bg-card);
+      border-radius: 24px;
+      border: 1px solid var(--slate-200);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
+      padding: 50px 45px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      text-align: center;
+      border-bottom: 2px solid var(--slate-100);
+      padding-bottom: 30px;
+      margin-bottom: 35px;
+    }
+
+    header h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--slate-900);
+      letter-spacing: -0.8px;
+      margin-bottom: 6px;
+    }
+
+    header h1 span {
+      color: var(--primary);
+    }
+
+    header p {
+      font-size: 13px;
+      color: var(--slate-400);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 800;
+    }
+
+    /* Introduction & Conclusion Callout boxes */
+    .callout-box {
+      width: 100%;
+      background-color: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 35px;
+    }
+
+    .callout-box h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin-bottom: 10px;
+      border-left: 4px solid var(--primary);
+      padding-left: 10px;
+    }
+
+    .callout-box p {
+      font-size: 13.5px;
+      color: var(--slate-700);
+      line-height: 1.6;
+    }
+
+    .section-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin: 15px 0 25px 0;
+      text-align: center;
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Core Flowchart Nodes */
+    .flow-node {
+      width: 100%;
+      max-width: 520px;
+      background-color: #ffffff;
+      border: 2px solid var(--slate-200);
+      border-radius: 16px;
+      padding: 16px 24px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.01);
+    }
+
+    .flow-node-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--slate-900);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .flow-node-subtitle {
+      font-size: 11px;
+      color: var(--slate-400);
+      margin-top: 2px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Arrow Connector */
+    .flow-arrow {
+      height: 45px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .flow-arrow::before {
+      content: "";
+      width: 2px;
+      height: 100%;
+      background-color: var(--slate-300);
+      position: absolute;
+    }
+
+    .flow-arrow::after {
+      content: "▼";
+      color: var(--slate-400);
+      font-size: 10px;
+      position: absolute;
+      bottom: -3px;
+    }
+
+    /* Branch Container (for Meta/DNS/HTML) */
+    .flow-branches {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      max-width: 600px;
+      margin: 10px 0;
+    }
+
+    .flow-branch-node {
+      flex: 1;
+      background-color: #ffffff;
+      border: 2px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--slate-700);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+    }
+
+    /* Grid container for AI Engine / list items */
+    .flow-grid-node {
+      width: 100%;
+      max-width: 600px;
+      background-color: var(--slate-50);
+      border: 2px dashed var(--slate-300);
+      border-radius: 16px;
+      padding: 20px;
+      display: grid;
+      grid-template-cols: repeat(2, 1fr);
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .flow-grid-item {
+      background-color: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--slate-700);
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .flow-grid-item::before {
+      content: "•";
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    /* Explanation Section Card */
+    .explanation-list {
+      width: 100%;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .explanation-item {
+      background-color: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 14px;
+      padding: 18px 22px;
+      display: flex;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.01);
+    }
+
+    .explanation-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50px;
+      background-color: var(--primary);
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      shrink-0: 1;
+    }
+
+    .explanation-content {
+      font-size: 13.5px;
+      color: var(--slate-700);
+      line-height: 1.6;
+    }
+
+    /* Footer styling */
+    footer {
+      width: 100%;
+      border-top: 1px solid var(--slate-200);
+      padding-top: 20px;
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--slate-400);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 0; /* Removes browser-added headers & footers */
+      }
+      body {
+        background-color: #ffffff;
+        padding: 2.2cm 2cm; /* Creates margins inside the page body */
+      }
+      .workflow-container {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .page-break {
+        page-break-before: always;
+        padding-top: 2.2cm; /* Maintain spacing at the top of new pages */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="workflow-container">
+    <header>
+      <h1>2all<span>.ai</span></h1>
+      <p>Technical workflow manual</p>
+    </header>
+
+    <!-- SECTION: INTRODUCTION -->
+    <div class="callout-box">
+      <h2>Introduction</h2>
+      <p>
+        2all.ai is a Software-as-a-Service (SaaS) accessibility platform designed to help website owners improve the accessibility of their websites through an AI-powered accessibility widget, accessibility scanning, domain management, and centralized administration. The platform allows organizations to register websites, verify ownership, generate secure API keys, deploy the widget, and monitor accessibility compliance from a single dashboard.
+      </p>
+    </div>
+
+    <!-- SECTION: COMPLETE WORKFLOW DIAGRAM -->
+    <div class="section-title">Complete Workflow Diagram</div>
+
+    <!-- Customer -->
+    <div class="flow-node" style="border-color: var(--slate-400); background-color: var(--slate-50);">
+      <div class="flow-node-title">Customer</div>
+      <div class="flow-node-subtitle">SaaS Account Owner</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Register / Login -->
+    <div class="flow-node">
+      <div class="flow-node-title">Register / Login</div>
+      <div class="flow-node-subtitle">Authentication Gate (NextAuth)</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Dashboard -->
+    <div class="flow-node">
+      <div class="flow-node-title">Dashboard</div>
+      <div class="flow-node-subtitle">Central Workspace Hub</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Add Domain -->
+    <div class="flow-node" style="border-color: var(--color-domain); background-color: var(--bg-domain);">
+      <div class="flow-node-title" style="color: var(--color-domain);">Add Domain</div>
+      <div class="flow-node-subtitle">Input clean target website url</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Verify Domain Ownership -->
+    <div class="flow-node">
+      <div class="flow-node-title">Verify Domain Ownership</div>
+      <div class="flow-node-subtitle">Verify via file upload, DNS, or tags</div>
+    </div>
+
+    <!-- Branches: Meta, DNS, HTML -->
+    <div class="flow-branches">
+      <div class="flow-branch-node" style="border-color: var(--color-domain);">Meta Tag</div>
+      <div class="flow-branch-node" style="border-color: var(--color-domain);">DNS TXT Record</div>
+      <div class="flow-branch-node" style="border-color: var(--color-domain);">HTML Verification File</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Domain Activated -->
+    <div class="flow-node" style="border-color: var(--color-domain); background-color: var(--bg-domain);">
+      <div class="flow-node-title" style="color: var(--color-domain);">Domain Activated</div>
+      <div class="flow-node-subtitle">Status set to ACTIVE in Database</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Generate API Key -->
+    <div class="flow-node" style="border-color: var(--color-api); background-color: var(--bg-api);">
+      <div class="flow-node-title" style="color: var(--color-api);">Generate API Key</div>
+      <div class="flow-node-subtitle">Create secure access keys</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Assign API Key to Domain -->
+    <div class="flow-node">
+      <div class="flow-node-title">Assign API Key to Domain</div>
+      <div class="flow-node-subtitle">Bind keys strictly to domain scopes</div>
+    </div>
+
+    <!-- Page Break -->
+    <div class="page-break"></div>
+
+    <!-- Generate Installation Script -->
+    <div class="flow-node" style="border-color: var(--color-widget); background-color: var(--bg-widget);">
+      <div class="flow-node-title" style="color: var(--color-widget);">Generate Installation Script</div>
+      <div class="flow-node-subtitle">Custom HTML script tag snippet</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Install loader.js on Website -->
+    <div class="flow-node">
+      <div class="flow-node-title">Install loader.js on Website</div>
+      <div class="flow-node-subtitle">Add embed code to target site markup</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Bootstrap Validation (API Key + Domain) -->
+    <div class="flow-node">
+      <div class="flow-node-title">Bootstrap Validation</div>
+      <div class="flow-node-subtitle">Handshake check (API Key + Domain)</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Load widget-core.js -->
+    <div class="flow-node">
+      <div class="flow-node-title">Load widget-core.js</div>
+      <div class="flow-node-subtitle">Inject primary adjustments framework</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Accessibility Widget Appears -->
+    <div class="flow-node" style="border-color: var(--color-widget); background-color: var(--bg-widget);">
+      <div class="flow-node-title" style="color: var(--color-widget);">Accessibility Widget Appears</div>
+      <div class="flow-node-subtitle">Floating accessibility button rendered</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Visitor Selects Accessibility Profile or Manual Settings -->
+    <div class="flow-node">
+      <div class="flow-node-title">Visitor Selects Options</div>
+      <div class="flow-node-subtitle">Pick predefined profile or manual config</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- AI Accessibility Engine -->
+    <div class="flow-node" style="border-color: var(--color-ai); background-color: var(--bg-ai);">
+      <div class="flow-node-title" style="color: var(--color-ai);">AI Accessibility Engine</div>
+      <div class="flow-node-subtitle">Runs runtime page adaptations</div>
+    </div>
+
+    <!-- Engine grid list -->
+    <div class="flow-grid-node">
+      <div class="flow-grid-item">DOM Analysis</div>
+      <div class="flow-grid-item">WCAG Rule Validation</div>
+      <div class="flow-grid-item">ARIA Enhancement</div>
+      <div class="flow-grid-item">Image Alt Detection</div>
+      <div class="flow-grid-item">Keyboard Navigation</div>
+      <div class="flow-grid-item">Focus Management</div>
+      <div class="flow-grid-item" style="grid-column: span 2;">Runtime Accessibility Adjustments</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Accessible Website Experience -->
+    <div class="flow-node" style="border-color: var(--color-ai); background-color: var(--bg-ai);">
+      <div class="flow-node-title" style="color: var(--color-ai);">Accessible Website Experience</div>
+      <div class="flow-node-subtitle">Seamless compliant rendering</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Run Accessibility Audit -->
+    <div class="flow-node" style="border-color: var(--color-audit); background-color: var(--bg-audit);">
+      <div class="flow-node-title" style="color: var(--color-audit);">Run Accessibility Audit</div>
+      <div class="flow-node-subtitle">Trigger live HTML crawler checks</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Generate Compliance Score & Reports -->
+    <div class="flow-node">
+      <div class="flow-node-title">Generate Score & Reports</div>
+      <div class="flow-node-subtitle">Generate WCAG lists & visual metrics</div>
+    </div>
+
+    <div class="flow-arrow"></div>
+
+    <!-- Platform Management -->
+    <div class="flow-node" style="border-color: var(--slate-700); background-color: var(--slate-50);">
+      <div class="flow-node-title">Platform Management</div>
+      <div class="flow-node-subtitle">Billing, Reports, Settings, Audit Logs</div>
+    </div>
+
+    <!-- Page Break -->
+    <div class="page-break"></div>
+
+    <!-- SECTION: WORKFLOW EXPLANATION -->
+    <div class="section-title">Workflow Explanation</div>
+
+    <ul class="explanation-list">
+      <li class="explanation-item">
+        <div class="explanation-num">1</div>
+        <div class="explanation-content">Users register and access the customer dashboard.</div>
+      </li>
+      <li class="explanation-item">
+        <div class="explanation-num">2</div>
+        <div class="explanation-content">A website domain is added and ownership is verified using a Meta Tag, DNS TXT record, or HTML verification file.</div>
+      </li>
+      <li class="explanation-item">
+        <div class="explanation-num">3</div>
+        <div class="explanation-content">After successful verification, the domain becomes active.</div>
+      </li>
+      <li class="explanation-item">
+        <div class="explanation-num">4</div>
+        <div class="explanation-content">The customer generates an API key and links it to the verified domain.</div>
+      </li>
+      <li class="explanation-item">
+        <div class="explanation-num">5</div>
+        <div class="explanation-content">The platform generates an installation snippet that loads <code>loader.js</code> on the customer's website.</div>
+      </li>
+      <li class="explanation-item">
+        <div class="explanation-num">6</div>
+        <div class="explanation-content">The loader validates the API key and domain, retrieves widget settings, and loads <code>widget-core.js</code>.</div>
+      </li>
+      <li class="explanation-item">
+        <div class="explanation-num">7</div>
+        <div class="explanation-content">Visitors use the accessibility widget to apply accessibility profiles or manual adjustments such as contrast, font size, dyslexia mode, text-to-speech, keyboard navigation, and color filters.</div>
+      </li>
+      <li class="explanation-item">
+        <div class="explanation-num">8</div>
+        <div class="explanation-content">The AI accessibility engine performs runtime enhancements including DOM analysis, ARIA improvements, WCAG validation, image accessibility support, and keyboard optimization.</div>
+      </li>
+      <li class="explanation-item">
+        <div class="explanation-num">9</div>
+        <div class="explanation-content">Administrators can run accessibility audits, view compliance reports, manage billing, monitor usage, and configure platform settings.</div>
+      </li>
+    </ul>
+
+    <div style="margin-top: 35px; width: 100%;"></div>
+
+    <!-- SECTION: CONCLUSION -->
+    <div class="callout-box" style="margin-bottom: 0;">
+      <h2>Conclusion</h2>
+      <p>
+        The 2all.ai workflow combines SaaS management with real-time accessibility services. Unlike a simple accessibility widget, the platform provides domain verification, API key management, AI-powered runtime accessibility improvements, compliance auditing, reporting, and centralized administration. This architecture enables organizations to deploy, manage, and continuously improve website accessibility in a scalable and secure manner.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div>2all.ai Technical Documentation &bull; Workflow Guide</div>
+      <div>Confidential &copy; 2026</div>
+    </footer>
+  </div>
+
+</body>
+</html>
