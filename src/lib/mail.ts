@@ -192,11 +192,11 @@ export async function sendInitialWelcomeEmail(toEmail: string, userName: string)
     
     <!-- Hero Section -->
     <div class="hero">
-      <h1>Welcome to 2all.ai!</h1>
+      <h1>Welcome to <span style="color: #ffffff; text-decoration: none;">2all.ai</span>!</h1>
       <a href="${dashboardUrl}" class="btn-white">START FREE TRIAL</a>
       
-      <div style="margin-top: 30px;">
-        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&h=160&q=80" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-radius: 12px; display: block; border: 1px solid rgba(255,255,255,0.2);" />
+      <div style="margin-top: 40px;">
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&h=160&q=80" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-top-left-radius: 12px; border-top-right-radius: 12px; display: block;" />
       </div>
     </div>
 
@@ -242,7 +242,9 @@ export async function sendInitialWelcomeEmail(toEmail: string, userName: string)
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr>
             <td width="80" valign="top">
-              <div class="card-icon icon-green"></div>
+              <div class="card-icon icon-green" style="text-align: center; line-height: 60px;">
+                <img src="https://img.icons8.com/ios-filled/30/ffffff/scales.png" width="30" height="30" alt="Legal" style="vertical-align: middle; display: inline-block;" />
+              </div>
             </td>
             <td valign="top">
               <div class="card-title">Mitigate legal risk</div>
@@ -256,7 +258,9 @@ export async function sendInitialWelcomeEmail(toEmail: string, userName: string)
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr>
             <td width="80" valign="top">
-              <div class="card-icon icon-blue"></div>
+              <div class="card-icon icon-blue" style="text-align: center; line-height: 60px;">
+                <img src="https://img.icons8.com/ios-filled/30/ffffff/lock.png" width="30" height="30" alt="Security" style="vertical-align: middle; display: inline-block;" />
+              </div>
             </td>
             <td valign="top">
               <div class="card-title">Get uncompromising security and privacy</div>
@@ -270,7 +274,9 @@ export async function sendInitialWelcomeEmail(toEmail: string, userName: string)
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr>
             <td width="80" valign="top">
-              <div class="card-icon icon-purple"></div>
+              <div class="card-icon icon-purple" style="text-align: center; line-height: 60px;">
+                <img src="https://img.icons8.com/ios-filled/30/ffffff/services.png" width="30" height="30" alt="Solutions" style="vertical-align: middle; display: inline-block;" />
+              </div>
             </td>
             <td valign="top">
               <div class="card-title">Explore tailored solutions to fit your needs</div>
@@ -371,11 +377,11 @@ export async function sendWelcomeEmail(toEmail: string, userName: string, websit
     
     <!-- Hero Section -->
     <div class="hero">
-      <h1>Welcome to 2all.ai</h1>
+      <h1>Welcome to <span style="color: #ffffff; text-decoration: none;">2all.ai</span></h1>
       <a href="${dashboardUrl}" class="btn-primary">GO TO YOUR ACCOUNT</a>
       
-      <div style="margin-top: 30px;">
-        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&h=160&q=80" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 75, 255, 0.3); display: block; border: 1px solid rgba(255,255,255,0.2);" />
+      <div style="margin-top: 40px;">
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&h=160&q=80" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-top-left-radius: 12px; border-top-right-radius: 12px; display: block;" />
       </div>
     </div>
 
