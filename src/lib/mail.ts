@@ -196,7 +196,7 @@ export async function sendInitialWelcomeEmail(toEmail: string, userName: string)
       <a href="${dashboardUrl}" class="btn-white">START FREE TRIAL</a>
       
       <div style="margin-top: 30px;">
-        <img src="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/images/email-hero.png" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-radius: 12px; display: block; border: 1px solid rgba(255,255,255,0.2);" />
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&h=160&q=80" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-radius: 12px; display: block; border: 1px solid rgba(255,255,255,0.2);" />
       </div>
     </div>
 
@@ -375,7 +375,7 @@ export async function sendWelcomeEmail(toEmail: string, userName: string, websit
       <a href="${dashboardUrl}" class="btn-primary">GO TO YOUR ACCOUNT</a>
       
       <div style="margin-top: 30px;">
-        <img src="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/images/email-hero.png" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 75, 255, 0.3); display: block;" />
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&h=160&q=80" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 75, 255, 0.3); display: block; border: 1px solid rgba(255,255,255,0.2);" />
       </div>
     </div>
 
@@ -416,7 +416,9 @@ export async function sendWelcomeEmail(toEmail: string, userName: string, websit
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td width="70" valign="top">
-                <div class="card-icon icon-green"></div>
+                <div class="card-icon icon-green" style="text-align: center; line-height: 48px;">
+                  <img src="https://img.icons8.com/ios-filled/24/ffffff/scales.png" width="24" height="24" alt="Legal" style="vertical-align: middle; display: inline-block;" />
+                </div>
               </td>
               <td valign="top">
                 <div class="card-title">Mitigate legal risk</div>
@@ -431,7 +433,9 @@ export async function sendWelcomeEmail(toEmail: string, userName: string, websit
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td width="70" valign="top">
-                <div class="card-icon icon-blue"></div>
+                <div class="card-icon icon-blue" style="text-align: center; line-height: 48px;">
+                  <img src="https://img.icons8.com/ios-filled/24/ffffff/lock.png" width="24" height="24" alt="Security" style="vertical-align: middle; display: inline-block;" />
+                </div>
               </td>
               <td valign="top">
                 <div class="card-title">Get uncompromising security and privacy</div>
@@ -446,7 +450,9 @@ export async function sendWelcomeEmail(toEmail: string, userName: string, websit
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td width="70" valign="top">
-                <div class="card-icon icon-purple"></div>
+                <div class="card-icon icon-purple" style="text-align: center; line-height: 48px;">
+                  <img src="https://img.icons8.com/ios-filled/24/ffffff/services.png" width="24" height="24" alt="Solutions" style="vertical-align: middle; display: inline-block;" />
+                </div>
               </td>
               <td valign="top">
                 <div class="card-title">Tailored solutions for your needs</div>
