@@ -112,11 +112,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           },
         });
 
-        // Send welcome and script emails if this is a brand new user
+        // Send initial welcome email if this is a brand new user
         if (isNewUser) {
           try {
             await sendInitialWelcomeEmail(email, dbUser.name || "Customer");
-            await sendWelcomeEmail(email, dbUser.name || "Customer", "");
           } catch (e) {
             console.error("Failed to send welcome emails on Google signup", e);
           }

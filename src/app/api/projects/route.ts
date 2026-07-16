@@ -16,10 +16,14 @@ export async function GET() {
   return NextResponse.json(projects);
 }
 
+import { sendWelcomeEmail } from "@/lib/mail";
+
 export async function POST(req: Request) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = (session.user as any).id as string;
+  const userEmail = session.user?.email || "";
+  const userName = session.user?.name || "Customer";
 
   try {
     const { name, url } = await req.json();
@@ -31,6 +35,15 @@ export async function POST(req: Request) {
     const project = await prisma.project.create({
       data: { name, url, userId },
     });
+    
+    // Dispatch script email for the new project
+    if (userEmail) {
+      try {
+        await sendWelcomeEmail(userEmail, userName, url);
+      } catch (mailError) {
+        console.error("Failed to send script email for new project:", mailError);
+      }
+    }
 
     return NextResponse.json(project, { status: 201 });
   } catch (error) {

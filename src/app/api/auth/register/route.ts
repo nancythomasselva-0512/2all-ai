@@ -47,9 +47,13 @@ export async function POST(req: Request) {
       });
     }
 
-    // Send the welcome emails
+    // Send the welcome email ONLY
     await sendInitialWelcomeEmail(email, name);
-    await sendWelcomeEmail(email, name, website || "");
+    
+    // If they provided a website, they also created a project. We should send the script email for that project!
+    if (website) {
+      await sendWelcomeEmail(email, name, website);
+    }
 
     return NextResponse.json(
       { message: "User created successfully", userId: user.id },
