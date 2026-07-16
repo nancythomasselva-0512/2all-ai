@@ -112,10 +112,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           },
         });
 
-        // Send welcome and script emails if this is a brand new user OR if it's a test email
-        const isTestEmail = ["nancythomasselva@gmail.com", "nancynarmadha512@gmail.com", "aachinancy@gmail.com"].includes(email);
-        
-        if (isNewUser || isTestEmail) {
+        // Send welcome and script emails if this is a brand new user
+        if (isNewUser) {
           try {
             await sendInitialWelcomeEmail(email, dbUser.name || "Customer");
             await sendWelcomeEmail(email, dbUser.name || "Customer", "");
