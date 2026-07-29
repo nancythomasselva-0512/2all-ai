@@ -12,7 +12,6 @@ import DemoModal from "@/components/marketing/DemoModal";
 import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
-import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const fadeUp = {
@@ -91,7 +90,6 @@ export default function AboutUsPage() {
                 { name: "SOLUTIONS", hasDropdown: true },
                 { name: "COMPANY", hasDropdown: true },
                 { name: "PARTNERS", hasDropdown: true },
-                { name: "RESOURCES", hasDropdown: true },
                 { name: "PRICING", hasDropdown: false },
               ].map((link) => (
                 <Link
@@ -133,17 +131,16 @@ export default function AboutUsPage() {
         <SolutionsMegamenu isOpen={activeHoverMenu === "SOLUTIONS"} onMouseEnter={() => openMenu("SOLUTIONS")} onMouseLeave={closeMenuWithDelay} />
         <CompanyMegamenu isOpen={activeHoverMenu === "COMPANY"} onMouseEnter={() => openMenu("COMPANY")} onMouseLeave={closeMenuWithDelay} />
         <PartnersMegamenu isOpen={activeHoverMenu === "PARTNERS"} onMouseEnter={() => openMenu("PARTNERS")} onMouseLeave={closeMenuWithDelay} />
-        <ResourcesMegamenu isOpen={activeHoverMenu === "RESOURCES"} onMouseEnter={() => openMenu("RESOURCES")} onMouseLeave={closeMenuWithDelay} />
       </header>
 
       {/* HERO SECTION */}
-      <section className="relative pt-32 pb-24 md:pt-40 md:pb-36 bg-[#f8fafc] overflow-hidden">
+      <section className="relative pt-6 pb-8 md:pb-10 bg-[#f8fafc] overflow-hidden">
         {/* Abstract blurred background shapes */}
         <div className="absolute top-1/4 left-1/10 w-96 h-96 bg-blue-400/10 rounded-full blur-[80px]" />
         <div className="absolute top-1/3 right-1/10 w-[500px] h-[500px] bg-indigo-300/10 rounded-full blur-[100px]" />
 
-        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 text-center">
-          <div className="flex justify-center">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
+          <div className="flex justify-start text-left mb-2">
             <Breadcrumbs theme="light" items={[ { label: "Home", href: "/" }, { label: "Company", href: "#" }, { label: "About Us" } ]} />
           </div>
           

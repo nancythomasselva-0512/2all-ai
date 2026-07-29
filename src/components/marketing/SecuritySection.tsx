@@ -12,18 +12,18 @@ export default function SecuritySection() {
 
   return (
     <motion.section 
-      initial="hidden"
+      initial="visible"
       whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true }}
       variants={{
-        hidden: { opacity: 0, y: 40 },
+        hidden: { opacity: 1, y: 0 },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+          transition: { duration: 0.5, ease: "easeOut", staggerChildren: 0.08 }
         }
       }}
-      className="py-24 bg-slate-950 text-white relative overflow-hidden select-none font-sans"
+      className="py-10 md:py-14 bg-slate-950 text-white relative overflow-hidden select-none font-sans"
     >
       {/* Background glowing gradients */}
       <div className="absolute top-1/4 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-[130px] pointer-events-none" />

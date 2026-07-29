@@ -6,77 +6,96 @@ export default function AlexChatWidget() {
   const [open, setOpen] = useState(false);
   const [showBubble, setShowBubble] = useState(true);
   const [message, setMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<{ from: "alex" | "user"; text: string }[]>([
-    { from: "alex", text: "Ask me a question or select one of the following options below." },
+    { from: "alex", text: "Hi! I'm Alex, your 2all.ai virtual assistant. How can I help make your website accessible today?" },
   ]);
-  const [quickReplied, setQuickReplied] = useState(false);
 
   const now = new Date();
   const startedAt = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   const startedLabel = `Started ${now.toLocaleString("en-US", { month: "short" })} ${now.getDate()} at ${startedAt}`;
 
   const getAlexReply = (text: string): string => {
-    const q = text.toLowerCase();
+    const q = text.toLowerCase().trim();
 
-    if (q.match(/hi|hello|hey|hii|good morning|good evening/)) {
-      return "Hi there! 👋 I'm Alex, your 2all.ai virtual assistant. How can I help you today?";
+    // 1. "I want my website more accessible" or similar intent
+    if (q.includes("more accessible") || q.includes("make my website accessible") || q.includes("get accessible") || q.includes("accessibility for my site")) {
+      return "Awesome! 🚀 2all.ai makes web accessibility effortless:\n\n1️⃣ **Instant 2-Minute Installation**: Add our single-line JS script to your site.\n2️⃣ **Automated AI Remediation**: Automatically fixes missing alt-tags, ARIA attributes, contrast ratios & keyboard focus traps in real time.\n3️⃣ **ADA & WCAG 2.1 AA Compliance**: Protects your business from legal risk while welcoming 20%+ more web visitors.\n\nWould you like to **Start a 7-day free trial** or **Book a live demo**?";
     }
-    if (q.match(/how.*(work|does it|it work|this work)/)) {
-      return "2all.ai works in 3 simple steps:\n1️⃣ Paste a small code snippet onto your website\n2️⃣ Our AI scans your site for accessibility issues\n3️⃣ The widget auto-fixes them for your visitors — all in real time!\nWant me to show you how to install it?";
+
+    // 2. Account / Login query
+    if (q.includes("2all.ai account") || q.includes("2all") || q.includes("account") || q.includes("login") || q.includes("sign in")) {
+      return "Welcome back! 👋 You can sign in to your dashboard anytime at **2all.ai/login**.\n\nOnce logged in, you can manage your domains, view real-time accessibility audit reports, and download your VPAT compliance certificates!";
     }
+
+    // 3. Greetings
+    if (q.match(/^(hi|hello|hey|hii|good morning|good evening|greetings)/)) {
+      return "Hi there! 👋 I'm Alex, your 2all.ai AI Assistant. I can help you with WCAG compliance, widget installation, pricing, or booking a live demo. What would you like to explore?";
+    }
+
+    // 4. How it works / Technology
+    if (q.match(/how.*(work|does it|it work|this work)/) || q.includes("how it works")) {
+      return "2all.ai operates seamlessly in 3 simple steps:\n1️⃣ **Embed Snippet**: Copy our lightweight JavaScript snippet into your website footer.\n2️⃣ **Automated AI Scan**: Our AI engine scans your DOM for WCAG 2.1 AA violations.\n3️⃣ **Real-time Remediation**: The widget automatically adjusts screen reader tags, keyboard navigation, contrast, and fonts for disabled visitors!\n\nWant to test it out with a **7-day Free Trial**?";
+    }
+
+    // 5. Pricing / Cost / Plans
     if (q.match(/pric|cost|how much|plan|subscri|pay|free trial|trial/)) {
-      return "We have plans starting from $49/month. You can start a 7-day free trial with no credit card required! 🎉\nVisit our Pricing page for full details, or I can connect you with our team for a custom quote.";
-    }
-    if (q.match(/install|snippet|widget|code|script|embed/)) {
-      return "Installing the 2all.ai widget is super easy! Just:\n1. Log in to your dashboard\n2. Go to 'Install Widget'\n3. Copy the script snippet and paste it in your website's <head>\nNeed help? Our team can walk you through it!";
-    }
-    if (q.match(/ada|wcag|compliance|legal|lawsuit|eaa|section 508/)) {
-      return "2all.ai helps your website comply with ADA, WCAG 2.1/2.2 AA, Section 508, and EAA standards. Our AI continuously scans and remediates accessibility barriers automatically. Want to learn more about compliance?";
-    }
-    if (q.match(/demo|book|schedule|call|meeting/)) {
-      return "I'd love to set up a demo for you! 📅\nYou can book a free demo at 2all.ai/demo — our team will walk you through the platform live and answer all your questions.";
-    }
-    if (q.match(/contact|email|phone|support|help|team|reach/)) {
-      return "You can reach our team at support@2all.ai or book a call via 2all.ai/demo. Our support team is available Monday–Friday, 9am–6pm IST. 💬";
-    }
-    if (q.match(/cancel|refund|money back|guarantee/)) {
-      return "We offer a 7-day free trial so you can test everything risk-free. If you're not happy after subscribing, reach out to support@2all.ai and we'll sort it out for you!";
-    }
-    if (q.match(/feature|what.*do|capability|can it|does it/)) {
-      return "2all.ai offers:\n✅ AI-powered accessibility widget\n✅ WCAG 2.2 AA auto-remediation\n✅ Accessibility scanning & reports\n✅ Screen reader optimisation\n✅ VPAT & audit documentation\n✅ Dashboard for all your websites\nWant details on any specific feature?";
-    }
-    if (q.match(/agency|partner|resell|white label|enterprise/)) {
-      return "We have special agency and enterprise plans with white-label options, bulk pricing, and a dedicated account manager. Visit 2all.ai/agency or contact us at partners@2all.ai!";
-    }
-    if (q.match(/non.?profit|charity|ngo|education|school/)) {
-      return "We offer special discounted plans for non-profits, schools, and NGOs! 🌟 Visit 2all.ai/non-profit or reach out to our team for special pricing.";
-    }
-    if (q.match(/thank|thanks|great|perfect|awesome|ok|okay|got it|understood/)) {
-      return "You're welcome! 😊 Is there anything else I can help you with?";
+      return "We offer simple, transparent pricing starting from **$49/month**! 💳\n\n✨ **All plans include**:\n- 7-Day Risk-Free Trial (No credit card required)\n- Automated WCAG 2.1 AA Remediation\n- Full Accessibility Toolbar Suite\n- VPAT Conformance Documentation\n\nVisit **2all.ai/pricing** to choose your plan!";
     }
 
-    // Default fallback
-    return "Thanks for your message! Our team will get back to you shortly. In the meantime, you can explore our website or book a demo at 2all.ai/demo. 😊";
+    // 6. Widget Installation / Script
+    if (q.match(/install|snippet|widget|code|script|embed|javascript/)) {
+      return "Installing 2all.ai takes under 2 minutes! ⚡\n\n1. Sign up for a free trial at **2all.ai/register**\n2. Add your website domain\n3. Copy the script tag provided in your dashboard and paste it right before your website's closing `</body>` tag.\n\nNeed technical assistance? Our engineering team can help you set it up for free!";
+    }
+
+    // 7. ADA / WCAG / Legal Compliance
+    if (q.match(/ada|wcag|compliance|legal|lawsuit|eaa|section 508|vpat|audit/)) {
+      return "2all.ai provides comprehensive compliance coverage: 🛡️\n\n- **WCAG 2.1 & 2.2 Level AA**\n- **ADA Title III Compliance**\n- **Section 508 & EAA Guidelines**\n- **VPAT 2.4 Conformance Statement**\n\nUsing 2all.ai mitigates legal lawsuit risks and ensures your digital presence is 100% inclusive.";
+    }
+
+    // 8. Demo / Meeting / Call
+    if (q.match(/demo|book|schedule|call|meeting|talk to human/)) {
+      return "I'd love to schedule a live demo for you! 📅\n\nVisit **2all.ai/demo** to pick a time slot. One of our accessibility experts will walk you through the platform, run a live scan on your domain, and answer all your questions.";
+    }
+
+    // 9. Features / Capabilities
+    if (q.match(/feature|what.*do|capability|can it|does it|tools/)) {
+      return "2all.ai features 27+ powerful accessibility tools: 🌟\n\n- 🎙️ **Universal Voice Command Navigation**\n- 📖 **OpenDyslexic Font & Dyslexia Reader**\n- 🔍 **Reading Ruler & Focus Mask**\n- 🔊 **Text-to-Speech Read Aloud Engine**\n- 🎨 **Dark Contrast & High Saturation Modes**\n- 📜 **Instant VPAT Certificate Generation**";
+    }
+
+    // 10. Agency / Enterprise / White Label
+    if (q.match(/agency|partner|resell|white label|enterprise/)) {
+      return "We offer specialized **White-Label Agency Plans**! 🏢\n\n- Rebrand the widget with your agency logo\n- Bulk domain management dashboard\n- Resell accessibility services to your clients\n\nCheck out **2all.ai/agency** or contact `partners@2all.ai`!";
+    }
+
+    // 11. Polite closing / Thanks
+    if (q.match(/thank|thanks|great|perfect|awesome|ok|okay|got it|understood/)) {
+      return "You're very welcome! 😊 Is there anything else I can help you with regarding web accessibility?";
+    }
+
+    // Comprehensive Intelligent Fallback
+    return "Thank you for reaching out! 2all.ai helps businesses make their websites fully WCAG 2.1 AA & ADA compliant.\n\nYou can:\n- **Start a Free Trial**: Visit 2all.ai/register\n- **Book a Live Demo**: Visit 2all.ai/demo\n- **Email Support**: Reach our team directly at support@2all.ai\n\nHow else can I assist you today?";
   };
 
-  const handleSend = () => {
-    if (!message.trim()) return;
-    const userText = message.trim();
-    setMessages((prev) => [
-      ...prev,
-      { from: "user", text: userText },
-      { from: "alex", text: getAlexReply(userText) },
-    ]);
+  const handleSend = (textToSend?: string) => {
+    const userText = (textToSend || message).trim();
+    if (!userText) return;
+
+    // Add user message immediately
+    setMessages((prev) => [...prev, { from: "user", text: userText }]);
     setMessage("");
+    setIsTyping(true);
+
+    // Simulate natural AI thinking delay (350ms)
+    setTimeout(() => {
+      const alexReply = getAlexReply(userText);
+      setMessages((prev) => [...prev, { from: "alex", text: alexReply }]);
+      setIsTyping(false);
+    }, 350);
   };
 
   const handleQuickReply = (text: string) => {
-    setQuickReplied(true);
-    setMessages((prev) => [
-      ...prev,
-      { from: "user", text },
-      { from: "alex", text: getAlexReply(text) },
-    ]);
+    handleSend(text);
   };
 
   return (
@@ -86,19 +105,21 @@ export default function AlexChatWidget() {
         {/* Alex bubble popover (shown when chat is closed) */}
         {showBubble && !open && (
           <div
-            className="bg-white border border-slate-200/80 rounded-2xl p-2.5 md:p-3 shadow-xl max-w-[200px] md:max-w-[220px] flex items-center gap-2 md:gap-3 mr-1 md:mr-2 relative cursor-pointer"
+            className="alex-chat-popover bg-white border border-slate-200/80 rounded-2xl p-2.5 md:p-3 shadow-xl w-[220px] md:w-[240px] flex items-center gap-2.5 mr-1 md:mr-2 relative cursor-pointer"
             onClick={() => setOpen(true)}
           >
             <div className="absolute right-4 md:right-6 -bottom-1.5 w-3 h-3 bg-white border-r border-b border-slate-200/80 rotate-45" />
-            <div className="relative w-7 h-7 md:w-8 md:h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200 overflow-hidden">
+            <div className="relative w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#000033] flex items-center justify-center shrink-0 border border-slate-700 overflow-hidden shadow-sm">
               <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
-              <svg viewBox="0 0 24 24" className="w-5 h-5 md:w-6 md:h-6 text-slate-400 absolute inset-0 m-auto z-0">
+              <svg viewBox="0 0 24 24" className="w-5 h-5 md:w-6 md:h-6 text-white absolute inset-0 m-auto z-0">
                 <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
               </svg>
             </div>
             <div className="text-left flex-1 min-w-0">
-              <span className="block text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest truncate">Alex</span>
-              <p className="text-xs text-slate-700 font-bold leading-snug break-words">Hi, I&apos;m Alex! I&apos;m your 24 hour virtual assistant.</p>
+              <span className="block text-[10px] font-black text-[#000033] uppercase tracking-widest truncate leading-none mb-0.5">Alex</span>
+              <p className="text-[11px] text-slate-700 font-semibold leading-tight break-words !m-0 !p-0 font-sans" style={{ fontSize: "11px", lineHeight: "1.3" }}>
+                Hi, I&apos;m Alex! Need help with web accessibility?
+              </p>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
@@ -112,7 +133,7 @@ export default function AlexChatWidget() {
         {/* Chat trigger button */}
         <button
           onClick={() => { setOpen(!open); setShowBubble(false); }}
-          className={`w-12 h-12 md:w-14 md:h-14 rounded-full text-white flex items-center justify-center shadow-lg transition-all cursor-pointer border-none ${open ? 'bg-[#000033] shadow-slate-900/30' : 'bg-[#000033] shadow-slate-900/30 hover:scale-105'}`}
+          className={`w-12 h-12 md:w-14 md:h-14 rounded-full text-white flex items-center justify-center shadow-xl transition-all cursor-pointer border-none ${open ? 'bg-[#000033] shadow-slate-900/30' : 'bg-[#000033] hover:bg-[#000044] shadow-slate-900/30 hover:scale-105'}`}
         >
           {open ? (
             <svg viewBox="0 0 24 24" className="w-6 h-6 fill-none stroke-current stroke-[2.5]">
@@ -128,113 +149,138 @@ export default function AlexChatWidget() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-[88px] right-6 md:right-32 z-[99990] w-[90vw] md:w-[360px] h-[75vh] md:h-[580px] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-200">
+        <div className="fixed bottom-[88px] right-4 md:right-28 z-[99990] w-[92vw] sm:w-[380px] h-[78vh] sm:h-[580px] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-200/90 font-sans">
           
           {/* Header */}
-          <div className="bg-[#000033] px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-[#000033] px-5 py-3.5 flex items-center justify-between shrink-0 text-white">
             <button
               onClick={() => setOpen(false)}
-              className="text-white hover:text-slate-200 border-none bg-transparent cursor-pointer focus:outline-none p-1"
+              className="text-slate-300 hover:text-white border-none bg-transparent cursor-pointer focus:outline-none p-1"
             >
-              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 stroke-current stroke-[2]">
+              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 stroke-current stroke-[2.5]">
                 <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            <div className="flex items-center gap-2">
-              <div className="relative w-7 h-7 rounded-full bg-slate-400 overflow-hidden shrink-0">
-                 <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
-                 <svg viewBox="0 0 24 24" className="w-5 h-5 text-slate-100 absolute inset-0 m-auto z-0">
+
+            <div className="flex items-center gap-2.5">
+              <div className="relative w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shrink-0 overflow-hidden border border-blue-400 shadow-sm">
+                <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
+                <svg viewBox="0 0 24 24" className="w-5 h-5 text-white absolute inset-0 m-auto z-0">
                   <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                 </svg>
               </div>
-              <p className="text-white text-sm font-bold">{startedLabel}</p>
+              <div className="text-left">
+                <p className="text-white text-xs font-black leading-tight">Alex (2all.ai AI Assistant)</p>
+                <p className="text-[10px] text-emerald-400 font-bold leading-none flex items-center gap-1 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Online 24/7
+                </p>
+              </div>
             </div>
-            <button className="text-white hover:text-slate-200 border-none bg-transparent cursor-pointer focus:outline-none p-1">
-              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-                <circle cx="12" cy="5" r="1.5" fill="currentColor" />
-                <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-                <circle cx="12" cy="19" r="1.5" fill="currentColor" />
+
+            <button 
+              onClick={() => setOpen(false)}
+              className="text-slate-300 hover:text-white border-none bg-transparent cursor-pointer focus:outline-none p-1"
+            >
+              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 stroke-current stroke-[2.5]">
+                <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
           </div>
 
-          {/* Notice bar */}
-          <div className="bg-white px-8 pt-4 pb-2 text-center shrink-0">
+          {/* Privacy Notice Banner */}
+          <div className="bg-slate-50 px-4 py-2 border-b border-slate-100 text-center shrink-0">
             <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
-              This chat is recorded using a cloud service and is subject to the terms of our{" "}
-              <a href="#" className="underline text-slate-600">Privacy Notice ↗</a>.
+              Conversations are monitored for quality. Read our{" "}
+              <a href="/security-and-privacy" className="underline font-bold text-blue-600">Privacy Policy ↗</a>.
             </p>
           </div>
 
-          {/* Messages area */}
-          <div className="flex-1 overflow-y-auto p-5 pb-2 space-y-6 bg-white flex flex-col">
-            <p className="text-center text-[10px] text-slate-400 font-medium">{startedAt}</p>
+          {/* Messages Container */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 flex flex-col">
+            <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider">{startedLabel}</p>
 
             {messages.map((msg, i) => (
               <div key={i} className={`flex flex-col ${msg.from === "user" ? "items-end" : "items-start"}`}>
-                
                 {msg.from === "alex" && (
-                  <p className="text-[11px] font-medium text-slate-500 mb-1 ml-10">Alex</p>
+                  <span className="text-[10px] font-black text-slate-400 mb-1 ml-10">Alex</span>
                 )}
                 
-                <div className={`flex items-end gap-2 ${msg.from === "user" ? "flex-row-reverse" : ""}`}>
+                <div className={`flex items-end gap-2 max-w-[88%] ${msg.from === "user" ? "flex-row-reverse" : ""}`}>
                   {msg.from === "alex" && (
-                    <div className="relative w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center shrink-0 overflow-hidden border border-slate-200 shadow-sm">
-                       <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
-                       <svg viewBox="0 0 24 24" className="w-6 h-6 text-slate-400 absolute inset-0 m-auto z-0">
+                    <div className="relative w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center shrink-0 overflow-hidden border border-blue-400 shadow-sm">
+                      <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
+                      <svg viewBox="0 0 24 24" className="w-4 h-4 text-white absolute inset-0 m-auto z-0">
                         <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                       </svg>
                     </div>
                   )}
                   
-                  <div className={`rounded-3xl px-4 py-2.5 max-w-[230px] text-sm text-slate-800 ${
+                  <div className={`rounded-2xl px-4 py-2.5 text-xs font-semibold leading-relaxed shadow-sm ${
                     msg.from === "alex"
-                      ? "bg-[#f3f4f6]"
-                      : "bg-[#f3f4f6] text-right"
+                      ? "bg-white text-slate-800 border border-slate-200/80 rounded-tl-sm"
+                      : "bg-blue-600 text-white rounded-tr-sm"
                   }`}>
-                    <span style={{ whiteSpace: "pre-wrap" }}>{msg.text}</span>
+                    <span className="whitespace-pre-wrap">{msg.text}</span>
                   </div>
                 </div>
-
-                {msg.from === "alex" && (
-                  <p className="text-[10px] font-medium text-slate-400 mt-1 ml-10">Just now</p>
-                )}
               </div>
             ))}
 
-            {/* Quick-reply option buttons */}
-            {!quickReplied && (
-              <div className="space-y-3 pt-4 flex flex-col items-center">
-                {["I have an accessiBe account", "I want my website more accessible"].map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => handleQuickReply(opt)}
-                    className="w-auto px-5 text-sm font-medium text-[#1c64f2] border border-[#1c64f2] rounded-full py-2 hover:bg-blue-50 transition-colors cursor-pointer bg-white text-center"
-                  >
-                    {opt}
-                  </button>
-                ))}
+            {/* AI Typing Indicator */}
+            {isTyping && (
+              <div className="flex items-center gap-2 text-slate-400 ml-10 text-xs font-bold">
+                <span className="w-2 h-2 rounded-full bg-blue-600 animate-bounce" />
+                <span className="w-2 h-2 rounded-full bg-blue-600 animate-bounce [animation-delay:0.2s]" />
+                <span className="w-2 h-2 rounded-full bg-blue-600 animate-bounce [animation-delay:0.4s]" />
+                <span className="text-[10px] text-slate-400 ml-1">Alex is typing...</span>
               </div>
             )}
+
+            {/* Interactive Quick Action Pills */}
+            <div className="space-y-2 pt-2 flex flex-col items-center">
+              {[
+                "I want my website more accessible",
+                "I have a 2all.ai account",
+                "How to install widget code",
+                "Is 2all.ai ADA & WCAG compliant?",
+                "Book a live demo",
+              ].map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => handleQuickReply(opt)}
+                  className="w-full text-xs font-bold text-blue-600 hover:text-blue-700 bg-white hover:bg-blue-50/80 border border-blue-200 rounded-xl py-2 px-3 transition-all cursor-pointer text-center shadow-sm hover:border-blue-300"
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Message input */}
-          <div className="bg-white p-4 pb-6 shrink-0">
-            <div className="relative">
+          {/* Input Box */}
+          <div className="bg-white p-3 border-t border-slate-100 shrink-0">
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full px-4 py-1.5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
               <input
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
-                placeholder="Type a message"
-                className="w-full border-2 border-[#1c64f2] rounded-full px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all placeholder:text-slate-500"
+                placeholder="Ask Alex a question..."
+                className="w-full bg-transparent text-xs font-semibold text-slate-800 focus:outline-none placeholder:text-slate-400"
               />
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-slate-800 animate-pulse" style={{ display: message ? 'none' : 'block' }}></div>
+              <button
+                onClick={() => handleSend()}
+                disabled={!message.trim()}
+                className="w-8 h-8 rounded-full bg-blue-600 disabled:bg-slate-300 text-white flex items-center justify-center cursor-pointer border-none shadow-sm shrink-0 transition-all"
+              >
+                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 stroke-current stroke-[2.5]">
+                  <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
             </div>
           </div>
+
         </div>
       )}
     </>
   );
 }
-

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
-import { CheckCircle2, Loader2, Sparkles, ShieldCheck, Mail, Phone, Calendar } from "lucide-react";
+import { CheckCircle2, Loader2, Sparkles, ShieldCheck, Mail, Phone, Calendar, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function DemoPage() {
@@ -60,27 +60,31 @@ export default function DemoPage() {
       <Navbar />
 
       {/* 1. HERO HEADER */}
-      <section className="bg-gradient-to-b from-[#0b3c96] to-[#041d57] text-white pt-32 pb-24 px-6 text-center relative overflow-hidden shrink-0">
+      <section className="bg-gradient-to-b from-[#0b3c96] to-[#041d57] text-white pt-6 pb-8 md:pb-10 relative overflow-hidden shrink-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(127,216,255,0.08)_0%,transparent_60%)] pointer-events-none" />
         
-        <div className="max-w-4xl mx-auto flex flex-col items-center space-y-6 relative z-10">
-          <Breadcrumbs 
-            theme="dark" 
-            items={[ { label: "Home", href: "/" }, { label: "Book a Demo" } ]} 
-          />
+        <div className="max-w-7xl mx-auto px-4 md:px-8 w-full relative z-10">
+          <div className="flex justify-start text-left mb-2">
+            <Breadcrumbs 
+              theme="dark" 
+              items={[ { label: "Home", href: "/" }, { label: "Book a Demo" } ]} 
+            />
+          </div>
           
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
-            Schedule a <span className="text-[#C8FF4D]">Demo</span>
-          </h1>
-          
-          <p className="text-slate-200 text-lg md:text-xl font-light max-w-2xl leading-relaxed">
-            Let our compliance experts show you how to automate your web accessibility, protect your site, and conform to regulations.
-          </p>
+          <div className="max-w-3xl mx-auto text-center space-y-3">
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight text-center">
+              Schedule a <span className="text-[#C8FF4D]">Demo</span>
+            </h1>
+            
+            <p className="text-slate-200 text-base md:text-lg font-light max-w-2xl mx-auto leading-relaxed text-center">
+              Let our compliance experts show you how to automate your web accessibility, protect your site, and conform to regulations.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* 2. SPLIT LAYOUT */}
-      <section className="py-24 px-6 bg-white">
+      <section className="py-10 md:py-14 px-6 bg-white">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-16 items-start">
           {/* Left Column: Benefits (5 columns) */}
           <div className="lg:col-span-5 space-y-8 text-left">
@@ -101,8 +105,8 @@ export default function DemoPage() {
                       <Icon className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{b.title}</h4>
-                      <p className="text-slate-500 text-xs mt-1 leading-relaxed max-w-md">{b.desc}</p>
+                      <h4 className="text-base font-extrabold text-slate-900 leading-snug">{b.title}</h4>
+                      <p className="text-xs md:text-sm text-slate-500 font-normal mt-1 leading-relaxed max-w-md">{b.desc}</p>
                     </div>
                   </div>
                 );
@@ -168,13 +172,52 @@ export default function DemoPage() {
                 <div className="grid sm:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider px-1">Prefix</label>
-                    <input
-                      type="text"
-                      value={phonePrefix}
-                      onChange={(e) => setPhonePrefix(e.target.value)}
-                      placeholder="+91"
-                      className="w-full bg-white border border-slate-200 rounded-xl py-2.5 px-3 text-sm font-semibold outline-none focus:border-blue-500 transition-all shadow-inner"
-                    />
+                    <div className="relative">
+                      <select
+                        value={phonePrefix}
+                        onChange={(e) => setPhonePrefix(e.target.value)}
+                        className="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-3 pr-8 text-sm font-semibold outline-none focus:border-blue-500 transition-all shadow-inner appearance-none cursor-pointer text-slate-800"
+                      >
+                        <option value="+91">+91 (India)</option>
+                        <option value="+1">+1 (US / Canada)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+61">+61 (Australia)</option>
+                        <option value="+49">+49 (Germany)</option>
+                        <option value="+33">+33 (France)</option>
+                        <option value="+81">+81 (Japan)</option>
+                        <option value="+86">+86 (China)</option>
+                        <option value="+971">+971 (UAE)</option>
+                        <option value="+65">+65 (Singapore)</option>
+                        <option value="+55">+55 (Brazil)</option>
+                        <option value="+27">+27 (South Africa)</option>
+                        <option value="+82">+82 (South Korea)</option>
+                        <option value="+34">+34 (Spain)</option>
+                        <option value="+39">+39 (Italy)</option>
+                        <option value="+7">+7 (Russia)</option>
+                        <option value="+52">+52 (Mexico)</option>
+                        <option value="+64">+64 (New Zealand)</option>
+                        <option value="+31">+31 (Netherlands)</option>
+                        <option value="+41">+41 (Switzerland)</option>
+                        <option value="+46">+46 (Sweden)</option>
+                        <option value="+47">+47 (Norway)</option>
+                        <option value="+48">+48 (Poland)</option>
+                        <option value="+90">+90 (Turkey)</option>
+                        <option value="+62">+62 (Indonesia)</option>
+                        <option value="+63">+63 (Philippines)</option>
+                        <option value="+60">+60 (Malaysia)</option>
+                        <option value="+84">+84 (Vietnam)</option>
+                        <option value="+92">+92 (Pakistan)</option>
+                        <option value="+880">+880 (Bangladesh)</option>
+                        <option value="+20">+20 (Egypt)</option>
+                        <option value="+234">+234 (Nigeria)</option>
+                        <option value="+254">+254 (Kenya)</option>
+                        <option value="+54">+54 (Argentina)</option>
+                        <option value="+966">+966 (Saudi Arabia)</option>
+                      </select>
+                      <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                        <ChevronDown className="w-4 h-4" />
+                      </div>
+                    </div>
                   </div>
                   <div className="space-y-1.5 sm:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider px-1">Phone Number</label>

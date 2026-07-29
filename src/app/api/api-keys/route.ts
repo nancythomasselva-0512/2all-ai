@@ -89,6 +89,20 @@ export async function POST(req: Request) {
       details: { keyId: newKey.id, name: newKey.name, domainName: newKey.domainName },
     });
 
+    // Send email notification with script snippet to User + Admin (non-blocking)
+    try {
+      const userEmail = session.user?.email || "";
+      const userName = session.user?.name || "Subscriber";
+      if (userEmail) {
+        const { sendApiKeyNotificationEmail } = await import("@/lib/mail");
+        sendApiKeyNotificationEmail(userEmail, userName, newKey.name, newKey.key, newKey.domainName || undefined).catch(e =>
+          console.error("API key mail trigger error:", e)
+        );
+      }
+    } catch (mailErr) {
+      console.error("Failed to import mail utility:", mailErr);
+    }
+
     return NextResponse.json(newKey, { status: 201 });
   } catch (error: any) {
     console.error("Error creating API key:", error);

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useAccessibility } from "@/context/AccessibilityContext";
 import { 
   LayoutDashboard, UserCircle, Settings2, 
-  Palette, Bot, Search, RefreshCcw, X
+  Palette, Bot, Search, RefreshCcw, X, EyeOff
 } from "lucide-react";
 
 // Sections
@@ -17,12 +17,13 @@ import AIAssistantSection from "./sections/AIAssistantSection";
 
 type Tab = "dashboard" | "profiles" | "features" | "vision" | "ai";
 
-// Searchable keywords for each tab — used to auto-switch tabs on search
+// Searchable keywords for each tab
 const tabKeywords: Record<Tab, string[]> = {
   dashboard: [],
   profiles: [
     "dyslexia", "adhd", "low vision", "screen reader", "blind", "cognitive",
-    "reading mode", "night mode", "seizure", "motor", "keyboard", "profile"
+    "reading mode", "night mode", "seizure", "motor", "keyboard", "profile",
+    "visually impaired", "epilepsy", "blindness"
   ],
   features: [
     "font", "size", "letter spacing", "word spacing", "line height", "readable",
@@ -34,14 +35,15 @@ const tabKeywords: Record<Tab, string[]> = {
     "contrast", "dark mode", "light mode", "color blind", "blue",
     "tritanopia", "protanopia", "deuteranopia", "red blind", "green blind",
     "blue blind", "achromatopsia", "monochromacy", "color", "vision", "colour",
-    "high contrast", "dark", "light"
+    "high contrast", "dark contrast", "dark", "light", "monochrome", "saturation",
+    "high saturation", "low saturation"
   ],
   ai: ["ai", "assistant", "chat", "help", "recommend", "auto"]
 };
 
 function findBestTab(query: string): Tab | null {
   const q = query.toLowerCase();
-  const order: Tab[] = ["features", "vision", "profiles", "ai"];
+  const order: Tab[] = ["profiles", "features", "vision", "ai"];
   for (const tab of order) {
     if (tabKeywords[tab].some(kw => kw.includes(q) || q.includes(kw))) {
       return tab;
@@ -51,14 +53,14 @@ function findBestTab(query: string): Tab | null {
 }
 
 export default function AccessibilityPanel() {
-  const { resetSettings } = useAccessibility();
+  const { resetSettings, togglePanel } = useAccessibility();
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   const [manualTab, setManualTab] = useState(false);
 
   const tabs = [
     { id: "dashboard", icon: LayoutDashboard, label: "Home" },
-    { id: "profiles", icon: UserCircle, label: "Profiles" },
+    { id: "profiles", icon: UserCircle, label: "Modes" },
     { id: "features", icon: Settings2, label: "Features" },
     { id: "vision", icon: Palette, label: "Vision" },
     { id: "ai", icon: Bot, label: "AI Assist" },
@@ -92,79 +94,80 @@ export default function AccessibilityPanel() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      id="accessibility-panel"
+      initial={{ opacity: 0, y: 30, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 20, scale: 0.95 }}
+      exit={{ opacity: 0, y: 20, scale: 0.96 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="fixed bottom-24 right-6 w-[420px] max-w-[calc(100vw-3rem)] h-[650px] max-h-[calc(100vh-8rem)] z-[99998] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-white/20 bg-white/90 backdrop-blur-2xl flex flex-col font-sans"
+      className="fixed bottom-20 right-4 sm:right-6 w-[360px] sm:w-[380px] h-[510px] max-h-[calc(100vh-6rem)] z-[2147483648] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.22)] border border-slate-200/90 bg-white backdrop-blur-xl flex flex-col font-sans select-none"
     >
-      {/* Dynamic Background Glows */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden -z-10">
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-cyan-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-      </div>
-
-      {/* Header */}
-      <div className="px-6 pt-6 pb-4 border-b border-slate-200/50 shrink-0 bg-white/50 backdrop-blur-md relative z-10">
-        <div className="flex items-center justify-between mb-4">
+      {/* Compact Header */}
+      <div className="px-4 pt-3.5 pb-2.5 border-b border-slate-100 shrink-0 bg-white relative z-10">
+        <div className="flex items-center justify-between mb-2">
           <div>
-            <h2 className="text-xl font-black text-[#0a1e3f] tracking-tight">Accessibility Center</h2>
-            <p className="text-xs font-bold text-blue-600 tracking-widest uppercase mt-0.5">Powered by AI</p>
+            <h2 className="text-base font-extrabold text-slate-900 tracking-tight leading-none">Accessibility</h2>
+            <p className="text-[11px] font-semibold text-slate-500 mt-0.5">Accessibility modes</p>
           </div>
+          
           <button 
-            onClick={resetSettings}
-            className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors bg-white hover:bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200 shadow-sm"
+            onClick={togglePanel}
+            className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center border border-slate-200/80 shadow-xs cursor-pointer transition-all hover:scale-105 active:scale-95"
+            aria-label="Close panel"
           >
-            <RefreshCcw className="w-3.5 h-3.5" /> Reset
+            <X className="w-3.5 h-3.5 stroke-[2.5]" />
           </button>
         </div>
 
-        {/* Search */}
+        {/* Compact Search Input */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
           <input 
             type="text" 
             placeholder="Search accessibility features..." 
             value={searchQuery}
             onChange={handleSearch}
-            className="w-full bg-white/80 border border-slate-200 rounded-xl py-2.5 pl-10 pr-9 text-sm font-semibold text-[#0a1e3f] outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-inner"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg py-1.5 pl-8 pr-8 text-xs font-medium text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition-all"
           />
           {searchQuery && (
             <button
               onClick={clearSearch}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 bg-transparent border-none cursor-pointer p-0.5"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 bg-transparent border-none cursor-pointer p-0.5"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
-
-        {/* Show which tab we auto-navigated to during search */}
-        {searchQuery && (
-          <p className="text-[10px] text-blue-500 font-semibold mt-2 px-1">
-            Showing results in{" "}
-            <span className="font-black capitalize">
-              {tabs.find(t => t.id === activeTab)?.label ?? activeTab}
-            </span>{" "}
-            tab — click any tab to switch manually
-          </p>
-        )}
       </div>
 
-      {/* Content Area */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden relative z-10 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent">
-        <div className="p-6">
-          {activeTab === "dashboard" && <DashboardSection setActiveTab={setActiveTab} searchQuery={searchQuery} />}
-          {activeTab === "profiles" && <ProfilesSection searchQuery={searchQuery} />}
-          {activeTab === "features" && <CoreFeaturesSection searchQuery={searchQuery} />}
-          {activeTab === "vision" && <ColorVisionSection searchQuery={searchQuery} />}
-          {activeTab === "ai" && <AIAssistantSection />}
-        </div>
+      {/* Compact Content Area */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden relative z-10 p-3 space-y-2 scrollbar-thin scrollbar-thumb-slate-300">
+        {activeTab === "profiles" && <ProfilesSection searchQuery={searchQuery} />}
+        {activeTab === "dashboard" && <DashboardSection setActiveTab={setActiveTab} searchQuery={searchQuery} />}
+        {activeTab === "features" && <CoreFeaturesSection searchQuery={searchQuery} />}
+        {activeTab === "vision" && <ColorVisionSection searchQuery={searchQuery} />}
+        {activeTab === "ai" && <AIAssistantSection />}
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="shrink-0 bg-white/80 backdrop-blur-xl border-t border-slate-200/50 p-2 relative z-10">
-        <div className="flex justify-between items-center max-w-sm mx-auto">
+      {/* Compact Bottom Action Bar */}
+      <div className="px-3 py-2.5 bg-white border-t border-slate-100 flex items-center justify-center gap-2 shrink-0">
+        <button
+          onClick={resetSettings}
+          className="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl border-none cursor-pointer shadow-xs transition-all active:scale-95 flex items-center justify-center gap-1.5"
+        >
+          <RefreshCcw className="w-3.5 h-3.5" />
+          Reset Settings
+        </button>
+        <button
+          onClick={togglePanel}
+          className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-200/80 cursor-pointer transition-all active:scale-95 text-center"
+        >
+          Hide Forever
+        </button>
+      </div>
+
+      {/* Compact Bottom Navigation */}
+      <div className="shrink-0 bg-white border-t border-slate-200/80 p-1 relative z-20 shadow-xs">
+        <div className="flex justify-between items-center max-w-xs mx-auto px-1">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -172,17 +175,14 @@ export default function AccessibilityPanel() {
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id as Tab)}
-                className={`flex flex-col items-center justify-center w-16 h-14 rounded-xl relative transition-all duration-300 ${isActive ? "text-blue-600" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100/50"}`}
+                className={`flex flex-col items-center justify-center w-12 h-10 rounded-lg transition-all duration-200 cursor-pointer ${
+                  isActive 
+                    ? "text-blue-600 bg-blue-50/80 font-extrabold" 
+                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+                }`}
               >
-                {isActive && (
-                  <motion.div 
-                    layoutId="a11y-nav-bg"
-                    className="absolute inset-0 bg-blue-50 rounded-xl -z-10"
-                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  />
-                )}
-                <Icon className={`w-5 h-5 mb-1 ${isActive ? "stroke-[2.5]" : "stroke-2"}`} />
-                <span className={`text-[10px] ${isActive ? "font-bold" : "font-semibold"}`}>{tab.label}</span>
+                <Icon className={`w-3.5 h-3.5 mb-0.5 ${isActive ? "stroke-[2.5]" : "stroke-[1.8]"}`} />
+                <span className="text-[9.5px] tracking-tight">{tab.label}</span>
               </button>
             );
           })}

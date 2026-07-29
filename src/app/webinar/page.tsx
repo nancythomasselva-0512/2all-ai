@@ -45,22 +45,26 @@ export default function WebinarPage() {
       <Navbar />
 
       {/* 1. HERO HEADER */}
-      <section className="bg-gradient-to-b from-[#0b3c96] to-[#041d57] text-white pt-32 pb-24 px-6 text-center relative overflow-hidden shrink-0">
+      <section className="bg-gradient-to-b from-[#0b3c96] to-[#041d57] text-white pt-6 pb-8 md:pb-10 relative overflow-hidden shrink-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(127,216,255,0.08)_0%,transparent_60%)] pointer-events-none" />
         
-        <div className="max-w-4xl mx-auto flex flex-col items-center space-y-6 relative z-10">
-          <Breadcrumbs 
-            theme="dark" 
-            items={[ { label: "Home", href: "/" }, { label: "Webinars" } ]} 
-          />
+        <div className="max-w-7xl mx-auto px-4 md:px-8 w-full relative z-10">
+          <div className="flex justify-start text-left mb-2">
+            <Breadcrumbs 
+              theme="dark" 
+              items={[ { label: "Home", href: "/" }, { label: "Webinars" } ]} 
+            />
+          </div>
           
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
-            On-Demand <span className="text-[#C8FF4D]">Webinars</span>
-          </h1>
-          
-          <p className="text-slate-200 text-lg md:text-xl font-light max-w-2xl leading-relaxed">
-            Gain tactical insights on web accessibility audit guidelines, legal frameworks, and digital compliance from our team of industry experts.
-          </p>
+          <div className="max-w-3xl mx-auto text-center space-y-3">
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight text-center">
+              On-Demand <span className="text-[#C8FF4D]">Webinars</span>
+            </h1>
+            
+            <p className="text-slate-200 text-base md:text-lg font-light max-w-2xl mx-auto leading-relaxed text-center">
+              Gain tactical insights on web accessibility audit guidelines, legal frameworks, and digital compliance from our team of industry experts.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -191,10 +195,10 @@ export default function WebinarPage() {
                 {/* Details */}
                 <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
                   <div className="space-y-3">
-                    <h4 className="text-sm font-black text-slate-800 tracking-tight leading-snug line-clamp-2">
+                    <h4 className="text-base font-extrabold text-slate-900 tracking-tight leading-snug line-clamp-2">
                       {web.title}
                     </h4>
-                    <p className="text-slate-500 text-[11px] leading-relaxed line-clamp-2">
+                    <p className="text-xs md:text-sm text-slate-500 font-normal leading-relaxed line-clamp-2">
                       {web.speaker}
                     </p>
                   </div>

@@ -128,18 +128,19 @@ export default function ServicesSection() {
 
   return (
     <motion.section 
-      initial="hidden"
+      id="solutions"
+      initial="visible"
       whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true }}
       variants={{
-        hidden: { opacity: 0, y: 40 },
+        hidden: { opacity: 1, y: 0 },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+          transition: { duration: 0.5, ease: "easeOut", staggerChildren: 0.08 }
         }
       }}
-      className="pt-10 pb-10 md:pb-20 bg-slate-50 relative overflow-hidden select-none"
+      className="py-10 md:py-14 bg-slate-50 relative overflow-hidden select-none"
     >
       {/* Background soft blur visual assets */}
       <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-blue-100/20 rounded-full blur-[120px] pointer-events-none" />
@@ -148,13 +149,13 @@ export default function ServicesSection() {
       <div className="max-w-7xl mx-auto px-6 sm:px-12 relative z-10">
         
         {/* Section Heading */}
-        <div className="max-w-4xl mb-10 md:mb-16 space-y-4">
-          <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-xs font-bold uppercase tracking-widest text-blue-600 block">Unmatched Partnership Benefits</motion.span>
-          <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
-            Compliance Built on <span className="text-blue-600">Expertise & Support</span>
+        <div className="max-w-4xl mb-6 md:mb-8 space-y-3">
+          <motion.span variants={{ hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }} className="text-[11px] font-extrabold uppercase tracking-widest text-blue-600 block">END-TO-END SUPPORT & PROTECTION</motion.span>
+          <motion.h2 variants={{ hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight font-sans">
+            Compliance backed by <span className="text-blue-600 italic font-serif font-normal">human expertise</span>
           </motion.h2>
-          <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-slate-700 text-lg font-normal leading-relaxed">
-            We provide agencies, developers, and legal departments with all the assets, hands-on support, and compliance infrastructure needed to succeed.
+          <motion.p variants={{ hidden: { opacity: 1 }, visible: { opacity: 1 } }} className="text-slate-600 text-lg font-normal leading-relaxed">
+            Beyond automated software, 2all.ai delivers dedicated accessibility engineers, continuous team training, and complete legal defense support.
           </motion.p>
         </div>
 

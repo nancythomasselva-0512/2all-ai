@@ -37,7 +37,7 @@ interface AccessibilityState {
   textToSpeech: boolean;
   textMagnifier: boolean;
   textAlignment: TextAlignment;
-  // Speech & Reading
+  // Speech, Reading & Voice Navigation
   speechStatus: "stopped" | "playing" | "paused";
   selectedText: string;
   voice: string;
@@ -50,6 +50,9 @@ interface AccessibilityState {
   autoReadSelection: boolean;
   readingMode: "selected" | "page" | "none";
   isVoiceSettingsOpen: boolean;
+  voiceNavigation: boolean;
+  isVoiceListening: boolean;
+  lastVoiceCommand: string;
 }
 
 interface AccessibilityContextProps {
@@ -100,7 +103,10 @@ const defaultState: AccessibilityState = {
   autoScroll: true,
   autoReadSelection: false,
   readingMode: "none",
-  isVoiceSettingsOpen: false
+  isVoiceSettingsOpen: false,
+  voiceNavigation: false,
+  isVoiceListening: false,
+  lastVoiceCommand: ""
 };
 
 const AccessibilityContext = createContext<AccessibilityContextProps | undefined>(undefined);
@@ -228,13 +234,14 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     
     switch (profile) {
       case "dyslexia":
-        newSettings = { fontFamily: "dyslexic", letterSpacing: 1, wordSpacing: 0.2, lineHeight: 1.8 };
+        newSettings = { fontFamily: "dyslexic", letterSpacing: 0.5, wordSpacing: 0.05, lineHeight: 1.6 };
         break;
       case "adhd":
         newSettings = { readingMask: true, reduceMotion: true, stopAnimations: true, highlightLinks: true };
         break;
       case "low-vision":
-        newSettings = { fontSize: 150, isHighContrast: true, cursorSize: "huge", highlightHeadings: true };
+        // Visually Impaired Mode profile — clean contrast & moderate scaling without blue boxes
+        newSettings = { fontSize: 112, isHighContrast: true, cursorSize: "large", highlightHeadings: false };
         break;
       case "blind":
         // Screen Reader profile — optimises the page for screen reader users

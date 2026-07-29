@@ -34,18 +34,18 @@ export default function ComplianceSection() {
 
   return (
     <motion.section 
-      initial="hidden"
+      initial="visible"
       whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true }}
       variants={{
-        hidden: { opacity: 0, y: 40 },
+        hidden: { opacity: 1, y: 0 },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+          transition: { duration: 0.5, ease: "easeOut", staggerChildren: 0.08 }
         }
       }}
-      className="py-24 bg-white relative overflow-hidden select-none font-sans border-t border-slate-100"
+      className="py-8 md:py-12 bg-white relative overflow-hidden select-none font-sans border-t border-slate-100"
     >
       {/* Background radial flare */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />

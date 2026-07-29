@@ -151,14 +151,14 @@ export default function AccessibilityWidget() {
         </div>
       )}
 
-      {/* Floating Button */}
+      {/* Floating Button - Always visible at bottom-6 right-6 */}
       <motion.button
         initial={{ scale: 1, opacity: 1 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
         onClick={togglePanel}
-        className="fixed bottom-6 right-6 z-[2147483647] w-14 h-14 bg-[#004bff] hover:bg-[#003edd] text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,75,255,0.4)] transition-colors group border-2 border-white/20"
-        aria-label="Open Accessibility Center"
+        className="fixed bottom-6 right-6 z-[2147483647] w-14 h-14 bg-[#004bff] hover:bg-[#003edd] text-white rounded-full flex items-center justify-center shadow-[0_0_25px_rgba(0,75,255,0.45)] transition-colors group border-2 border-white/20 cursor-pointer"
+        aria-label="Toggle Accessibility Center"
       >
         <div className="absolute inset-0 rounded-full border border-[#004bff] animate-ping opacity-20 group-hover:opacity-40" />
         <AnimatePresence mode="wait">
@@ -168,7 +168,7 @@ export default function AccessibilityWidget() {
               initial={{ rotate: -90, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.15 }}
             >
               <X className="w-6 h-6 stroke-[3]" />
             </motion.div>
@@ -178,7 +178,7 @@ export default function AccessibilityWidget() {
               initial={{ rotate: 90, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.15 }}
             >
               <svg 
                 viewBox="0 0 24 24" 

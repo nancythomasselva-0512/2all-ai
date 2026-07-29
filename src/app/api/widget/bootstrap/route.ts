@@ -130,7 +130,7 @@ async function handleBootstrap(req: Request) {
       },
     });
 
-    // Check plan limits
+    // 4. Check plan limits & 7-Day Free Trial status
     const plan = user.plan || "NONE";
     let limit = 999; // Micro default
     if (plan.toLowerCase() === "business") limit = 29999;
@@ -138,7 +138,17 @@ async function handleBootstrap(req: Request) {
 
     const overageWarning = usageLog.pageViews > limit;
 
-    // 4. Fetch Published Widget Config
+    // 7-Day Free Trial Calculation
+    const TRIAL_DAYS = 7;
+    const userCreatedAt = new Date(user.createdAt).getTime();
+    const now = Date.now();
+    const trialDurationMs = TRIAL_DAYS * 24 * 60 * 60 * 1000;
+    const isPaidUser = user.paymentStatus === "PAID" || ["PRO", "BUSINESS", "ENTERPRISE"].includes((user.plan || "").toUpperCase()) || ["ADMIN", "SUPER_ADMIN"].includes((user.role || "").toUpperCase());
+
+    const isTrialExpired = !isPaidUser && (now - userCreatedAt > trialDurationMs);
+    const daysRemaining = isPaidUser ? 999 : Math.max(0, Math.ceil((trialDurationMs - (now - userCreatedAt)) / (1000 * 60 * 60 * 24)));
+
+    // 5. Fetch Published Widget Config
     let configRecord = await prisma.widgetConfig.findUnique({
       where: { userId },
     });
@@ -164,8 +174,17 @@ async function handleBootstrap(req: Request) {
         domain: targetDomain,
         config: publishedConfig,
         scriptUrl: "/widget-core.js",
-        overageWarning,
-        overageMessage: overageWarning
+        trialInfo: {
+          isPaidUser,
+          isTrialExpired,
+          daysRemaining,
+          trialPeriodDays: TRIAL_DAYS,
+          upgradeUrl: "https://2all.ai/pricing"
+        },
+        overageWarning: overageWarning || isTrialExpired,
+        overageMessage: isTrialExpired
+          ? "Your 7-day free trial has expired. Upgrade your plan at 2all.ai to reactivate accessibility suite."
+          : overageWarning
           ? `Monthly pageview limit (${limit.toLocaleString()}) exceeded for ${plan} plan.`
           : null,
       },

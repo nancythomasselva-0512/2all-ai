@@ -19,6 +19,8 @@ import {
   Check,
 } from "lucide-react";
 import InstallCodeBlock from "@/components/dashboard/InstallCodeBlock";
+import PageHelpTooltip from "@/components/ui/PageHelpTooltip";
+import DemoModal from "@/components/marketing/DemoModal";
 
 const PLAN_CARDS = [
   {
@@ -67,9 +69,11 @@ const NAV_ITEMS: { label: string; icon: any; tab: Tab }[] = [
 ];
 
 function PlanContent() {
+  const [isDemoOpen, setIsDemoOpen] = useState(false);
+
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-black text-slate-800 tracking-tight">Plan and payments</h1>
+      <h1 className="text-2xl font-black text-slate-800 tracking-tight font-['Times_New_Roman']">Plan and payments</h1>
 
       {/* Current plan banner */}
       <div className="bg-[#eef4ff] border border-blue-100 rounded-3xl p-5 flex items-center justify-between gap-4 shadow-sm">
@@ -78,9 +82,9 @@ function PlanContent() {
             <CreditCard className="w-5 h-5 text-blue-600 stroke-[2.5]" />
           </div>
           <div>
-            <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Current Plan</p>
-            <p className="text-sm font-black text-blue-900">Free Trial</p>
-            <p className="text-[10px] text-blue-600/70 font-bold mt-0.5">Your free trial gives you access to basic features. Upgrade to unlock full AI accessibility.</p>
+            <p className="text-xs font-bold text-blue-900 uppercase tracking-widest font-sans">Current Plan</p>
+            <p className="text-sm font-semibold text-blue-900 tracking-tight leading-snug font-sans">Free Trial</p>
+            <p className="text-sm font-normal text-blue-900 leading-relaxed font-sans mt-0.5">Your free trial gives you access to basic features. Upgrade to unlock full AI accessibility.</p>
           </div>
         </div>
         <span className="px-3 py-1 bg-amber-100 text-amber-600 rounded-full text-[10px] font-black uppercase tracking-wider shrink-0">Active</span>
@@ -105,10 +109,10 @@ function PlanContent() {
               {plan.price}
               {plan.per && <span className="text-xs text-slate-400 font-normal ml-1">{plan.per}</span>}
             </p>
-            <ul className="space-y-2 mb-5 flex-1">
+            <ul className="space-y-2.5 mb-6 flex-1">
               {plan.features.map((f) => (
-                <li key={f} className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                  <Check className="w-3.5 h-3.5 text-blue-500 shrink-0 stroke-[2.5]" />
+                <li key={f} className="flex items-center gap-2.5 text-sm font-semibold text-slate-700">
+                  <Check className="w-4 h-4 text-blue-500 shrink-0 stroke-[2.5]" />
                   {f}
                 </li>
               ))}
@@ -116,7 +120,7 @@ function PlanContent() {
             {plan.href ? (
               <Link
                 href={plan.href}
-                className={`w-full py-2.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider text-center transition-all ${
+                className={`w-full py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider text-center transition-all ${
                   plan.popular
                     ? "bg-blue-600 hover:bg-blue-700 text-white"
                     : "bg-slate-100 hover:bg-slate-200 text-slate-700"
@@ -125,13 +129,21 @@ function PlanContent() {
                 Upgrade Now
               </Link>
             ) : (
-              <button className="w-full py-2.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider text-center bg-slate-100 hover:bg-slate-200 text-slate-700 cursor-pointer border-none">
+              <button 
+                onClick={() => setIsDemoOpen(true)}
+                className="w-full py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider text-center bg-slate-900 hover:bg-blue-600 text-white cursor-pointer border-none transition-colors"
+              >
                 Contact Sales
               </button>
             )}
           </div>
         ))}
       </div>
+
+      <DemoModal 
+        isOpen={isDemoOpen}
+        onClose={() => setIsDemoOpen(false)}
+      />
     </div>
   );
 }
@@ -139,7 +151,7 @@ function PlanContent() {
 function ComingSoonContent({ title }: { title: string }) {
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-black text-slate-800 tracking-tight">{title}</h1>
+      <h1 className="text-2xl font-black text-slate-800 tracking-tight font-['Times_New_Roman']">{title}</h1>
       <div className="bg-white border border-slate-200/80 rounded-3xl p-12 shadow-sm flex flex-col items-center justify-center text-center gap-4">
         <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center border border-blue-100">
           <Rocket className="w-7 h-7 text-blue-500 stroke-[2]" />
@@ -182,8 +194,8 @@ function UpgradeBanner({ title, sub, cta }: { title: string; sub: string; cta?: 
           </svg>
         </div>
         <div>
-          <p className="text-xs font-black text-purple-800">{title}</p>
-          <p className="text-[10px] font-semibold text-purple-600/80">{sub}</p>
+          <p className="text-sm font-semibold text-purple-900 tracking-tight leading-snug font-sans">{title}</p>
+          <p className="text-sm font-normal text-purple-700 leading-relaxed font-sans mt-0.5">{sub}</p>
         </div>
       </div>
       <Link
@@ -196,21 +208,41 @@ function UpgradeBanner({ title, sub, cta }: { title: string; sub: string; cta?: 
   );
 }
 
-/* ── 1. Remediation Report ── */
 function RemediationReportContent() {
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-black text-slate-800 tracking-tight">Remediation report</h1>
-        <p className="text-xs text-slate-500 font-semibold mt-1 leading-relaxed max-w-2xl">
-          Get a detailed monthly report of all accessibility remediations and code changes accessWidget has applied to your website.
-        </p>
+      <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center font-['Times_New_Roman']">
+        Remediation report
+        <PageHelpTooltip
+          title="Remediation Report"
+          purpose="View a detailed monthly record of all automated code fixes and accessibility corrections applied by 2all.ai to your website."
+          features={[
+            "Track automated ARIA attribute and contrast fixes",
+            "View date-stamped remediations by WCAG category",
+            "Export proof of ongoing accessibility remediation for legal compliance"
+          ]}
+        />
+      </h1>
+
+      <div className="bg-[#eef4ff] border border-blue-100 rounded-3xl p-5 flex items-center gap-4 shadow-sm relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.02)_0%,transparent_70%)] pointer-events-none" />
+        <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 text-blue-600 shadow-inner">
+          <BarChart3 className="w-5 h-5 stroke-[2.5]" />
+        </div>
+        <div className="space-y-2 text-left font-sans">
+          <p className="text-sm font-bold text-blue-900 font-sans tracking-normal">
+            Monthly Remediation Tracking Report
+          </p>
+          <p className="text-sm font-normal text-blue-900 leading-relaxed font-sans">
+            Get a detailed monthly report of all accessibility remediations and code changes 2all.ai has applied to your website.
+          </p>
+        </div>
       </div>
       <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
         <div className="p-5">
           <UpgradeBanner
             title="Advanced feature!"
-            sub="Upgrade your accessWidget plan to gain access to remediation reports"
+            sub="Upgrade your 2all.ai plan to gain access to remediation reports"
           />
           {/* Table header */}
           <div className="grid grid-cols-4 px-3 py-2 text-[10px] font-black text-slate-400 uppercase tracking-wider border-b border-slate-100">
@@ -233,11 +265,23 @@ function RemediationReportContent() {
 function AuditReportContent() {
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-black text-slate-800 tracking-tight">Audit report</h1>
-        <p className="text-xs text-slate-500 font-semibold mt-1 leading-relaxed max-w-2xl">
-          View the history of all monthly accessibility audits run for your websites and download the reports.
-        </p>
+      <h1 className="text-2xl font-black text-slate-800 tracking-tight font-['Times_New_Roman']">
+        Audit report
+      </h1>
+
+      <div className="bg-[#eef4ff] border border-blue-100 rounded-3xl p-5 flex items-center gap-4 shadow-sm relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.02)_0%,transparent_70%)] pointer-events-none" />
+        <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 text-blue-600 shadow-inner">
+          <ShieldCheck className="w-5 h-5 stroke-[2.5]" />
+        </div>
+        <div className="space-y-2 text-left font-sans">
+          <p className="text-sm font-bold text-blue-900 font-sans tracking-normal">
+            Monthly Accessibility Audit History
+          </p>
+          <p className="text-sm font-normal text-blue-900 leading-relaxed font-sans">
+            View the history of all monthly accessibility audits run for your websites and download the reports.
+          </p>
+        </div>
       </div>
       <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
         <div className="p-5">
@@ -263,60 +307,168 @@ function AuditReportContent() {
 
 /* ── 3. License Owner Info ── */
 function LicenseOwnerContent() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneCode, setPhoneCode] = useState("+1");
+  const [phoneDigits, setPhoneDigits] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
+
+  // Fetch existing data on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/user/license-owner");
+        if (res.ok) {
+          const data = await res.json();
+          setName(data.name ?? "");
+          setEmail(data.email ?? "");
+          // Split stored phone into code + digits if it looks like "+1 5551234"
+          if (data.phone) {
+            const match = data.phone.match(/^(\+\d+)\s*(.*)$/);
+            if (match) {
+              setPhoneCode(match[1]);
+              setPhoneDigits(match[2]);
+            } else {
+              setPhoneDigits(data.phone);
+            }
+          }
+        }
+      } catch {
+        // silently fail; user can still fill in manually
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const handleSave = async () => {
+    setStatus(null);
+    setSaving(true);
+    try {
+      const phone = phoneDigits.trim() ? `${phoneCode} ${phoneDigits.trim()}` : "";
+      const res = await fetch("/api/user/license-owner", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone }),
+      });
+      let data: any = {};
+      try { data = await res.json(); } catch { /* non-JSON response */ }
+      if (!res.ok) {
+        setStatus({ type: "error", msg: data.error || `Server error (${res.status}). Please try again.` });
+      } else {
+        setStatus({ type: "success", msg: "License owner info saved successfully." });
+      }
+    } catch (err: any) {
+      setStatus({ type: "error", msg: err?.message || "Failed to reach server. Please try again." });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-black text-slate-800 tracking-tight">License owner info</h1>
-        <p className="text-xs text-slate-500 font-semibold mt-1 leading-relaxed max-w-2xl">
-          This information is used in the accessibility statement and for sending account notifications based on your preferences in account settings.
-        </p>
+      <h1 className="text-2xl font-black text-slate-800 tracking-tight font-['Times_New_Roman']">
+        License owner info
+      </h1>
+
+      <div className="bg-[#eef4ff] border border-blue-100 rounded-3xl p-5 flex items-center gap-4 shadow-sm relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.02)_0%,transparent_70%)] pointer-events-none" />
+        <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 text-blue-600 shadow-inner">
+          <User className="w-5 h-5 stroke-[2.5]" />
+        </div>
+        <div className="space-y-2 text-left font-sans">
+          <p className="text-sm font-bold text-blue-900 font-sans tracking-normal">
+            License Owner & Organization Details
+          </p>
+          <p className="text-sm font-normal text-blue-900 leading-relaxed font-sans">
+            This information is used in the accessibility statement and for sending account notifications based on your preferences in account settings.
+          </p>
+        </div>
       </div>
       <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm p-6">
-        <div className="space-y-5 max-w-lg">
-          {/* Website owner's name */}
-          <div className="grid grid-cols-[200px_1fr] items-center gap-4">
-            <label className="text-xs font-black text-slate-700">Website owner&apos;s name</label>
-            <input
-              type="text"
-              placeholder=""
-              className="border border-slate-200 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-800 w-full focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all"
-            />
+        {loading ? (
+          <div className="flex items-center gap-3 py-6 text-slate-400">
+            <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+            <span className="text-xs font-semibold">Loading your info…</span>
           </div>
-          {/* Website owner's email */}
-          <div className="grid grid-cols-[200px_1fr] items-center gap-4">
-            <label className="text-xs font-black text-slate-700">Website owner&apos;s email</label>
-            <input
-              type="email"
-              placeholder=""
-              className="border border-slate-200 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-800 w-full focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all"
-            />
-          </div>
-          {/* Phone number */}
-          <div className="grid grid-cols-[200px_1fr] items-center gap-4">
-            <label className="text-xs font-black text-slate-700">Phone number</label>
-            <div className="flex items-center gap-2">
-              <select className="border border-slate-200 rounded-lg px-2 py-2.5 text-xs font-semibold text-slate-700 focus:outline-none focus:border-blue-400 transition-all bg-white shrink-0">
-                <option value="+1">🇺🇸 United States (+1)</option>
-                <option value="+44">🇬🇧 UK (+44)</option>
-                <option value="+91">🇮🇳 India (+91)</option>
-                <option value="+61">🇦🇺 Australia (+61)</option>
-                <option value="+49">🇩🇪 Germany (+49)</option>
-                <option value="+33">🇫🇷 France (+33)</option>
-              </select>
+        ) : (
+          <div className="space-y-5 max-w-lg">
+            {/* Status feedback */}
+            {status && (
+              <div className={`px-4 py-3 rounded-xl text-xs font-semibold border ${
+                status.type === "success"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                  : "bg-red-50 border-red-200 text-red-600"
+              }`}>
+                {status.msg}
+              </div>
+            )}
+
+            {/* Website owner's name */}
+            <div className="grid grid-cols-[220px_1fr] items-center gap-4">
+              <label className="text-sm font-black text-slate-700">Website owner&apos;s name</label>
               <input
-                type="tel"
-                placeholder="Phone digits here..."
-                className="border border-slate-200 rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-800 flex-1 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Jane Smith"
+                className="border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 w-full focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all"
               />
             </div>
+
+            {/* Website owner's email */}
+            <div className="grid grid-cols-[220px_1fr] items-center gap-4">
+              <label className="text-sm font-black text-slate-700">Website owner&apos;s email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="e.g. jane@example.com"
+                className="border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 w-full focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all"
+              />
+            </div>
+
+            {/* Phone number */}
+            <div className="grid grid-cols-[220px_1fr] items-center gap-4">
+              <label className="text-sm font-black text-slate-700">Phone number</label>
+              <div className="flex items-center gap-2">
+                <select
+                  value={phoneCode}
+                  onChange={(e) => setPhoneCode(e.target.value)}
+                  className="border border-slate-200 rounded-lg px-2 py-2.5 text-sm font-semibold text-slate-700 focus:outline-none focus:border-blue-400 transition-all bg-white shrink-0"
+                >
+                  <option value="+1">🇺🇸 United States (+1)</option>
+                  <option value="+44">🇬🇧 UK (+44)</option>
+                  <option value="+91">🇮🇳 India (+91)</option>
+                  <option value="+61">🇦🇺 Australia (+61)</option>
+                  <option value="+49">🇩🇪 Germany (+49)</option>
+                  <option value="+33">🇫🇷 France (+33)</option>
+                </select>
+                <input
+                  type="tel"
+                  value={phoneDigits}
+                  onChange={(e) => setPhoneDigits(e.target.value)}
+                  placeholder="Phone digits here..."
+                  className="border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 flex-1 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Save button */}
+            <div className="pt-2">
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-extrabold rounded-xl cursor-pointer border-none transition-colors flex items-center gap-2"
+              >
+                {saving && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />}
+                {saving ? "Saving…" : "Save Changes"}
+              </button>
+            </div>
           </div>
-          {/* Save button */}
-          <div className="pt-2">
-            <button className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold rounded-xl cursor-pointer border-none transition-colors">
-              Save Changes
-            </button>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -326,13 +478,25 @@ function LicenseOwnerContent() {
 function ProofOfEffortContent() {
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-black text-slate-800 tracking-tight">Proof of effort toolkit</h1>
-        <p className="text-xs text-slate-500 font-semibold mt-1 leading-relaxed max-w-2xl">
-          You&apos;ve taken steps to make your website accessible. The proof of effort toolkit compiles key documentation
-          that showcases your commitment to accessibility. If your website&apos;s accessibility is ever challenged (i.e.
-          you receive a demand letter), you&apos;ll have evidence to demonstrate your efforts and respond with confidence.
-        </p>
+      <h1 className="text-2xl font-black text-slate-800 tracking-tight font-['Times_New_Roman']">
+        Proof of effort toolkit
+      </h1>
+
+      <div className="bg-[#eef4ff] border border-blue-100 rounded-3xl p-5 flex items-center gap-4 shadow-sm relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.02)_0%,transparent_70%)] pointer-events-none" />
+        <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 text-blue-600 shadow-inner">
+          <Award className="w-5 h-5 stroke-[2.5]" />
+        </div>
+        <div className="space-y-2 text-left font-sans">
+          <p className="text-sm font-bold text-blue-900 font-sans tracking-normal">
+            Proof of Effort & Legal Compliance Toolkit
+          </p>
+          <p className="text-sm font-normal text-blue-900 leading-relaxed font-sans">
+            You&apos;ve taken steps to make your website accessible. The proof of effort toolkit compiles key documentation
+            that showcases your commitment to accessibility. If your website&apos;s accessibility is ever challenged (i.e.
+            you receive a demand letter), you&apos;ll have evidence to demonstrate your efforts and respond with confidence.
+          </p>
+        </div>
       </div>
       <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
         <div className="p-5">
@@ -358,76 +522,78 @@ function AccessibilityStatementContent({ domain }: { domain: string }) {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-['Times_New_Roman']">
       {/* Top bar: date + print button */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-slate-500">{today}</span>
+        <span className="text-[14px] font-normal text-slate-600 font-['Times_New_Roman']">{today}</span>
         <button
           onClick={() => window.print()}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold rounded-xl cursor-pointer border-none transition-colors"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-[14px] font-semibold rounded-xl cursor-pointer border-none transition-colors font-['Times_New_Roman']"
         >
           Print
         </button>
       </div>
 
       {/* Document card */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden font-['Times_New_Roman']">
         {/* Document header */}
-        <div className="p-8 pb-6 border-b border-slate-100">
+        <div className="p-8 pb-6 border-b border-slate-100 font-['Times_New_Roman']">
           <div className="flex items-start justify-between gap-6">
             <div>
-              <h1 className="text-2xl font-black text-blue-600 tracking-tight">Accessibility Statement</h1>
-              <div className="flex items-center gap-3 mt-1.5">
-                <span className="text-xs font-semibold text-slate-500">{domain}</span>
-                <span className="text-slate-200">|</span>
-                <span className="text-xs font-semibold text-slate-500">{today}</span>
+              <h1 className="text-2xl font-black text-blue-600 tracking-tight font-['Times_New_Roman']">Accessibility Statement</h1>
+              <div className="flex items-center gap-3 mt-2 font-['Times_New_Roman']">
+                <span className="text-[14px] font-normal text-slate-500 font-['Times_New_Roman']">{domain}</span>
+                <span className="text-slate-300">|</span>
+                <span className="text-[14px] font-normal text-slate-500 font-['Times_New_Roman']">{today}</span>
               </div>
             </div>
-            <div className="shrink-0 text-right">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Issued by</p>
-              <div className="flex items-center gap-1.5 justify-end">
+            <div className="shrink-0 text-right font-['Times_New_Roman']">
+              <p className="no-scale text-[13px] font-normal text-slate-500 mb-1 font-['Times_New_Roman']">Issued by</p>
+              <div className="flex items-center gap-1.5 justify-end font-['Times_New_Roman']">
                 <div className="w-5 h-5 bg-blue-600 rounded-md flex items-center justify-center">
                   <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3 stroke-white stroke-[2.5]">
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
                 </div>
-                <span className="text-sm font-black text-slate-800">2all.ai</span>
+                <span className="text-[15px] font-bold text-slate-800 font-['Times_New_Roman']">2all.ai</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Document body */}
-        <div className="p-8 space-y-6 text-sm text-slate-700 leading-relaxed">
-          <div className="space-y-3">
-            <h2 className="text-base font-black text-slate-900">Compliance status</h2>
-            <p>
-              We firmly believe that the internet should be available and accessible to anyone and are committed to
-              providing a website that is accessible to the broadest possible audience, regardless of ability.
-            </p>
-            <p>
-              To fulfill this, we aim to adhere as strictly as possible to the World Wide Web Consortium's (W3C) Web
-              Content Accessibility Guidelines 2.2 (WCAG 2.2) at the AA level. These guidelines explain how to make
-              web content accessible to people with a wide array of disabilities. Complying with those guidelines
-              helps us ensure that the website is accessible to blind people, people with motor impairments, visual
-              impairment, cognitive disabilities, and more.
-            </p>
-            <p>
-              This website utilizes various technologies that are meant to make it as accessible as possible at all times.
-              We utilize an accessibility interface that allows persons with specific disabilities to adjust the website's
-              UI (user interface) and design it to their personal needs.
-            </p>
-            <p>
-              Additionally, the website utilizes an AI-based application that runs in the background and optimizes its
-              accessibility level constantly. This application remediates the website's HTML, adapts its functionality
-              and behavior for screen-readers used by blind users, and for keyboard functions used by individuals with
-              motor impairments.
-            </p>
+        <div className="p-8 space-y-8 text-[15px] font-normal text-slate-700 leading-relaxed font-['Times_New_Roman']">
+          <div>
+            <h2 className="text-[16px] font-bold text-slate-900 font-['Times_New_Roman'] mb-3.5 mt-0 block">Compliance status</h2>
+            <div className="space-y-3.5">
+              <p className="no-scale text-[15px] font-normal text-slate-700 leading-relaxed font-['Times_New_Roman'] m-0">
+                We firmly believe that the internet should be available and accessible to anyone and are committed to
+                providing a website that is accessible to the broadest possible audience, regardless of ability.
+              </p>
+              <p className="no-scale text-[15px] font-normal text-slate-700 leading-relaxed font-['Times_New_Roman'] m-0">
+                To fulfill this, we aim to adhere as strictly as possible to the World Wide Web Consortium's (W3C) Web
+                Content Accessibility Guidelines 2.2 (WCAG 2.2) at the AA level. These guidelines explain how to make
+                web content accessible to people with a wide array of disabilities. Complying with those guidelines
+                helps us ensure that the website is accessible to blind people, people with motor impairments, visual
+                impairment, cognitive disabilities, and more.
+              </p>
+              <p className="no-scale text-[15px] font-normal text-slate-700 leading-relaxed font-['Times_New_Roman'] m-0">
+                This website utilizes various technologies that are meant to make it as accessible as possible at all times.
+                We utilize an accessibility interface that allows persons with specific disabilities to adjust the website's
+                UI (user interface) and design it to their personal needs.
+              </p>
+              <p className="no-scale text-[15px] font-normal text-slate-700 leading-relaxed font-['Times_New_Roman'] m-0">
+                Additionally, the website utilizes an AI-based application that runs in the background and optimizes its
+                accessibility level constantly. This application remediates the website's HTML, adapts its functionality
+                and behavior for screen-readers used by blind users, and for keyboard functions used by individuals with
+                motor impairments.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-3">
-            <h2 className="text-base font-black text-slate-900">Screen-reader and keyboard navigation</h2>
-            <p>
+          <div>
+            <h2 className="text-[16px] font-bold text-slate-900 font-['Times_New_Roman'] mb-3.5 mt-0 block">Screen-reader and keyboard navigation</h2>
+            <p className="no-scale text-[15px] font-normal text-slate-700 leading-relaxed font-['Times_New_Roman'] m-0">
               Our website implements the ARIA attributes (Accessible Rich Internet Applications) technique, alongside
               various different behavioral changes, to ensure blind users visiting with screen-readers are able to
               read, comprehend, and enjoy the website's functions. As soon as a user with a screen-reader enters your
@@ -436,9 +602,9 @@ function AccessibilityStatementContent({ domain }: { domain: string }) {
             </p>
           </div>
 
-          <div className="space-y-3">
-            <h2 className="text-base font-black text-slate-900">Disability profiles supported</h2>
-            <ul className="list-none space-y-2">
+          <div>
+            <h2 className="text-[16px] font-bold text-slate-900 font-['Times_New_Roman'] mb-3.5 mt-0 block">Disability profiles supported</h2>
+            <ul className="list-none space-y-3 p-0 m-0 font-['Times_New_Roman']">
               {[
                 { name: "Epilepsy Safe Mode", desc: "Reduces the risk of seizures by eliminating flashing or blinking animations and risky color combinations." },
                 { name: "Visually Impaired Mode", desc: "Optimizes the website for the experience of users with visual impairments such as Degrading Eyesight, Tunnel Vision, Cataract, Glaucoma, and others." },
@@ -447,28 +613,28 @@ function AccessibilityStatementContent({ domain }: { domain: string }) {
                 { name: "Blind Users (Screen-reader)", desc: "Optimizes the website's compatibility with screen-readers such as JAWS, NVDA, VoiceOver, and TalkBack." },
                 { name: "Keyboard Navigation Profile", desc: "Enables motor-impaired persons to operate the website using the keyboard Tab, Shift+Tab, and the Enter keys." },
               ].map((item) => (
-                <li key={item.name} className="flex items-start gap-2">
-                  <div className="w-4 h-4 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center shrink-0 mt-0.5">
+                <li key={item.name} className="flex items-start gap-2.5 text-[15px] font-normal text-slate-700 font-['Times_New_Roman']">
+                  <div className="w-3.5 h-3.5 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center shrink-0 mt-1">
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
                   </div>
-                  <span><strong className="font-black text-slate-800">{item.name}:</strong> {item.desc}</span>
+                  <span className="font-['Times_New_Roman']"><strong className="font-bold text-slate-900 font-['Times_New_Roman']">{item.name}:</strong> {item.desc}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="space-y-3">
-            <h2 className="text-base font-black text-slate-900">Additional UI, design, and readability adjustments</h2>
-            <p>
+          <div>
+            <h2 className="text-[16px] font-bold text-slate-900 font-['Times_New_Roman'] mb-3.5 mt-0 block">Additional UI, design, and readability adjustments</h2>
+            <p className="no-scale text-[15px] font-normal text-slate-700 leading-relaxed font-['Times_New_Roman'] m-0">
               In addition to the profiles above, we provide users the ability to change font sizes, spacing, alignment,
               colors, and more via accessibility tools built into our widget. Changes are stored via browser cookies and
               persist across sessions.
             </p>
           </div>
 
-          <div className="space-y-3">
-            <h2 className="text-base font-black text-slate-900">Assistive technology support</h2>
-            <p>
+          <div>
+            <h2 className="text-[16px] font-bold text-slate-900 font-['Times_New_Roman'] mb-3.5 mt-0 block">Assistive technology support</h2>
+            <p className="no-scale text-[15px] font-normal text-slate-700 leading-relaxed font-['Times_New_Roman'] m-0">
               We aim to support the widest array of browsers and assistive technologies as possible, so our users can
               choose the best fitting tools for them, with as few limitations as possible. We support all major systems
               including Windows and Mac ecosystems, major browsers including Chrome, Firefox, Safari, and Opera,
@@ -476,9 +642,9 @@ function AccessibilityStatementContent({ domain }: { domain: string }) {
             </p>
           </div>
 
-          <div className="bg-slate-50 rounded-xl p-5 border border-slate-100 space-y-2">
-            <h2 className="text-sm font-black text-slate-900">Got feedback or encountered an issue?</h2>
-            <p className="text-xs text-slate-600">
+          <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 space-y-2.5 font-['Times_New_Roman']">
+            <h2 className="text-[15px] font-bold text-slate-900 font-['Times_New_Roman'] mb-2 mt-0 block">Got feedback or encountered an issue?</h2>
+            <p className="no-scale text-[14px] font-normal text-slate-600 font-['Times_New_Roman'] m-0">
               We are always striving to improve our accessibility. If you find anything broken or have suggestions,
               please contact us and we will be happy to assist.
             </p>
@@ -489,191 +655,16 @@ function AccessibilityStatementContent({ domain }: { domain: string }) {
   );
 }
 
-/* ── Alex Chat Widget ── */
-function AlexChatWidget() {
-  const [open, setOpen] = useState(false);
-  const [showBubble, setShowBubble] = useState(true);
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<{ from: "alex" | "user"; text: string }[]>([
-    { from: "alex", text: "Hi, I'm Alex! I'm your 24 hour virtual assistant." },
-    { from: "alex", text: "Ask me a question or select one of the following options below." },
-  ]);
-  const [quickReplied, setQuickReplied] = useState(false);
-
-  const now = new Date();
-  const startedAt = now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-  const startedLabel = `Started ${now.getDate()} ${now.toLocaleString("en-US", { month: "short" })} at ${startedAt}`;
-
-  const handleQuickReply = (text: string) => {
-    setQuickReplied(true);
-    setMessages((prev) => [
-      ...prev,
-      { from: "user", text },
-      { from: "alex", text: "Thanks! Let me connect you with the right support. A team member will be with you shortly." },
-    ]);
-  };
-
-  const handleSend = () => {
-    if (!message.trim()) return;
-    setMessages((prev) => [
-      ...prev,
-      { from: "user", text: message.trim() },
-      { from: "alex", text: "Thanks for your message! Our team will get back to you soon." },
-    ]);
-    setMessage("");
-  };
-
+/* ── Accessibility Mock Button ── */
+function AccessibilityMockButton() {
   return (
-    <>
-      {/* Floating buttons */}
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 select-none">
-        {/* Alex bubble popover (shown when chat is closed) */}
-        {showBubble && !open && (
-          <div
-            className="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-xl max-w-[220px] flex items-center gap-3 mr-2 relative cursor-pointer"
-            onClick={() => setOpen(true)}
-          >
-            <div className="absolute right-6 -bottom-1.5 w-3 h-3 bg-white border-r border-b border-slate-200/80 rotate-45" />
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200 overflow-hidden">
-              <svg viewBox="0 0 24 24" className="w-6 h-6 text-slate-400 mt-0.5">
-                <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
-            </div>
-            <div className="text-left flex-1">
-              <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Alex</span>
-              <p className="text-[10px] text-slate-700 font-bold leading-normal">Hi, I&apos;m Alex! I&apos;m your 24 hour virtual assistant.</p>
-            </div>
-            <button
-              onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
-              className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-slate-600 border-none bg-transparent cursor-pointer shrink-0 text-sm font-bold focus:outline-none"
-            >
-              ×
-            </button>
-          </div>
-        )}
-
-        <div className="flex items-center gap-3">
-          {/* Accessibility button */}
-          <button className="w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 hover:scale-105 transition-all cursor-pointer border-none">
-            <svg viewBox="0 0 24 24" className="w-6 h-6 fill-none stroke-current stroke-[2.5]">
-              <path d="M12 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7.5 12h9M12 8v8M10 22v-6h4v6" strokeLinecap="round" />
-            </svg>
-          </button>
-          {/* Chat button — opens Alex panel */}
-          <button
-            onClick={() => { setOpen(true); setShowBubble(false); }}
-            className="w-12 h-12 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center shadow-lg shadow-slate-900/30 hover:scale-105 transition-all cursor-pointer border-none"
-          >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current stroke-[2.5]">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      {/* Chat panel */}
-      {open && (
-        <div className="fixed bottom-0 right-6 z-50 w-80 h-[520px] bg-white rounded-t-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200/80">
-          {/* Header */}
-          <div className="bg-[#1a2340] px-4 py-3 flex items-center gap-3 shrink-0">
-            <button
-              onClick={() => setOpen(false)}
-              className="text-white/70 hover:text-white border-none bg-transparent cursor-pointer p-1 -ml-1 focus:outline-none"
-            >
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 stroke-current stroke-[2.5]">
-                <path d="M19 12H5M12 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <div className="w-9 h-9 rounded-full bg-slate-600 border-2 border-white/20 overflow-hidden flex items-center justify-center shrink-0">
-              <svg viewBox="0 0 24 24" className="w-7 h-7 text-slate-300">
-                <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-xs font-black truncate">{startedLabel}</p>
-            </div>
-            <button className="text-white/70 hover:text-white border-none bg-transparent cursor-pointer focus:outline-none">
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 stroke-current stroke-[2.5]">
-                <circle cx="12" cy="5" r="1" fill="currentColor" />
-                <circle cx="12" cy="12" r="1" fill="currentColor" />
-                <circle cx="12" cy="19" r="1" fill="currentColor" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Notice bar */}
-          <div className="bg-slate-50 border-b border-slate-100 px-4 py-2 text-center">
-            <p className="text-[9px] text-slate-400 font-semibold leading-relaxed">
-              This chat is recorded using a cloud service and is subject to the terms of our{" "}
-              <a href="#" className="underline text-slate-500">Privacy Notice ↗</a>.
-            </p>
-          </div>
-
-          {/* Messages area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-white">
-            {/* Timestamp */}
-            <p className="text-center text-[9px] text-slate-400 font-semibold">{startedAt}</p>
-
-            {messages.map((msg, i) => (
-              <div key={i} className={`flex items-start gap-2 ${msg.from === "user" ? "flex-row-reverse" : ""}`}>
-                {msg.from === "alex" && (
-                  <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center shrink-0 border border-slate-200 overflow-hidden mt-0.5">
-                    <svg viewBox="0 0 24 24" className="w-5 h-5 text-slate-500">
-                      <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                    </svg>
-                  </div>
-                )}
-                <div>
-                  {msg.from === "alex" && <p className="text-[9px] font-black text-slate-400 mb-1 ml-1">Alex</p>}
-                  <div className={`rounded-2xl px-3 py-2 max-w-[200px] text-xs font-semibold leading-relaxed ${
-                    msg.from === "alex"
-                      ? "bg-slate-100 text-slate-700 rounded-tl-sm"
-                      : "bg-blue-600 text-white rounded-tr-sm ml-auto"
-                  }`}>
-                    {msg.text}
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {/* Quick reply buttons — only if not yet replied */}
-            {!quickReplied && (
-              <div className="space-y-2 pt-1">
-                {["I have an accessiBe account", "I want my website more accessible"].map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => handleQuickReply(opt)}
-                    className="w-full text-xs font-semibold text-blue-600 border border-blue-300 rounded-full py-2 px-4 hover:bg-blue-50 transition-colors cursor-pointer bg-white text-left"
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Message input */}
-          <div className="border-t border-slate-100 p-3 flex items-center gap-2 bg-white shrink-0">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
-              placeholder="Type a message"
-              className="flex-1 border border-blue-300 rounded-full px-4 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all"
-            />
-            <button
-              onClick={handleSend}
-              className="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center border-none cursor-pointer transition-colors shrink-0"
-            >
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 stroke-current stroke-[2.5]">
-                <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
-    </>
+    <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 select-none">
+      <button className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 hover:scale-105 transition-all cursor-pointer border-none">
+        <svg viewBox="0 0 24 24" className="w-6 h-6 md:w-7 md:h-7 fill-none stroke-current stroke-[2.5]">
+          <path d="M12 4a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7.5 12h9M12 8v8M10 22v-6h4v6" strokeLinecap="round" />
+        </svg>
+      </button>
+    </div>
   );
 }
 
@@ -729,7 +720,7 @@ function InstallPageInner() {
       case "install":
         return (
           <div className="space-y-6">
-            <h1 className="text-2xl font-black text-slate-800 tracking-tight">
+            <h1 className="text-2xl font-black text-slate-800 tracking-tight font-['Times_New_Roman']">
               Install and customize widget
             </h1>
 
@@ -739,12 +730,12 @@ function InstallPageInner() {
               <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 text-blue-600 shadow-inner">
                 <Rocket className="w-5 h-5 stroke-[2.5]" />
               </div>
-              <div className="space-y-1">
-                <h4 className="text-xs font-black text-blue-900 leading-snug">
+              <div className="space-y-2 text-left font-sans">
+                <p className="text-sm font-bold text-blue-900 font-sans tracking-normal">
                   Your free trial is active and will expire on {formattedExpDate}.
-                </h4>
-                <p className="text-[10px] text-blue-600/80 font-bold leading-relaxed">
-                  Next, install accessWidget on your website and help make it accessible.
+                </p>
+                <p className="text-sm font-normal text-blue-900 leading-relaxed font-sans">
+                  Next, install 2all.ai on your website and help make it accessible.
                 </p>
               </div>
             </div>
@@ -788,10 +779,10 @@ function InstallPageInner() {
       {/* SIDEBAR NAVIGATION: (3 cols) */}
       <div className="lg:col-span-3 space-y-6">
 
-        {/* All licenses back link */}
+        {/* Back Link */}
         <Link
-          href="/dashboard"
-          className="flex items-center gap-1 text-slate-400 hover:text-slate-600 text-xs font-black transition-colors"
+          href="/dashboard/domains"
+          className="flex items-center gap-1.5 text-slate-600 hover:text-blue-600 text-sm font-black transition-colors py-1"
         >
           <ChevronLeft className="w-4 h-4 stroke-[3]" />
           All licenses
@@ -799,17 +790,17 @@ function InstallPageInner() {
 
         {/* Domain Selector Dropdown Card */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between hover:border-slate-300 transition-colors">
-          <div className="flex items-center gap-2.5 w-full">
-            <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100 text-blue-600 shrink-0">
-              <Globe className="w-4 h-4 stroke-[2.5]" />
+          <div className="flex items-center gap-3 w-full">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100 text-blue-600 shrink-0">
+              <Globe className="w-4.5 h-4.5 stroke-[2.5]" />
             </div>
             <div className="flex-1 min-w-0">
-              <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest">Domain</span>
+              <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">DOMAIN</span>
               {domains.length > 0 ? (
                 <select
                   value={selectedDomain}
                   onChange={(e) => setSelectedDomain(e.target.value)}
-                  className="block w-full bg-transparent text-xs font-black text-slate-800 focus:outline-none cursor-pointer border-none p-0 mt-0.5"
+                  className="block w-full bg-transparent text-sm font-black text-slate-900 focus:outline-none cursor-pointer border-none p-0 mt-0.5"
                 >
                   {domains.map((d) => (
                     <option key={d.id} value={d.domain}>
@@ -818,7 +809,7 @@ function InstallPageInner() {
                   ))}
                 </select>
               ) : (
-                <span className="block text-xs font-black text-slate-800">yourwebsite.com</span>
+                <span className="block text-sm font-black text-slate-900 mt-0.5">yourwebsite.com</span>
               )}
             </div>
           </div>
@@ -833,13 +824,13 @@ function InstallPageInner() {
               <button
                 key={item.tab}
                 onClick={() => setActiveTab(item.tab)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-xs font-black transition-all cursor-pointer border-none ${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-bold transition-all cursor-pointer border-none ${
                   isActive
-                    ? "bg-blue-50 text-blue-600"
-                    : "bg-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+                    ? "bg-blue-50 text-blue-600 font-black"
+                    : "bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
-                <Icon className={`w-4 h-4 stroke-[2.5] shrink-0 ${isActive ? "text-blue-600" : "text-slate-400"}`} />
+                <Icon className={`w-4.5 h-4.5 stroke-[2.5] shrink-0 ${isActive ? "text-blue-600" : "text-slate-400"}`} />
                 {item.label}
               </button>
             );
@@ -853,10 +844,8 @@ function InstallPageInner() {
         {renderContent()}
       </div>
 
-      {/* Floating Alex chat widget */}
-      <AlexChatWidget />
-
-
+      {/* Dashboard fixed Alex widget demo */}
+      <AccessibilityMockButton />
     </div>
   );
 }

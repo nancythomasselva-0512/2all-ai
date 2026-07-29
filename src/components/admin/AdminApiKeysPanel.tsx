@@ -193,16 +193,16 @@ export default function AdminApiKeysPanel() {
   return (
     <div className="space-y-8 select-none font-sans">
       
-      {/* Top Header & Status Badges matching DomainOnboarding style */}
+      {/* Top Header & Status Badges */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span className="text-[10px] font-extrabold text-[#0052ff] uppercase tracking-widest block mb-1">
+          <span className="text-xs font-extrabold text-[#0052ff] uppercase tracking-widest block mb-1">
             Admin Console / Workspace
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
             API Keys Suite
           </h1>
-          <p className="text-xs text-slate-500 font-medium max-w-xl mt-1">
+          <p className="text-sm text-slate-500 font-medium max-w-xl mt-1 leading-relaxed">
             Manage platform-wide installation keys, domain bindings, and script loaders across all customers with unlimited domain selection.
           </p>
         </div>
@@ -210,11 +210,11 @@ export default function AdminApiKeysPanel() {
         <div className="flex items-center gap-2.5 flex-wrap">
           <div className="px-3 py-1.5 bg-emerald-50 border border-emerald-200/60 rounded-full flex items-center gap-1.5 shadow-2xs">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[11px] font-bold text-emerald-700 tracking-wide">Secure tenant isolation</span>
+            <span className="text-xs font-extrabold text-emerald-700 tracking-wide">Secure tenant isolation</span>
           </div>
           <div className="px-3 py-1.5 bg-slate-50 border border-slate-200/80 rounded-full flex items-center gap-1.5 shadow-2xs">
             <Activity className="w-3.5 h-3.5 text-blue-600" />
-            <span className="text-[11px] font-bold text-slate-700 tracking-wide">Live widget telemetry</span>
+            <span className="text-xs font-extrabold text-slate-700 tracking-wide">Live widget telemetry</span>
           </div>
         </div>
       </div>
@@ -227,7 +227,7 @@ export default function AdminApiKeysPanel() {
           placeholder="Search customers, domains, API keys, reports, and settings"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 shadow-sm transition-all"
+          className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 shadow-sm transition-all"
         />
       </div>
 
@@ -237,20 +237,20 @@ export default function AdminApiKeysPanel() {
         {/* Left Card: Issue API Key Form */}
         <div className="lg:col-span-7 bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col justify-between">
           <div>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mb-6">
+            <p className="text-sm text-slate-600 font-medium leading-relaxed mb-6">
               Issue a new public installation key for any domain on the platform. As an Admin, there are no domain restrictions.
             </p>
 
             <form onSubmit={handleCreateKey} id="create-admin-key-form" className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
                   Domain (All Customers)
                 </label>
                 <div className="relative">
                   <select 
                     value={selectedDomainId}
                     onChange={(e) => setSelectedDomainId(e.target.value)}
-                    className="w-full px-3.5 py-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-blue-500 shadow-2xs appearance-none cursor-pointer pr-9"
+                    className="w-full px-3.5 py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:border-blue-500 shadow-2xs appearance-none cursor-pointer pr-9"
                   >
                     <option value="">Select any domain</option>
                     {domains.map((dom) => (
@@ -264,7 +264,7 @@ export default function AdminApiKeysPanel() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-2">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
                   Key label
                 </label>
                 <input 
@@ -272,7 +272,7 @@ export default function AdminApiKeysPanel() {
                   placeholder="Production install key"
                   value={keyLabel}
                   onChange={(e) => setKeyLabel(e.target.value)}
-                  className="w-full px-3.5 py-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
+                  className="w-full px-3.5 py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-2xs"
                 />
               </div>
             </form>
@@ -283,7 +283,7 @@ export default function AdminApiKeysPanel() {
               type="submit"
               form="create-admin-key-form"
               disabled={isCreating || !keyLabel.trim()}
-              className="px-6 py-3 bg-[#0052ff] hover:bg-[#0042cc] disabled:opacity-50 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/25 transition-all cursor-pointer flex items-center gap-2 border-none uppercase tracking-wider"
+              className="px-6 py-3 bg-[#0052ff] hover:bg-[#0042cc] disabled:opacity-50 text-white font-extrabold text-sm rounded-xl shadow-md shadow-blue-500/25 transition-all cursor-pointer flex items-center gap-2 border-none uppercase tracking-wider"
             >
               {isCreating ? (
                 <>
@@ -299,13 +299,13 @@ export default function AdminApiKeysPanel() {
 
         {/* Right Card: Rules & Instructions */}
         <div className="lg:col-span-5 bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col justify-between gap-3.5">
-          <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-[11px] sm:text-xs text-slate-600 font-medium leading-relaxed">
+          <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-sm text-slate-600 font-medium leading-relaxed">
             Paste the script before the closing &apos;body&apos; tag or in the &apos;head&apos; section.
           </div>
-          <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-[11px] sm:text-xs text-slate-600 font-medium leading-relaxed">
+          <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-sm text-slate-600 font-medium leading-relaxed">
             Keys are public on approved sites, but should not be reused on unapproved domains.
           </div>
-          <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-[11px] sm:text-xs text-slate-600 font-medium leading-relaxed">
+          <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-sm text-slate-600 font-medium leading-relaxed">
             If the key, domain, tenant, or widget status does not match later validation rules, the widget will fail silently.
           </div>
         </div>
@@ -314,7 +314,7 @@ export default function AdminApiKeysPanel() {
       {/* API Keys Table Card */}
       <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm overflow-hidden">
         {loading ? (
-          <div className="text-center py-16 text-slate-400 text-xs font-semibold">
+          <div className="text-center py-16 text-slate-400 text-sm font-semibold">
             Loading platform API keys...
           </div>
         ) : filteredKeys.length === 0 ? (
@@ -331,7 +331,7 @@ export default function AdminApiKeysPanel() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[800px] text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/70 border-b border-slate-100 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                <tr className="bg-slate-50/70 border-b border-slate-100 text-sm font-extrabold text-slate-400 uppercase tracking-wider">
                   <th className="py-4 px-6">PUBLIC KEY</th>
                   <th className="py-4 px-6">CUSTOMER</th>
                   <th className="py-4 px-6">DOMAIN</th>
@@ -341,22 +341,22 @@ export default function AdminApiKeysPanel() {
                   <th className="py-4 px-6 text-right">ACTION</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
+              <tbody className="divide-y divide-slate-100 text-sm">
                 {filteredKeys.map((k) => (
                   <tr key={k.id} className="hover:bg-slate-50/50 transition-colors">
                     
                     {/* Public Key & Label */}
                     <td className="py-4 px-6">
-                      <div className="font-mono font-bold text-slate-900 text-xs flex items-center gap-2">
+                      <div className="font-mono font-bold text-slate-900 text-sm flex items-center gap-2">
                         {k.key}
                       </div>
-                      <div className="text-[11px] font-medium text-slate-400 mt-0.5">
+                      <div className="text-xs font-medium text-slate-400 mt-0.5">
                         {k.name}
                       </div>
                     </td>
 
                     {/* Customer */}
-                    <td className="py-4 px-6 font-semibold text-slate-700">
+                    <td className="py-4 px-6 font-semibold text-sm text-slate-700">
                       {k.user?.name || k.user?.email || "Demo Customer"}
                     </td>
 
@@ -379,17 +379,17 @@ export default function AdminApiKeysPanel() {
                     {/* Status Pill */}
                     <td className="py-4 px-6">
                       {k.status === "ACTIVE" && (
-                        <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200/60 rounded-full text-[11px] font-bold inline-block">
+                        <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200/60 rounded-full text-sm font-bold inline-block">
                           Active
                         </span>
                       )}
                       {k.status === "REVOKED" && (
-                        <span className="px-2.5 py-1 bg-red-50 text-red-600 border border-red-200/60 rounded-full text-[11px] font-bold inline-block">
+                        <span className="px-2.5 py-1 bg-red-50 text-red-600 border border-red-200/60 rounded-full text-sm font-bold inline-block">
                           Revoked
                         </span>
                       )}
                       {k.status === "EXPIRED" && (
-                        <span className="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200/60 rounded-full text-[11px] font-bold inline-block">
+                        <span className="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200/60 rounded-full text-sm font-bold inline-block">
                           Expired
                         </span>
                       )}
@@ -424,7 +424,7 @@ export default function AdminApiKeysPanel() {
                             <button
                               type="button"
                               onClick={() => handleCopyKey(k.id, k.key)}
-                              className="w-full px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
+                              className="w-full px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
                             >
                               {copiedId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
                               Copy API Key
@@ -433,7 +433,7 @@ export default function AdminApiKeysPanel() {
                             <button
                               type="button"
                               onClick={() => handleCopyScript(k.id, k.key)}
-                              className="w-full px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
+                              className="w-full px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
                             >
                               {copiedScriptId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Code2 className="w-3.5 h-3.5 text-slate-400" />}
                               Copy Install Script
@@ -443,7 +443,7 @@ export default function AdminApiKeysPanel() {
                               type="button"
                               onClick={() => handleRotateKey(k.id)}
                               disabled={k.status !== "ACTIVE" || rotatingId === k.id}
-                              className={`w-full px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
+                              className={`w-full px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
                             >
                               <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${rotatingId === k.id ? "animate-spin" : ""}`} />
                               Rotate API Key
@@ -453,7 +453,7 @@ export default function AdminApiKeysPanel() {
                               type="button"
                               onClick={() => handleRevokeKey(k.id)}
                               disabled={k.status !== "ACTIVE"}
-                              className={`w-full px-4 py-2 text-xs font-bold text-amber-600 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
+                              className={`w-full px-4 py-2 text-sm font-bold text-amber-600 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
                             >
                               <Trash2 className="w-3.5 h-3.5 text-amber-500" />
                               Revoke API Key
@@ -467,7 +467,7 @@ export default function AdminApiKeysPanel() {
                                 setActiveDropdownId(null);
                                 window.location.href = `/dashboard/reports?domain=${encodeURIComponent(k.domainName || "")}`;
                               }}
-                              className="w-full px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
+                              className="w-full px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
                             >
                               <Activity className="w-3.5 h-3.5 text-blue-500" />
                               View Usage
@@ -486,7 +486,7 @@ export default function AdminApiKeysPanel() {
       </div>
 
       {/* Footer Title */}
-      <p className="text-center text-xs text-slate-400 font-bold tracking-wide">
+      <p className="text-center text-sm text-slate-400 font-bold tracking-wide">
         Admin Console: Generate and manage API keys across all domains
       </p>
 

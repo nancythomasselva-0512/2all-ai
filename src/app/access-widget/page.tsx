@@ -12,7 +12,6 @@ import DemoModal from "@/components/marketing/DemoModal";
 import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
-import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const fadeUp = {
@@ -68,7 +67,6 @@ export default function AccessWidgetPage() {
                 { name: "SOLUTIONS", hasDropdown: true },
                 { name: "COMPANY", hasDropdown: true },
                 { name: "PARTNERS", hasDropdown: true },
-                { name: "RESOURCES", hasDropdown: true },
                 { name: "PRICING", hasDropdown: false },
               ].map((link) => (
                 <Link
@@ -104,7 +102,6 @@ export default function AccessWidgetPage() {
         <SolutionsMegamenu isOpen={activeHoverMenu === "SOLUTIONS"} onMouseEnter={() => openMenu("SOLUTIONS")} onMouseLeave={closeMenuWithDelay} />
         <CompanyMegamenu isOpen={activeHoverMenu === "COMPANY"} onMouseEnter={() => openMenu("COMPANY")} onMouseLeave={closeMenuWithDelay} />
         <PartnersMegamenu isOpen={activeHoverMenu === "PARTNERS"} onMouseEnter={() => openMenu("PARTNERS")} onMouseLeave={closeMenuWithDelay} />
-        <ResourcesMegamenu isOpen={activeHoverMenu === "RESOURCES"} onMouseEnter={() => openMenu("RESOURCES")} onMouseLeave={closeMenuWithDelay} />
       </header>
 
       <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
@@ -116,7 +113,7 @@ export default function AccessWidgetPage() {
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
           <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center relative z-10">
             <motion.div initial="hidden" animate="visible" variants={stagger} className="text-white space-y-7">
-              <Breadcrumbs items={[ { label: "Home", href: "/" }, { label: "Products" }, { label: "accessWidget" } ]} />
+              <Breadcrumbs items={[ { label: "Home", href: "/" }, { label: "Products" }, { label: "2all.ai Widget" } ]} />
               <motion.h1 variants={fadeUp} className="text-4xl md:text-5xl lg:text-[62px] font-black leading-[1.05] tracking-tight">
                 Automate web<br />accessibility and<br /><span className="text-cyan-300 italic font-serif font-semibold">compliance</span> at scale
               </motion.h1>
@@ -209,7 +206,7 @@ export default function AccessWidgetPage() {
                 Validate your accessibility with a single click
               </h2>
               <p className="text-lg text-slate-600 leading-relaxed">
-                accessWidget uses AI-driven processes and machine learning to continuously fix and improve your website's accessibility, ensuring compliance with WCAG 2.2, ADA, Section 508, and more.
+                2all.ai uses AI-driven processes and machine learning to continuously fix and improve your website's accessibility, ensuring compliance with WCAG 2.2, ADA, Section 508, and more.
               </p>
               <ul className="space-y-3 pt-2">
                 {["Add one line of JavaScript to your site", "AI scans and fixes 70%+ of accessibility issues automatically", "Human experts handle the remaining complex fixes", "Receive a real-time accessibility statement"].map((t) => (
@@ -276,7 +273,7 @@ export default function AccessWidgetPage() {
           <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-2 gap-20 items-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="space-y-8">
               <h2 className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tight">
-                Why choose <span className="text-cyan-300 italic font-serif font-semibold">accessWidget</span>?
+                Why choose <span className="text-cyan-300 italic font-serif font-semibold">2all.ai</span>?
               </h2>
               <p className="text-slate-400 text-lg leading-relaxed">We combine AI automation with human expertise to deliver the most comprehensive accessibility solution for your business.</p>
               <button onClick={() => setIsDemoOpen(true)} className="bg-cyan-400 hover:bg-cyan-300 text-[#060b27] px-8 py-3.5 rounded-full font-extrabold text-sm tracking-widest uppercase transition-colors">
@@ -328,7 +325,7 @@ export default function AccessWidgetPage() {
               <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
                 Accessibility is not optional. <span className="italic font-serif text-cyan-300">Make it automatic.</span>
               </h2>
-              <p className="text-blue-100 text-lg">Join thousands of businesses that have automated their compliance with accessWidget.</p>
+              <p className="text-blue-100 text-lg">Join thousands of businesses that have automated their compliance with 2all.ai.</p>
             </div>
             <div className="relative z-10 shrink-0">
               <Link href="/register" className="bg-white hover:bg-slate-100 text-[#004bff] px-8 py-4 rounded-full font-extrabold text-sm tracking-widest uppercase transition-colors shadow-xl">
@@ -344,10 +341,10 @@ export default function AccessWidgetPage() {
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight text-center">Frequently asked questions.</h2>
             <div className="divide-y divide-slate-100 border-y border-slate-100">
               {[
-                { q: "How quickly does accessWidget work?", a: "accessWidget starts working within minutes of installation. The AI begins scanning and fixing accessibility issues immediately after you add the script to your website." },
+                { q: "How quickly does 2all.ai work?", a: "2all.ai starts working within minutes of installation. The AI begins scanning and fixing accessibility issues immediately after you add the script to your website." },
                 { q: "Does it cover 100% of WCAG requirements?", a: "Our AI automatically fixes over 70% of WCAG 2.2 success criteria. For the remaining 30% that require human judgment, our expert team provides manual remediation as part of your plan." },
-                { q: "Will it slow down my website?", a: "No. accessWidget is a lightweight, asynchronously loaded script that has virtually no impact on your site's performance or Core Web Vitals scores." },
-                { q: "What types of websites does it support?", a: "accessWidget works with any website, regardless of the technology stack — WordPress, Shopify, React, Next.js, plain HTML, and more." },
+                { q: "Will it slow down my website?", a: "No. 2all.ai is a lightweight, asynchronously loaded script that has virtually no impact on your site's performance or Core Web Vitals scores." },
+                { q: "What types of websites does it support?", a: "2all.ai works with any website, regardless of the technology stack — WordPress, Shopify, React, Next.js, plain HTML, and more." },
                 { q: "Do I need technical expertise to install it?", a: "Not at all. Simply copy and paste one line of JavaScript into your website's header. The rest is fully automated." },
               ].map((faq, i) => (
                 <details key={i} className="group py-6 cursor-pointer">
@@ -366,7 +363,7 @@ export default function AccessWidgetPage() {
         <section className="w-full py-20 px-6 md:px-10 bg-[#e0f2fe]">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
             <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight max-w-xl">
-              See <span className="italic font-serif text-[#004bff] font-semibold">accessWidget</span> in action
+              See <span className="italic font-serif text-[#004bff] font-semibold">2all.ai</span> in action
             </h2>
             <div className="flex flex-wrap gap-4 shrink-0">
               <button onClick={() => setIsDemoOpen(true)} className="bg-[#004bff] hover:bg-[#003edd] text-white px-8 py-4 rounded-full font-extrabold text-sm tracking-widest uppercase transition-colors shadow-lg shadow-blue-500/20">

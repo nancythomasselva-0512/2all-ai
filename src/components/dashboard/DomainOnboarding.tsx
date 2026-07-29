@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import PageHelpTooltip from "@/components/ui/PageHelpTooltip";
 import {
   Globe,
   Plus,
@@ -408,16 +409,26 @@ export default function DomainOnboarding({
             <span className="text-[11px] font-black tracking-widest text-[#0052ff] uppercase block">
               {isAdmin ? "Admin Console / Workspace" : "Customer Workspace"}
             </span>
-            <h3 className="text-3xl font-black text-slate-900 mt-1 tracking-tight">
+
+            <div className="no-scale font-sans text-2xl font-black text-slate-900 mt-1 tracking-tight flex items-center gap-2">
               Domains
-            </h3>
-            <p className="text-sm text-slate-500 font-medium max-w-2xl mt-2 leading-relaxed">
+              <PageHelpTooltip
+                title="My Domains"
+                purpose="Manage and configure all websites registered under your 2all.ai accessibility subscription."
+                features={[
+                  "Add new domain names to install the accessibility widget",
+                  "Customize widget appearance, colors, and positioning",
+                  "Copy installation embed codes for your web developers"
+                ]}
+              />
+            </div>
+            <p className="no-scale font-sans text-sm font-medium text-slate-600 max-w-3xl mt-1.5 leading-relaxed">
               Track approved domains, verify ownership, generate API authorization keys, and deploy WCAG accessibility widget CDN scripts from one clean inventory view.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <span className="px-4 py-2 rounded-full bg-slate-100/80 border border-slate-200/60 text-xs font-extrabold text-slate-600 whitespace-nowrap">
+            <span className="px-4 py-2 rounded-full bg-slate-100/80 border border-slate-200/60 text-xs font-extrabold text-slate-600 whitespace-nowrap font-sans">
               Total domains: {domains.length}
             </span>
             {/* STEP 1: Add Domain button triggers SaaS modal */}
@@ -430,7 +441,7 @@ export default function DomainOnboarding({
                 setNotes("");
                 setActiveModal({ type: "add" });
               }}
-              className="px-6 py-2.5 rounded-xl bg-[#0052ff] hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition-all cursor-pointer border-none flex items-center gap-2 whitespace-nowrap shrink-0"
+              className="px-6 py-2.5 rounded-xl bg-[#0052ff] hover:bg-blue-700 text-white font-extrabold text-sm shadow-lg shadow-blue-500/25 transition-all cursor-pointer border-none flex items-center gap-2 whitespace-nowrap shrink-0 font-sans"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
               Add Domain
@@ -441,7 +452,7 @@ export default function DomainOnboarding({
         {/* SEARCH & FILTER ROW */}
         <div className="mt-8 pt-6 border-t border-slate-100/80 flex flex-wrap items-end gap-4">
           <div className="flex-1 min-w-[240px] max-w-md">
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5 font-sans">
               Search domain
             </label>
             <div className="relative">
@@ -450,19 +461,19 @@ export default function DomainOnboarding({
                 placeholder="example.com or website name"
                 value={domainSearch}
                 onChange={(e) => setDomainSearch(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#0052ff] shadow-sm transition-all"
+                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#0052ff] shadow-sm transition-all font-sans"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5 font-sans">
               Status
             </label>
             <select
               value={domainStatusFilter}
               onChange={(e) => setDomainStatusFilter(e.target.value)}
-              className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 w-44 focus:outline-none focus:border-[#0052ff] shadow-sm cursor-pointer"
+              className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:border-[#0052ff] shadow-sm transition-all cursor-pointer font-sans"
             >
               <option value="all">All statuses</option>
               <option value="VERIFIED">Active / Verified</option>
@@ -493,18 +504,18 @@ export default function DomainOnboarding({
 
       {/* BOTTOM TABLE CARD - APPROVED VISUAL DESIGN */}
       <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-sm min-h-[500px]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
-          <div>
-            <span className="text-[11px] font-black tracking-widest text-[#0052ff] uppercase block">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-100">
+          <div className="space-y-1">
+            <span className="text-xs font-black tracking-wider text-[#0052ff] uppercase block font-sans">
               Installation Inventory
             </span>
-            <h4 className="text-xl font-black text-slate-900 mt-0.5">
+            <p className="no-scale text-xl font-extrabold text-slate-900 font-sans tracking-tight">
               Domain Inventory
-            </h4>
+            </p>
           </div>
         </div>
 
-        <div className="mt-6 w-full overflow-visible">
+        <div className="mt-3 w-full overflow-visible">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="border-b border-slate-200 text-[11px] font-black tracking-wider text-slate-400 uppercase">
@@ -806,7 +817,7 @@ export default function DomainOnboarding({
 
               {filteredDomains.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-16 text-center text-slate-400 text-xs font-medium">
+                  <td colSpan={7} className="py-16 text-center text-slate-500 text-sm font-semibold font-sans no-scale">
                     No domains tracked in inventory matching your filters. Click &quot;Add Domain&quot; above to register a property.
                   </td>
                 </tr>

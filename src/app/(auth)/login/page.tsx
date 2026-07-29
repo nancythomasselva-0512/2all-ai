@@ -158,7 +158,7 @@ function LoginForm() {
             </div>
 
             {/* Forgot Password */}
-            <div className="flex justify-start text-[11px] pt-1">
+            <div className="flex justify-start text-sm sm:text-base pt-1">
               <a href="#" className="font-extrabold text-blue-600 hover:text-blue-700 transition-colors">
                 Forgot your password?
               </a>
@@ -168,7 +168,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-[#004bff] hover:bg-[#003edd] disabled:bg-blue-400 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/10 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-2 transition-all"
+              className="w-full py-3.5 bg-[#004bff] hover:bg-[#003edd] disabled:bg-blue-400 text-white font-extrabold text-sm rounded-xl shadow-md shadow-blue-500/10 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-2 transition-all"
             >
               {loading && <Loader2 className="w-4.5 h-4.5 animate-spin" />}
               {loading ? "Signing In..." : "Sign In"}
@@ -176,19 +176,14 @@ function LoginForm() {
             </button>
           </form>
 
-          <div className="text-center text-xs font-bold text-slate-500 pt-2 border-t border-slate-50">
+          <div className="text-center text-sm sm:text-base font-bold text-slate-700 pt-3 border-t border-slate-100">
             Don't have an account yet?{" "}
             <Link 
               href={plan ? `/register?plan=${plan}&billing=${billing || "yearly"}` : "/register"} 
-              className="text-blue-600 hover:text-blue-700 font-extrabold transition-colors"
+              className="text-blue-600 hover:text-blue-700 font-black transition-colors"
             >
               Sign up
             </Link>
-          </div>
-
-          {/* SSO Login */}
-          <div className="text-center text-xs font-extrabold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer pt-1">
-            SSO Login
           </div>
 
         </div>

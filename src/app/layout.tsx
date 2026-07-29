@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { promises as fs } from "fs";
 import path from "path";
@@ -52,12 +53,15 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         {/* Inject Custom CSS */}
         {customCss && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
       </head>
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${inter.variable} antialiased`} suppressHydrationWarning>
         {/* Inject Tracking Scripts */}
         {trackingScripts && <div dangerouslySetInnerHTML={{ __html: trackingScripts }} style={{ display: "none" }} />}
         
@@ -72,7 +76,13 @@ export default async function RootLayout({
         <ChatWidgetWrapper />
 
         {/* Inject Custom JS before body end */}
-        {customJs && <script dangerouslySetInnerHTML={{ __html: customJs }} />}
+        {customJs && (
+          <Script
+            id="custom-js"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{ __html: customJs }}
+          />
+        )}
       </body>
     </html>
   );

@@ -7,33 +7,33 @@ export default function AudienceSection() {
   const cards = [
     {
       type: "owners",
-      pill: "Website Owners",
-      title: "It's your choice, our work.",
-      desc: "With automated AI, human expertise, or a blend of both—get a tailored solution that fits your website.",
+      pill: "Enterprise & Brands",
+      title: "Built for Your Tech Ecosystem",
+      desc: "Combine autonomous AI remediation with certified human accessibility auditors for custom, bulletproof compliance.",
       icon: <Globe className="w-8 h-8 text-blue-600" />,
       features: [
-        "Automated AI auto-remediation",
-        "Expert manual auditing & validation",
-        "Hybrid plan tailored to your site"
+        "Autonomous AI auto-remediation engine",
+        "Certified WCAG 2.2 AA expert validation",
+        "Enterprise-grade SLA & legal protection"
       ],
-      ctaText: "Get Tailored Solution",
+      ctaText: "Get Enterprise Plan",
       ctaLink: "/register",
       bgGradient: "from-blue-500/5 to-indigo-500/5",
       borderHover: "hover:border-blue-500/30 hover:shadow-blue-500/5"
     },
     {
       type: "partners",
-      pill: "Partners & Agencies",
-      title: "Offer your clients the best.",
-      desc: "Close deals, grow revenue, and make clients happy with AI-driven accessibility backed by unmatched support.",
+      pill: "Agencies & Partners",
+      title: "Scale Accessibility Revenue",
+      desc: "Offer your clients market-leading accessibility compliance. Grow monthly recurring revenue with white-label tools.",
       icon: <Handshake className="w-8 h-8 text-indigo-600" />,
       features: [
-        "White-label options & portal",
-        "Revenue sharing & partner pricing",
-        "Priority support & dedicated account team"
+        "White-label portal & multi-site dashboard",
+        "Partner pricing & revenue share models",
+        "Dedicated technical account manager"
       ],
-      ctaText: "Explore Partner Program",
-      ctaLink: "/partners",
+      ctaText: "Explore Partner Network",
+      ctaLink: "/agency",
       bgGradient: "from-indigo-500/5 to-purple-500/5",
       borderHover: "hover:border-indigo-500/30 hover:shadow-indigo-500/5"
     }
@@ -41,18 +41,18 @@ export default function AudienceSection() {
 
   return (
     <motion.section 
-      initial="hidden"
+      initial="visible"
       whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true }}
       variants={{
-        hidden: { opacity: 0, y: 40 },
+        hidden: { opacity: 1, y: 0 },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+          transition: { duration: 0.5, ease: "easeOut", staggerChildren: 0.08 }
         }
       }}
-      className="pt-10 pb-10 md:pb-20 bg-white relative overflow-hidden select-none"
+      className="py-10 md:py-14 bg-white relative overflow-hidden select-none"
     >
       {/* Decorative background shapes */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-slate-50 rounded-full blur-[120px] pointer-events-none" />
@@ -60,13 +60,13 @@ export default function AudienceSection() {
       <div className="max-w-6xl mx-auto px-6 sm:px-12 relative z-10">
         
         {/* Section Heading */}
-        <div className="text-center max-w-2xl mx-auto mb-10 md:mb-16 space-y-4">
-          <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-xs font-bold uppercase tracking-widest text-slate-500 block">Solutions for Everyone</motion.span>
-          <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
-            How Can We Help <span className="text-blue-600">You?</span>
+        <div className="text-center max-w-2xl mx-auto mb-6 md:mb-8 space-y-3">
+          <motion.span variants={{ hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }} className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500 block">TAILORED ENGAGEMENT MODELS</motion.span>
+          <motion.h2 variants={{ hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight font-sans">
+            Designed for your <span className="text-blue-600 italic font-serif font-normal">unique ecosystem</span>
           </motion.h2>
-          <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-slate-700 text-lg font-normal">
-            Select the path that fits your goals. We have tailor-made tools for businesses of all sizes and partner agencies.
+          <motion.p variants={{ hidden: { opacity: 1 }, visible: { opacity: 1 } }} className="text-slate-600 text-lg font-normal">
+            Whether you manage an enterprise web infrastructure or operate a digital agency, our platform scales with your vision.
           </motion.p>
         </div>
 
@@ -75,7 +75,7 @@ export default function AudienceSection() {
           {cards.map((card, index) => (
             <motion.div
               key={card.pill}
-              variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }}
+              variants={{ hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }}
               className={`card-premium bg-gradient-to-br ${card.bgGradient} border border-slate-200/60 rounded-[32px] p-6 sm:p-8 md:p-10 flex flex-col justify-between shadow-sm`}
             >
               <div className="space-y-6">

@@ -20,6 +20,8 @@ interface MegamenuProps {
 }
 
 export default function CompanyMegamenu({ isOpen, onMouseEnter, onMouseLeave }: MegamenuProps) {
+  const [isPlayingVideo, setIsPlayingVideo] = React.useState(false);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -30,10 +32,10 @@ export default function CompanyMegamenu({ isOpen, onMouseEnter, onMouseLeave }: 
           transition={{ duration: 0.2, ease: "easeOut" }}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          className="absolute top-[72px] left-4 right-4 md:left-[20%] md:right-[20%] max-w-3xl mx-auto bg-white border border-slate-200/80 rounded-3xl shadow-2xl z-40 flex flex-col lg:flex-row text-left select-none overflow-y-auto lg:overflow-hidden max-h-[85vh] lg:max-h-none"
+          className="absolute top-[72px] left-4 right-4 md:left-auto md:right-auto max-w-2xl mx-auto bg-white border border-slate-200/90 rounded-3xl shadow-2xl z-40 p-4 md:p-5 flex flex-col lg:grid lg:grid-cols-2 gap-4 text-left select-none overflow-hidden"
         >
           {/* MOBILE CLOSE HEADER */}
-          <div className="flex lg:hidden justify-between items-center p-4 border-b border-slate-100">
+          <div className="flex lg:hidden justify-between items-center p-3 border-b border-slate-100">
             <h3 className="font-black text-slate-900 text-lg">Company</h3>
             <button 
               onClick={onMouseLeave}
@@ -43,12 +45,12 @@ export default function CompanyMegamenu({ isOpen, onMouseEnter, onMouseLeave }: 
             </button>
           </div>
 
-          {/* LEFT PANEL: OVERVIEW (w-1/2) */}
-          <div className="w-full lg:w-1/2 p-4 md:p-8 space-y-6">
-            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none border-b border-slate-100 pb-2">
+          {/* LEFT PANEL: OVERVIEW */}
+          <div className="w-full p-2 space-y-3">
+            <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest leading-none border-b border-slate-100 pb-2.5">
               Overview
             </h4>
-            <div className="space-y-4">
+            <div className="space-y-2">
               {[
                 { title: "About us", desc: "Find out what makes us different", icon: Info, href: "/about-us" },
                 { title: "Why choose 2all.ai", desc: "Compare us to competitors", icon: ArrowLeftRight, href: "/why-choose-2all-ai" },
@@ -60,16 +62,16 @@ export default function CompanyMegamenu({ isOpen, onMouseEnter, onMouseLeave }: 
                   <Link 
                     key={item.title} 
                     href={item.href} 
-                    className="flex gap-3 group/item hover:bg-slate-50/60 p-2 rounded-xl transition-all"
+                    className="flex items-center gap-3 group/item hover:bg-blue-50/50 p-2 rounded-2xl transition-all"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/50">
+                    <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/60 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
                       <Icon className="w-4 h-4 stroke-[2]" />
                     </div>
                     <div>
-                      <span className="block text-[12px] font-black text-slate-900 group-hover/item:text-blue-600 transition-colors">
+                      <span className="block text-xs md:text-sm font-extrabold text-slate-900 group-hover/item:text-blue-600 transition-colors">
                         {item.title}
                       </span>
-                      <span className="block text-[10px] text-slate-400 font-bold mt-0.5">
+                      <span className="block text-[11px] text-slate-500 font-medium leading-snug">
                         {item.desc}
                       </span>
                     </div>
@@ -79,55 +81,41 @@ export default function CompanyMegamenu({ isOpen, onMouseEnter, onMouseLeave }: 
             </div>
           </div>
 
-          {/* RIGHT PANEL: PROMO CARD (w-1/2) */}
-          <div className="w-full lg:w-1/2 bg-blue-600 text-white p-4 md:p-8 relative overflow-hidden flex flex-col justify-between h-[390px] lg:h-auto">
+          {/* RIGHT PANEL: PROMO CARD WITH VIDEO */}
+          <div className="w-full bg-blue-600 text-white p-4 md:p-5 rounded-3xl relative overflow-hidden flex flex-col justify-between h-[340px] max-h-[340px]">
             {/* Visual design accent */}
             <div className="absolute top-0 right-0 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" />
             
-            {/* Graphic illustration mockup */}
-            <div className="space-y-3 relative z-10">
-              <div className="flex justify-between items-center text-[9px] font-black text-blue-100 tracking-widest uppercase border-b border-white/10 pb-2">
-                <span>Issues Solved</span>
-                <span className="text-emerald-300 flex items-center gap-1">
-                  <TrendingUp className="w-3.5 h-3.5" />
-                  +12.4%
+            <div className="relative z-10 w-full h-full flex flex-col justify-between overflow-hidden">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2.5 shrink-0">
+                <span className="text-[11px] font-black text-blue-100 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+                  About 2all.ai
+                </span>
+                <span className="text-[10px] font-extrabold text-blue-100 uppercase tracking-widest bg-white/10 px-2 py-0.5 rounded-full">
+                  VIDEO DEMO
                 </span>
               </div>
               
-              <div className="space-y-2 py-1">
-                <div className="flex justify-between items-center bg-white/10 p-2 rounded-xl border border-white/5 text-[10px]">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-300" />
-                    <span className="font-bold">Breadcrumbs-1410</span>
-                  </div>
-                  <span className="px-1.5 py-0.5 bg-emerald-400 text-slate-900 rounded-md font-black text-[9px]">DONE</span>
-                </div>
-                <div className="flex justify-between items-center bg-white/10 p-2 rounded-xl border border-white/5 text-[10px]">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
-                    <span className="font-bold">Page-Title-048a93</span>
-                  </div>
-                  <span className="px-1.5 py-0.5 bg-amber-300 text-slate-900 rounded-md font-black text-[9px]">IN PROGRESS</span>
-                </div>
+              <div className="w-full flex-1 my-2.5 rounded-2xl overflow-hidden bg-black border border-white/10 shadow-inner flex items-center justify-center relative min-h-0">
+                <video 
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls 
+                  className="w-full h-full object-cover rounded-2xl max-h-[220px]"
+                >
+                  <source src="/company-video.mp4" type="video/mp4" />
+                  Your browser does not support HTML5 video.
+                </video>
               </div>
-            </div>
 
-            {/* CTA action */}
-            <div className="space-y-3 pt-4 border-t border-white/10 relative z-10">
-              <span className="block text-[9px] font-black text-blue-200 tracking-widest uppercase">
-                On-Demand Webinar
-              </span>
-              <h5 className="text-[13px] font-black text-white leading-snug tracking-tight">
-                How dev teams are tackling accessibility debt
-              </h5>
-              
-              <Link
-                href="/webinar"
-                className="w-full py-2.5 bg-white hover:bg-slate-100 text-blue-600 font-extrabold text-[11px] rounded-xl flex items-center justify-center gap-2 tracking-wider uppercase transition-all shadow-sm"
-              >
-                Watch Recording
-                <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
-              </Link>
+              <div className="pt-2 border-t border-white/10 text-center shrink-0">
+                <h5 className="text-xs font-extrabold text-white leading-snug tracking-tight truncate px-1">
+                  Empowering digital access for everyone
+                </h5>
+              </div>
             </div>
           </div>
 

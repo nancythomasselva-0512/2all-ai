@@ -1,35 +1,88 @@
 import nodemailer from "nodemailer";
+import fs from "fs";
+import path from "path";
 
-// SMTP Transporter configuration
+// Helper to log sent emails to a persistent JSON log for dashboard tracking
+const logEmailSent = (type: string, to: string, subject: string, status: "SUCCESS" | "FAILED", details?: string) => {
+  try {
+    const logFilePath = path.join(process.cwd(), "public", "sent_emails.json");
+    let existingLogs: any[] = [];
+    if (fs.existsSync(logFilePath)) {
+      const content = fs.readFileSync(logFilePath, "utf8");
+      try {
+        existingLogs = JSON.parse(content);
+      } catch (e) {
+        existingLogs = [];
+      }
+    }
+    const newEntry = {
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString(),
+      type,
+      to,
+      subject,
+      status,
+      details: details || "Dispatched via Gmail SMTP (aachinancy@gmail.com)",
+    };
+    existingLogs.unshift(newEntry);
+    fs.writeFileSync(logFilePath, JSON.stringify(existingLogs.slice(0, 100), null, 2), "utf8");
+  } catch (e) {
+    console.error("Failed to log sent email to JSON file:", e);
+  }
+};
+
+// SMTP Transporter configuration (Optimized for Gmail SMTP & TLS)
 const getTransporter = () => {
-  const host = process.env.SMTP_HOST;
-  const port = process.env.SMTP_PORT;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const host = process.env.SMTP_HOST || "smtp.gmail.com";
+  const port = process.env.SMTP_PORT || "587";
+  const user = process.env.SMTP_USER || "aachinancy@gmail.com";
+  const pass = process.env.SMTP_PASS || "uzlcibhsmlkcdhuj";
 
-  if (!host || !user || !pass) {
-    console.warn("[SMTP] Warning: SMTP credentials are not configured in your .env file. Email notifications will fall back to logging in the dev console.");
+  if (!user || !pass) {
+    console.warn("[SMTP] Warning: SMTP credentials are not configured.");
     return null;
+  }
+
+  // Gmail SMTP Transport
+  if (host.includes("gmail") || user.includes("gmail")) {
+    return nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user,
+        pass,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
   }
 
   return nodemailer.createTransport({
     host,
-    port: parseInt(port || "587", 10),
-    secure: port === "465", // true for 465, false for other ports
+    port: parseInt(port, 10),
+    secure: port === "465",
     auth: {
       user,
       pass,
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
+};
+
+const getFromHeader = () => {
+  const user = process.env.SMTP_USER || "aachinancy@gmail.com";
+  return process.env.SMTP_FROM || `"2all.ai Team" <${user}>`;
 };
 
 export async function sendPaymentSuccessEmail(toEmail: string, userName: string, planName: string, amount: number) {
   const transporter = getTransporter();
-  const from = process.env.SMTP_FROM || "2all.ai <no-reply@2all.ai>";
-  
+  const from = getFromHeader();
   const subject = `Payment Confirmed - Your 2all.ai ${planName} Subscription is Active!`;
+  
   const htmlContent = `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px border #e2e8f0; border-radius: 16px; color: #1e293b;">
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
       <h2 style="color: #004bff; margin-bottom: 8px;">2all.ai</h2>
       <hr style="border: 0; border-top: 1px solid #f1f5f9; margin-bottom: 20px;" />
       <p style="font-size: 16px; font-weight: bold; margin-top: 0;">Hi ${userName || "Subscriber"},</p>
@@ -72,7 +125,8 @@ export async function sendPaymentSuccessEmail(toEmail: string, userName: string,
   `;
 
   if (!transporter) {
-    console.log(`[SMTP SIMULATOR] Email would be sent to: ${toEmail}\nSubject: ${subject}\nBody: ${htmlContent}`);
+    console.log(`[SMTP SIMULATOR] Email would be sent to: ${toEmail}`);
+    logEmailSent("Payment Success", toEmail, subject, "SUCCESS", "Simulated mode");
     return;
   }
 
@@ -84,10 +138,14 @@ export async function sendPaymentSuccessEmail(toEmail: string, userName: string,
       html: htmlContent,
     });
     console.log(`[SMTP] Payment success receipt sent to ${toEmail}`);
-  } catch (err) {
+    logEmailSent("Payment Success", toEmail, subject, "SUCCESS");
+  } catch (err: any) {
     console.error("[SMTP] Failed to send payment confirmation email:", err);
+    logEmailSent("Payment Success", toEmail, subject, "FAILED", err.message);
   }
 }
+
+export const getAdminEmail = () => process.env.ADMIN_EMAIL || process.env.SMTP_USER || "aachinancy@gmail.com";
 
 export async function sendDemoNotificationEmail(
   adminEmail: string,
@@ -97,13 +155,16 @@ export async function sendDemoNotificationEmail(
   leadWebsite: string
 ) {
   const transporter = getTransporter();
-  const from = process.env.SMTP_FROM || "2all.ai <no-reply@2all.ai>";
-  const subject = `[New Lead] Demo Scheduled - ${leadName}`;
-  const htmlContent = `
+  const from = getFromHeader();
+  const targetAdmin = getAdminEmail();
+  const adminSubject = `[New Lead] Contact Sales Inquiry - ${leadName}`;
+  const userSubject = `Thank you for contacting 2all.ai Sales!`;
+  
+  const adminHtmlContent = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
-      <h3 style="color: #004bff; margin-top: 0;">2all.ai Lead Alert</h3>
+      <h3 style="color: #004bff; margin-top: 0;">2all.ai Lead & Contact Sales Alert</h3>
       <p style="font-size: 14px; line-height: 1.5; color: #475569;">
-        A new accessibility demo has been scheduled by a prospective client.
+        A new enterprise sales lead has been submitted by a prospective client.
       </p>
       
       <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px; line-height: 1.8;">
@@ -115,33 +176,71 @@ export async function sendDemoNotificationEmail(
       </div>
       
       <p style="font-size: 12px; color: #94a3b8;">
-        This lead is also saved and visible in the Form Builder tab of the Admin Console.
+        This lead is also saved and visible in the Admin Console.
+      </p>
+    </div>
+  `;
+
+  const userHtmlContent = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
+      <h2 style="color: #004bff; margin-top: 0;">2all.ai</h2>
+      <p style="font-size: 15px; font-weight: bold; color: #0f172a;">Hi ${leadName},</p>
+      <p style="font-size: 14px; line-height: 1.6; color: #475569;">
+        Thank you for reaching out to 2all.ai Sales regarding your website <strong>${leadWebsite}</strong>. Our enterprise accessibility team has received your inquiry and will be in touch shortly to assist you.
+      </p>
+      <div style="background-color: #eef2ff; border-left: 4px solid #004bff; padding: 14px; margin: 20px 0; font-size: 13px; color: #1e1b4b;">
+        <strong>Need immediate assistance?</strong> You can also reach our support team directly at <a href="mailto:support@2all.ai" style="color: #004bff;">support@2all.ai</a>.
+      </div>
+      <p style="font-size: 12px; color: #94a3b8; margin-top: 30px;">
+        &copy; ${new Date().getFullYear()} 2all.ai. All rights reserved.
       </p>
     </div>
   `;
 
   if (!transporter) {
-    console.log(`[SMTP SIMULATOR] Admin Lead notification would be sent to: ${adminEmail || "admin@gmail.com"}\nSubject: ${subject}\nBody: ${htmlContent}`);
+    console.log(`[SMTP SIMULATOR] Admin Lead notification would be sent to: ${targetAdmin} and User confirmation to: ${leadEmail}`);
+    logEmailSent("Demo Alert Admin", targetAdmin, adminSubject, "SUCCESS", "Simulated mode");
+    logEmailSent("Demo Alert User", leadEmail, userSubject, "SUCCESS", "Simulated mode");
     return;
   }
 
-    try {
+  // 1. Send email to Admin
+  try {
     await transporter.sendMail({
       from,
-      to: adminEmail || "aiadmin@gmail.com",
-      subject,
-      html: htmlContent,
+      to: targetAdmin,
+      subject: adminSubject,
+      html: adminHtmlContent,
     });
-    console.log(`[SMTP] Demo lead alert sent to admin`);
-  } catch (err) {
-    console.error("[SMTP] Failed to send demo lead alert email:", err);
+    console.log(`[SMTP] Demo lead alert sent to Admin ${targetAdmin}`);
+    logEmailSent("Demo Alert Admin", targetAdmin, adminSubject, "SUCCESS");
+  } catch (err: any) {
+    console.error("[SMTP] Failed to send demo lead alert email to admin:", err);
+    logEmailSent("Demo Alert Admin", targetAdmin, adminSubject, "FAILED", err.message);
+  }
+
+  // 2. Send confirmation email to User
+  try {
+    await transporter.sendMail({
+      from,
+      to: leadEmail,
+      subject: userSubject,
+      html: userHtmlContent,
+    });
+    console.log(`[SMTP] Demo lead receipt sent to User ${leadEmail}`);
+    logEmailSent("Demo Alert User", leadEmail, userSubject, "SUCCESS");
+  } catch (err: any) {
+    console.error("[SMTP] Failed to send demo lead receipt email to user:", err);
+    logEmailSent("Demo Alert User", leadEmail, userSubject, "FAILED", err.message);
   }
 }
 
 export async function sendInitialWelcomeEmail(toEmail: string, userName: string) {
   const transporter = getTransporter();
-  const from = process.env.SMTP_FROM || "2all.ai <no-reply@2all.ai>";
+  const from = getFromHeader();
+  const targetAdmin = getAdminEmail();
   const subject = `Welcome to 2all.ai!`;
+  const adminSubject = `[New User Registration] ${userName || toEmail}`;
   const dashboardUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/dashboard`;
 
   const htmlContent = `
@@ -152,57 +251,31 @@ export async function sendInitialWelcomeEmail(toEmail: string, userName: string)
   <style>
     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f7f9; }
     .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
-    
     .hero { background-color: #004bff; padding: 40px 20px 0 20px; text-align: center; color: #ffffff; }
     .hero h1 { font-size: 28px; font-weight: 800; margin: 0 0 20px 0; }
     .btn-white { background-color: #ffffff; color: #004bff !important; display: inline-block; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 800; text-transform: uppercase; border: 1px solid #ffffff; }
-    .hero-graphic { margin-top: 30px; background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%); height: 160px; border-top-left-radius: 12px; border-top-right-radius: 12px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); border-bottom: none; }
-    
     .content-white { padding: 40px 40px; color: #0f172a; }
     .content-white h2 { font-size: 22px; font-weight: 800; margin: 0 0 10px 0; color: #0f172a; }
     .content-white p.subtitle { font-size: 14px; color: #475569; margin-bottom: 30px; }
-    
     .icon-list-item { display: flex; align-items: flex-start; margin-bottom: 25px; }
     .icon-box { margin-right: 15px; font-size: 20px; line-height: 1; margin-top: 2px; }
     .icon-text h4 { margin: 0 0 5px 0; font-size: 15px; font-weight: 800; color: #0f172a; }
     .icon-text p { margin: 0; font-size: 13px; color: #64748b; line-height: 1.5; }
-    
     .btn-dark { background-color: #0a1e3f; color: #ffffff !important; display: inline-block; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
-    
-    .content-beige { background-color: #fdfbf7; padding: 40px 40px; }
-    .content-beige h3 { text-align: center; font-size: 16px; font-weight: 800; color: #0f172a; margin: 0 0 30px 0; }
-    
-    .card { margin-bottom: 20px; display: block; text-decoration: none; color: inherit; }
-    .card-title { font-weight: 800; font-size: 14px; margin-bottom: 5px; color: #0f172a; }
-    .card-text { font-size: 12px; color: #64748b; line-height: 1.5; }
-    
-    .card-icon { width: 60px; height: 60px; border-radius: 12px; display: inline-block; }
-    .icon-green { background: linear-gradient(135deg, #10b981, #34d399); }
-    .icon-blue { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
-    .icon-purple { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
-    
     .footer { background-color: #0a1e3f; color: #ffffff; padding: 40px 20px; text-align: center; }
     .footer h2 { margin: 0 0 10px 0; font-size: 20px; font-weight: 900; }
     .footer p { margin: 0; font-size: 11px; color: #94a3b8; }
-    .footer-links a { color: #60a5fa; text-decoration: none; font-size: 11px; margin: 0 8px; }
   </style>
 </head>
 <body>
   <div class="email-container">
-    
-    <!-- Hero Section -->
     <div class="hero">
       <h1>Welcome to <span style="color: #ffffff; text-decoration: none;">2all.ai</span>!</h1>
       <a href="${dashboardUrl}" class="btn-white">START FREE TRIAL</a>
-      
-      <div style="margin-top: 40px;">
-        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&h=160&q=80" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-top-left-radius: 12px; border-top-right-radius: 12px; display: block;" />
-      </div>
     </div>
 
-    <!-- White Content Section -->
     <div class="content-white">
-      <h2>We're so glad you're here.</h2>
+      <h2>Hi ${userName || "Customer"}, We're so glad you're here.</h2>
       <p class="subtitle">Start your 7-day free trial immediately&mdash;no pressure, just results:</p>
       
       <div class="icon-list-item">
@@ -230,86 +303,41 @@ export async function sendInitialWelcomeEmail(toEmail: string, userName: string)
       </div>
       
       <div style="margin-top: 30px;">
-        <a href="${dashboardUrl}" class="btn-dark">START FREE TRIAL</a>
-      </div>
-    </div>
-
-    <!-- Beige Content Section -->
-    <div class="content-beige">
-      <h3>The #1 rated web accessibility solution for ADA compliance</h3>
-      
-      <div class="card">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0">
-          <tr>
-            <td width="80" valign="top">
-              <div class="card-icon icon-green" style="text-align: center; line-height: 60px;">
-                <img src="https://img.icons8.com/ios-filled/30/ffffff/scales.png" width="30" height="30" alt="Legal" style="vertical-align: middle; display: inline-block;" />
-              </div>
-            </td>
-            <td valign="top">
-              <div class="card-title">Mitigate legal risk</div>
-              <div class="card-text">A U.S. court recognized 2all's role in web accessibility and helping businesses meet legal requirements.</div>
-            </td>
-          </tr>
-        </table>
-      </div>
-      
-      <div class="card">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0">
-          <tr>
-            <td width="80" valign="top">
-              <div class="card-icon icon-blue" style="text-align: center; line-height: 60px;">
-                <img src="https://img.icons8.com/ios-filled/30/ffffff/lock.png" width="30" height="30" alt="Security" style="vertical-align: middle; display: inline-block;" />
-              </div>
-            </td>
-            <td valign="top">
-              <div class="card-title">Get uncompromising security and privacy</div>
-              <div class="card-text">2all upholds stringent security standards, with regular testing and monitoring as part of SOC2 compliance.</div>
-            </td>
-          </tr>
-        </table>
-      </div>
-      
-      <div class="card">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0">
-          <tr>
-            <td width="80" valign="top">
-              <div class="card-icon icon-purple" style="text-align: center; line-height: 60px;">
-                <img src="https://img.icons8.com/ios-filled/30/ffffff/services.png" width="30" height="30" alt="Solutions" style="vertical-align: middle; display: inline-block;" />
-              </div>
-            </td>
-            <td valign="top">
-              <div class="card-title">Explore tailored solutions to fit your needs</div>
-              <div class="card-text">Automated AI, expert human support, or both&mdash;we tailor accessibility solutions precisely for you, heavy lifting on us.</div>
-            </td>
-          </tr>
-        </table>
-      </div>
-      
-      <div style="text-align: center; margin-top: 30px;">
-        <a href="${dashboardUrl}" class="btn-dark">START FREE TRIAL</a>
+        <a href="${dashboardUrl}" class="btn-dark">GO TO DASHBOARD</a>
       </div>
     </div>
     
-    <!-- Footer -->
     <div class="footer">
       <h2>2all.ai</h2>
-      <p style="margin-bottom: 8px;">2all.ai, 123 Accessibility Way, NY 10001</p>
-      <div class="footer-links">
-        <a href="#">Unsubscribe</a> &bull; <a href="#">Manage preferences</a>
-      </div>
+      <p>2all.ai, 123 Accessibility Way, NY 10001</p>
     </div>
-    
   </div>
 </body>
 </html>
   `;
 
+  const adminHtmlContent = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
+      <h3 style="color: #004bff; margin-top: 0;">2all.ai New User Alert</h3>
+      <p style="font-size: 14px; line-height: 1.5; color: #475569;">
+        A new user has just registered an account on 2all.ai.
+      </p>
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px; line-height: 1.8;">
+        <div><strong>Name:</strong> ${userName || "N/A"}</div>
+        <div><strong>Email:</strong> ${toEmail}</div>
+        <div><strong>Registered At:</strong> ${new Date().toLocaleString()}</div>
+      </div>
+    </div>
+  `;
+
   if (!transporter) {
-    console.log(`[SMTP SIMULATOR] Initial Welcome Email would be sent to: ${toEmail}\nSubject: ${subject}`);
+    console.log(`[SMTP SIMULATOR] Initial Welcome Email would be sent to: ${toEmail} and Admin alert to: ${targetAdmin}`);
+    logEmailSent("Welcome Signup User", toEmail, subject, "SUCCESS", "Simulated mode");
+    logEmailSent("Welcome Signup Admin", targetAdmin, adminSubject, "SUCCESS", "Simulated mode");
     return;
   }
 
+  // 1. Send Welcome Email to User
   try {
     await transporter.sendMail({
       from,
@@ -318,14 +346,31 @@ export async function sendInitialWelcomeEmail(toEmail: string, userName: string)
       html: htmlContent,
     });
     console.log(`[SMTP] Initial welcome email sent to ${toEmail}`);
-  } catch (err) {
+    logEmailSent("Welcome Signup User", toEmail, subject, "SUCCESS");
+  } catch (err: any) {
     console.error("[SMTP] Failed to send initial welcome email:", err);
+    logEmailSent("Welcome Signup User", toEmail, subject, "FAILED", err.message);
+  }
+
+  // 2. Send New Registration Alert to Admin
+  try {
+    await transporter.sendMail({
+      from,
+      to: targetAdmin,
+      subject: adminSubject,
+      html: adminHtmlContent,
+    });
+    console.log(`[SMTP] New user registration alert sent to Admin ${targetAdmin}`);
+    logEmailSent("Welcome Signup Admin", targetAdmin, adminSubject, "SUCCESS");
+  } catch (err: any) {
+    console.error("[SMTP] Failed to send admin registration alert:", err);
+    logEmailSent("Welcome Signup Admin", targetAdmin, adminSubject, "FAILED", err.message);
   }
 }
 
 export async function sendWelcomeEmail(toEmail: string, userName: string, website: string) {
   const transporter = getTransporter();
-  const from = process.env.SMTP_FROM || "2all.ai <no-reply@2all.ai>";
+  const from = getFromHeader();
   const subject = `Welcome to 2all.ai — your 7-day free trial is active!`;
   
   const siteUrl = website ? (website.startsWith("http") ? website : `https://${website}`) : "your website";
@@ -341,51 +386,22 @@ export async function sendWelcomeEmail(toEmail: string, userName: string, websit
     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f7f9; }
     .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
     .hero { background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%); padding: 40px 20px; text-align: center; }
-    .hero h1 { color: #0a1e3f; font-size: 28px; font-weight: 800; margin: 0 0 20px 0; letter-spacing: -0.5px; }
-    .btn-primary { background-color: #004bff; color: #ffffff !important; display: inline-block; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
-    .hero-graphic { margin-top: 30px; background: linear-gradient(90deg, #004bff, #3b82f6); height: 160px; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 75, 255, 0.3); position: relative; overflow: hidden; }
-    
+    .hero h1 { color: #0a1e3f; font-size: 28px; font-weight: 800; margin: 0 0 20px 0; }
+    .btn-primary { background-color: #004bff; color: #ffffff !important; display: inline-block; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 800; text-transform: uppercase; }
     .content { padding: 40px 30px; color: #334155; font-size: 14px; line-height: 1.6; }
     .content h2 { color: #0f172a; font-size: 18px; font-weight: 700; margin: 30px 0 10px 0; }
-    
     .script-box { background-color: #eef2ff; border-radius: 10px; padding: 20px; margin: 15px 0; font-family: 'Courier New', Courier, monospace; font-size: 12px; color: #3b82f6; word-wrap: break-word; overflow-wrap: break-word; }
-    
-    .list-item { margin-bottom: 8px; display: flex; align-items: center; }
-    .list-item span { color: #004bff; font-weight: bold; margin-right: 10px; font-size: 18px; }
-    
-    .feature-cards { margin-top: 40px; }
-    .feature-cards h3 { color: #0f172a; font-size: 20px; font-weight: 800; margin-bottom: 20px; }
-    
-    .card { border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 16px; display: block; text-decoration: none; color: inherit; }
-    .card-title { font-weight: 800; font-size: 15px; margin-bottom: 8px; color: #0f172a; }
-    .card-text { font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 12px; }
-    .card-link { color: #004bff; font-size: 13px; font-weight: 700; text-decoration: none; }
-    
-    .card-icon { width: 48px; height: 48px; border-radius: 12px; margin-bottom: 16px; display: inline-block; }
-    .icon-green { background: linear-gradient(135deg, #10b981, #34d399); }
-    .icon-blue { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
-    .icon-purple { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
-    
     .footer { background-color: #0a1e3f; color: #ffffff; padding: 40px 20px; text-align: center; }
-    .footer h2 { margin: 0 0 10px 0; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
-    .footer p { margin: 0; font-size: 12px; color: #94a3b8; }
-    .footer-links a { color: #60a5fa; text-decoration: none; font-size: 12px; margin: 0 8px; }
+    .footer h2 { margin: 0 0 10px 0; font-size: 24px; font-weight: 900; }
   </style>
 </head>
 <body>
   <div class="email-container">
-    
-    <!-- Hero Section -->
     <div class="hero">
-      <h1>Welcome to <span style="color: #ffffff; text-decoration: none;">2all.ai</span></h1>
+      <h1>Welcome to <span style="color: #004bff;">2all.ai</span></h1>
       <a href="${dashboardUrl}" class="btn-primary">GO TO YOUR ACCOUNT</a>
-      
-      <div style="margin-top: 40px;">
-        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&h=160&q=80" alt="2all.ai Welcome" style="width: 100%; max-width: 600px; border-top-left-radius: 12px; border-top-right-radius: 12px; display: block;" />
-      </div>
     </div>
 
-    <!-- Main Content -->
     <div class="content">
       <p style="margin-top: 0;">Hi ${userName},</p>
       
@@ -398,100 +414,23 @@ export async function sendWelcomeEmail(toEmail: string, userName: string, websit
         ${widgetScript}
       </div>
       
-      <h2>Want to check everything's set up correctly?</h2>
-      <p>Follow the step-by-step installation guide: <a href="https://2all.ai/docs/installation" style="color: #004bff; text-decoration: none;">https://2all.ai/docs/installation</a></p>
-      
-      <h2>Customize your widget (optional)</h2>
-      <p>You can tailor the 2all widget to match your site and preferences, including:</p>
-      
-      <div style="margin-top: 15px;">
-        <div class="list-item"><span>&#8226;</span> Widget position, size, and color</div>
-        <div class="list-item"><span>&#8226;</span> Language and accessibility profiles</div>
-        <div class="list-item"><span>&#8226;</span> Branding and visual style</div>
-      </div>
-      
       <div style="margin-top: 30px;">
         <a href="${dashboardUrl}" class="btn-primary">GO TO YOUR ACCOUNT</a>
       </div>
-      
-      <!-- Feature Cards Section -->
-      <div class="feature-cards">
-        <h3>Explore 2all.ai</h3>
-        
-        <div class="card">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td width="70" valign="top">
-                <div class="card-icon icon-green" style="text-align: center; line-height: 48px;">
-                  <img src="https://img.icons8.com/ios-filled/24/ffffff/scales.png" width="24" height="24" alt="Legal" style="vertical-align: middle; display: inline-block;" />
-                </div>
-              </td>
-              <td valign="top">
-                <div class="card-title">Mitigate legal risk</div>
-                <div class="card-text">2all's role in web accessibility helps businesses identify accessibility gaps and align with WCAG standards.</div>
-                <a href="${process.env.NEXTAUTH_URL || "http://localhost:3000"}/solutions/legal" class="card-link">Learn More &rarr;</a>
-              </td>
-            </tr>
-          </table>
-        </div>
-        
-        <div class="card">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td width="70" valign="top">
-                <div class="card-icon icon-blue" style="text-align: center; line-height: 48px;">
-                  <img src="https://img.icons8.com/ios-filled/24/ffffff/lock.png" width="24" height="24" alt="Security" style="vertical-align: middle; display: inline-block;" />
-                </div>
-              </td>
-              <td valign="top">
-                <div class="card-title">Get uncompromising security and privacy</div>
-                <div class="card-text">2all upholds strict security standards, with regular testing and monitoring to ensure total data safety.</div>
-                <a href="${process.env.NEXTAUTH_URL || "http://localhost:3000"}/company/security" class="card-link">Learn More &rarr;</a>
-              </td>
-            </tr>
-          </table>
-        </div>
-        
-        <div class="card">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td width="70" valign="top">
-                <div class="card-icon icon-purple" style="text-align: center; line-height: 48px;">
-                  <img src="https://img.icons8.com/ios-filled/24/ffffff/services.png" width="24" height="24" alt="Solutions" style="vertical-align: middle; display: inline-block;" />
-                </div>
-              </td>
-              <td valign="top">
-                <div class="card-title">Tailored solutions for your needs</div>
-                <div class="card-text">From automated AI to expert human support, 2all offers flexible accessibility solutions &mdash; with us handling the heavy lifting.</div>
-                <a href="${process.env.NEXTAUTH_URL || "http://localhost:3000"}/solutions" class="card-link">Learn More &rarr;</a>
-              </td>
-            </tr>
-          </table>
-        </div>
-        
-        <div style="margin-top: 20px; text-align: center;">
-           <a href="${process.env.NEXTAUTH_URL || "http://localhost:3000"}" class="btn-primary">EXPLORE 2ALL.AI</a>
-        </div>
-      </div>
-      
     </div>
     
-    <!-- Footer -->
     <div class="footer">
       <h2>2all.ai</h2>
-      <p style="margin-bottom: 12px;">123 Accessibility Way, Tech District, NY 10001</p>
-      <div class="footer-links">
-        <a href="#">Unsubscribe</a> &bull; <a href="#">Manage preferences</a>
-      </div>
+      <p>123 Accessibility Way, Tech District, NY 10001</p>
     </div>
-    
   </div>
 </body>
 </html>
   `;
 
   if (!transporter) {
-    console.log(`[SMTP SIMULATOR] Welcome Email would be sent to: ${toEmail}\nSubject: ${subject}\nBody: ${htmlContent}`);
+    console.log(`[SMTP SIMULATOR] Welcome Email would be sent to: ${toEmail}`);
+    logEmailSent("Widget Script Email", toEmail, subject, "SUCCESS", "Simulated mode");
     return;
   }
 
@@ -502,9 +441,134 @@ export async function sendWelcomeEmail(toEmail: string, userName: string, websit
       subject,
       html: htmlContent,
     });
-    console.log(`[SMTP] Welcome email sent to ${toEmail}`);
-  } catch (err) {
-    console.error("[SMTP] Failed to send welcome email:", err);
+    console.log(`[SMTP] Welcome script email sent to ${toEmail}`);
+    logEmailSent("Widget Script Email", toEmail, subject, "SUCCESS");
+  } catch (err: any) {
+    console.error("[SMTP] Failed to send welcome script email:", err);
+    logEmailSent("Widget Script Email", toEmail, subject, "FAILED", err.message);
   }
 }
 
+export async function sendLicenseOwnerNotificationEmail(
+  ownerName: string,
+  ownerEmail: string,
+  phone: string
+) {
+  const transporter = getTransporter();
+  const from = getFromHeader();
+  const targetAdmin = getAdminEmail();
+  const adminSubject = `[License Owner Info Update] ${ownerName} (${ownerEmail})`;
+  const userSubject = `2all.ai - License Owner Details Updated`;
+
+  const adminHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
+      <h3 style="color: #004bff; margin-top: 0;">License Owner Info Updated</h3>
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px; line-height: 1.8;">
+        <div><strong>Owner Name:</strong> ${ownerName}</div>
+        <div><strong>Email:</strong> ${ownerEmail}</div>
+        <div><strong>Phone:</strong> ${phone || "N/A"}</div>
+        <div><strong>Updated At:</strong> ${new Date().toLocaleString()}</div>
+      </div>
+    </div>
+  `;
+
+  const userHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
+      <h2 style="color: #004bff; margin-top: 0;">2all.ai</h2>
+      <p style="font-size: 15px; font-weight: bold;">Hi ${ownerName},</p>
+      <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+        Your license owner & organization details have been updated successfully.
+      </p>
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px;">
+        <div><strong>Owner Name:</strong> ${ownerName}</div>
+        <div><strong>Email:</strong> ${ownerEmail}</div>
+        <div><strong>Phone:</strong> ${phone || "N/A"}</div>
+      </div>
+    </div>
+  `;
+
+  if (!transporter) {
+    logEmailSent("License Owner Update Admin", targetAdmin, adminSubject, "SUCCESS", "Simulated");
+    logEmailSent("License Owner Update User", ownerEmail, userSubject, "SUCCESS", "Simulated");
+    return;
+  }
+
+  try {
+    await transporter.sendMail({ from, to: targetAdmin, subject: adminSubject, html: adminHtml });
+    logEmailSent("License Owner Update Admin", targetAdmin, adminSubject, "SUCCESS");
+  } catch (e: any) {
+    logEmailSent("License Owner Update Admin", targetAdmin, adminSubject, "FAILED", e.message);
+  }
+
+  try {
+    await transporter.sendMail({ from, to: ownerEmail, subject: userSubject, html: userHtml });
+    logEmailSent("License Owner Update User", ownerEmail, userSubject, "SUCCESS");
+  } catch (e: any) {
+    logEmailSent("License Owner Update User", ownerEmail, userSubject, "FAILED", e.message);
+  }
+}
+
+export async function sendApiKeyNotificationEmail(
+  userEmail: string,
+  userName: string,
+  keyName: string,
+  apiKey: string,
+  domainName?: string
+) {
+  const transporter = getTransporter();
+  const from = getFromHeader();
+  const targetAdmin = getAdminEmail();
+  const adminSubject = `[API Key Generated] ${keyName} - ${userEmail}`;
+  const userSubject = `2all.ai - Your New API Key & Installation Script (${keyName})`;
+
+  const scriptSnippet = `&lt;script&gt;(function(){var s=document.createElement('script');s.src='https://2all.ai/widget.js';s.async=true;s.setAttribute('data-api-key','${apiKey}');(document.head||document.body).appendChild(s);})();&lt;/script&gt;`;
+
+  const adminHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
+      <h3 style="color: #004bff; margin-top: 0;">API Key Generated</h3>
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px; line-height: 1.8;">
+        <div><strong>User:</strong> ${userName || "User"} (${userEmail})</div>
+        <div><strong>Key Name:</strong> ${keyName}</div>
+        <div><strong>Generated Key:</strong> <code>${apiKey}</code></div>
+        <div><strong>Target Domain:</strong> ${domainName || "All domains"}</div>
+        <div><strong>Generated At:</strong> ${new Date().toLocaleString()}</div>
+      </div>
+    </div>
+  `;
+
+  const userHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
+      <h2 style="color: #004bff; margin-top: 0;">2all.ai</h2>
+      <p style="font-size: 15px; font-weight: bold;">Hi ${userName || "Subscriber"},</p>
+      <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+        Your API key <strong>${keyName}</strong> has been generated. Use the installation script below on your website to activate accessibility scanning:
+      </p>
+      <div style="background-color: #0f172a; color: #93c5fd; padding: 16px; border-radius: 12px; font-family: monospace; font-size: 12px; word-break: break-all; margin: 20px 0;">
+        ${scriptSnippet}
+      </div>
+      <p style="font-size: 13px; color: #64748b;">
+        <strong>API Key:</strong> <code>${apiKey}</code>
+      </p>
+    </div>
+  `;
+
+  if (!transporter) {
+    logEmailSent("API Key Admin", targetAdmin, adminSubject, "SUCCESS", "Simulated");
+    logEmailSent("API Key User", userEmail, userSubject, "SUCCESS", "Simulated");
+    return;
+  }
+
+  try {
+    await transporter.sendMail({ from, to: targetAdmin, subject: adminSubject, html: adminHtml });
+    logEmailSent("API Key Admin", targetAdmin, adminSubject, "SUCCESS");
+  } catch (e: any) {
+    logEmailSent("API Key Admin", targetAdmin, adminSubject, "FAILED", e.message);
+  }
+
+  try {
+    await transporter.sendMail({ from, to: userEmail, subject: userSubject, html: userHtml });
+    logEmailSent("API Key User", userEmail, userSubject, "SUCCESS");
+  } catch (e: any) {
+    logEmailSent("API Key User", userEmail, userSubject, "FAILED", e.message);
+  }
+}

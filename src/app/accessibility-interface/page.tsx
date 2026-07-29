@@ -15,6 +15,7 @@ import {
   CheckCircle,
   ArrowRight
 } from "lucide-react";
+import DyslexiaSimulation from "@/components/accessibility/DyslexiaSimulation";
 
 export default function AccessibilityInterfacePage() {
   // Simulated Interactive Widget State
@@ -166,6 +167,20 @@ export default function AccessibilityInterfacePage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 2.5 DYSLEXIA READING SIMULATION DEMO */}
+      <section className="py-16 px-6 bg-slate-50 border-t border-slate-200/60">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="text-center space-y-3 max-w-3xl mx-auto">
+            <span className="text-xs font-black tracking-widest text-blue-600 uppercase">Live Feature Demo</span>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Dyslexia Reading Simulation</h2>
+            <p className="text-slate-500 text-sm md:text-md leading-relaxed">
+              Experience the visual jitter effect simulating dyslexic reading difficulty, and test the dyslexia-optimized font & spacing remediation solution.
+            </p>
+          </div>
+          <DyslexiaSimulation />
         </div>
       </section>
 

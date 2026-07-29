@@ -66,27 +66,31 @@ export default function WhyChoose2allAiPage() {
       <Navbar />
 
       {/* ── 1. BLUE HERO HEADER ── */}
-      <section className="bg-gradient-to-b from-[#0b3c96] to-[#041d57] text-white pt-32 pb-20 px-6 text-center relative overflow-hidden shrink-0">
+      <section className="bg-gradient-to-b from-[#0b3c96] to-[#041d57] text-white pt-6 pb-8 md:pb-10 relative overflow-hidden shrink-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(200,255,77,0.08)_0%,transparent_60%)] pointer-events-none" />
         
-        <div className="max-w-4xl mx-auto flex flex-col items-center space-y-6 relative z-10">
-          <Breadcrumbs 
-            theme="dark" 
-            items={[ { label: "Home", href: "/" }, { label: "Why Choose 2all.ai" } ]} 
-          />
+        <div className="max-w-7xl mx-auto px-4 md:px-8 w-full relative z-10">
+          <div className="flex justify-start text-left mb-2">
+            <Breadcrumbs 
+              theme="dark" 
+              items={[ { label: "Home", href: "/" }, { label: "Why Choose 2all.ai" } ]} 
+            />
+          </div>
           
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
-            Why choose <span className="text-[#C8FF4D]">2all.ai</span>?
-          </h1>
-          
-          <p className="text-slate-200 text-lg md:text-xl font-light max-w-2xl leading-relaxed">
-            Join thousands of businesses that trust 2all.ai to help improve alignment with WCAG 2.2, ADA, Section 508, and global web accessibility standards.
-          </p>
-          
-          <div className="pt-4">
-            <button className="bg-white hover:bg-slate-100 text-[#041d57] px-8 py-3.5 rounded-full font-black text-sm tracking-widest uppercase transition-all hover:scale-105 shadow-xl">
-              Compare Us &rarr;
-            </button>
+          <div className="max-w-3xl mx-auto text-center space-y-3">
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight text-center">
+              Why choose <span className="text-[#C8FF4D]">2all.ai</span>?
+            </h1>
+            
+            <p className="text-slate-200 text-base md:text-lg font-light max-w-2xl mx-auto leading-relaxed text-center">
+              Join thousands of businesses that trust 2all.ai to help improve alignment with WCAG 2.2, ADA, Section 508, and global web accessibility standards.
+            </p>
+            
+            <div className="pt-4">
+              <button className="bg-white hover:bg-slate-100 text-[#041d57] px-8 py-3.5 rounded-full font-black text-sm tracking-widest uppercase transition-all hover:scale-105 shadow-xl">
+                Compare Us &rarr;
+              </button>
+            </div>
           </div>
         </div>
       </section>

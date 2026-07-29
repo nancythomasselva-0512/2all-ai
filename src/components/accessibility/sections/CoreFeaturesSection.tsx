@@ -4,9 +4,10 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useAccessibility } from "@/context/AccessibilityContext";
 import { 
-  Type, AlignLeft, Search, Link, MousePointer2,
+  Type, AlignLeft, AlignCenter, Search, Link, MousePointer2,
   Video, Maximize, Target, Hash, Expand, BetweenHorizonalEnd,
-  MonitorSpeaker, ShieldAlert, Play, Pause, Square, Settings, BookOpen
+  MonitorSpeaker, ShieldAlert, Play, Pause, Square, Settings, BookOpen,
+  MessageSquarePlus, Minus, Plus, Mic
 } from "lucide-react";
 
 const stagger = {
@@ -26,11 +27,6 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
     {
       title: "Typography & Alignment",
       items: [
-        { 
-          id: "fontSize", label: "Font Size", type: "range", 
-          min: 90, max: 200, step: 10, value: state.fontSize,
-          icon: <Type className="w-4 h-4" />, suffix: "%"
-        },
         { 
           id: "letterSpacing", label: "Letter Spacing", type: "range", 
           min: 0, max: 5, step: 0.5, value: state.letterSpacing,
@@ -163,6 +159,13 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
           type: "action",
           onClick: () => updateSetting("isVoiceSettingsOpen", true),
           icon: <Settings className="w-5 h-5 text-slate-600" />
+        },
+        {
+          id: "voiceNavigation",
+          label: "Voice Navigation",
+          type: "toggle",
+          value: state.voiceNavigation,
+          icon: <Mic className="w-5 h-5 text-blue-600" />
         }
       ]
     },
@@ -171,7 +174,6 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
       items: [
         { id: "readingMask", label: "Reading Mask", type: "toggle", value: state.readingMask, icon: <Maximize className="w-5 h-5" /> },
         { id: "readingRuler", label: "Reading Ruler", type: "toggle", value: state.readingRuler, icon: <Target className="w-5 h-5" /> },
-        { id: "textMagnifier", label: "Text Magnifier", type: "toggle", value: state.textMagnifier, icon: <Search className="w-5 h-5" /> },
         { id: "textToSpeech", label: "Read Aloud (TTS)", type: "toggle", value: state.textToSpeech, icon: <MonitorSpeaker className="w-5 h-5" /> },
       ]
     },
@@ -213,18 +215,113 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
   const filteredGroups = groups.map(g => ({ ...g, items: filterItems(g.items) })).filter(g => g.items.length > 0);
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-8 pb-10">
+    <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-6 pb-10">
       
-      {filteredGroups.length === 0 && (
+      {/* Readable Experience Section (Matching User Reference Images) */}
+      {(!searchQuery || "readable experience content scaling text magnifier readable font center aligned".includes(searchQuery.toLowerCase())) && (
+        <motion.div variants={fadeUp} className="space-y-3">
+          <h3 className="text-sm font-bold text-slate-800 px-1">Readable Experience</h3>
+
+          {/* Card 1: Content Scaling */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col items-center justify-center gap-3 shadow-sm hover:border-slate-300 transition-all">
+            <span className="text-xs font-bold text-slate-900">Content Scaling</span>
+            <div className="flex items-center justify-between w-full max-w-[220px] px-2">
+              {/* Minus Button */}
+              <button
+                onClick={() => updateSetting("fontSize", Math.max(90, state.fontSize - 10))}
+                className="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg flex items-center justify-center border border-blue-500 shadow-md shadow-blue-500/20 cursor-pointer transition-all active:scale-95"
+                aria-label="Decrease content scaling"
+              >
+                <Minus className="w-4 h-4 stroke-[3]" />
+              </button>
+
+              {/* Center Label */}
+              <span className="text-xs font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200/60">
+                {state.fontSize === 100 ? "Default" : `${state.fontSize}%`}
+              </span>
+
+              {/* Plus Button */}
+              <button
+                onClick={() => updateSetting("fontSize", Math.min(200, state.fontSize + 10))}
+                className="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg flex items-center justify-center border border-blue-500 shadow-md shadow-blue-500/20 cursor-pointer transition-all active:scale-95"
+                aria-label="Increase content scaling"
+              >
+                <Plus className="w-4 h-4 stroke-[3]" />
+              </button>
+            </div>
+          </div>
+
+          {/* Card 2: Text Magnifier */}
+          <button
+            onClick={() => updateSetting("textMagnifier", !state.textMagnifier)}
+            className={`w-full rounded-2xl p-3.5 flex items-center justify-center gap-3 transition-all cursor-pointer select-none ${
+              state.textMagnifier 
+                ? 'border-2 border-blue-500 bg-blue-50/80 text-blue-900 shadow-md shadow-blue-500/10' 
+                : 'border border-slate-200/80 bg-white text-slate-800 hover:border-blue-300 hover:shadow-md'
+            }`}
+          >
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-sm transition-colors ${
+              state.textMagnifier ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-600 border border-blue-100'
+            }`}>
+              <MessageSquarePlus className="w-4 h-4 stroke-[2]" />
+            </div>
+            <span className="text-xs font-bold">Text Magnifier</span>
+          </button>
+
+          {/* Card 3 & 4 Grid: Readable Font (Aa) & Center Aligned (Small Boxes) */}
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            {/* Card 3: Readable Font (Aa) */}
+            <button
+              onClick={() => updateSetting("fontFamily", state.fontFamily === "readable" ? "default" : "readable")}
+              className={`rounded-2xl py-3.5 px-3 flex flex-col items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer select-none border-2 ${
+                state.fontFamily === "readable"
+                  ? 'border-[#0091ff] bg-sky-50/80 text-blue-950 shadow-sm scale-[1.01]' 
+                  : 'border-[#cbe2ff] bg-white text-slate-800 hover:border-[#0091ff] hover:shadow-sm'
+              }`}
+            >
+              <span className="text-2xl font-black text-[#0091ff] tracking-tight leading-none">
+                Aa
+              </span>
+              <span className="text-xs font-bold text-[#262626] text-center">
+                Readable Font
+              </span>
+            </button>
+
+            {/* Card 4: Center Aligned */}
+            <button
+              onClick={() => updateSetting("textAlignment", state.textAlignment === "center" ? "default" : "center")}
+              className={`rounded-2xl py-3.5 px-3 flex flex-col items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer select-none border-2 ${
+                state.textAlignment === "center"
+                  ? 'border-[#0091ff] bg-sky-50/80 text-blue-950 shadow-sm scale-[1.01]' 
+                  : 'border-[#cbe2ff] bg-white text-slate-800 hover:border-[#0091ff] hover:shadow-sm'
+              }`}
+            >
+              <div className="flex items-center justify-center h-6">
+                <svg width="26" height="21" viewBox="0 0 34 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="10" y="1" width="14" height="4.5" rx="2.25" fill="#0091ff" />
+                  <rect x="3" y="8.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
+                  <rect x="7" y="16" width="20" height="4.5" rx="2.25" fill="#0091ff" />
+                  <rect x="3" y="23.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
+                </svg>
+              </div>
+              <div className="text-xs font-bold text-[#262626] text-center leading-tight">
+                Center<br />Aligned
+              </div>
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {filteredGroups.length === 0 && searchQuery && (
         <div className="text-center py-10 text-slate-400 text-sm">No features found for "{searchQuery}"</div>
       )}
 
       {filteredGroups.map((group, gIdx) => (
         <motion.div key={gIdx} variants={fadeUp} className="space-y-4">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-2">{group.title}</h3>
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">{group.title}</h3>
           
           <div className="grid grid-cols-2 gap-3">
-            {group.items.map((item, iIdx) => {
+            {group.items.map((item) => {
               
               if (item.type === "action") {
                 return (

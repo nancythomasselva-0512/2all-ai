@@ -31,6 +31,9 @@ function RegisterForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+  const [suggestedPassword, setSuggestedPassword] = useState("K9#vX2$mL8!pQ4");
+  const [marketingConsent, setMarketingConsent] = useState(false);
+  const [termsConsent, setTermsConsent] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -250,12 +253,12 @@ function RegisterForm() {
                   )}
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-2">
-                      Enter your website <span className="text-red-500">*</span>
+                    <label className="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1.5">
+                      Enter your website <span className="text-red-500 font-bold">*</span>
                     </label>
-                    <div className="flex rounded-xl border border-slate-200 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 overflow-hidden shadow-sm transition-all bg-white">
-                      <div className="bg-slate-50 border-r border-slate-100 px-3 sm:px-4 flex items-center gap-1.5 text-slate-400 font-bold text-xs select-none shrink-0">
-                        <Globe className="w-4 h-4 text-slate-400" />
+                    <div className="flex rounded-xl border border-slate-200/80 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 overflow-hidden transition-all bg-slate-50">
+                      <div className="bg-slate-100 border-r border-slate-200/80 px-3.5 flex items-center gap-1.5 text-slate-500 font-bold text-xs select-none shrink-0">
+                        <Globe className="w-3.5 h-3.5 text-slate-500" />
                         <span className="hidden sm:inline">www.</span>
                       </div>
                       <input
@@ -263,7 +266,7 @@ function RegisterForm() {
                         required
                         value={website}
                         onChange={(e) => setWebsite(e.target.value)}
-                        className="flex-1 px-4 py-3.5 bg-white text-slate-900 placeholder-slate-300 focus:outline-none text-sm font-semibold"
+                        className="flex-1 px-4 py-2.5 bg-slate-50 text-slate-800 placeholder-slate-400 focus:outline-none text-xs font-semibold"
                         placeholder="yourwebsite.com"
                       />
                     </div>
@@ -271,14 +274,14 @@ function RegisterForm() {
 
                   <button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-4 px-6 rounded-xl flex items-center justify-center gap-1 shadow-md shadow-blue-500/15 transition-all text-sm uppercase tracking-wider cursor-pointer"
+                    className="w-full bg-[#004bff] hover:bg-[#003edd] text-white font-extrabold py-3 px-6 rounded-xl flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/10 transition-all text-xs uppercase tracking-wider cursor-pointer"
                   >
                     Next
                     <ChevronRight className="w-4 h-4 stroke-[3]" />
                   </button>
                 </motion.form>
               ) : (
-                /* STEP 2 FORM: ACCOUNT INFO (AS SHOWN IN SCREENSHOT) */
+                /* STEP 2 FORM: ACCOUNT INFO */
                 <motion.form
                   key="step2"
                   initial={{ opacity: 0, x: 20 }}
@@ -286,10 +289,10 @@ function RegisterForm() {
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.2 }}
                   onSubmit={handleSubmit}
-                  className="space-y-5"
+                  className="space-y-4"
                 >
                   {error && (
-                    <div className="p-3.5 rounded-xl bg-red-50 border border-red-100 text-red-500 text-xs font-semibold">
+                    <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-xs font-bold">
                       {error}
                     </div>
                   )}
@@ -303,9 +306,9 @@ function RegisterForm() {
                         : "/dashboard";
                       signIn("google", { callbackUrl: callback });
                     }}
-                    className="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all text-sm cursor-pointer"
+                    className="w-full bg-white border border-slate-200/85 hover:bg-slate-50 text-slate-700 font-extrabold py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 shadow-sm transition-all text-xs tracking-wider uppercase cursor-pointer"
                   >
-                    <svg className="w-4 h-4" viewBox="0 0 24 24">
+                    <svg className="w-4.5 h-4.5" viewBox="0 0 24 24">
                       <path fill="#EA4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582l3.51-3.51C17.842 1.091 15.114 0 12 0 7.354 0 3.327 2.673 1.341 6.577l3.925 3.188z" />
                       <path fill="#34A853" d="M16.04 15.345c-1.07.728-2.43 1.164-4.04 1.164a7.077 7.077 0 0 1-6.75-4.909l-3.925 3.188c1.986 3.905 6.013 6.577 10.675 6.577 3.09 0 5.864-1.036 7.84-2.827l-3.8-2.993z" />
                       <path fill="#4285F4" d="M23.864 12.273c0-.818-.073-1.636-.218-2.427H12v4.61h6.654a5.69 5.69 0 0 1-2.463 3.73l3.8 2.993c2.218-2.045 4.318-5.073 4.318-8.906z" />
@@ -315,56 +318,62 @@ function RegisterForm() {
                   </button>
 
                   {/* "or" Divider */}
-                  <div className="flex items-center gap-4 text-slate-300 text-xs font-bold uppercase tracking-wider justify-center">
-                    <div className="h-px bg-slate-100 flex-1" />
-                    <span>or</span>
-                    <div className="h-px bg-slate-100 flex-1" />
+                  <div className="relative py-1">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-slate-100" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-slate-400 font-bold">or</span>
+                    </div>
                   </div>
 
                   {/* Full Name */}
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                      Full name <span className="text-red-500">*</span>
+                    <label className="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1.5">
+                      Full name <span className="text-red-500 font-bold">*</span>
                     </label>
                     <input
                       type="text"
                       required
                       autoComplete="off"
+                      placeholder="Jane Doe"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full px-4 py-3.5 border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-sm font-semibold transition-all shadow-sm"
+                      className="w-full border border-slate-200/80 bg-slate-50 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
                     />
                   </div>
 
                   {/* Company Email */}
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                      Enter your company email <span className="text-red-500">*</span>
+                    <label className="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1.5">
+                      Enter your company email <span className="text-red-500 font-bold">*</span>
                     </label>
                     <input
                       type="email"
                       required
                       autoComplete="off"
+                      placeholder="name@company.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-3.5 border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-sm font-semibold transition-all shadow-sm"
+                      className="w-full border border-slate-200/80 bg-slate-50 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
                     />
                   </div>
 
                   {/* Password */}
                   <div className="relative">
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                      Password <span className="text-red-500">*</span>
+                    <label className="block text-[11px] font-black text-slate-600 uppercase tracking-wider mb-1.5">
+                      Password <span className="text-red-500 font-bold">*</span>
                     </label>
                     <div className="relative z-10">
                       <input
                         type={showPassword ? "text" : "password"}
                         required
                         autoComplete="new-password"
+                        placeholder="Enter your password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         onFocus={() => setShowPasswordPopup(true)}
-                        className="w-full px-4 py-3.5 pr-10 border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-sm font-semibold transition-all shadow-sm"
+                        className="w-full border border-slate-200/80 bg-slate-50 rounded-xl pl-4 pr-10 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
                       />
                       <button
                         type="button"
@@ -395,7 +404,7 @@ function RegisterForm() {
                       </div>
                     </div>
 
-                    {/* Transparent Click-Outside Backdrop for Password Popup */}
+                    {/* Transparent Click-Outside Backdrop */}
                     {showPasswordPopup && (
                       <div
                         className="fixed inset-0 z-20 cursor-default"
@@ -403,54 +412,67 @@ function RegisterForm() {
                       />
                     )}
 
-                    {/* Simulated Google Password Manager Popup Dialog */}
+                    {/* Strong Password Generator Popup */}
                     <AnimatePresence>
                       {showPasswordPopup && (
                         <motion.div
-                          initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                          initial={{ opacity: 0, x: -12, scale: 0.98 }}
+                          animate={{ opacity: 1, x: 0, scale: 1 }}
+                          exit={{ opacity: 0, x: -12, scale: 0.98 }}
                           transition={{ duration: 0.15 }}
-                          className="absolute left-0 right-0 md:left-auto md:-right-8 top-full mt-3 bg-white border border-slate-200/80 rounded-2xl shadow-[0_12px_45px_rgba(0,0,0,0.08)] p-5 z-30 w-full max-w-[calc(100vw-50px)] sm:max-w-[380px] text-left mx-auto md:mx-0"
+                          className="absolute left-0 lg:left-auto lg:right-[calc(100%+28px)] top-full lg:top-0 mt-2 lg:mt-0 bg-white border border-blue-100 rounded-2xl shadow-[0_15px_45px_rgba(11,60,150,0.16)] p-4.5 z-30 w-full lg:w-[340px] text-left"
                         >
-                          {/* Triangle Speech bubble arrow */}
-                          <div className="w-3 h-3 bg-white rotate-45 border-l border-t border-slate-200/80 -mt-[25.5px] left-8 md:left-auto md:right-16 absolute z-30" />
+                          {/* Triangle speech bubble pointer arrow for desktop */}
+                          <div className="hidden lg:block w-3 h-3 bg-white rotate-45 border-r border-t border-blue-100 absolute -right-[6.5px] top-5 z-31" />
 
-                          <div className="flex items-start gap-3 relative z-31">
-                            {/* Colorful Key Icon */}
-                            <div className="mt-0.5 shrink-0 flex items-center">
-                              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1" />
-                                <path d="M11.5 12h5.5v1.5h-1v1h-1.5v-1h-3v-1.5Z" fill="#FBBC05" />
-                                <circle cx="8.5" cy="12" r="2.5" fill="#4285F4" />
-                                <circle cx="8.5" cy="12" r="1" fill="#EA4335" />
-                                <rect x="14" y="12.5" width="1.5" height="2" rx="0.5" fill="#34A853" />
-                              </svg>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm">🔐</span>
+                              <h4 className="text-xs font-black text-slate-800">
+                                Suggested Strong Password
+                              </h4>
                             </div>
-                            <h4 className="text-xs font-bold text-slate-800 leading-snug">
-                              Google Password Manager created a strong password for this website
-                            </h4>
                           </div>
 
-                          <p className="text-[10px] text-slate-400 font-semibold leading-relaxed mt-2.5 relative z-31">
-                            You won't need to remember this password. It will be saved to Google Password Manager for zubairyasalamkhan213@gmail.com.
+                          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 flex items-center justify-between gap-2 mb-2.5">
+                            <code className="text-xs font-mono font-bold text-blue-700 tracking-wider">
+                              {suggestedPassword}
+                            </code>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*";
+                                let pass = "";
+                                for (let i = 0; i < 14; i++) {
+                                  pass += chars.charAt(Math.floor(Math.random() * chars.length));
+                                }
+                                setSuggestedPassword(pass);
+                              }}
+                              className="text-[10px] text-blue-600 hover:text-blue-700 font-bold underline border-none bg-transparent cursor-pointer"
+                            >
+                              Regenerate
+                            </button>
+                          </div>
+
+                          <p className="text-[11px] text-slate-500 font-medium leading-relaxed mb-3">
+                            Use this secure password for your 2all.ai account or type your own.
                           </p>
 
-                          <div className="flex justify-end gap-2.5 mt-4 relative z-31">
+                          <div className="flex items-center justify-end gap-2">
                             <button
                               type="button"
                               onClick={() => setShowPasswordPopup(false)}
-                              className="px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-blue-600 font-extrabold text-[11px] rounded-full transition-colors cursor-pointer"
+                              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-[11px] rounded-lg transition-colors cursor-pointer border-none"
                             >
-                              Choose your own
+                              Type my own
                             </button>
                             <button
                               type="button"
                               onClick={() => {
-                                setPassword("R!Ehd$4s6bApHDF");
+                                setPassword(suggestedPassword);
                                 setShowPasswordPopup(false);
                               }}
-                              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-[11px] rounded-full transition-colors cursor-pointer"
+                              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-[11px] rounded-lg transition-colors cursor-pointer border-none shadow-sm shadow-blue-500/20"
                             >
                               Use strong password
                             </button>
@@ -460,33 +482,62 @@ function RegisterForm() {
                     </AnimatePresence>
                   </div>
 
+                  {/* Consent Checkboxes */}
+                  <div className="space-y-3.5 pt-2 text-left">
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={marketingConsent}
+                        onChange={(e) => setMarketingConsent(e.target.checked)}
+                        className="mt-0.5 w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
+                      />
+                      <span className="text-sm font-semibold text-slate-700 leading-relaxed group-hover:text-slate-900 transition-colors select-none">
+                        I want to receive latest news and accessibility updates from 2all.ai.
+                      </span>
+                    </label>
+
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        required
+                        checked={termsConsent}
+                        onChange={(e) => setTermsConsent(e.target.checked)}
+                        className="mt-0.5 w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
+                      />
+                      <span className="text-sm font-semibold text-slate-700 leading-relaxed group-hover:text-slate-900 transition-colors select-none">
+                        I agree to the{" "}
+                        <Link 
+                          href="/terms-of-service" 
+                          className="text-blue-600 hover:text-blue-700 font-extrabold underline transition-colors"
+                        >
+                          Terms of Service
+                        </Link>{" "}
+                        &{" "}
+                        <Link 
+                          href="/privacy-notice" 
+                          className="text-blue-600 hover:text-blue-700 font-extrabold underline transition-colors"
+                        >
+                          Privacy Notice
+                        </Link>.
+                      </span>
+                    </label>
+                  </div>
+
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={loading}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-4 px-6 rounded-xl flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/15 transition-all text-sm uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer mt-4"
+                    disabled={loading || !termsConsent}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3.5 px-6 rounded-xl flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/15 transition-all text-sm uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer mt-4"
                   >
                     {loading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <>
-                        Continue
+                        Sign Up
                         <ChevronRight className="w-4 h-4 stroke-[3]" />
                       </>
                     )}
                   </button>
-
-                  {/* Terms & Privacy */}
-                  <p className="text-[11px] text-slate-400 font-semibold text-center mt-4 leading-normal">
-                    By signing up, you agree to our{" "}
-                    <Link href="/terms" className="text-blue-500 hover:underline">
-                      Terms of Use
-                    </Link>{" "}
-                    and acknowledge you've read our{" "}
-                    <Link href="/privacy" className="text-blue-500 hover:underline">
-                      Privacy Notice
-                    </Link>
-                  </p>
                 </motion.form>
               )}
             </AnimatePresence>

@@ -24,7 +24,6 @@ import DemoModal from "@/components/marketing/DemoModal";
 import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
-import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function PricingPage() {
@@ -63,23 +62,23 @@ export default function PricingPage() {
       a: "Absolutely. A single installation script integrates immediately with WordPress, Shopify, Webflow, Wix, Squarespace, Drupal, Custom React/NextJS setups, and all other major CMS frameworks."
     },
     {
-      q: "Does accessWidget help you conform to WCAG?",
-      a: "Yes, accessWidget automatically remediates interactive elements, form fields, document states, and navigational structures to align with official WCAG 2.2 AA guidelines."
+      q: "Does 2all.ai help you conform to WCAG?",
+      a: "Yes, 2all.ai automatically remediates interactive elements, form fields, document states, and navigational structures to align with official WCAG 2.2 AA guidelines."
     },
     {
-      q: "How much does accessWidget cost?",
+      q: "How much does 2all.ai cost?",
       a: "Pricing starts as low as $49/mo (or $490 billed annually) for smaller sites, scaling incrementally based on the total page count of your digital platform."
     },
     {
-      q: "Does accessWidget affect loading speed?",
+      q: "Does 2all.ai affect loading speed?",
       a: "No. The system loads asynchronously and executes after the main DOM is fully parsed, ensuring zero impact on your Core Web Vitals or page load performance."
     },
     {
-      q: "How do I install accessWidget?",
+      q: "How do I install 2all.ai?",
       a: "Simply paste a single line of JavaScript code right before the closing </body> tag of your website. Alternatively, use our official CMS plugins for one-click installation."
     },
     {
-      q: "Can I customize accessWidget's user interface?",
+      q: "Can I customize 2all.ai's user interface?",
       a: "Yes. Through the admin dashboard customizer, you can change the widget's primary colors, positioning, button shapes, icons, and language selections to align perfectly with your branding."
     },
     {
@@ -117,7 +116,6 @@ export default function PricingPage() {
                 { name: "SOLUTIONS", hasDropdown: true },
                 { name: "COMPANY", hasDropdown: true },
                 { name: "PARTNERS", hasDropdown: true },
-                { name: "RESOURCES", hasDropdown: true },
                 { name: "PRICING", hasDropdown: false },
               ].map((link) => (
                 <Link
@@ -130,8 +128,6 @@ export default function PricingPage() {
                       setActiveHoverMenu("COMPANY");
                     } else if (link.name === "PARTNERS") {
                       setActiveHoverMenu("PARTNERS");
-                    } else if (link.name === "RESOURCES") {
-                      setActiveHoverMenu("RESOURCES");
                     } else {
                       setActiveHoverMenu(null);
                     }
@@ -202,11 +198,6 @@ export default function PricingPage() {
           onMouseEnter={() => setActiveHoverMenu("PARTNERS")}
           onMouseLeave={() => setActiveHoverMenu(null)}
         />
-        <ResourcesMegamenu 
-          isOpen={activeHoverMenu === "RESOURCES"} 
-          onMouseEnter={() => setActiveHoverMenu("RESOURCES")}
-          onMouseLeave={() => setActiveHoverMenu(null)}
-        />
 
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
@@ -216,13 +207,12 @@ export default function PricingPage() {
                 { name: "SOLUTIONS", href: "#" },
                 { name: "COMPANY", href: "#" },
                 { name: "PARTNERS", href: "#" },
-                { name: "RESOURCES", href: "#" },
                 { name: "PRICING", href: "/pricing" },
               ].map((link) => (
                 <button
                   key={link.name}
                   onClick={() => {
-                    if (["SOLUTIONS", "COMPANY", "PARTNERS", "RESOURCES"].includes(link.name)) {
+                    if (["SOLUTIONS", "COMPANY", "PARTNERS"].includes(link.name)) {
                       setActiveHoverMenu(link.name);
                       setIsMobileMenuOpen(false);
                     } else {
@@ -256,12 +246,17 @@ export default function PricingPage() {
       </header>
 
       {/* TITLE & TOGGLES */}
-      <section className="relative bg-[#f8fafc] pt-20 pb-16 overflow-hidden text-center border-b border-slate-100">
-        <div className="max-w-5xl mx-auto px-6 space-y-6">
-          <Breadcrumbs theme="light" items={[ { label: "Home", href: "/" }, { label: "Pricing" } ]} />
-          <h1 className="text-4xl sm:text-5xl font-black text-slate-900 leading-[1.15] tracking-tight max-w-3xl mx-auto">
-            <span className="text-blue-600 italic font-serif">Plans</span> scale with your website's growth and accessibility needs
-          </h1>
+      <section className="relative bg-[#f8fafc] pt-6 pb-8 overflow-hidden text-center border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 w-full relative z-10">
+          <div className="flex justify-start text-left mb-2">
+            <Breadcrumbs theme="light" items={[ { label: "Home", href: "/" }, { label: "Pricing" } ]} />
+          </div>
+          
+          <div className="max-w-3xl mx-auto text-center space-y-3">
+            <h1 className="text-3xl sm:text-5xl font-black text-slate-900 leading-[1.15] tracking-tight text-center max-w-3xl mx-auto">
+              <span className="text-blue-600 italic font-serif">Plans</span> scale with your website's growth and accessibility needs
+            </h1>
+          </div>
 
           {/* Toggle Control */}
           <div className="flex flex-col items-center gap-4 pt-4">
@@ -312,23 +307,23 @@ export default function PricingPage() {
                 <ChevronRight className="w-4 h-4" />
               </Link>
 
-              <div className="border-t border-slate-100 pt-6 space-y-4 text-xs font-semibold text-slate-600">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Automated Accessibility</span>
+              <div className="border-t border-slate-100 pt-6 space-y-4 text-sm font-semibold text-slate-700">
+                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">Automated Accessibility</span>
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                    <span>accessWidget (AI-Powered Overlay)</span>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
+                    <span>2all.ai Widget (AI-Powered Overlay)</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
                     <span>Automated Screen Reader adjustments</span>
                   </li>
                 </ul>
 
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block pt-2">Support</span>
+                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block pt-2">Support</span>
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
                     <span>Standard support helpdesk</span>
                   </li>
                 </ul>
@@ -356,23 +351,23 @@ export default function PricingPage() {
                 <ChevronRight className="w-4 h-4" />
               </Link>
 
-              <div className="border-t border-slate-100 pt-6 space-y-4 text-xs font-semibold text-slate-600">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Everything in Micro, plus:</span>
+              <div className="border-t border-slate-100 pt-6 space-y-4 text-sm font-semibold text-slate-700">
+                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">Everything in Micro, plus:</span>
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
                     <span>Larger scan volume capacity</span>
                   </li>
                 </ul>
 
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block pt-2">Premium Features</span>
+                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block pt-2">Premium Features</span>
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
                     <span>Full widget customization</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
                     <span>White-label brand dashboard removal</span>
                   </li>
                 </ul>
@@ -404,23 +399,23 @@ export default function PricingPage() {
                 <ChevronRight className="w-4 h-4" />
               </Link>
 
-              <div className="border-t border-slate-100 pt-6 space-y-4 text-xs font-semibold text-slate-600">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Everything in Business, plus:</span>
+              <div className="border-t border-slate-100 pt-6 space-y-4 text-sm font-semibold text-slate-700">
+                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">Everything in Business, plus:</span>
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
                     <span>Top-tier site crawling engines</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
                     <span>Dedicated account success advisor</span>
                   </li>
                 </ul>
 
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block pt-2">Compliance & Reports</span>
+                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block pt-2">Compliance & Reports</span>
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
                     <span>Scheduled compliance scanning reports</span>
                   </li>
                 </ul>
@@ -448,17 +443,17 @@ export default function PricingPage() {
               </button>
 
               <div className="border-t border-slate-100 pt-6 space-y-4 text-xs font-semibold text-slate-600">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Everything in Advanced, plus:</span>
+                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">Everything in Advanced, plus:</span>
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
+                  <li className="flex items-start gap-2 text-sm">
                     <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                     <span>Unlimited crawling and custom volume</span>
                   </li>
                 </ul>
 
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block pt-2">Integrations & Security</span>
+                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block pt-2">Integrations & Security</span>
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
+                  <li className="flex items-start gap-2 text-sm">
                     <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                     <span>Single Sign-On (SSO) Support</span>
                   </li>

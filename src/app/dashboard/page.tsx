@@ -10,6 +10,8 @@ import {
   ArrowUpRight
 } from "lucide-react";
 
+import PageHelpTooltip from "@/components/ui/PageHelpTooltip";
+
 export default async function DashboardPage() {
   const session = await auth();
   const userName = session?.user?.name?.split(" ")[0] ?? "Zubairya";
@@ -24,8 +26,17 @@ export default async function DashboardPage() {
         
         {/* Welcome greeting */}
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-black text-slate-800 tracking-tight">
+          <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center">
             {userName}, Welcome to 2all.ai
+            <PageHelpTooltip
+              title="Dashboard Overview"
+              purpose="Your central command center to monitor active website licenses, widget status, and accessibility resources."
+              features={[
+                "View active domains and accessibility widget status",
+                "Get quick installation script snippets for your site",
+                "Access partner programs and expert support"
+              ]}
+            />
           </h1>
           {userPlan !== "NONE" && paymentStatus === "PAID" && (
             <span className="px-3.5 py-1 bg-emerald-100 border border-emerald-200 text-emerald-700 font-extrabold text-[10px] rounded-full uppercase tracking-wider">
@@ -143,28 +154,28 @@ export default async function DashboardPage() {
                 title: "Advancing digital accessibility with 2all.ai's expert services", 
                 desc: "An overview of 2all.ai's Expert Services and how they can help your accessibility",
                 bg: "bg-[#dbeafe]",
-                img: "/images/dashboard/expert_services.png",
+                img: "/ai-image1.jpg",
                 badge: "EXPERT SERVICES"
               },
               { 
                 title: "ADA compliant businesses are eligible for tax credits", 
                 desc: "Information on tax credits for ADA-compliant businesses",
                 bg: "bg-[#d1fae5]",
-                img: "/images/dashboard/tax_credit.png",
+                img: "/ai-image2.jpg",
                 badge: "TAX CREDIT"
               },
               { 
                 title: "How accessibility can improve your SEO and increase traffic", 
                 desc: "Discover how accessibility can boost your website's SEO and organic traffic",
                 bg: "bg-[#dee2ff]",
-                img: "/images/dashboard/seo.png",
+                img: "/ai-image3.jpg",
                 badge: "SEO"
               },
               { 
                 title: "ADA, web accessibility & legal requirements", 
                 desc: "Understand the importance of the ADA & legal requirements for web accessibility",
                 bg: "bg-[#ffedd5]",
-                img: "/images/dashboard/wcag.png",
+                img: "/ai-image4.jpg",
                 badge: "WCAG"
               }
             ].map((art) => (
@@ -173,15 +184,15 @@ export default async function DashboardPage() {
                 className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex flex-col h-full cursor-pointer group text-left"
               >
                 {/* Graphical Header */}
-                <div className="h-28 relative overflow-hidden select-none bg-slate-50 flex items-center justify-center">
+                <div className="h-36 relative overflow-hidden select-none bg-slate-900 flex items-center justify-center">
                   <img 
                     src={art.img} 
                     alt={art.title} 
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  {/* Subtle vignette overlay */}
-                  <div className="absolute inset-0 bg-black/5" />
-                  <span className="absolute top-3 left-3 px-2.5 py-1 bg-white/80 backdrop-blur-sm rounded-full text-[8px] font-black text-slate-800 tracking-wider z-10">
+                  {/* Subtle dark vignette overlay for legibility */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
+                  <span className="absolute top-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur-md rounded-full text-[9px] font-extrabold text-slate-900 tracking-wider shadow-sm z-10">
                     {art.badge}
                   </span>
                 </div>

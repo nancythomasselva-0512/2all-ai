@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { useAccessibility } from "@/context/AccessibilityContext";
-import { Play, Pause, Square, X, Volume2, Settings2 } from "lucide-react";
+import { Play, Pause, Square, X, Volume2, Settings2, Mic, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 
@@ -578,14 +578,331 @@ export default function SpeechEngine() {
     };
   }, [state.selectedText, state.voice, state.speed, state.pitch, state.volume, state.speechStatus, voices, state.highlightWord, state.highlightSentence, state.autoScroll]);
 
-  // Voice configurations helper to filter active language
-  const getFilteredVoices = () => {
-    // Determine target locale
-    const activeFont = state.fontFamily; // dyslexic etc.
-    // For Tamil, Hindi, English checks
-    // Filter Speech voices
-    return voices;
-  };
+  // ========================================================
+  // Voice Command Navigation Effect (SpeechRecognition API)
+  // ========================================================
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      if (state.voiceNavigation) {
+        updateSetting("lastVoiceCommand", "Browser doesn't support Voice Navigation API");
+      }
+      return;
+    }
+
+    let recognition: any = null;
+    let isStoppedManually = false;
+
+    if (state.voiceNavigation) {
+      try {
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.lang = "en-US";
+
+        recognition.onstart = () => {
+          updateSetting("isVoiceListening", true);
+        };
+
+        recognition.onresult = (event: any) => {
+          const lastIndex = event.results.length - 1;
+          const rawTranscript = event.results[lastIndex][0].transcript.trim();
+          
+          // Remove all punctuation (periods, commas, question marks) added by browser SpeechRecognition
+          const transcript = rawTranscript
+            .replace(/[.,?!;:'"()]/g, "")
+            .toLowerCase()
+            .trim();
+
+          console.log("[Voice Command Spoken Raw]:", rawTranscript, "[Cleaned]:", transcript);
+
+          // 1. Clean conversational command prefixes/suffixes
+          let cleanQuery = transcript
+            .replace(/^(go to|navigate to|open|show|take me to|scroll to|find|search|where is|jump to|i want to go to)\s+/i, "")
+            .replace(/\s+(po|page|section|option|button|link|text)$/i, "")
+            .trim();
+
+          // Alias mapping for speech variants
+          const aliases: Record<string, string> = {
+            "vpat": "vpat",
+            "v pat": "vpat",
+            "veepatt": "vpat",
+            "weepatt": "vpat",
+            "bpat": "vpat",
+            "pricing": "pricing",
+            "price": "pricing",
+            "plans": "pricing",
+            "plan": "pricing",
+            "cost": "pricing",
+            "solution": "solutions",
+            "solutions": "solutions",
+            "service": "solutions",
+            "services": "solutions",
+            "footer": "footer",
+            "bottom": "footer",
+            "contact": "contact",
+            "about": "about",
+            "security": "security",
+            "trust": "trust",
+            "audit": "audit",
+            "compliance": "compliance",
+            "features": "features",
+            "showcase": "features"
+          };
+
+          if (aliases[cleanQuery]) {
+            cleanQuery = aliases[cleanQuery];
+          }
+
+          // 2. Special system commands check
+          if (transcript.includes("open accessibility") || transcript.includes("open menu") || transcript.includes("open panel")) {
+            if (!stateRef.current.isPanelOpen) setState(prev => ({ ...prev, isPanelOpen: true }));
+            updateSetting("lastVoiceCommand", `Opened Accessibility Panel ("${rawTranscript}")`);
+            return;
+          }
+          if (transcript.includes("close accessibility") || transcript.includes("close menu") || transcript.includes("close panel")) {
+            if (stateRef.current.isPanelOpen) setState(prev => ({ ...prev, isPanelOpen: false }));
+            updateSetting("lastVoiceCommand", `Closed Accessibility Panel ("${rawTranscript}")`);
+            return;
+          }
+          if (transcript.includes("dark mode") || transcript.includes("dark contrast")) {
+            updateSetting("isDarkMode", true);
+            updateSetting("lastVoiceCommand", `Applied Dark Contrast ("${rawTranscript}")`);
+            return;
+          }
+          if (transcript.includes("monochrome")) {
+            updateSetting("saturationMode", "monochrome");
+            updateSetting("lastVoiceCommand", `Applied Monochrome ("${rawTranscript}")`);
+            return;
+          }
+          if (transcript.includes("reset settings") || transcript.includes("reset accessibility")) {
+            updateSetting("lastVoiceCommand", `Reset Settings ("${rawTranscript}")`);
+            return;
+          }
+          // Direct Page Route Map for Instant Voice Navigation
+          const PAGE_ROUTES: Record<string, string> = {
+            "about": "/about-us",
+            "about us": "/about-us",
+            "about page": "/about-us",
+            "pricing": "/pricing",
+            "prices": "/pricing",
+            "plan": "/pricing",
+            "plans": "/pricing",
+            "cost": "/pricing",
+            "vpat": "/vpat",
+            "v pat": "/vpat",
+            "veepatt": "/vpat",
+            "weepatt": "/vpat",
+            "bpat": "/vpat",
+            "contact": "/contact-us",
+            "contact us": "/contact-us",
+            "contact page": "/contact-us",
+            "services": "/services",
+            "service": "/services",
+            "solutions": "/services",
+            "careers": "/careers",
+            "career": "/careers",
+            "jobs": "/careers",
+            "enterprise": "/enterprise",
+            "mid large business": "/mid-large-business",
+            "small business": "/small-business",
+            "agency": "/agency",
+            "non profit": "/non-profit",
+            "security": "/security-and-privacy",
+            "privacy": "/security-and-privacy",
+            "security and privacy": "/security-and-privacy",
+            "compliance": "/compliance",
+            "blog": "/blog",
+            "case studies": "/case-studies",
+            "case study": "/case-studies",
+            "demo": "/demo",
+            "access scan": "/access-scan",
+            "audit": "/expert-audit",
+            "expert audit": "/expert-audit",
+            "glossary": "/glossary",
+            "help": "/help-center",
+            "help center": "/help-center",
+            "user testing": "/user-testing",
+            "webinar": "/webinar",
+            "why choose us": "/why-choose-2all-ai",
+            "why choose 2all ai": "/why-choose-2all-ai",
+            "dyslexia": "/dyslexia-simulation",
+            "dashboard": "/dashboard",
+            "admin": "/admin/dashboard",
+            "super admin": "/super-admin/dashboard",
+          };
+
+          if (PAGE_ROUTES[cleanQuery]) {
+            const targetRoute = PAGE_ROUTES[cleanQuery];
+            updateSetting("lastVoiceCommand", `Voice Command Heard: "${rawTranscript}" ➔ Opening ${targetRoute}...`);
+            setTimeout(() => {
+              window.location.href = targetRoute;
+            }, 600);
+            return;
+          }
+
+          if (cleanQuery === "home" || cleanQuery === "top" || cleanQuery === "start") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            updateSetting("lastVoiceCommand", `Navigated to Home ("${rawTranscript}")`);
+            return;
+          }
+
+          if (!cleanQuery) return;
+
+          // 3. UNIVERSAL TOKENIZED DOM ELEMENT SEARCH ALGORITHM
+          let targetElement: HTMLElement | null = null;
+          let matchReason = "";
+
+          // Extract candidate tokens (full query + non-stop words)
+          const stopWords = new Set(["the", "a", "an", "and", "or", "to", "for", "in", "on", "of", "with", "is", "it", "at", "by"]);
+          const words = cleanQuery.split(/\s+/).filter((w: string) => w.length > 2 && !stopWords.has(w));
+          const searchCandidates = Array.from(new Set([cleanQuery, ...words]));
+
+          for (const q of searchCandidates) {
+            if (targetElement) break;
+
+            // Priority A: Search elements with ID matching candidate
+            const elById = document.getElementById(q) || 
+                           document.querySelector(`[id*="${q}"]`) as HTMLElement;
+            if (elById) {
+              targetElement = elById;
+              matchReason = `Section #${q}`;
+              break;
+            }
+
+            // Priority B: Explicit VPAT match
+            if (q === "vpat") {
+              const vpatEl = Array.from(document.querySelectorAll<HTMLElement>("a, button, h1, h2, h3, h4, span, div")).find(el => {
+                const txt = (el.innerText || "").toLowerCase();
+                const href = (el.getAttribute("href") || "").toLowerCase();
+                return txt.includes("vpat") || href.includes("vpat");
+              });
+              if (vpatEl) {
+                targetElement = vpatEl;
+                matchReason = "VPAT Link & Reference";
+                break;
+              }
+            }
+
+            // Priority C: Search headings (h1, h2, h3, h4, h5, h6, .font-heading)
+            const headings = Array.from(document.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6, .font-heading"));
+            for (const h of headings) {
+              const text = (h.innerText || "").toLowerCase();
+              if (text.includes(q)) {
+                targetElement = h;
+                matchReason = `Heading: "${h.innerText.trim().substring(0, 25)}..."`;
+                break;
+              }
+            }
+            if (targetElement) break;
+
+            // Priority D: Search clickable links and buttons (a, button, [role='button'])
+            const clickables = Array.from(document.querySelectorAll<HTMLElement>("a, button, [role='button'], input[type='submit']"));
+            for (const c of clickables) {
+              const text = (c.innerText || c.getAttribute("aria-label") || c.getAttribute("title") || c.getAttribute("alt") || "").toLowerCase();
+              const href = (c.getAttribute("href") || "").toLowerCase();
+              if (text.includes(q) || href.includes(q)) {
+                targetElement = c;
+                matchReason = `Link/Button: "${(c.innerText || q).trim().substring(0, 25)}"`;
+                break;
+              }
+            }
+            if (targetElement) break;
+
+            // Priority E: Search content text blocks (section, div, p, li, span)
+            const textBlocks = Array.from(document.querySelectorAll<HTMLElement>("section, footer, header, nav, main, article, div[class*='card'], p, li, span"));
+            for (const el of textBlocks) {
+              if (el.closest("#accessibility-panel") || el.closest(".fixed")) continue;
+              const text = (el.innerText || "").toLowerCase();
+              if (text.includes(q) && el.children.length < 6) {
+                targetElement = el;
+                matchReason = `Text Element: "${q}"`;
+                break;
+              }
+            }
+            if (targetElement) break;
+
+            // Priority F: Footer fallback search
+            if (q.includes("footer") || q.includes("bottom")) {
+              const footerEl = document.querySelector("footer") || document.getElementById("footer");
+              if (footerEl) {
+                targetElement = footerEl as HTMLElement;
+                matchReason = "Footer Section";
+                break;
+              }
+            }
+          }
+
+          // 4. SCROLL, HIGHLIGHT AND NAVIGATE ON SUCCESS MATCH
+          if (targetElement) {
+            targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+
+            // Flash glowing ring highlight on the target element
+            targetElement.classList.add("ring-4", "ring-blue-500", "ring-offset-4", "rounded-xl", "transition-all", "duration-500");
+            setTimeout(() => {
+              targetElement?.classList.remove("ring-4", "ring-blue-500", "ring-offset-4", "rounded-xl");
+            }, 3500);
+
+            // Check if matched element is an anchor link or contains one
+            const anchor = (targetElement.tagName.toLowerCase() === "a" 
+              ? targetElement 
+              : targetElement.closest("a") || targetElement.querySelector("a")) as HTMLAnchorElement | null;
+            const href = anchor?.getAttribute("href");
+
+            if (anchor && href && href.startsWith("/") && href !== "#" && !href.startsWith("#")) {
+              updateSetting("lastVoiceCommand", `Opening page "${cleanQuery}" (${href})...`);
+              setTimeout(() => {
+                anchor.click();
+              }, 1200);
+            } else {
+              updateSetting("lastVoiceCommand", `Jumped to "${cleanQuery}" (${matchReason})`);
+            }
+
+            // Auto-dismiss notification toast after 4 seconds
+            setTimeout(() => {
+              updateSetting("lastVoiceCommand", "");
+            }, 4000);
+          } else {
+            // Silence background noise/unmatched speech error toasts for a clean experience
+            console.log("[Voice Navigation Unmatched Ambient Speech]:", rawTranscript);
+          }
+        };
+
+        recognition.onerror = (e: any) => {
+          if (e.error !== "no-speech") {
+            console.warn("Speech Recognition Error:", e.error);
+          }
+        };
+
+        recognition.onend = () => {
+          updateSetting("isVoiceListening", false);
+          if (stateRef.current.voiceNavigation && !isStoppedManually) {
+            try {
+              recognition.start();
+            } catch (err) {
+              // Ignore restart collision
+            }
+          }
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.error("Failed to start speech recognition:", e);
+      }
+    }
+
+    return () => {
+      isStoppedManually = true;
+      if (recognition) {
+        try {
+          recognition.stop();
+        } catch (e) {}
+      }
+      updateSetting("isVoiceListening", false);
+    };
+  }, [state.voiceNavigation]);
 
   return (
     <>
@@ -779,6 +1096,53 @@ export default function SpeechEngine() {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* 3. Floating Voice Command Navigation Overlay */}
+      <AnimatePresence>
+        {state.voiceNavigation && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-[2147483647] flex flex-col items-center gap-2 pointer-events-none select-none font-sans"
+          >
+            {/* Listening Mic Badge */}
+            <div className="bg-slate-900/95 text-white backdrop-blur-md px-4 py-2 rounded-full border border-blue-500/40 shadow-2xl flex items-center gap-3 text-xs font-bold pointer-events-auto">
+              <div className="relative flex items-center justify-center">
+                <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-cyan-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500" />
+              </div>
+              <span className="text-blue-300 font-extrabold uppercase tracking-wider text-[10px]">
+                Voice Navigation Active
+              </span>
+              <span className="text-slate-300 font-medium">
+                Say <strong className="text-white font-bold">"Go to pricing"</strong>, <strong className="text-white font-bold">"Solutions"</strong>, or <strong className="text-white font-bold">"Plans"</strong>
+              </span>
+              <button
+                onClick={() => updateSetting("voiceNavigation", false)}
+                className="ml-2 w-5 h-5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer border-none"
+                title="Turn off Voice Navigation"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+
+            {/* Last Command Recognition Toast */}
+            {state.lastVoiceCommand && (
+              <motion.div
+                key={state.lastVoiceCommand}
+                initial={{ opacity: 0, y: -5, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -5, scale: 0.95 }}
+                className="bg-slate-900/95 text-white px-5 py-2 rounded-full text-xs font-black shadow-2xl border border-cyan-400/80 flex items-center gap-2 pointer-events-auto backdrop-blur-md"
+              >
+                <Sparkles className="w-4 h-4 text-cyan-400 animate-spin shrink-0" />
+                <span className="text-cyan-300 font-extrabold">{state.lastVoiceCommand}</span>
+              </motion.div>
+            )}
+          </motion.div>
         )}
       </AnimatePresence>
     </>

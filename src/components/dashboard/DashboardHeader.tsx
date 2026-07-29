@@ -8,14 +8,21 @@ import {
   ChevronDown,
   LayoutDashboard,
   Globe,
-  CreditCard,
   BarChart3,
   Settings,
-  LogOut
+  LogOut,
+  BookOpen,
+  FileText,
+  MessageSquare,
+  Mail,
+  Check,
+  Sparkles,
+  ShieldCheck
 } from "lucide-react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import Logo from "@/components/ui/Logo";
+import DemoModal from "@/components/marketing/DemoModal";
 
 interface HeaderProps {
   user: { name?: string | null; email?: string | null };
@@ -23,13 +30,17 @@ interface HeaderProps {
 
 export default function DashboardHeader({ user }: HeaderProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [contactSalesOpen, setContactSalesOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(2);
+
   const pathname = usePathname();
   const firstName = user?.name?.split(" ")[0] ?? "Zubairya";
 
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
     { href: "/dashboard/domains", label: "My Domains", icon: Globe },
-    { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
     { href: "/dashboard/reports", label: "Reports", icon: BarChart3 },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
@@ -70,25 +81,142 @@ export default function DashboardHeader({ user }: HeaderProps) {
       {/* RIGHT: Actions */}
       <div className="flex items-center gap-4">
         {/* Contact Sales */}
-        <button className="hidden sm:inline-flex px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-full transition-colors cursor-pointer border-none">
+        <button 
+          onClick={() => setContactSalesOpen(true)}
+          className="hidden sm:inline-flex px-4 py-2 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-800 font-bold text-xs rounded-full transition-all cursor-pointer border-none shadow-sm"
+        >
           Contact Sales
         </button>
 
-        {/* Help Circle */}
-        <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-colors cursor-pointer border-none bg-transparent">
-          <HelpCircle className="w-5 h-5 stroke-[2.5]" />
-        </button>
+        {/* Help Circle Button & Popover */}
+        <div className="relative">
+          <button 
+            onClick={() => {
+              setHelpOpen(!helpOpen);
+              setNotificationsOpen(false);
+              setDropdownOpen(false);
+            }}
+            className={`p-2 rounded-full transition-colors cursor-pointer border-none bg-transparent ${
+              helpOpen ? "text-blue-600 bg-blue-50" : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+            }`}
+            title="Help & Support"
+          >
+            <HelpCircle className="w-5 h-5 stroke-[2.5]" />
+          </button>
 
-        {/* Bell Notifications */}
-        <button className="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-colors cursor-pointer border-none bg-transparent">
-          <Bell className="w-5 h-5 stroke-[2.5]" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white" />
-        </button>
+          {helpOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setHelpOpen(false)} />
+              <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200/90 rounded-2xl shadow-xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-left font-sans">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                  <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">Help & Support</h3>
+                  <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">2all.ai Support</span>
+                </div>
+                <div className="space-y-2">
+                  <Link 
+                    href="/dashboard/install?tab=install"
+                    onClick={() => setHelpOpen(false)}
+                    className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-xs font-bold text-slate-700 no-underline"
+                  >
+                    <BookOpen className="w-4 h-4 text-blue-600 shrink-0" />
+                    <div>
+                      <p className="font-bold text-slate-800">Widget Setup Guide</p>
+                      <p className="text-[11px] text-slate-400 font-normal">Step-by-step code snippet installation</p>
+                    </div>
+                  </Link>
+
+                  <Link 
+                    href="/dashboard/install?tab=statement"
+                    onClick={() => setHelpOpen(false)}
+                    className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-xs font-bold text-slate-700 no-underline"
+                  >
+                    <FileText className="w-4 h-4 text-purple-600 shrink-0" />
+                    <div>
+                      <p className="font-bold text-slate-800">Accessibility Statement</p>
+                      <p className="text-[11px] text-slate-400 font-normal">WCAG 2.2 AA compliance documentation</p>
+                    </div>
+                  </Link>
+
+                  <a 
+                    href="mailto:support@2all.ai"
+                    onClick={() => setHelpOpen(false)}
+                    className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-xs font-bold text-slate-700 no-underline"
+                  >
+                    <Mail className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div>
+                      <p className="font-bold text-slate-800">Email Support</p>
+                      <p className="text-[11px] text-slate-400 font-normal">support@2all.ai (24hr response)</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Bell Notifications Button & Popover */}
+        <div className="relative">
+          <button 
+            onClick={() => {
+              setNotificationsOpen(!notificationsOpen);
+              setHelpOpen(false);
+              setDropdownOpen(false);
+              setUnreadCount(0);
+            }}
+            className={`relative p-2 rounded-full transition-colors cursor-pointer border-none bg-transparent ${
+              notificationsOpen ? "text-blue-600 bg-blue-50" : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+            }`}
+            title="Notifications"
+          >
+            <Bell className="w-5 h-5 stroke-[2.5]" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white" />
+            )}
+          </button>
+
+          {notificationsOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setNotificationsOpen(false)} />
+              <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200/90 rounded-2xl shadow-xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-left font-sans">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                  <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">Notifications</h3>
+                  <button 
+                    onClick={() => setNotificationsOpen(false)}
+                    className="text-[10px] font-bold text-blue-600 hover:underline border-none bg-transparent cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-blue-50/60 border border-blue-100/60">
+                    <Sparkles className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs font-bold text-blue-950">Free Trial Active</p>
+                      <p className="text-[11px] text-blue-800 font-normal mt-0.5">Your 7-day full feature trial is currently active.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs font-bold text-slate-800">WCAG Audit Scheduled</p>
+                      <p className="text-[11px] text-slate-500 font-normal mt-0.5">Monthly automated remediation report ready for review.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         {/* User Dropdown */}
         <div className="relative">
           <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
+            onClick={() => {
+              setDropdownOpen(!dropdownOpen);
+              setHelpOpen(false);
+              setNotificationsOpen(false);
+            }}
             className="flex items-center gap-2 pl-2 pr-1 py-1 hover:bg-slate-50 rounded-full transition-colors cursor-pointer border-none bg-transparent"
           >
             {/* Avatar Circle */}
@@ -141,6 +269,12 @@ export default function DashboardHeader({ user }: HeaderProps) {
           );
         })}
       </nav>
+
+      {/* Contact Sales Modal */}
+      <DemoModal 
+        isOpen={contactSalesOpen}
+        onClose={() => setContactSalesOpen(false)}
+      />
     </div>
   );
 }

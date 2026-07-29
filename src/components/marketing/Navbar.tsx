@@ -9,13 +9,12 @@ import Logo from "@/components/ui/Logo";
 import SolutionsMegamenu from "./SolutionsMegamenu";
 import CompanyMegamenu from "./CompanyMegamenu";
 import PartnersMegamenu from "./PartnersMegamenu";
-import ResourcesMegamenu from "./ResourcesMegamenu";
 
 export default function Navbar() {
-  const [activeMenu, setActiveMenu] = useState<"solutions" | "company" | "partners" | "resources" | null>(null);
+  const [activeMenu, setActiveMenu] = useState<"solutions" | "company" | "partners" | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleMouseEnter = (menu: "solutions" | "company" | "partners" | "resources") => {
+  const handleMouseEnter = (menu: "solutions" | "company" | "partners") => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -111,27 +110,6 @@ export default function Navbar() {
             />
           </div>
 
-          {/* Resources Link */}
-          <div 
-            onMouseEnter={() => handleMouseEnter("resources")}
-            onMouseLeave={handleMouseLeave}
-            className="py-2"
-          >
-            <button className={`flex items-center gap-1.5 text-xs font-black uppercase tracking-widest transition-colors ${
-              activeMenu === "resources" ? "text-blue-600" : "text-slate-700 hover:text-slate-900"
-            }`}>
-              Resources
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                activeMenu === "resources" ? "rotate-180 text-blue-600" : "text-slate-400"
-              }`} />
-            </button>
-            <ResourcesMegamenu 
-              isOpen={activeMenu === "resources"}
-              onMouseEnter={handleMenuMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            />
-          </div>
-
           {/* Pricing Link */}
           <Link 
             href="/pricing" 
@@ -143,19 +121,22 @@ export default function Navbar() {
         </nav>
 
         {/* Right Section: CTAs */}
-        <div className="flex items-center gap-5 select-none shrink-0">
-          <Link href="/login" className="text-xs font-black uppercase tracking-widest text-slate-700 hover:text-slate-950 transition-colors">
+        <div className="flex items-center gap-3 md:gap-4 select-none shrink-0">
+          <Link 
+            href="/login" 
+            className="text-xs font-black uppercase tracking-widest text-slate-700 hover:text-blue-600 px-4 py-2 rounded-full hover:bg-blue-50/80 hover:scale-105 active:scale-95 hover:shadow-sm hover:shadow-blue-500/20 transition-all duration-200"
+          >
             Login
           </Link>
           <Link 
             href="/demo" 
-            className="hidden md:inline-flex items-center justify-center border border-slate-200 hover:border-slate-300 text-slate-700 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all"
+            className="hidden md:inline-flex items-center justify-center border border-slate-300/80 hover:border-blue-500/60 bg-white hover:bg-blue-50/60 text-slate-800 hover:text-blue-600 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-lg hover:shadow-blue-500/20"
           >
             Book A Demo
           </Link>
           <Link 
             href="/register" 
-            className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-md shadow-blue-900/10 hover:scale-105"
+            className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-200 shadow-md shadow-blue-600/25 hover:shadow-xl hover:shadow-blue-600/40 hover:scale-105 active:scale-95"
           >
             Start Free Trial
           </Link>

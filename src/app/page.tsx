@@ -50,14 +50,13 @@ export default function Home() {
       <Navbar />
       
       {/* SECTION 1: Intro Screen (First Viewport) */}
-      {/* SECTION 1: Intro Screen (First Viewport) */}
       <div 
         onMouseMove={handleMouseMove}
-        className="w-full flex flex-col min-h-[calc(100svh-74px)] relative overflow-hidden bg-white pt-12 pb-12"
+        className="w-full flex flex-col relative overflow-hidden bg-white pt-8 pb-6"
       >
 
         {/* Center Presentation Stage */}
-        <div className="flex-1 relative flex flex-col justify-center gap-10 px-6 max-w-7xl mx-auto w-full z-10">
+        <div className="relative flex flex-col items-center gap-6 px-6 max-w-7xl mx-auto w-full z-10">
 
           {/* Soft central gradient accent behind text */}
           <motion.div 
@@ -90,30 +89,30 @@ export default function Home() {
             >
               <motion.span 
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-                className="px-3.5 py-1.5 bg-blue-50/80 backdrop-blur-sm border border-blue-100/50 rounded-full text-xs font-bold text-[#004bff] uppercase tracking-widest block font-sans shadow-[0_0_15px_rgba(0,75,255,0.15)]"
+                className="px-4 py-1.5 bg-blue-50/90 backdrop-blur-md border border-blue-200/60 rounded-full text-[11px] font-extrabold text-[#004bff] uppercase tracking-widest block font-sans shadow-sm shadow-blue-500/10"
               >
-                EXPERT-DRIVEN. AI-POWERED.
+                AI-POWERED • EXPERT-VALIDATED • UNIVERSAL ACCESS
               </motion.span>
             </motion.div>
             
-            <h1 className="text-4xl sm:text-5xl md:text-[54px] font-black text-slate-900 leading-[1.15] tracking-tight font-sans max-w-3xl pt-2">
+            <h1 className="text-4xl sm:text-5xl md:text-[56px] font-black text-slate-950 leading-[1.12] tracking-tight font-sans max-w-4xl pt-2">
               <span className="overflow-hidden block">
                 <motion.span variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } }} className="block">
-                  Web accessibility
+                  Digital inclusion built as
                 </motion.span>
               </span>
               <span className="overflow-hidden block">
                 <motion.span variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } }} className="block">
-                  <span className="italic font-serif font-semibold text-[#004bff]">tailored</span> for your business
+                  <span className="italic font-serif font-medium text-[#004bff]">core infrastructure</span> for your web
                 </motion.span>
               </span>
             </h1>
             
             <motion.p 
               variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { delay: 0.4, duration: 0.8 } } }}
-              className="text-slate-500 text-sm sm:text-base md:text-lg font-normal max-w-2xl leading-relaxed font-sans"
+              className="text-slate-600 text-lg sm:text-xl md:text-[21px] font-normal max-w-3xl leading-relaxed"
             >
-              We combine AI technology with accessibility expertise to help businesses achieve compliance, improve usability, and create more inclusive digital experiences.
+              Transform web accessibility from a complex legal chore into an intelligent growth engine. Seamlessly achieve WCAG 2.2 AA & ADA compliance without compromising user experience.
             </motion.p>
 
             <motion.div 
@@ -124,7 +123,7 @@ export default function Home() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setIsDemoOpen(true)}
-                className="btn-premium w-full sm:w-auto justify-center border-2 border-slate-200 hover:border-slate-800 text-slate-800 rounded-full px-6 py-3 md:px-8 md:py-3.5 text-xs md:text-sm font-extrabold tracking-wider uppercase flex items-center gap-2 bg-transparent cursor-pointer group shadow-sm transition-all"
+                className="btn-premium w-full sm:w-auto justify-center border border-slate-300 hover:border-slate-800 text-slate-800 rounded-full px-7 py-3.5 text-xs md:text-sm font-extrabold tracking-wider uppercase flex items-center gap-2.5 bg-white/80 backdrop-blur-sm cursor-pointer group shadow-sm transition-all"
               >
                 BOOK A DEMO
                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-[3] stroke-current fill-none transition-transform duration-300 group-hover:translate-x-1">
@@ -134,7 +133,7 @@ export default function Home() {
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
                 <Link
                   href="/register"
-                  className="btn-premium w-full sm:w-auto justify-center bg-[#004bff] hover:bg-[#003edd] text-white rounded-full px-6 py-3 md:px-8 md:py-3.5 text-xs md:text-sm font-extrabold tracking-wider uppercase flex items-center gap-2 shadow-lg shadow-blue-500/30 group relative overflow-hidden transition-all"
+                  className="btn-premium w-full sm:w-auto justify-center bg-[#004bff] hover:bg-[#003edd] text-white rounded-full px-7 py-3.5 text-xs md:text-sm font-extrabold tracking-wider uppercase flex items-center gap-2.5 shadow-lg shadow-blue-500/25 group relative overflow-hidden transition-all"
                 >
                   <span className="relative z-10">START FREE TRIAL</span>
                   <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-[3] stroke-current fill-none relative z-10 transition-transform duration-300 group-hover:translate-x-1">
@@ -148,30 +147,29 @@ export default function Home() {
           </motion.div>
 
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
+            initial="visible"
+            animate="visible"
             variants={{
-              hidden: { opacity: 0 },
+              hidden: { opacity: 1 },
               visible: { 
                 opacity: 1,
-                transition: { staggerChildren: 0.15, delayChildren: 0.2 }
+                transition: { staggerChildren: 0.1, delayChildren: 0.1 }
               }
             }}
-            className="grid md:grid-cols-3 gap-6 w-full max-w-5xl mx-auto pt-10 border-t border-slate-100/60 z-20 mt-8"
+            className="grid md:grid-cols-3 gap-6 w-full max-w-5xl mx-auto pt-4 border-t border-slate-100/80 z-20 mt-1"
           >
             {[
               {
-                title: "ADA & EAA COMPLIANCE",
-                desc: "WCAG 2.2 AA-based remediation for legal compliance and accessibility readiness."
+                title: "AUTONOMOUS COMPLIANCE",
+                desc: "Continuous WCAG 2.2 AA remediation that self-heals as your website content updates."
               },
               {
-                title: "CUSTOMIZABLE",
-                desc: "Solutions and plans designed to fit every business type, platform, and accessibility goal."
+                title: "ZERO-CODE INTEGRATION",
+                desc: "Instantly deployable on any platform, CMS, or modern tech stack in under 2 minutes."
               },
               {
-                title: "HEAVY-LIFTING ON US",
-                desc: "Fast to implement, easy to scale, and fully managed by our accessibility specialists."
+                title: "MANAGED EXPERT OVERSIGHT",
+                desc: "AI velocity combined with certified accessibility specialists to guarantee legal protection."
               }
             ].map((feat, index) => {
               const isActive = activeCard === index;
@@ -180,23 +178,23 @@ export default function Home() {
                   key={feat.title}
                   onClick={() => setActiveCard(index)}
                   layout
-                  variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } }}
+                  variants={{ hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }}
                   animate={{
-                    y: isActive ? -12 : 0,
-                    scale: isActive ? 1.04 : 1.0,
-                    borderColor: isActive ? "#004bff" : "rgba(241, 245, 249, 0.8)",
-                    backgroundColor: isActive ? "#ffffff" : "rgba(248, 250, 252, 0.4)",
+                    y: isActive ? -10 : 0,
+                    scale: isActive ? 1.03 : 1.0,
+                    borderColor: isActive ? "#004bff" : "rgba(226, 232, 240, 0.8)",
+                    backgroundColor: isActive ? "#ffffff" : "rgba(248, 250, 252, 0.6)",
                   }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   whileHover={{ 
-                    y: -12, 
-                    scale: 1.04,
+                    y: -10, 
+                    scale: 1.03,
                     borderColor: "#004bff",
                     backgroundColor: "#ffffff",
-                    boxShadow: "0 20px 40px -10px rgba(0, 75, 255, 0.1)"
+                    boxShadow: "0 20px 40px -10px rgba(0, 75, 255, 0.12)"
                   }}
                   whileTap={{ scale: 0.98 }}
-                  className={`card-premium border p-8 sm:p-10 rounded-[32px] text-center space-y-3 cursor-pointer select-none transition-shadow duration-300 group relative overflow-hidden
+                  className={`card-premium border p-8 sm:p-10 rounded-[32px] text-center space-y-3 cursor-pointer select-none transition-shadow duration-300 group relative overflow-hidden backdrop-blur-sm
                     ${isActive 
                       ? "shadow-2xl shadow-blue-500/10" 
                       : "shadow-sm"
@@ -206,12 +204,12 @@ export default function Home() {
                   {/* Subtle shine effect on hover */}
                   <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
                   <h4 className={`text-sm sm:text-base font-black tracking-wider uppercase transition-colors duration-300 group-hover:text-[#004bff]
-                    ${isActive ? "text-[#004bff]" : "text-slate-800"}
+                    ${isActive ? "text-[#004bff]" : "text-slate-900"}
                   `}>
                     {feat.title}
                   </h4>
-                  <p className={`text-xs sm:text-sm font-medium leading-relaxed max-w-[280px] mx-auto transition-colors duration-300 group-hover:text-slate-600
-                    ${isActive ? "text-slate-600" : "text-slate-500"}
+                  <p className={`text-sm sm:text-base font-medium leading-relaxed max-w-[320px] mx-auto transition-colors duration-300 group-hover:text-slate-800
+                    ${isActive ? "text-slate-800" : "text-slate-600"}
                   `}>
                     {feat.desc}
                   </p>

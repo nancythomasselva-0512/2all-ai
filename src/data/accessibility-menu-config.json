@@ -1,0 +1,247 @@
+{
+  "features": [
+    {
+      "id": "voiceNavigation",
+      "title": "Voice Command Navigation",
+      "description": "Navigate page by speaking any word (VPAT, Footer, Pricing)",
+      "category": "Speech & Reading",
+      "icon": "Mic",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "textToSpeech",
+      "title": "Read Aloud (Text-to-Speech)",
+      "description": "Listen to spoken text on hover or selection",
+      "category": "Speech & Reading",
+      "icon": "Volume2",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "readEntirePage",
+      "title": "Read Entire Page",
+      "description": "Narrate the entire page content automatically from top to bottom",
+      "category": "Speech & Reading",
+      "icon": "Volume2",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "autoReadSelection",
+      "title": "Auto Read Selection",
+      "description": "Automatically speak any text highlight or mouse drag",
+      "category": "Speech & Reading",
+      "icon": "Mic",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "highlightWord",
+      "title": "Highlight Word Spoken",
+      "description": "Highlight individual words in sync with narration",
+      "category": "Speech & Reading",
+      "icon": "Focus",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "highlightSentence",
+      "title": "Highlight Sentence Spoken",
+      "description": "Highlight active sentences during audio playback",
+      "category": "Speech & Reading",
+      "icon": "Focus",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "autoScroll",
+      "title": "Auto Scroll Page",
+      "description": "Smoothly scroll page down as text is spoken",
+      "category": "Speech & Reading",
+      "icon": "Focus",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "fontSize",
+      "title": "Content Scaling",
+      "description": "Scale text and content size from 90% up to 200%",
+      "category": "Typography",
+      "icon": "Type",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "textMagnifier",
+      "title": "Text Magnifier",
+      "description": "Enlarge text on hover with magnifier bubble",
+      "category": "Typography",
+      "icon": "Type",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "readableFont",
+      "title": "Readable Font (Aa)",
+      "description": "Switch font to clear sans-serif typography for easy reading",
+      "category": "Typography",
+      "icon": "Type",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "dyslexiaFont",
+      "title": "Dyslexia Friendly Font",
+      "description": "OpenDyslexic typography for easier reading",
+      "category": "Typography",
+      "icon": "Type",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "textAlignment",
+      "title": "Text Alignment (Center / Left)",
+      "description": "Align all body text to center or left margin",
+      "category": "Typography",
+      "icon": "Type",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "letterSpacing",
+      "title": "Letter Spacing",
+      "description": "Adjust kerning and distance between characters",
+      "category": "Typography",
+      "icon": "Type",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "wordSpacing",
+      "title": "Word Spacing",
+      "description": "Adjust spacing between words for tracking clarity",
+      "category": "Typography",
+      "icon": "Type",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "lineHeight",
+      "title": "Line Height",
+      "description": "Increase vertical line spacing for reading ease",
+      "category": "Typography",
+      "icon": "Type",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "darkMode",
+      "title": "Dark Contrast",
+      "description": "High contrast dark mode for visual ease",
+      "category": "Visual & Color",
+      "icon": "Moon",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "monochrome",
+      "title": "Monochrome Mode",
+      "description": "Remove colors to display grayscale view",
+      "category": "Visual & Color",
+      "icon": "Eye",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "highSaturation",
+      "title": "High Saturation",
+      "description": "Vibrant and pronounced color contrast",
+      "category": "Visual & Color",
+      "icon": "Sparkles",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "lowSaturation",
+      "title": "Low Saturation",
+      "description": "Muted and soft color palette",
+      "category": "Visual & Color",
+      "icon": "Eye",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "readingMask",
+      "title": "Reading Mask",
+      "description": "Focus spotlight on active reading line",
+      "category": "Focus & Reading",
+      "icon": "Focus",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "readingRuler",
+      "title": "Reading Guide Ruler",
+      "description": "Horizontal guidelines for reading tracking",
+      "category": "Focus & Reading",
+      "icon": "Ruler",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "highlightLinks",
+      "title": "Highlight Links",
+      "description": "Underline and highlight all interactive hyperlinks",
+      "category": "Focus & Reading",
+      "icon": "Focus",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "highlightHeadings",
+      "title": "Highlight Headings",
+      "description": "Outline section titles (H1-H6) across page",
+      "category": "Focus & Reading",
+      "icon": "Focus",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "highlightButtons",
+      "title": "Highlight Buttons",
+      "description": "Border and highlight all action buttons",
+      "category": "Focus & Reading",
+      "icon": "Focus",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "reduceMotion",
+      "title": "Reduce Motion",
+      "description": "Disable CSS animations and marquee effects",
+      "category": "Focus & Reading",
+      "icon": "Focus",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "cursorSize",
+      "title": "Big Cursor",
+      "description": "Enlarge mouse pointer for motor and visual tracking",
+      "category": "Focus & Reading",
+      "icon": "Focus",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "aiAssistant",
+      "title": "Anna AI Virtual Assistant",
+      "description": "Interactive AI Chatbot for accessibility guidance",
+      "category": "Speech & Reading",
+      "icon": "Sparkles",
+      "enabled": true,
+      "isCustom": false
+    }
+  ]
+}

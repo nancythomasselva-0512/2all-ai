@@ -8,7 +8,6 @@ import Footer from "@/components/marketing/Footer";
 import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
-import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function EnterprisePage() {
@@ -51,7 +50,6 @@ export default function EnterprisePage() {
                 { name: "SOLUTIONS", hasDropdown: true },
                 { name: "COMPANY", hasDropdown: true },
                 { name: "PARTNERS", hasDropdown: true },
-                { name: "RESOURCES", hasDropdown: true },
                 { name: "PRICING", hasDropdown: false },
               ].map((link) => (
                 <Link
@@ -98,7 +96,6 @@ export default function EnterprisePage() {
           <SolutionsMegamenu isOpen={activeHoverMenu === "SOLUTIONS"} onMouseEnter={() => openMenu("SOLUTIONS")} onMouseLeave={closeMenuWithDelay} />
           <CompanyMegamenu isOpen={activeHoverMenu === "COMPANY"} onMouseEnter={() => openMenu("COMPANY")} onMouseLeave={closeMenuWithDelay} />
           <PartnersMegamenu isOpen={activeHoverMenu === "PARTNERS"} onMouseEnter={() => openMenu("PARTNERS")} onMouseLeave={closeMenuWithDelay} />
-          <ResourcesMegamenu isOpen={activeHoverMenu === "RESOURCES"} onMouseEnter={() => openMenu("RESOURCES")} onMouseLeave={closeMenuWithDelay} />
         </div>
       </header>
 

@@ -7,24 +7,24 @@ export default function BeyondCompliance() {
   const points = [
     {
       num: "01",
-      title: "Demonstrate inclusion",
-      desc: "Contribute to a more inclusive internet, making a meaningful impact on the lives of millions.",
+      title: "Empower 1.3 Billion Users",
+      desc: "Enable over 1.3 billion people globally to navigate your digital assets with dignity, independence, and flawless usability.",
       icon: <Users className="w-5 h-5 text-[#004bff]" />,
       color: "border-blue-200 text-[#004bff] bg-blue-50/50",
       delay: 0.1
     },
     {
       num: "02",
-      title: "Tap into new opportunity",
-      desc: "Unlock over $8 trillion in expendable income that businesses can only tap with an accessible website.",
+      title: "Unlock $13 Trillion Market",
+      desc: "Capture expansive purchasing power from people with disabilities and aging demographics who actively choose accessible brands.",
       icon: <TrendingUp className="w-5 h-5 text-[#004bff]" />,
       color: "border-blue-200 text-[#004bff] bg-blue-50/50",
       delay: 0.2
     },
     {
       num: "03",
-      title: "Boost brand reputation",
-      desc: "Web accessibility isn’t just a feature—it reflects leadership and values, elevating brand reputation with every click.",
+      title: "SEO & Search Dominance",
+      desc: "Accessible semantic structure directly boosts Google Core Web Vitals, driving organic traffic and superior search ranking.",
       icon: <Award className="w-5 h-5 text-[#004bff]" />,
       color: "border-blue-200 text-[#004bff] bg-blue-50/50",
       delay: 0.3
@@ -52,18 +52,18 @@ export default function BeyondCompliance() {
 
   return (
     <motion.section 
-      initial="hidden"
+      initial="visible"
       whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true }}
       variants={{
-        hidden: { opacity: 0, y: 40 },
+        hidden: { opacity: 1, y: 0 },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.08 }
+          transition: { duration: 0.5, ease: "easeOut", staggerChildren: 0.08 }
         }
       }}
-      className="py-10 md:py-24 bg-white relative overflow-hidden select-none font-sans"
+      className="py-6 md:py-10 bg-white relative overflow-hidden select-none font-sans"
     >
       {/* Background accents */}
       <div className="absolute top-1/3 left-10 w-80 h-80 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
@@ -75,14 +75,14 @@ export default function BeyondCompliance() {
           {/* LEFT COLUMN: Header & Animated Rings SVG */}
           <div className="lg:col-span-5 space-y-6 md:space-y-8 text-left">
             <div className="space-y-4">
-              <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="px-3.5 py-1.5 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold text-[#004bff] uppercase tracking-widest inline-block font-sans">
-                Beyond Legal Standards
+              <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="px-3.5 py-1.5 bg-blue-50/80 border border-blue-100 rounded-full text-[11px] font-extrabold text-[#004bff] uppercase tracking-widest inline-block font-sans">
+                REVENUE & BRAND IMPACT
               </motion.span>
               <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black text-slate-900 leading-tight tracking-tight font-sans">
-                More than <span className="text-[#004bff]">compliance</span>
+                Accessibility as a <span className="text-[#004bff] italic font-serif font-normal">competitive edge</span>
               </motion.h2>
               <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-slate-500 text-lg font-normal leading-relaxed font-sans">
-                Web accessibility is the right thing to do and good for business. Achieve real inclusion while driving growth.
+                Web accessibility goes far beyond lawsuit prevention. It unleashes untapped market potential, improves SEO rankings, and cements your position as an ethical digital leader.
               </motion.p>
             </div>
 

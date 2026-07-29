@@ -13,12 +13,11 @@ import DemoModal from "@/components/marketing/DemoModal";
 import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
-import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7 } },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 };
 
 const stagger = {
@@ -61,7 +60,6 @@ export default function AccessScanPage() {
     { q: "How much does a scan cost?", a: "Our initial automated accessScan is completely free. It provides a high-level overview of your website's compliance status and highlights critical areas needing attention." },
     { q: "What does the free scan cover?", a: "The free scan checks your homepage or any single URL for common accessibility issues including missing alt text, contrast errors, ARIA labeling, and keyboard navigation barriers." },
     { q: "Are automated scans enough for full ADA compliance?", a: "No. While automated scans catch up to 30% of accessibility issues, true ADA compliance requires combining automated tools with manual expert auditing. 2all.ai offers both." },
-    { q: "What happens after the scan?", a: "You'll receive a detailed PDF report outlining the issues found. You can then choose to remediate them yourself or use our accessWidget and accessFlow solutions to automate compliance." },
     { q: "Is my data safe during the scan?", a: "Absolutely. We only scan the public-facing HTML/CSS of the URL you provide. We do not access databases, user data, or any protected areas of your site." }
   ];
 
@@ -83,7 +81,6 @@ export default function AccessScanPage() {
                 { name: "SOLUTIONS", hasDropdown: true },
                 { name: "COMPANY", hasDropdown: true },
                 { name: "PARTNERS", hasDropdown: true },
-                { name: "RESOURCES", hasDropdown: true },
                 { name: "PRICING", hasDropdown: false },
               ].map((link) => (
                 <Link
@@ -119,7 +116,6 @@ export default function AccessScanPage() {
         <SolutionsMegamenu isOpen={activeHoverMenu === "SOLUTIONS"} onMouseEnter={() => openMenu("SOLUTIONS")} onMouseLeave={closeMenuWithDelay} />
         <CompanyMegamenu isOpen={activeHoverMenu === "COMPANY"} onMouseEnter={() => openMenu("COMPANY")} onMouseLeave={closeMenuWithDelay} />
         <PartnersMegamenu isOpen={activeHoverMenu === "PARTNERS"} onMouseEnter={() => openMenu("PARTNERS")} onMouseLeave={closeMenuWithDelay} />
-        <ResourcesMegamenu isOpen={activeHoverMenu === "RESOURCES"} onMouseEnter={() => openMenu("RESOURCES")} onMouseLeave={closeMenuWithDelay} />
       </header>
 
       <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
@@ -129,7 +125,7 @@ export default function AccessScanPage() {
         <section className="w-full pt-32 pb-16 px-4 md:px-8">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-[1400px] mx-auto bg-[#004bff] rounded-[48px] px-6 py-24 md:py-32 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-2xl">
             {/* Soft background glows */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div className="absolute inset-0">
               <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-blue-400/30 rounded-full blur-[120px]" />
               <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-cyan-400/20 rounded-full blur-[100px]" />
             </div>

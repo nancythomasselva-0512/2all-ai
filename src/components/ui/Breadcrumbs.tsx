@@ -6,7 +6,7 @@ export interface BreadcrumbItem {
   href?: string;
 }
 
-export default function Breadcrumbs({ items, theme = "dark" }: { items: BreadcrumbItem[], theme?: "light" | "dark" }) {
+export default function Breadcrumbs({ items, theme = "dark", className = "" }: { items: BreadcrumbItem[], theme?: "light" | "dark", className?: string }) {
   const isLight = theme === "light";
   
   const navClass = isLight ? "text-slate-500" : "text-white/80";
@@ -17,7 +17,7 @@ export default function Breadcrumbs({ items, theme = "dark" }: { items: Breadcru
   const chevronClass = isLight ? "text-slate-400" : "text-white/60";
 
   return (
-    <nav className={`flex flex-wrap items-center gap-1.5 text-[14px] font-medium mb-6 ${navClass}`}>
+    <nav className={`flex flex-wrap items-center justify-start text-left gap-1.5 text-[14px] font-medium mb-4 w-full ${navClass} ${className}`}>
       {items.map((item, index) => (
         <div key={item.label} className="flex items-center gap-1.5">
           {item.href ? (

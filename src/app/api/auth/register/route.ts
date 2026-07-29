@@ -47,12 +47,19 @@ export async function POST(req: Request) {
       });
     }
 
-    // Send the welcome email ONLY
-    await sendInitialWelcomeEmail(email, name);
-    
-    // If they provided a website, they also created a project. We should send the script email for that project!
+    // Send welcome emails — wrapped in try/catch so SMTP errors don't block registration
+    try {
+      await sendInitialWelcomeEmail(email, name);
+    } catch (emailErr) {
+      console.warn("[Register] Welcome email failed (non-fatal):", emailErr);
+    }
+
     if (website) {
-      await sendWelcomeEmail(email, name, website);
+      try {
+        await sendWelcomeEmail(email, name, website);
+      } catch (emailErr) {
+        console.warn("[Register] Website welcome email failed (non-fatal):", emailErr);
+      }
     }
 
     return NextResponse.json(

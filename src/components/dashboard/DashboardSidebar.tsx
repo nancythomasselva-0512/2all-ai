@@ -22,7 +22,6 @@ const navItems = [
   { href: "/dashboard/projects", icon: FolderKanban, label: "Projects" },
   { href: "/dashboard/reports", icon: FileBarChart2, label: "Reports" },
   { href: "/dashboard/notifications", icon: Bell, label: "Notifications" },
-  { href: "/dashboard/billing", icon: CreditCard, label: "Billing" },
   { href: "/dashboard/api-keys", icon: KeyRound, label: "API Keys" },
   { href: "/dashboard/settings", icon: Settings, label: "Settings" },
 ];

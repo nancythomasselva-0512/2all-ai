@@ -23,7 +23,6 @@ import DemoModal from "@/components/marketing/DemoModal";
 import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
 import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
 import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
-import ResourcesMegamenu from "@/components/marketing/ResourcesMegamenu";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function ServicesPage() {
@@ -56,7 +55,6 @@ export default function ServicesPage() {
                 { name: "SOLUTIONS", hasDropdown: true },
                 { name: "COMPANY", hasDropdown: true },
                 { name: "PARTNERS", hasDropdown: true },
-                { name: "RESOURCES", hasDropdown: true },
                 { name: "PRICING", hasDropdown: false },
               ].map((link) => (
                 <Link
@@ -69,8 +67,6 @@ export default function ServicesPage() {
                       setActiveHoverMenu("COMPANY");
                     } else if (link.name === "PARTNERS") {
                       setActiveHoverMenu("PARTNERS");
-                    } else if (link.name === "RESOURCES") {
-                      setActiveHoverMenu("RESOURCES");
                     } else {
                       setActiveHoverMenu(null);
                     }
@@ -146,13 +142,6 @@ export default function ServicesPage() {
           onMouseLeave={() => setActiveHoverMenu(null)}
         />
 
-        {/* Resources Megamenu Overlay */}
-        <ResourcesMegamenu 
-          isOpen={activeHoverMenu === "RESOURCES"} 
-          onMouseEnter={() => setActiveHoverMenu("RESOURCES")}
-          onMouseLeave={() => setActiveHoverMenu(null)}
-        />
-
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
           <div className="absolute top-full left-0 w-full bg-white shadow-lg shadow-slate-200/50 border-t border-slate-100 lg:hidden flex flex-col py-6 px-6 gap-6 z-50">
@@ -161,13 +150,12 @@ export default function ServicesPage() {
                 { name: "SOLUTIONS", href: "#" },
                 { name: "COMPANY", href: "#" },
                 { name: "PARTNERS", href: "#" },
-                { name: "RESOURCES", href: "#" },
                 { name: "PRICING", href: "/pricing" },
               ].map((link) => (
                 <button
                   key={link.name}
                   onClick={() => {
-                    if (["SOLUTIONS", "COMPANY", "PARTNERS", "RESOURCES"].includes(link.name)) {
+                    if (["SOLUTIONS", "COMPANY", "PARTNERS"].includes(link.name)) {
                       setActiveHoverMenu(link.name);
                       setIsMobileMenuOpen(false);
                     } else {
@@ -431,7 +419,7 @@ export default function ServicesPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
-                title: "accessWidget",
+                title: "2all.ai Widget",
                 textColor: "text-[#1c64f2]",
                 imgPlaceholder: "from-[#a1c4fd] to-[#c2e9fb]",
               },

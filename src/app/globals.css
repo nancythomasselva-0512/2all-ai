@@ -39,16 +39,55 @@ html {
   overflow-x: hidden;
   overflow-y: scroll;
   max-width: 100%;
+  font-size: 125%; /* Scaled base size for maximum visibility */
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: 'Times New Roman', Times, Georgia, serif !important;
+  font-size: 1.25rem; /* ~22px base body size */
+  line-height: 1.75;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   max-width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif !important;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+/* High visibility contrast & size defaults for serif text */
+#app-content p:not(.no-scale) {
+  font-size: 1.15rem;
+  line-height: 1.7;
+}
+
+.text-slate-500:not(.alex-chat-popover *), .text-slate-400:not(.alex-chat-popover *) {
+  color: #334155 !important; /* Slate-700 for sharp readability */
+}
+
+.text-slate-600:not(.alex-chat-popover *) {
+  color: #1e293b !important; /* Slate-800 */
+}
+
+/* Floating Chat Popover & Accessibility Panel Typography */
+#accessibility-panel,
+#accessibility-panel *,
+.alex-chat-popover,
+.alex-chat-popover * {
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.alex-chat-popover p {
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #334155 !important;
 }
 
 #app-content {
@@ -203,17 +242,30 @@ html.a11y-light-mode, body.a11y-light-mode {
 /* Fonts */
 @font-face {
   font-family: 'OpenDyslexic';
-  src: url('https://opendyslexic.org/fonts/OpenDyslexic-Regular.otf') format('opentype');
+  src: url('/fonts/open-dyslexic.woff') format('woff'),
+       url('https://fonts.cdnfonts.com/s/29616/open-dyslexic.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
-.a11y-font-dyslexic, .a11y-font-dyslexic * {
-  font-family: 'OpenDyslexic', sans-serif !important;
+/* Dyslexia & Readable Font Classes */
+.a11y-font-dyslexic,
+.a11y-font-dyslexic #app-content, 
+.a11y-font-dyslexic #app-content *:not(svg):not(path):not(i):not(.lucide) {
+  font-family: 'OpenDyslexic', 'Lexend', sans-serif !important;
 }
-.a11y-font-lexend, .a11y-font-lexend * {
+
+.a11y-font-lexend,
+.a11y-font-lexend #app-content, 
+.a11y-font-lexend #app-content *:not(svg):not(path):not(i):not(.lucide) {
   font-family: 'Lexend', sans-serif !important;
 }
-.a11y-font-readable, .a11y-font-readable * {
-  font-family: Tahoma, Verdana, sans-serif !important;
+
+.a11y-font-readable,
+.a11y-font-readable #app-content, 
+.a11y-font-readable #app-content *:not(svg):not(path):not(i):not(.lucide) {
+  font-family: 'Atkinson Hyperlegible', Tahoma, Verdana, sans-serif !important;
 }
 
 /* Highlights */
@@ -224,12 +276,17 @@ html.a11y-light-mode, body.a11y-light-mode {
   text-decoration-thickness: 3px !important;
 }
 
-.a11y-highlight-headings h1, .a11y-highlight-headings h2, 
-.a11y-highlight-headings h3, .a11y-highlight-headings h4, 
-.a11y-highlight-headings h5, .a11y-highlight-headings h6 {
-  border: 3px solid #004bff !important;
-  padding: 4px !important;
-  border-radius: 4px !important;
+.a11y-highlight-headings h1:not(.fixed *), 
+.a11y-highlight-headings h2:not(.fixed *), 
+.a11y-highlight-headings h3:not(.fixed *), 
+.a11y-highlight-headings h4:not(.fixed *), 
+.a11y-highlight-headings h5:not(.fixed *), 
+.a11y-highlight-headings h6:not(.fixed *) {
+  border-bottom: 2px solid #004bff !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  padding-bottom: 2px !important;
 }
 
 .a11y-highlight-buttons button, .a11y-highlight-buttons .btn, .a11y-highlight-buttons [role="button"] {
@@ -288,16 +345,20 @@ html.a11y-light-mode, body.a11y-light-mode {
 }
 
 /* Text Alignments */
-.a11y-align-left, .a11y-align-left * {
+.a11y-align-left #app-content, 
+.a11y-align-left #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
   text-align: left !important;
 }
-.a11y-align-right, .a11y-align-right * {
+.a11y-align-right #app-content, 
+.a11y-align-right #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
   text-align: right !important;
 }
-.a11y-align-center, .a11y-align-center * {
+.a11y-align-center #app-content, 
+.a11y-align-center #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
   text-align: center !important;
 }
-.a11y-align-justify, .a11y-align-justify * {
+.a11y-align-justify #app-content, 
+.a11y-align-justify #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
   text-align: justify !important;
 }
 

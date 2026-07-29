@@ -26,6 +26,16 @@ export default async function AdminDashboardPage(props: { searchParams?: Promise
   try {
     users = await prisma.user.findMany({
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        plan: true,
+        paymentStatus: true,
+        phone: true,
+        createdAt: true,
+      },
     });
 
     projects = await prisma.project.findMany({

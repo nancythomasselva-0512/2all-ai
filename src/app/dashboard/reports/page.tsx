@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import PageHelpTooltip from "@/components/ui/PageHelpTooltip";
 import {
   FileText, Download, TrendingUp, BarChart3, ShieldAlert,
   CheckCircle2, KeyRound, Globe, Sliders, Calendar, Activity, RefreshCw
@@ -64,7 +65,18 @@ export default function ReportsPage() {
       {/* Page header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Usage & Audit Reports</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center">
+            Usage & Audit Reports
+            <PageHelpTooltip
+              title="Usage & Audit Reports"
+              purpose="Monitor real-time widget pageviews, security compliance logs, and export legal WCAG / ADA audit reports."
+              features={[
+                "Track monthly widget pageview usage against plan limits",
+                "Review account security logs (API keys, domain edits)",
+                "Download official WCAG & ADA compliance PDF / CSV reports"
+              ]}
+            />
+          </h1>
           <p className="text-sm text-slate-500 font-medium mt-1">Monitor real-time widget pageviews, quota limits, and security compliance logs.</p>
         </div>
 

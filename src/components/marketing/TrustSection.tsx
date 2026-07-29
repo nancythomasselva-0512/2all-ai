@@ -207,12 +207,12 @@ export default function TrustSection() {
           
           {/* Header */}
           <div className="space-y-4">
-            <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className={`${colorMap[siteConfig.primaryColor as keyof typeof colorMap]?.text || "text-blue-500"} text-xs font-bold uppercase tracking-widest block`}>Global Compliance Standard</motion.span>
-            <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
-              Trusted by Businesses & Industry Leaders
+            <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-blue-400 text-[11px] font-extrabold uppercase tracking-widest block">ENGINEERED FOR SCALE • WCAG & ADA COMPLIANCE</motion.span>
+            <motion.h2 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight font-sans">
+              Empowering <span className="italic font-serif font-normal text-blue-400">industry leaders</span> worldwide
             </motion.h2>
-            <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-slate-400 text-md font-light leading-relaxed">
-              We empower compliance and deliver measurable business value, minimizing risks while optimizing conversion rates for enterprises worldwide.
+            <motion.p variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="text-slate-300 text-md font-light leading-relaxed">
+              From high-growth scale-ups to Fortune 500 enterprises, forward-thinking brands rely on 2all.ai to safeguard compliance and deliver accessible digital access.
             </motion.p>
           </div>
 

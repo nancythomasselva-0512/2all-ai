@@ -131,18 +131,18 @@ export default function Showcase() {
   };
 
   return (
-    <section id="diff" className="pt-12 pb-10 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden select-none">
+    <section id="features" className="pt-6 pb-10 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden select-none">
       {/* Decorative Blur Blobs */}
       <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-blue-100/30 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-indigo-100/30 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-12 flex flex-col items-center">
         {/* Title Section */}
-        <div className="text-center max-w-3xl mx-auto mb-8 relative z-20">
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-6">
+        <div className="text-center max-w-4xl mx-auto mb-8 relative z-20">
+          <h2 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
             See AI Remediation in <span className="text-blue-600">Real-Time</span>
           </h2>
-          <p className="text-lg text-slate-500 font-light">
+          <p className="text-xl md:text-2xl text-slate-800 font-medium leading-relaxed">
             Watch 2all.ai scan, highlight, and automatically resolve critical accessibility violations across web interfaces instantly.
           </p>
         </div>

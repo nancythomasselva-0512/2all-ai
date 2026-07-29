@@ -209,7 +209,7 @@ export default function LitigationSupportPage() {
                   </thead>
                   <tbody>
                      {[
-                       ["accessWidget", true, true, true],
+                       ["2all.ai Widget", true, true, true],
                        ["Litigation Support", true, true, true],
                        ["Compliance Audit", false, true, true],
                        ["VPAT Documentation", false, true, true],
@@ -248,8 +248,8 @@ export default function LitigationSupportPage() {
              {/* Card 1 */}
              <div className="bg-[#0a1e3f] rounded-[32px] overflow-hidden flex flex-col group cursor-pointer shadow-xl hover:-translate-y-2 transition-transform duration-300">
                 <div className="h-48 overflow-hidden bg-slate-800 relative">
-                   <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=600&auto=format&fit=crop" alt="accessWidget" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
-                   <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-white border border-white/20">accessWidget</div>
+                   <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=600&auto=format&fit=crop" alt="2all.ai Widget" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
+                   <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-white border border-white/20">2all.ai Widget</div>
                 </div>
                 <div className="p-8 flex-1 flex flex-col justify-between">
                    <div>

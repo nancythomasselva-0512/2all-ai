@@ -82,23 +82,23 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-slate-950 text-slate-400 pt-20 pb-10 relative overflow-hidden select-none font-sans border-t border-slate-900 z-10">
+    <footer id="footer" className="bg-slate-950 text-slate-200 pt-16 pb-10 relative overflow-hidden select-none font-sans border-t border-slate-900 z-10">
       
       <div className="max-w-7xl mx-auto px-6 sm:px-12 relative z-10">
         
         {/* Links Columns Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-14">
           {footerLinks.map((col) => (
-            <div key={col.title} className="space-y-4 text-left">
-              <h4 className="text-white font-extrabold text-xs tracking-wider uppercase">
+            <div key={col.title} className="space-y-3.5 text-left">
+              <h4 className="text-white font-black text-xs tracking-wider uppercase border-b border-slate-800/80 pb-2">
                 {col.title}
               </h4>
-              <ul className="space-y-2.5 text-xs">
+              <ul className="space-y-2 text-xs">
                 {col.links.map((link) => (
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="hover:text-white transition-colors duration-200"
+                      className="text-slate-300 hover:text-white font-medium transition-colors duration-200 block py-0.5"
                     >
                       {link.name}
                     </Link>
@@ -110,19 +110,19 @@ export default function Footer() {
         </div>
 
         {/* Footer Bottom Bar */}
-        <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
           
           {/* Copyright & Legal Links */}
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-2 gap-y-1 text-xs text-slate-500">
-            <span>&copy; {currentYear} - 2all.ai Inc.</span>
-            <span className="hidden md:inline text-slate-700">|</span>
-            <Link href="#" className="hover:text-slate-400 transition-colors">Terms of Service</Link>
-            <span className="text-slate-700">|</span>
-            <Link href="#" className="hover:text-slate-400 transition-colors">Privacy Notice</Link>
-            <span className="text-slate-700">|</span>
-            <Link href="#" className="hover:text-slate-400 transition-colors">Cookie Policy</Link>
-            <span className="text-slate-700">|</span>
-            <Link href="#" className="hover:text-slate-400 transition-colors">Accessibility Statement</Link>
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-3.5 gap-y-1.5 text-xs">
+            <span className="text-slate-300 font-semibold">&copy; {currentYear} 2all.ai Inc. All rights reserved.</span>
+            <span className="hidden md:inline text-slate-500 font-bold">|</span>
+            <Link href="/terms-of-service" className="text-slate-200 hover:text-blue-400 underline decoration-slate-600 hover:decoration-blue-400 underline-offset-4 font-medium transition-colors">Terms of Service</Link>
+            <span className="text-slate-500 font-bold">|</span>
+            <Link href="/privacy-notice" className="text-slate-200 hover:text-blue-400 underline decoration-slate-600 hover:decoration-blue-400 underline-offset-4 font-medium transition-colors">Privacy Notice</Link>
+            <span className="text-slate-500 font-bold">|</span>
+            <Link href="/cookie-policy" className="text-slate-200 hover:text-blue-400 underline decoration-slate-600 hover:decoration-blue-400 underline-offset-4 font-medium transition-colors">Cookie Policy</Link>
+            <span className="text-slate-500 font-bold">|</span>
+            <Link href="/accessibility-statement" className="text-slate-200 hover:text-blue-400 underline decoration-slate-600 hover:decoration-blue-400 underline-offset-4 font-medium transition-colors">Accessibility Statement</Link>
           </div>
 
           {/* Social Icons Links */}

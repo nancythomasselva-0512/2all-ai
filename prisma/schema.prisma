@@ -17,6 +17,7 @@ model User {
   role          String    @default("CUSTOMER") // SUPER_ADMIN, ADMIN, CUSTOMER
   plan          String    @default("NONE")
   paymentStatus String    @default("UNPAID")
+  phone         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

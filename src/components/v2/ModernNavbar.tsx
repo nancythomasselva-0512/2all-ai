@@ -21,7 +21,6 @@ export default function ModernNavbar() {
   const navLinks = [
     { name: "Solutions", href: "/solutions" },
     { name: "Platform", href: "/platform" },
-    { name: "Resources", href: "/resources" },
     { name: "Pricing", href: "/pricing" },
   ];
 

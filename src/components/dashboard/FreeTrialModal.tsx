@@ -82,7 +82,7 @@ export default function FreeTrialModal() {
                   <path d="M8 12h8M12 8v8" />
                 </svg>
               </div>
-              <span className="text-sm font-black text-slate-800">accessWidget</span>
+              <span className="text-sm font-black text-slate-800">2all.ai</span>
             </div>
             <button
               onClick={handleClose}
