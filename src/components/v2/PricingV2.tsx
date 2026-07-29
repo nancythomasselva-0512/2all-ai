@@ -74,7 +74,7 @@ export default function PricingV2() {
               </div>
 
               <Link
-                href="/register"
+                href={plan.name === "Enterprise" ? "/enterprise" : "/register"}
                 className={`block w-full py-3.5 px-6 rounded-full text-center font-bold text-sm transition-all relative overflow-hidden group/btn ${
                   plan.popular 
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50' 

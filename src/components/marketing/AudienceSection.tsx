@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Globe, Shield, Handshake, CheckCircle2, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function AudienceSection() {
   const cards = [
@@ -17,7 +18,7 @@ export default function AudienceSection() {
         "Enterprise-grade SLA & legal protection"
       ],
       ctaText: "Get Enterprise Plan",
-      ctaLink: "/register",
+      ctaLink: "/enterprise",
       bgGradient: "from-blue-500/5 to-indigo-500/5",
       borderHover: "hover:border-blue-500/30 hover:shadow-blue-500/5"
     },
@@ -112,13 +113,13 @@ export default function AudienceSection() {
 
               {/* Action Button */}
               <div className="mt-10">
-                <a
+                <Link
                   href={card.ctaLink}
                   className="btn-premium w-full inline-flex items-center justify-center gap-2 bg-slate-950 hover:bg-slate-900 text-white rounded-2xl px-6 py-4 text-sm font-extrabold tracking-wide shadow-md group"
                 >
                   {card.ctaText}
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 stroke-[2.5]" />
-                </a>
+                </Link>
               </div>
             </motion.div>
           ))}

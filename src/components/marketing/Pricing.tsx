@@ -121,7 +121,7 @@ export default function Pricing() {
               </div>
 
               <Link
-                href={plan.price === "Custom" ? "/contact" : "/register"}
+                href={plan.price === "Custom" ? "/enterprise" : "/register"}
                 className={`w-full py-3.5 rounded-xl text-center text-sm font-semibold transition-all ${
                   plan.popular
                     ? `${theme.bg} text-white ${theme.hover} shadow-md ${theme.shadowHover}`

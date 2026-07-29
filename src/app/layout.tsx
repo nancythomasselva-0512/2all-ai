@@ -7,6 +7,7 @@ import path from "path";
 import ChatWidgetWrapper from "@/components/ChatWidgetWrapper";
 import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import AccessibilityWidget from "@/components/accessibility/AccessibilityWidget";
+import ScrollToTopButton from "@/components/ui/ScrollToTopButton";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -74,6 +75,9 @@ export default async function RootLayout({
 
         {/* Anna chat widget — hidden on admin pages */}
         <ChatWidgetWrapper />
+
+        {/* Global Scroll to Top Button (Bottom-Left) */}
+        <ScrollToTopButton />
 
         {/* Inject Custom JS before body end */}
         {customJs && (
