@@ -5,7 +5,7 @@ import path from "path";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, phone, website } = body;
+    const { name, email, phone, website, meetingSlot } = body;
 
     if (!name || !email || !phone || !website) {
       return NextResponse.json({ message: "All fields are required" }, { status: 400 });
@@ -27,6 +27,7 @@ export async function POST(req: Request) {
       email,
       phone,
       website,
+      meetingSlot: meetingSlot || null,
       createdAt: new Date().toISOString()
     };
 
@@ -41,7 +42,9 @@ export async function POST(req: Request) {
         name,
         email,
         phone,
-        website
+        website,
+        meetingSlot,
+        newRequest.id
       ).catch(e => console.error("Async email error:", e));
     } catch (e) {
       console.error("Failed to import mail utility", e);

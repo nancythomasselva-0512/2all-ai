@@ -72,8 +72,23 @@ const getTransporter = () => {
 };
 
 const getFromHeader = () => {
-  const user = process.env.SMTP_USER || "aachinancy@gmail.com";
-  return process.env.SMTP_FROM || `"2all.ai Team" <${user}>`;
+  let email = process.env.SMTP_USER || "aachinancy@gmail.com";
+  let name = "2all.ai Team";
+
+  try {
+    const configPath = path.join(process.cwd(), "src/data/site-config.json");
+    if (fs.existsSync(configPath)) {
+      const configData = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+      if (configData.smtpFromEmail && typeof configData.smtpFromEmail === "string" && configData.smtpFromEmail.trim()) {
+        email = configData.smtpFromEmail.trim();
+      }
+      if (configData.smtpFromName && typeof configData.smtpFromName === "string" && configData.smtpFromName.trim()) {
+        name = configData.smtpFromName.trim();
+      }
+    }
+  } catch (e) {}
+
+  return process.env.SMTP_FROM || `"${name}" <${email}>`;
 };
 
 export async function sendPaymentSuccessEmail(toEmail: string, userName: string, planName: string, amount: number) {
@@ -165,86 +180,237 @@ export async function sendDemoNotificationEmail(
   leadName: string,
   leadEmail: string,
   leadPhone: string,
-  leadWebsite: string
+  leadWebsite: string,
+  meetingSlot?: string,
+  requestId?: string
 ) {
   const transporter = getTransporter();
   const from = getFromHeader();
   const targetAdmin = getAdminEmail();
-  const adminSubject = `[New Lead] Contact Sales Inquiry - ${leadName}`;
-  const userSubject = `Thank you for contacting 2all.ai Sales!`;
-  
-  const adminHtmlContent = `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
-      <h3 style="color: #004bff; margin-top: 0;">2all.ai Lead & Contact Sales Alert</h3>
-      <p style="font-size: 14px; line-height: 1.5; color: #475569;">
-        A new enterprise sales lead has been submitted by a prospective client.
-      </p>
-      
-      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px; line-height: 1.8;">
-        <h4 style="margin: 0 0 10px 0; color: #0f172a; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;">Client Details</h4>
-        <div><strong>Name:</strong> ${leadName}</div>
-        <div><strong>Email:</strong> ${leadEmail}</div>
-        <div><strong>Phone:</strong> ${leadPhone}</div>
-        <div><strong>Website:</strong> <a href="${leadWebsite}" target="_blank" style="color: #004bff;">${leadWebsite}</a></div>
+  const meetRoomId = leadEmail.replace(/[^a-zA-Z0-9]/g, "").substring(0, 10) || "demo";
+  const meetLink = `https://meet.google.com/2all-ai-demo-${meetRoomId}`;
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+  const isSkipped = !meetingSlot || meetingSlot.toLowerCase().includes("skipped");
+
+  if (!isSkipped) {
+    // =========================================================================
+    // SCENARIO 1: SLOT IS CONFIRMED -> SEND DISTINCT CONFIRMED EMAILS
+    // =========================================================================
+    
+    // 1. CONFIRMED EMAIL TO CUSTOMER
+    const customerSubject = `[CONFIRMED DEMO] Your 2all.ai Demo is Scheduled for ${meetingSlot}`;
+    const customerHtmlContent = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b; background-color: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px; margin-bottom: 20px;">
+          <h2 style="color: #004bff; margin: 0; font-size: 22px;">2all.ai</h2>
+          <span style="font-size: 11px; font-weight: bold; background-color: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 20px; text-transform: uppercase;">Meeting Confirmed</span>
+        </div>
+
+        <p style="font-size: 15px; font-weight: bold; color: #0f172a; margin-top: 0;">Hi ${leadName},</p>
+        
+        <p style="font-size: 14px; line-height: 1.6; color: #475569;">
+          Thank you for scheduling a 1-on-1 accessibility demo for <strong><a href="${leadWebsite}" target="_blank" style="color: #004bff;">${leadWebsite}</a></strong>! Your meeting slot is confirmed.
+        </p>
+
+        <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 18px; margin: 20px 0; font-size: 13px; line-height: 1.8;">
+          <h4 style="margin: 0 0 8px 0; color: #166534; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;">📅 Your Confirmed Meeting Details</h4>
+          <div style="font-size: 16px; font-weight: 800; color: #15803d; margin-bottom: 12px;">📅 ${meetingSlot}</div>
+          <div style="margin-bottom: 12px;">
+            <strong>🎥 Google Meet Video Link:</strong><br/>
+            <a href="${meetLink}" target="_blank" style="color: #004bff; font-weight: bold; font-size: 14px;">${meetLink}</a>
+          </div>
+          <div>
+            <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=2all.ai+Accessibility+Demo+Session&details=Live+1-on-1+web+accessibility+demo+and+compliance+audit+walkthrough&location=${encodeURIComponent(meetLink)}" 
+               target="_blank"
+               style="background-color: #004bff; color: white; padding: 10px 20px; border-radius: 8px; font-size: 12px; font-weight: bold; text-decoration: none; display: inline-block;">
+              📅 Add to Google Calendar
+            </a>
+          </div>
+        </div>
+
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin: 20px 0; font-size: 12px; color: #64748b;">
+          <strong>Need to reschedule?</strong> Contact our support team at <a href="mailto:support@2all.ai" style="color: #004bff;">support@2all.ai</a>.
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #f1f5f9; margin-top: 24px; margin-bottom: 16px;" />
+        <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0;">
+          &copy; ${new Date().getFullYear()} 2all.ai Inc. All rights reserved.
+        </p>
       </div>
-      
-      <p style="font-size: 12px; color: #94a3b8;">
-        This lead is also saved and visible in the Admin Console.
-      </p>
-    </div>
-  `;
+    `;
 
-  const userHtmlContent = `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
-      <h2 style="color: #004bff; margin-top: 0;">2all.ai</h2>
-      <p style="font-size: 15px; font-weight: bold; color: #0f172a;">Hi ${leadName},</p>
-      <p style="font-size: 14px; line-height: 1.6; color: #475569;">
-        Thank you for reaching out to 2all.ai Sales regarding your website <strong>${leadWebsite}</strong>. Our enterprise accessibility team has received your inquiry and will be in touch shortly to assist you.
-      </p>
-      <div style="background-color: #eef2ff; border-left: 4px solid #004bff; padding: 14px; margin: 20px 0; font-size: 13px; color: #1e1b4b;">
-        <strong>Need immediate assistance?</strong> You can also reach our support team directly at <a href="mailto:support@2all.ai" style="color: #004bff;">support@2all.ai</a>.
+    // 2. CONFIRMED EMAIL TO ADMIN
+    const adminSubject = `[CONFIRMED DEMO ALERT] Demo Call with ${leadName} - ${meetingSlot}`;
+    const adminHtmlContent = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b; background-color: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px; margin-bottom: 20px;">
+          <h2 style="color: #004bff; margin: 0; font-size: 22px;">2all.ai Admin</h2>
+          <span style="font-size: 11px; font-weight: bold; background-color: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 20px; text-transform: uppercase;">Confirmed Demo</span>
+        </div>
+
+        <h3 style="color: #0f172a; margin-top: 0;">Confirmed Demo Booking Alert</h3>
+        <p style="font-size: 14px; color: #475569; line-height: 1.5;">
+          A client has confirmed a live demo call for <strong><a href="${leadWebsite}" target="_blank" style="color: #004bff;">${leadWebsite}</a></strong>.
+        </p>
+
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px; line-height: 1.8;">
+          <h4 style="margin: 0 0 10px 0; color: #0f172a; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;">📋 Client Details</h4>
+          <div><strong>Name:</strong> ${leadName}</div>
+          <div><strong>Email:</strong> <a href="mailto:${leadEmail}" style="color: #004bff;">${leadEmail}</a></div>
+          <div><strong>Phone:</strong> ${leadPhone}</div>
+          <div><strong>Website:</strong> <a href="${leadWebsite}" target="_blank" style="color: #004bff;">${leadWebsite}</a></div>
+        </div>
+
+        <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px;">
+          <div><strong>Confirmed Slot:</strong> <span style="font-weight: bold; color: #15803d;">${meetingSlot}</span></div>
+          <div style="margin-top: 8px;"><strong>Join Video Call:</strong> <a href="${meetLink}" target="_blank" style="color: #004bff; font-weight: bold;">${meetLink}</a></div>
+        </div>
+
+        <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 24px;">
+          &copy; ${new Date().getFullYear()} 2all.ai Inc. All rights reserved.
+        </p>
       </div>
-      <p style="font-size: 12px; color: #94a3b8; margin-top: 30px;">
-        &copy; ${new Date().getFullYear()} 2all.ai. All rights reserved.
-      </p>
-    </div>
-  `;
+    `;
 
-  if (!transporter) {
-    console.log(`[SMTP SIMULATOR] Admin Lead notification would be sent to: ${targetAdmin} and User confirmation to: ${leadEmail}`);
-    logEmailSent("Demo Alert Admin", targetAdmin, adminSubject, "SUCCESS", "Simulated mode");
-    logEmailSent("Demo Alert User", leadEmail, userSubject, "SUCCESS", "Simulated mode");
-    return;
-  }
+    if (!transporter) {
+      logEmailSent("Demo Confirmed Customer", leadEmail, customerSubject, "SUCCESS", "Simulated mode");
+      logEmailSent("Demo Confirmed Admin", targetAdmin, adminSubject, "SUCCESS", "Simulated mode");
+      return;
+    }
 
-  // 1. Send email to Admin
-  try {
-    await transporter.sendMail({
-      from,
-      to: targetAdmin,
-      subject: adminSubject,
-      html: adminHtmlContent,
-    });
-    console.log(`[SMTP] Demo lead alert sent to Admin ${targetAdmin}`);
-    logEmailSent("Demo Alert Admin", targetAdmin, adminSubject, "SUCCESS");
-  } catch (err: any) {
-    console.error("[SMTP] Failed to send demo lead alert email to admin:", err);
-    logEmailSent("Demo Alert Admin", targetAdmin, adminSubject, "FAILED", err.message);
-  }
+    // Send to Customer
+    try {
+      await transporter.sendMail({ from, to: leadEmail, subject: customerSubject, html: customerHtmlContent });
+      logEmailSent("Demo Confirmed Customer", leadEmail, customerSubject, "SUCCESS");
+    } catch (err: any) {
+      console.error("[SMTP] Failed customer confirmed email:", err);
+    }
 
-  // 2. Send confirmation email to User
-  try {
-    await transporter.sendMail({
-      from,
-      to: leadEmail,
-      subject: userSubject,
-      html: userHtmlContent,
-    });
-    console.log(`[SMTP] Demo lead receipt sent to User ${leadEmail}`);
-    logEmailSent("Demo Alert User", leadEmail, userSubject, "SUCCESS");
-  } catch (err: any) {
-    console.error("[SMTP] Failed to send demo lead receipt email to user:", err);
-    logEmailSent("Demo Alert User", leadEmail, userSubject, "FAILED", err.message);
+    // Send to Admin
+    try {
+      await transporter.sendMail({ from, to: targetAdmin, replyTo: leadEmail, subject: adminSubject, html: adminHtmlContent });
+      logEmailSent("Demo Confirmed Admin", targetAdmin, adminSubject, "SUCCESS");
+    } catch (err: any) {
+      console.error("[SMTP] Failed admin confirmed email:", err);
+    }
+
+  } else {
+    // =========================================================================
+    // SCENARIO 2: SLOT IS SKIPPED -> SEND ADMIN ACTION EMAIL + CUSTOMER PENDING EMAIL
+    // =========================================================================
+    const reqId = requestId || "demo";
+    const availableSlots = [
+      "Tomorrow, 10:00 AM",
+      "Tomorrow, 02:00 PM",
+      "Friday, 11:30 AM",
+      "Friday, 04:00 PM"
+    ];
+
+    const slotButtonsHtml = availableSlots.map(slot => 
+      `<a href="${baseUrl}/api/admin/demo/assign-slot?requestId=${reqId}&meetingSlot=${encodeURIComponent(slot)}" style="display: block; background-color: #ffffff; border: 1px solid #6366f1; color: #4338ca; padding: 12px 18px; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: bold; text-align: left; margin-bottom: 8px;">👉 Assign: ${slot} & Auto-Email Customer</a>`
+    ).join("");
+
+    // 1. Email to Admin with 1-Click Interactive Slot Assignment Buttons inside Gmail!
+    const adminSubject = `[ACTION REQUIRED] Demo Request from ${leadName} - Assign Slot`;
+    const adminHtmlContent = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b; background-color: #ffffff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px; margin-bottom: 20px;">
+          <h2 style="color: #004bff; margin: 0; font-size: 22px;">2all.ai Admin</h2>
+          <span style="font-size: 11px; font-weight: bold; background-color: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 20px; text-transform: uppercase;">Action Required</span>
+        </div>
+
+        <h3 style="color: #0f172a; margin-top: 0;">New Demo Lead (Customer Skipped Time Slot)</h3>
+        <p style="font-size: 14px; color: #475569; line-height: 1.5;">
+          Customer <strong>${leadName}</strong> submitted a demo request for <strong><a href="${leadWebsite}" target="_blank" style="color: #004bff;">${leadWebsite}</a></strong> and skipped instant slot selection.
+        </p>
+
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px; line-height: 1.8;">
+          <h4 style="margin: 0 0 10px 0; color: #0f172a; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;">📋 Client Details</h4>
+          <div><strong>Name:</strong> ${leadName}</div>
+          <div><strong>Email:</strong> <a href="mailto:${leadEmail}" style="color: #004bff;">${leadEmail}</a></div>
+          <div><strong>Phone:</strong> ${leadPhone}</div>
+          <div><strong>Website:</strong> <a href="${leadWebsite}" target="_blank" style="color: #004bff;">${leadWebsite}</a></div>
+        </div>
+
+        <div style="background-color: #eef2ff; border: 1px solid #c7d2fe; border-radius: 14px; padding: 18px; margin: 24px 0;">
+          <h4 style="margin: 0 0 12px 0; color: #1e1b4b; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em;">⚡ 1-Click Meeting Slot Assignment (Select below to auto-email client)</h4>
+          
+          <div style="display: block;">
+            ${slotButtonsHtml}
+          </div>
+          
+          <div style="margin-top: 14px; text-align: center;">
+            <a href="${baseUrl}/admin/dashboard" style="color: #004bff; font-size: 12px; font-weight: bold;">Open Admin Dashboard Console</a>
+          </div>
+        </div>
+
+        <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 24px;">
+          &copy; ${new Date().getFullYear()} 2all.ai Inc. All rights reserved.
+        </p>
+      </div>
+    `;
+
+    // 2. Email to Customer informing them that team will assign meeting slot
+    const customerSubject = `2all.ai Demo Request Received - We will assign your meeting slot shortly!`;
+    const customerHtmlContent = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b; background-color: #ffffff;">
+        <h2 style="color: #004bff; margin-top: 0;">2all.ai</h2>
+        <p style="font-size: 15px; font-weight: bold; color: #0f172a;">Hi ${leadName},</p>
+        <p style="font-size: 14px; line-height: 1.6; color: #475569;">
+          Thank you for requesting an enterprise accessibility demonstration for <strong>${leadWebsite}</strong>!
+        </p>
+
+        <div style="background-color: #f8fafc; border-left: 4px solid #004bff; padding: 16px; margin: 20px 0; font-size: 13px; color: #1e293b; line-height: 1.6;">
+          <strong>Slot Status:</strong> You skipped instant slot selection. Our enterprise team will review your website and email you a confirmed meeting time slot along with your video call join link shortly.
+        </div>
+
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin: 20px 0; font-size: 12px; color: #64748b;">
+          <strong>Need immediate assistance?</strong> Reach our team directly at <a href="mailto:support@2all.ai" style="color: #004bff;">support@2all.ai</a>.
+        </div>
+
+        <p style="font-size: 11px; color: #94a3b8; margin-top: 30px;">
+          &copy; ${new Date().getFullYear()} 2all.ai Inc. All rights reserved.
+        </p>
+      </div>
+    `;
+
+    if (!transporter) {
+      logEmailSent("Demo Alert Admin Skipped", targetAdmin, adminSubject, "SUCCESS", "Simulated mode");
+      logEmailSent("Demo Alert Customer Pending", leadEmail, customerSubject, "SUCCESS", "Simulated mode");
+      return;
+    }
+
+    // Send Admin Email (To targetAdmin)
+    try {
+      await transporter.sendMail({
+        from,
+        to: targetAdmin,
+        replyTo: leadEmail,
+        subject: adminSubject,
+        html: adminHtmlContent,
+      });
+      console.log(`[SMTP] Action Required email sent to Admin: ${targetAdmin}`);
+      logEmailSent("Demo Alert Admin Skipped", targetAdmin, adminSubject, "SUCCESS");
+    } catch (err: any) {
+      console.error("[SMTP] Failed to send admin skipped email:", err);
+      logEmailSent("Demo Alert Admin Skipped", targetAdmin, adminSubject, "FAILED", err.message);
+    }
+
+    // Send Customer Pending Email (To leadEmail)
+    try {
+      await transporter.sendMail({
+        from,
+        to: leadEmail,
+        subject: customerSubject,
+        html: customerHtmlContent,
+      });
+      console.log(`[SMTP] Pending receipt email sent to Customer: ${leadEmail}`);
+      logEmailSent("Demo Alert Customer Pending", leadEmail, customerSubject, "SUCCESS");
+    } catch (err: any) {
+      console.error("[SMTP] Failed to send customer pending email:", err);
+      logEmailSent("Demo Alert Customer Pending", leadEmail, customerSubject, "FAILED", err.message);
+    }
   }
 }
 

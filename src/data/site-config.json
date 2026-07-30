@@ -1,6 +1,8 @@
 {
   "brandName": "2all.ai",
   "notificationAdminEmail": "nancythomasselva@gmail.com",
+  "smtpFromEmail": "aachinancy@gmail.com",
+  "smtpFromName": "2all.ai Team",
   "tagline": "Intelligence that scans & remediates web accessibility",
   "logoText": "2all.ai",
   "footerCopyrightText": "© 2026 2all.ai Inc. All rights reserved.",

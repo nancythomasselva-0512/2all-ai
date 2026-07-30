@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, CheckCircle2, Loader2, ChevronDown } from "lucide-react";
+import { X, CheckCircle2, Loader2, ChevronDown, Calendar, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface DemoModalProps {
@@ -34,6 +34,10 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [selectedDate, setSelectedDate] = useState("Tomorrow, 10:00 AM");
+  const [slotConfirmed, setSlotConfirmed] = useState(false);
+  const [slotLoading, setSlotLoading] = useState(false);
+  const [isSkipped, setIsSkipped] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,23 +100,117 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
             </button>
 
             {success ? (
-              /* Success State */
-              <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500 shadow-md">
-                  <CheckCircle2 className="w-9 h-9 stroke-[2]" />
+              /* Success & Meeting Slot Booking State */
+              <div className="flex flex-col items-center justify-center py-4 text-center space-y-4 font-sans">
+                <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500 shadow-md">
+                  <CheckCircle2 className="w-8 h-8 stroke-[2]" />
                 </div>
+                
                 <div className="space-y-1">
-                  <h3 className="text-lg font-black text-slate-900">Demo Scheduled!</h3>
-                  <p className="text-xs text-slate-400 font-bold max-w-xs leading-relaxed">
-                    Thank you! We've received your request and will reach out to you within 24 business hours to coordinate.
+                  <h3 className="text-lg font-black text-slate-900">Demo Request Submitted!</h3>
+                  <p className="text-xs text-slate-500 font-medium max-w-xs mx-auto leading-relaxed">
+                    Select your preferred date & time slot for your live 1-on-1 accessibility demonstration below:
                   </p>
                 </div>
+
+                {slotConfirmed ? (
+                  isSkipped ? (
+                    <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2 text-left">
+                      <div className="flex items-center gap-2 text-slate-800 font-extrabold text-xs">
+                        <Clock className="w-4 h-4 text-blue-600" />
+                        <span>Slot Assignment Pending</span>
+                      </div>
+                      <p className="text-xs text-slate-600 bg-white p-3 rounded-xl border border-slate-200/80 leading-relaxed font-medium">
+                        Thank you! You skipped instant slot selection. Our enterprise team will review your website and email you 2 proposed meeting times within 24 business hours.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="w-full bg-blue-50 border border-blue-200/80 rounded-2xl p-4 space-y-3 text-left">
+                      <div className="flex items-center gap-2 text-blue-900 font-extrabold text-xs">
+                        <Calendar className="w-4 h-4 text-blue-600" />
+                        <span>Meeting Slot Confirmed!</span>
+                      </div>
+                      <p className="text-xs font-bold text-slate-700 bg-white p-2.5 rounded-xl border border-blue-100">
+                        📅 {selectedDate}
+                      </p>
+                      <a
+                        href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=2all.ai+Accessibility+Demo+Session&details=Live+1-on-1+web+accessibility+demo+and+compliance+audit+walkthrough&location=Google+Meet`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-2.5 bg-[#004bff] hover:bg-[#003edd] text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 text-center text-white no-underline shadow-sm transition-all"
+                      >
+                        <Calendar className="w-4 h-4 text-white" /> Add to Google Calendar
+                      </a>
+                    </div>
+                  )
+                ) : (
+                  <div className="w-full space-y-3 text-left">
+                    <label className="block text-[11px] font-black text-slate-600 uppercase tracking-wider">
+                      Select Meeting Slot
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        "Tomorrow, 10:00 AM",
+                        "Tomorrow, 02:00 PM",
+                        "Friday, 11:30 AM",
+                        "Friday, 04:00 PM"
+                      ].map((slot) => (
+                        <button
+                          key={slot}
+                          type="button"
+                          onClick={() => setSelectedDate(slot)}
+                          className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border text-left cursor-pointer ${
+                            selectedDate === slot
+                              ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                              : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                          }`}
+                        >
+                          📅 {slot}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={slotLoading}
+                      onClick={async () => {
+                        setSlotLoading(true);
+                        try {
+                          await fetch("/api/admin/demo", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ name: name || "Client", email: email || "client@example.com", phone: phoneNumber || "+1", website: website || "https://2all.ai", meetingSlot: selectedDate }),
+                          });
+                        } catch (e) {}
+                        setSlotLoading(false);
+                        setSlotConfirmed(true);
+                      }}
+                      className="w-full py-2.5 bg-[#004bff] hover:bg-[#003edd] text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer border-none uppercase tracking-wider shadow-md mt-2"
+                    >
+                      {slotLoading ? "Confirming..." : `Confirm Slot (${selectedDate})`}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSkipped(true);
+                        setSlotConfirmed(true);
+                        setSelectedDate("Skipped (2all.ai Team will assign time)");
+                      }}
+                      className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-xl transition-all cursor-pointer border-none uppercase tracking-wider"
+                    >
+                      Skip & Let Team Email Me Proposed Slots
+                    </button>
+                  </div>
+                )}
+
                 <button
                   onClick={() => {
                     setSuccess(false);
+                    setSlotConfirmed(false);
                     onClose();
                   }}
-                  className="px-6 py-2.5 bg-[#004bff] hover:bg-[#003edd] text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer border-none uppercase tracking-wider"
+                  className="text-xs text-slate-400 font-bold hover:text-slate-600 transition-colors border-none bg-transparent cursor-pointer pt-1"
                 >
                   Close Window
                 </button>

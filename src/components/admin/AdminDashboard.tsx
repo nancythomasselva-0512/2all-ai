@@ -47,7 +47,8 @@ import {
 import Logo from "@/components/ui/Logo";
 import DomainOnboarding from "@/components/dashboard/DomainOnboarding";
 import AdminApiKeysPanel from "@/components/admin/AdminApiKeysPanel";
-import AdminAccessibilityMenuManager from "@/components/admin/AdminAccessibilityMenuManager";
+import AdminAccessibilityMenuManager from "./AdminAccessibilityMenuManager";
+import AdminDemoRequestsManager from "./AdminDemoRequestsManager";
 import { useAccessibility } from "@/context/AccessibilityContext";
 
 interface UserType {
@@ -75,6 +76,8 @@ interface ProjectType {
 interface ConfigType {
   brandName: string;
   notificationAdminEmail?: string;
+  smtpFromEmail?: string;
+  smtpFromName?: string;
   tagline: string;
   logoText?: string;
   footerCopyrightText?: string;
@@ -453,7 +456,7 @@ export default function AdminDashboard({
           <div className="p-4 pt-1 space-y-1">
             <span className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-3 leading-none">Platform Builder Modules</span>
             {[
-              { id: "branding", label: "Branding Manager", icon: Award },
+              { id: "branding", label: "Branding & Email Config", icon: Mail },
               { id: "theme", label: "Theme Manager", icon: Palette },
               { id: "website", label: "Website Builder", icon: Globe },
               { id: "navigation", label: "Navigation Builder", icon: Layers },
@@ -838,6 +841,9 @@ export default function AdminDashboard({
 
               </div>
 
+              {/* Enterprise Demo Requests & Slot Manager */}
+              <AdminDemoRequestsManager />
+
             </div>
           )}
 
@@ -860,23 +866,66 @@ export default function AdminDashboard({
                   </button>
                 </div>
 
-                <form onSubmit={handleSaveConfig} className="space-y-4">
-                  {/* Dynamic Admin Notification Email Receiver */}
-                  <div className="p-4 bg-blue-50/70 border border-blue-200/80 rounded-2xl space-y-2">
-                    <label className="block text-xs font-black text-blue-900 uppercase tracking-wider flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-blue-600" />
-                      Notification Admin Email (All Leads & System Alerts Receiver)
-                    </label>
-                    <input
-                      type="email"
-                      value={editConfig.notificationAdminEmail || "nancythomasselva@gmail.com"}
-                      onChange={(e) => setEditConfig({ ...editConfig, notificationAdminEmail: e.target.value })}
-                      placeholder="nancythomasselva@gmail.com"
-                      className="w-full bg-white border border-blue-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-sm"
-                    />
-                    <p className="text-[11px] text-blue-700 font-medium">
-                      All demo requests, contact form messages, user signup alerts, and license updates are dynamically dispatched to this email address.
-                    </p>
+                <form onSubmit={handleSaveConfig} className="space-y-6">
+                  {/* Dynamic Email System Manager Card */}
+                  <div className="p-5 bg-[#0b3c96]/5 border border-blue-200 rounded-2xl space-y-4">
+                    <div className="flex items-center gap-2 border-b border-blue-200/60 pb-3">
+                      <Mail className="w-5 h-5 text-blue-600" />
+                      <div>
+                        <h4 className="text-sm font-black text-slate-900 tracking-tight">Dynamic Email Engine & SMTP Dispatcher</h4>
+                        <p className="text-[11px] text-slate-500 font-medium">Configure dynamic FROM sender email, display name, and TO admin receiver address for all site forms, login, demo, and support scripts.</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* FROM Sender Email */}
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                          Outbound FROM Email Sender
+                        </label>
+                        <input
+                          type="email"
+                          value={editConfig.smtpFromEmail || "aachinancy@gmail.com"}
+                          onChange={(e) => setEditConfig({ ...editConfig, smtpFromEmail: e.target.value })}
+                          placeholder="aachinancy@gmail.com"
+                          className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-sm"
+                        />
+                        <p className="text-[10px] text-slate-500">Address used in the 'From' header for all dispatched emails.</p>
+                      </div>
+
+                      {/* FROM Display Name */}
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                          Outbound FROM Sender Name
+                        </label>
+                        <input
+                          type="text"
+                          value={editConfig.smtpFromName || "2all.ai Team"}
+                          onChange={(e) => setEditConfig({ ...editConfig, smtpFromName: e.target.value })}
+                          placeholder="2all.ai Team"
+                          className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-sm"
+                        />
+                        <p className="text-[10px] text-slate-500">Brand display name shown in user email inboxes.</p>
+                      </div>
+                    </div>
+
+                    {/* TO Admin Notification Email Receiver */}
+                    <div className="space-y-1.5 pt-2 border-t border-blue-200/50">
+                      <label className="block text-xs font-black text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-blue-600" />
+                        Inbound TO Admin Notification Email Receiver
+                      </label>
+                      <input
+                        type="email"
+                        value={editConfig.notificationAdminEmail || "nancythomasselva@gmail.com"}
+                        onChange={(e) => setEditConfig({ ...editConfig, notificationAdminEmail: e.target.value })}
+                        placeholder="nancythomasselva@gmail.com"
+                        className="w-full bg-white border border-blue-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-sm"
+                      />
+                      <p className="text-[11px] text-blue-700 font-medium">
+                        All demo requests, contact form entries, user signup alerts, login activity, and script support inquiries are dynamically delivered to this email address.
+                      </p>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
