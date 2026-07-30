@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useAccessibility } from "@/context/AccessibilityContext";
+import { useAccessibility, calculateAccessibilityScore } from "@/context/AccessibilityContext";
 import { 
   LayoutDashboard, UserCircle, Settings2, 
-  Palette, Bot, Search, RefreshCcw, X, EyeOff
+  Palette, Bot, Search, RefreshCcw, X, EyeOff, ShieldCheck, Zap
 } from "lucide-react";
 
 // Sections
@@ -53,10 +53,12 @@ function findBestTab(query: string): Tab | null {
 }
 
 export default function AccessibilityPanel() {
-  const { resetSettings, togglePanel } = useAccessibility();
+  const { state, resetSettings, togglePanel } = useAccessibility();
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   const [manualTab, setManualTab] = useState(false);
+
+  const currentScore = calculateAccessibilityScore(state);
 
   const tabs = [
     { id: "dashboard", icon: LayoutDashboard, label: "Home" },
@@ -101,7 +103,7 @@ export default function AccessibilityPanel() {
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className="fixed bottom-20 right-4 sm:right-6 w-[360px] sm:w-[380px] h-[510px] max-h-[calc(100vh-6rem)] z-[2147483648] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.22)] border border-slate-200/90 bg-white backdrop-blur-xl flex flex-col font-sans select-none"
     >
-      {/* Compact Header */}
+      {/* Compact Header with Live Accessibility Score Badge */}
       <div className="px-4 pt-3.5 pb-2.5 border-b border-slate-100 shrink-0 bg-white relative z-10">
         <div className="flex items-center justify-between mb-2">
           <div>
@@ -109,13 +111,27 @@ export default function AccessibilityPanel() {
             <p className="text-[11px] font-semibold text-slate-500 mt-0.5">Accessibility modes</p>
           </div>
           
-          <button 
-            onClick={togglePanel}
-            className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center border border-slate-200/80 shadow-xs cursor-pointer transition-all hover:scale-105 active:scale-95"
-            aria-label="Close panel"
-          >
-            <X className="w-3.5 h-3.5 stroke-[2.5]" />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Live Score Pill in Header */}
+            <div className={`px-2.5 py-1 rounded-full text-xs font-black flex items-center gap-1.5 shadow-xs border transition-all ${
+              currentScore === 100 
+                ? "bg-emerald-50 text-emerald-700 border-emerald-300 ring-2 ring-emerald-400/30" 
+                : currentScore >= 85 
+                  ? "bg-blue-50 text-blue-700 border-blue-300" 
+                  : "bg-slate-100 text-slate-700 border-slate-200"
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${currentScore === 100 ? "bg-emerald-500 animate-ping" : "bg-blue-600 animate-pulse"}`} />
+              Score: {currentScore}/100
+            </div>
+
+            <button 
+              onClick={togglePanel}
+              className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center border border-slate-200/80 shadow-xs cursor-pointer transition-all hover:scale-105 active:scale-95"
+              aria-label="Close panel"
+            >
+              <X className="w-3.5 h-3.5 stroke-[2.5]" />
+            </button>
+          </div>
         </div>
 
         {/* Compact Search Input */}

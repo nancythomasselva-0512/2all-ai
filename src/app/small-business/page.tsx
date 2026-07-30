@@ -40,7 +40,7 @@ export default function SmallBusinessPage() {
 
       <main>
         {/* ── HERO ── */}
-        <section className="w-full min-h-[92vh] bg-gradient-to-br from-[#0a1e3f] via-[#10316b] to-[#0052cc] flex items-center pt-16 pb-20 px-6 md:px-10 relative overflow-hidden">
+        <section className="w-full bg-gradient-to-br from-[#0a1e3f] via-[#10316b] to-[#0052cc] pt-2 md:pt-3 pb-12 md:pb-16 px-6 md:px-10 relative overflow-hidden">
           <div className="absolute -top-40 -right-40 w-[700px] h-[700px] bg-blue-500/20 rounded-full blur-[120px] pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
           
@@ -122,7 +122,7 @@ export default function SmallBusinessPage() {
             </motion.div>
 
             {/* G2 Badges Row */}
-            <div className="flex flex-wrap justify-center gap-6 md:gap-8">
+            <div className="flex flex-wrap justify-center gap-5 md:gap-7">
               {[
                 { season: "SUMMER 2026", label: "Most\nImplementable", sub: "" },
                 { season: "SUMMER 2026", label: "Best\nUsability", sub: "" },
@@ -140,22 +140,24 @@ export default function SmallBusinessPage() {
                   className="flex flex-col items-center group cursor-default"
                 >
                   {/* Badge Shell */}
-                  <div className="relative w-[120px] h-[148px] flex flex-col items-center">
+                  <div className="relative w-[144px] h-[176px] flex flex-col items-center">
                     {/* Pentagon SVG Badge */}
-                    <svg viewBox="0 0 120 148" className="absolute inset-0 w-full h-full drop-shadow-xl" xmlns="http://www.w3.org/2000/svg">
-                      <polygon points="60,4 116,38 116,110 60,144 4,110 4,38" fill="#1a1a2e" stroke="#f59e0b" strokeWidth="3" />
-                      <polygon points="60,10 110,42 110,106 60,138 10,106 10,42" fill="none" stroke="#fbbf24" strokeWidth="1" strokeOpacity="0.4" />
+                    <svg viewBox="0 0 144 176" className="absolute inset-0 w-full h-full drop-shadow-2xl" xmlns="http://www.w3.org/2000/svg">
+                      <polygon points="72,4 140,42 140,134 72,172 4,134 4,42" fill="#0f172a" stroke="#f59e0b" strokeWidth="3" />
+                      <polygon points="72,10 134,46 134,130 72,166 10,130 10,46" fill="none" stroke="#fbbf24" strokeWidth="1" strokeOpacity="0.4" />
                     </svg>
 
                     {/* Badge content */}
-                    <div className="relative z-10 flex flex-col items-center justify-center h-full pt-3 pb-2 px-2 text-center">
-                      <span className="text-[8px] font-black uppercase tracking-[0.15em] text-amber-400 mb-1">{badge.season}</span>
-                      <div className="w-8 h-8 bg-[#FF492C] rounded-md flex items-center justify-center mb-1.5 shadow-md">
-                        <span className="text-white font-black text-[14px] leading-none">G2</span>
+                    <div className="relative z-10 flex flex-col items-center justify-between h-full pt-6 pb-6 px-3 text-center">
+                      <span className="text-[9px] font-black uppercase tracking-[0.12em] text-amber-400">{badge.season}</span>
+                      <div className="w-7 h-7 bg-[#FF492C] rounded-md flex items-center justify-center shadow-md my-0.5">
+                        <span className="text-white font-black text-[13px] leading-none">G2</span>
                       </div>
-                      <p className="text-white font-black text-[11px] leading-tight whitespace-pre-line">{badge.label}</p>
-                      {badge.sub && (
-                        <p className="text-amber-400 font-black text-[7px] uppercase tracking-wider mt-1">{badge.sub}</p>
+                      <p className="text-white font-bold text-[11px] leading-tight whitespace-pre-line">{badge.label}</p>
+                      {badge.sub ? (
+                        <p className="text-amber-400 font-extrabold text-[8px] uppercase tracking-wider">{badge.sub}</p>
+                      ) : (
+                        <div className="h-2" />
                       )}
                     </div>
                   </div>

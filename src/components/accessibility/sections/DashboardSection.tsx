@@ -4,7 +4,7 @@ import {
   ShieldCheck, Zap, Sparkles, ArrowRight, 
   Info, ChevronDown, ChevronUp, CheckCircle2 
 } from "lucide-react";
-import { useAccessibility } from "@/context/AccessibilityContext";
+import { useAccessibility, calculateAccessibilityScore } from "@/context/AccessibilityContext";
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -23,18 +23,46 @@ export default function DashboardSection({ setActiveTab, searchQuery }: { setAct
   if (searchQuery) return null; // Hide dashboard if searching
 
   // Calculate real-time accessibility score based on active optimizations
-  const hasProfile = state.activeProfile !== "none";
-  const hasTypography = state.fontFamily !== "default" || state.fontSize > 100 || state.letterSpacing > 0 || state.lineHeight !== 1.5;
-  const hasContrast = state.isHighContrast || state.isDarkMode || state.isLightMode || state.colorBlindMode !== "none" || state.saturationMode !== "normal";
-  const hasReadingTools = state.readingMask || state.readingRuler || state.highlightFocus || state.textMagnifier || state.textToSpeech || state.autoReadSelection;
+  const hasProfile = Boolean(state.activeProfile) && state.activeProfile !== "none";
 
-  const baseScore = 70;
+  const hasTypography = 
+    state.fontFamily !== "default" || 
+    state.fontSize > 100 || 
+    state.letterSpacing > 0 || 
+    state.lineHeight !== 1.5 ||
+    state.wordSpacing > 0 ||
+    state.textAlignment !== "default";
+
+  const hasContrast = 
+    state.isHighContrast || 
+    state.isDarkMode || 
+    state.isLightMode || 
+    state.isSmartContrast ||
+    state.colorBlindMode !== "none" || 
+    state.saturationMode !== "normal" ||
+    (Boolean(state.textColor) && state.textColor !== "default");
+
+  const hasReadingTools = 
+    state.readingMask || 
+    state.readingRuler || 
+    state.highlightFocus || 
+    state.textMagnifier || 
+    state.textToSpeech || 
+    state.autoReadSelection ||
+    state.readingMode !== "none" ||
+    state.highlightLinks ||
+    state.highlightHeadings ||
+    state.highlightButtons ||
+    state.voiceNavigation ||
+    state.reduceMotion ||
+    state.stopAnimations;
+
   const profileScore = hasProfile ? 15 : 0;
   const typographyScore = hasTypography ? 5 : 0;
   const contrastScore = hasContrast ? 5 : 0;
   const readingToolsScore = hasReadingTools ? 5 : 0;
 
-  const totalScore = baseScore + profileScore + typographyScore + contrastScore + readingToolsScore;
+  const totalScore = calculateAccessibilityScore(state);
 
   return (
     <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-6">

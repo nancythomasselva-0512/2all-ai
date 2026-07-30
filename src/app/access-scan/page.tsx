@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -10,9 +10,7 @@ import {
 } from "lucide-react";
 import Footer from "@/components/marketing/Footer";
 import DemoModal from "@/components/marketing/DemoModal";
-import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
-import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
-import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
+import Navbar from "@/components/marketing/Navbar";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const fadeUp = {
@@ -26,34 +24,12 @@ const stagger = {
 };
 
 export default function AccessScanPage() {
-  const [activeHoverMenu, setActiveHoverMenu] = useState<string | null>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-
-  const closeMenuTimer = useRef<NodeJS.Timeout | null>(null);
-
-  const openMenu = (name: string | null) => {
-    if (closeMenuTimer.current) clearTimeout(closeMenuTimer.current);
-    setActiveHoverMenu(name);
-  };
-  const closeMenuWithDelay = () => {
-    closeMenuTimer.current = setTimeout(() => setActiveHoverMenu(null), 200);
-  };
-
-  useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const toggleFaq = (idx: number) => {
     setActiveFaq(activeFaq === idx ? null : idx);
   };
-
-  const navTextClass = "text-[#0a1e3f]";
-  const navHoverClass = "hover:text-blue-600";
-  const logoClass = "mix-blend-multiply";
 
   const faqs = [
     { q: "What is an accessibility audit?", a: "An accessibility audit is an automated and manual evaluation of your website to identify potential barriers for people with disabilities, checking against standards like WCAG and ADA." },
@@ -65,90 +41,41 @@ export default function AccessScanPage() {
 
   return (
     <div className="min-h-screen w-full bg-white relative overflow-x-hidden font-sans">
-      
+
       {/* NAVBAR */}
-      <header
-        onMouseLeave={closeMenuWithDelay}
-        className={`w-full py-2 px-4 md:px-10 z-50 fixed top-0 transition-all duration-500 ease-out border-b ${isScrolled ? "bg-white/90 backdrop-blur-xl shadow-sm border-slate-200/50" : "bg-white border-transparent"}`}
-      >
-        <div className="w-full flex items-center justify-between gap-4 max-w-[1600px] mx-auto">
-          <div className="md:px-4 py-1.5 flex items-center justify-between flex-grow">
-            <Link href="/" className="flex items-center mr-2 md:mr-6 shrink-0">
-              <img src="/images/logo.png" alt="2all.ai Logo" className={`h-10 md:h-16 w-auto object-contain transition-all ${logoClass}`} />
-            </Link>
-            <nav className="hidden lg:flex items-center gap-8">
-              {[
-                { name: "SOLUTIONS", hasDropdown: true },
-                { name: "COMPANY", hasDropdown: true },
-                { name: "PARTNERS", hasDropdown: true },
-                { name: "PRICING", hasDropdown: false },
-              ].map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.name === "PRICING" ? "/pricing" : "#"}
-                  onMouseEnter={() => link.name !== "PRICING" ? openMenu(link.name) : openMenu(null)}
-                  className={`text-[13px] font-bold ${navTextClass} ${navHoverClass} transition-colors flex items-center gap-1.5 tracking-wider pb-1`}
-                >
-                  <span className="relative">
-                    {link.name}
-                    {activeHoverMenu === link.name && link.hasDropdown && (
-                      <motion.span layoutId="scan-nav-underline" className={`absolute left-0 right-0 -bottom-1 h-0.5 rounded-full bg-blue-600`} />
-                    )}
-                  </span>
-                  {link.hasDropdown && (
-                    <motion.svg animate={{ rotate: activeHoverMenu === link.name ? 180 : 0 }} transition={{ duration: 0.2 }} viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-[3.5] stroke-current fill-none">
-                      <path d="M19 9l-7 7-7-7" />
-                    </motion.svg>
-                  )}
-                </Link>
-              ))}
-            </nav>
-            <Link href="/login" className={`hidden md:block text-[13px] font-bold ${navTextClass} ${navHoverClass} tracking-wider mr-2`}>LOGIN</Link>
-          </div>
-          <div className="py-1.5 md:pl-6 flex items-center gap-3 md:gap-5 shrink-0">
-            <button onClick={() => setIsDemoOpen(true)} className={`hidden md:block text-[13px] font-bold ${navTextClass} ${navHoverClass} tracking-wider border-none bg-transparent cursor-pointer pb-1`}>BOOK A DEMO</button>
-            <Link href="/register" className={`flex items-center gap-2 rounded-xl px-4 md:px-6 py-2 md:py-3 text-[10px] md:text-[12px] font-extrabold tracking-wider whitespace-nowrap transition-all bg-[#004bff] hover:bg-[#003edd] text-white shadow-md shadow-blue-500/20`}>
-              START FREE TRIAL
-              <svg viewBox="0 0 24 24" className="w-3 h-3 stroke-[3] stroke-current fill-none"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </Link>
-          </div>
-        </div>
-        <SolutionsMegamenu isOpen={activeHoverMenu === "SOLUTIONS"} onMouseEnter={() => openMenu("SOLUTIONS")} onMouseLeave={closeMenuWithDelay} />
-        <CompanyMegamenu isOpen={activeHoverMenu === "COMPANY"} onMouseEnter={() => openMenu("COMPANY")} onMouseLeave={closeMenuWithDelay} />
-        <PartnersMegamenu isOpen={activeHoverMenu === "PARTNERS"} onMouseEnter={() => openMenu("PARTNERS")} onMouseLeave={closeMenuWithDelay} />
-      </header>
+      <Navbar />
 
       <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
 
       <main>
         {/* ── HERO (BLUE BOX) ── */}
-        <section className="w-full pt-32 pb-16 px-4 md:px-8">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-[1400px] mx-auto bg-[#004bff] rounded-[48px] px-6 py-24 md:py-32 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-2xl">
+        <section className="w-full pt-1 md:pt-2 pb-8 px-4 md:px-8">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-[1400px] mx-auto bg-[#004bff] rounded-[36px] px-6 pt-3 md:pt-4 pb-8 md:pb-10 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-2xl">
             {/* Soft background glows */}
             <div className="absolute inset-0">
               <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-blue-400/30 rounded-full blur-[120px]" />
               <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-cyan-400/20 rounded-full blur-[100px]" />
             </div>
 
-            <div className="relative z-10 space-y-10 max-w-4xl w-full">
+            <div className="relative z-10 space-y-5 max-w-4xl w-full">
               <Breadcrumbs items={[ { label: "Home", href: "/" }, { label: "Products" }, { label: "accessScan" } ]} />
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.1]">
                 Check if your website is<br/>accessible and ADA compliant<br/><span className="italic font-serif text-cyan-300">in seconds</span>
               </h1>
               
-              <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 text-white font-bold text-sm">
-                <span className="flex items-center gap-2"><Check className="w-5 h-5 text-cyan-300" /> No credit card</span>
-                <span className="flex items-center gap-2"><Check className="w-5 h-5 text-cyan-300" /> Instant results</span>
-                <span className="flex items-center gap-2"><Check className="w-5 h-5 text-cyan-300" /> Completely free</span>
+              <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 text-white font-bold text-xs md:text-sm">
+                <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-cyan-300" /> No credit card</span>
+                <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-cyan-300" /> Instant results</span>
+                <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-cyan-300" /> Completely free</span>
               </div>
 
-              <div className="max-w-2xl mx-auto w-full bg-white rounded-full p-2 flex shadow-xl border-4 border-white/20">
+              <div className="max-w-xl mx-auto w-full bg-white rounded-full p-1.5 flex shadow-xl border-2 border-white/30">
                 <input 
                   type="text" 
                   placeholder="mywebsite.com" 
-                  className="flex-1 bg-transparent border-none outline-none px-6 text-[#0a1e3f] font-semibold text-lg placeholder:text-slate-400"
+                  className="flex-1 bg-transparent border-none outline-none px-4 text-[#0a1e3f] font-semibold text-sm placeholder:text-slate-400"
                 />
-                <button className="bg-[#0a1e3f] hover:bg-[#06122b] text-white px-8 md:px-12 py-4 rounded-full font-extrabold tracking-widest uppercase text-sm transition-colors shrink-0">
+                <button className="bg-[#0a1e3f] hover:bg-[#06122b] text-white px-6 py-2.5 rounded-full font-bold tracking-wider uppercase text-xs transition-colors shrink-0">
                   Get Audit
                 </button>
               </div>
@@ -157,7 +84,7 @@ export default function AccessScanPage() {
         </section>
 
         {/* ── 3 STEPS PROCESS ── */}
-        <section className="w-full py-20 px-6 md:px-10">
+        <section className="w-full py-16 px-6 md:px-10">
           <div className="max-w-7xl mx-auto space-y-12">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center space-y-3">
                <div className="text-blue-600 font-bold tracking-widest uppercase text-xs">Free Website Audit</div>
@@ -169,7 +96,6 @@ export default function AccessScanPage() {
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
                {/* Step 1 */}
                <motion.div variants={fadeUp} className="bg-white border border-slate-200 rounded-3xl p-8 relative flex flex-col hover:shadow-lg transition-shadow">
-                  <div className="text-5xl font-black text-slate-200 absolute top-6 left-6 -z-0">1</div>
                   <div className="relative z-10 pt-10">
                      <h3 className="text-lg font-black text-[#0a1e3f] mb-3">Enter website URL</h3>
                      <p className="text-slate-500 text-sm font-semibold leading-relaxed">Paste your domain name and hit get audit</p>

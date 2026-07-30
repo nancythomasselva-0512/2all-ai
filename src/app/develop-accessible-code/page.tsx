@@ -12,33 +12,39 @@ export default function DevelopAccessibleCodePage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-16 pb-20 md:pt-24 md:pb-32 px-4 relative overflow-hidden bg-slate-950 text-white">
+      <section className="pt-2 pb-12 md:pt-3 md:pb-16 px-6 md:px-10 relative overflow-hidden bg-slate-950 text-white">
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
         <div className="absolute top-1/4 -right-1/4 w-[800px] h-[800px] bg-blue-600/30 rounded-full blur-[120px] pointer-events-none" />
         
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 relative z-10">
           <div className="flex-1 max-w-xl">
-            <div className="flex items-center gap-2 mb-6">
+            <Breadcrumbs items={[ { label: "Home", href: "/" }, { label: "Products" }, { label: "Develop Accessible Code" } ]} />
+            <div className="flex items-center gap-2 mt-3 mb-4">
                <div className="p-1.5 bg-blue-500/20 rounded-md border border-blue-400/30">
                   <Terminal className="w-4 h-4 text-blue-400" />
                </div>
                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-blue-300">Developer Tools</span>
             </div>
             
-            <Breadcrumbs items={[ { label: "Home", href: "/" }, { label: "Products" }, { label: "Develop Accessible Code" } ]} />
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.1] tracking-tight text-white">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.1] tracking-tight text-white">
               Accessibility natively built into your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#004bff] to-[#00ff87] italic font-serif font-light">CI/CD pipeline</span>.
             </h1>
             <p className="text-lg text-slate-300 mb-10 leading-relaxed font-medium">
               Catch accessibility bugs before they reach production. 2allFlow integrates directly with your source code, IDEs, and testing frameworks.
             </p>
             <div className="flex flex-wrap gap-4">
-              <button className="bg-[#004bff] hover:bg-blue-600 text-white px-8 py-3.5 rounded-full font-bold text-sm transition-all shadow-lg hover:shadow-xl inline-flex items-center gap-2">
+              <Link
+                href="/register"
+                className="no-underline bg-[#004bff] hover:bg-blue-600 text-white px-8 py-3.5 rounded-full font-bold text-sm transition-all shadow-lg hover:shadow-xl inline-flex items-center gap-2"
+              >
                 START BUILDING
-              </button>
-              <button className="bg-transparent text-white hover:bg-white/10 border border-slate-600 px-8 py-3.5 rounded-full font-bold text-sm transition-all">
+              </Link>
+              <Link
+                href="/help-center"
+                className="no-underline bg-transparent text-white hover:bg-white/10 border border-slate-600 px-8 py-3.5 rounded-full font-bold text-sm transition-all inline-flex items-center"
+              >
                 READ THE DOCS
-              </button>
+              </Link>
             </div>
           </div>
           

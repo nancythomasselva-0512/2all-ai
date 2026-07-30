@@ -65,6 +65,32 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
       ]
     },
     {
+      title: "Color & Contrast Adjustments",
+      items: [
+        {
+          id: "monochrome",
+          label: "Monochrome Mode",
+          type: "toggle",
+          value: state.saturationMode === "monochrome",
+          onClick: () => updateSetting("saturationMode", state.saturationMode === "monochrome" ? "normal" : "monochrome"),
+          icon: <Video className="w-5 h-5" />
+        },
+        {
+          id: "darkMode",
+          label: "Dark Contrast Mode",
+          type: "toggle",
+          value: state.isDarkMode || state.isHighContrast,
+          onClick: () => {
+            const next = !(state.isDarkMode || state.isHighContrast);
+            updateSetting("isDarkMode", next);
+            updateSetting("isHighContrast", next);
+            updateSetting("isLightMode", false);
+          },
+          icon: <Target className="w-5 h-5" />
+        }
+      ]
+    },
+    {
       title: "🔊 Speech & Reading",
       items: [
         {
@@ -342,7 +368,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
                 return (
                   <button
                     key={item.id}
-                    onClick={() => updateSetting(item.id as any, !isActive)}
+                    onClick={() => (item.onClick ? item.onClick() : updateSetting(item.id as any, !isActive))}
                     className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all duration-300 ${isActive ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-blue-300'}`}
                   >
                     {item.icon}

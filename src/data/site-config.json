@@ -13,7 +13,7 @@
   "stripeActive": true,
   "paypalActive": false,
   "trialPeriodDays": 7,
-  "primaryColor": "blue",
+  "primaryColor": "#004bff",
   "proPrice": 49,
   "auditBannerTitle": "Put your website to the accessibility test",
   "orbitIcon": "globe",
@@ -21,12 +21,30 @@
   "heroSubtitle": "Automatically align your website with WCAG 2.1 AA & ADA compliance in under 48 hours.",
   "showHeroCTA": true,
   "navLinks": [
-    { "label": "Home", "href": "/" },
-    { "label": "About Us", "href": "/about-us" },
-    { "label": "Pricing", "href": "/pricing" },
-    { "label": "VPAT", "href": "/vpat" },
-    { "label": "Services", "href": "/services" },
-    { "label": "Contact Us", "href": "/contact-us" }
+    {
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "label": "About Us",
+      "href": "/about-us"
+    },
+    {
+      "label": "Pricing",
+      "href": "/pricing"
+    },
+    {
+      "label": "VPAT",
+      "href": "/vpat"
+    },
+    {
+      "label": "Services",
+      "href": "/services"
+    },
+    {
+      "label": "Contact Us",
+      "href": "/contact-us"
+    }
   ],
   "showNavCta": true,
   "showHeroSection": true,

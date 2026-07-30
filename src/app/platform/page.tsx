@@ -139,20 +139,23 @@ export default function PlatformPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-[#0a1e3f] text-white pt-16 pb-20 md:pt-24 md:pb-28">
+      <section className="relative overflow-hidden bg-[#0a1e3f] text-white pt-2 pb-10 md:pt-3 md:pb-14 px-6 md:px-12 lg:px-16">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(0,75,255,0.15)_0%,rgba(0,0,0,0)_50%)] pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-6 sm:px-12 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-10">
             
             {/* Left Content Column */}
-            <div className="flex-1 space-y-6 max-w-xl">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 tracking-wider">
-                <Sparkles className="w-3.5 h-3.5" />
-                PARTNERSHIPS FOR PLATFORMS
-              </span>
+            <div className="flex-1 space-y-4 max-w-xl">
               <Breadcrumbs theme="dark" items={[ { label: "Home", href: "/" }, { label: "Partners" }, { label: "Platform" } ]} />
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight">
+              <div>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  PARTNERSHIPS FOR PLATFORMS
+                </span>
+              </div>
+              
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight">
                 The only solution that can <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 italic font-serif font-light">match your platform</span>
               </h1>
               
@@ -160,10 +163,10 @@ export default function PlatformPage() {
                 Improve design layout, decrease code vulnerability, secure your website platform, and offer new value to users with full control over custom structures.
               </p>
 
-              <div className="flex flex-wrap gap-4 pt-4">
+              <div className="flex flex-wrap gap-4 pt-2">
                 <a 
                   href="#register" 
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3.5 rounded-xl font-bold text-xs tracking-wider transition-all shadow-md shadow-blue-600/15 inline-flex items-center gap-2"
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-7 py-3 rounded-xl font-bold text-xs tracking-wider transition-all shadow-md shadow-blue-600/15 inline-flex items-center gap-2"
                 >
                   PARTNER WITH 2ALL.AI
                   <ArrowRight className="w-4 h-4" />

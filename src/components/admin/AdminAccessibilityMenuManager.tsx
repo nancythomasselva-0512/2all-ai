@@ -211,20 +211,20 @@ export default function AdminAccessibilityMenuManager() {
       <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl">
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-sm font-bold text-cyan-300 border border-white/10 uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-black text-cyan-300 border border-white/10 uppercase tracking-widest">
               <Sliders className="w-3.5 h-3.5" /> Menu Customizer & Feature Manager
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               Accessibility Menu Manager
             </h2>
-            <p className="text-sm text-blue-200/80 font-medium max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-blue-100 font-medium max-w-2xl leading-relaxed">
               Add new accessibility tools, delete existing features, edit titles, or toggle active tools in the Accessibility Panel widget.
             </p>
           </div>
 
           <button
             onClick={handleOpenAddModal}
-            className="px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-blue-600/30 transition-all flex items-center gap-2 cursor-pointer border-none uppercase tracking-wider shrink-0"
+            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-600/30 transition-all flex items-center gap-2 cursor-pointer border-none uppercase tracking-wider shrink-0"
           >
             <Plus className="w-4 h-4 stroke-[3]" /> Add New Tool
           </button>
@@ -240,7 +240,7 @@ export default function AdminAccessibilityMenuManager() {
             placeholder="Search tools by title or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
 
@@ -250,7 +250,7 @@ export default function AdminAccessibilityMenuManager() {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-xl text-sm font-bold transition-all cursor-pointer whitespace-nowrap border ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap border ${
                 selectedCategory === cat
                   ? "bg-blue-600 text-white border-blue-600 shadow-sm"
                   : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"

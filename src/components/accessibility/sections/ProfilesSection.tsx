@@ -107,36 +107,36 @@ export default function ProfilesSection({ searchQuery }: { searchQuery: string }
           <motion.div key={profile.id} variants={fadeUp}>
             <div
               onClick={() => applyProfile(isActive ? "none" : (profile.id as ProfileType))}
-              className={`w-full text-left rounded-xl transition-all duration-200 cursor-pointer overflow-hidden select-none ${
+              className={`w-full text-left rounded-2xl transition-all duration-200 cursor-pointer overflow-hidden select-none ${
                 isActive 
-                  ? 'bg-blue-50/90 border border-blue-300 shadow-sm p-2.5 px-3 space-y-1.5' 
-                  : 'bg-white border border-slate-200/80 hover:border-slate-300 p-2.5 px-3 shadow-xs hover:shadow-sm'
+                  ? 'bg-blue-50/90 border-2 border-blue-400 shadow-md p-4 px-4.5 space-y-2' 
+                  : 'bg-white border border-slate-200/90 hover:border-slate-300 p-4 px-4.5 shadow-xs hover:shadow-md'
               }`}
             >
-              <div className="flex items-center justify-between gap-2.5">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                    isActive ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700'
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                    isActive ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700'
                   }`}>
-                    <Icon className="w-4 h-4 stroke-[1.8]" />
+                    <Icon className="w-5.5 h-5.5 stroke-[1.8]" />
                   </div>
                   <div className="truncate">
-                    <h4 className={`text-xs font-bold leading-tight truncate ${isActive ? 'text-blue-950' : 'text-slate-900'}`}>
+                    <h4 className={`text-sm md:text-base font-extrabold leading-tight truncate ${isActive ? 'text-blue-950' : 'text-slate-900'}`}>
                       {profile.label}
                     </h4>
-                    <p className="text-[10px] text-slate-500 font-medium truncate mt-0.5">{profile.desc}</p>
+                    <p className="text-xs text-slate-500 font-semibold truncate mt-0.5">{profile.desc}</p>
                   </div>
                 </div>
                 
-                {/* Compact toggle switch visual matching screenshot */}
-                <div className={`w-9 h-5 rounded-full p-0.5 transition-colors shrink-0 ${isActive ? 'bg-blue-600' : 'bg-slate-200'}`}>
-                  <div className={`w-4 h-4 bg-white rounded-full transition-transform shadow-xs ${isActive ? 'translate-x-4' : 'translate-x-0'}`} />
+                {/* Larger toggle switch visual matching user request */}
+                <div className={`w-11 h-6 rounded-full p-0.5 transition-colors shrink-0 ${isActive ? 'bg-blue-600' : 'bg-slate-200'}`}>
+                  <div className={`w-5 h-5 bg-white rounded-full transition-transform shadow-sm ${isActive ? 'translate-x-5' : 'translate-x-0'}`} />
                 </div>
               </div>
 
               {/* Active mode detailed box */}
               {isActive && profile.detail && (
-                <div className="pt-1.5 text-[11px] text-slate-700 font-normal leading-relaxed border-t border-blue-200/80">
+                <div className="pt-2 text-xs text-slate-700 font-normal leading-relaxed border-t border-blue-200/80">
                   {profile.detail}
                 </div>
               )}

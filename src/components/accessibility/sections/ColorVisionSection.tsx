@@ -145,8 +145,8 @@ export default function ColorVisionSection({ searchQuery }: { searchQuery: strin
                 className={`w-full text-left flex items-center justify-between p-3.5 rounded-xl border transition-all cursor-pointer ${isActive ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm font-bold' : 'bg-white border-slate-200 text-[#0a1e3f] hover:border-blue-300'}`}
               >
                 <div className="flex items-center gap-3">
-                  <Eye className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                  <span className="text-xs font-bold">{cb.label}</span>
+                  <Eye className={`w-4.5 h-4.5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                  <span className="text-sm font-bold">{cb.label}</span>
                 </div>
                 {isActive && (
                   <div className="w-4 h-4 rounded-full bg-blue-600 flex items-center justify-center">
@@ -156,6 +156,43 @@ export default function ColorVisionSection({ searchQuery }: { searchQuery: strin
               </button>
             );
           })}
+        </div>
+      </motion.div>
+
+      {/* Text Color Adaptations */}
+      <motion.div variants={fadeUp} className="space-y-3 pt-2">
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Text Color Adaptations</h3>
+        
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-3 shadow-xs">
+          <p className="text-xs text-slate-600 font-medium leading-relaxed">
+            Customize the text color across all page elements to improve contrast & reading comfort:
+          </p>
+          
+          <div className="flex flex-wrap gap-2.5 pt-1">
+            {[
+              { id: "default", label: "Default", bg: "bg-slate-200 text-slate-800 border-slate-300" },
+              { id: "black", label: "Black", bg: "bg-black text-white border-black" },
+              { id: "white", label: "White", bg: "bg-slate-900 text-white border-slate-700" },
+              { id: "yellow", label: "Yellow", bg: "bg-yellow-400 text-slate-950 border-yellow-500" },
+              { id: "blue", label: "Blue", bg: "bg-blue-600 text-white border-blue-700" },
+              { id: "green", label: "Green", bg: "bg-emerald-600 text-white border-emerald-700" },
+              { id: "red", label: "Red", bg: "bg-red-600 text-white border-red-700" },
+            ].map(col => {
+              const isActive = (state.textColor || "default") === col.id;
+              return (
+                <button
+                  key={col.id}
+                  onClick={() => updateSetting("textColor", col.id as any)}
+                  className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${col.bg} ${
+                    isActive ? 'ring-2 ring-blue-600 ring-offset-1 scale-105 shadow-sm' : 'opacity-85 hover:opacity-100'
+                  }`}
+                >
+                  <span className="w-2.5 h-2.5 rounded-full bg-current border border-black/20" />
+                  {col.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </motion.div>
 

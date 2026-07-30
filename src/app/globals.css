@@ -408,3 +408,29 @@ html.a11y-light-mode, body.a11y-light-mode {
   0% { opacity: 0; transform: translateY(50px) scale(0.9); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* Custom Text Color Adaptations */
+.a11y-textcolor-black #app-content, 
+.a11y-textcolor-black #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
+  color: #000000 !important;
+}
+.a11y-textcolor-white #app-content, 
+.a11y-textcolor-white #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
+  color: #ffffff !important;
+}
+.a11y-textcolor-yellow #app-content, 
+.a11y-textcolor-yellow #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
+  color: #facc15 !important;
+}
+.a11y-textcolor-blue #app-content, 
+.a11y-textcolor-blue #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
+  color: #2563eb !important;
+}
+.a11y-textcolor-green #app-content, 
+.a11y-textcolor-green #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
+  color: #16a34a !important;
+}
+.a11y-textcolor-red #app-content, 
+.a11y-textcolor-red #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
+  color: #dc2626 !important;
+}

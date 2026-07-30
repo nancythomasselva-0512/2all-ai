@@ -1,17 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Check, ArrowRight, Heart, Sparkles, Shield, Users, Globe, Scale,
-  ChevronDown, Award, Zap, Target, Lock, Eye, Star, Activity
+  Award, Zap, Star, Activity
 } from "lucide-react";
 import Footer from "@/components/marketing/Footer";
 import DemoModal from "@/components/marketing/DemoModal";
-import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
-import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
-import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
+import Navbar from "@/components/marketing/Navbar";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const fadeUp = {
@@ -25,28 +23,7 @@ const stagger = {
 };
 
 export default function AboutUsPage() {
-  const [activeHoverMenu, setActiveHoverMenu] = useState<string | null>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
-  const closeMenuTimer = useRef<NodeJS.Timeout | null>(null);
-
-  const openMenu = (name: string | null) => {
-    if (closeMenuTimer.current) clearTimeout(closeMenuTimer.current);
-    setActiveHoverMenu(name);
-  };
-
-  const closeMenuWithDelay = () => {
-    closeMenuTimer.current = setTimeout(() => setActiveHoverMenu(null), 200);
-  };
-
-  useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const navTextClass = isScrolled ? "text-[#374b6c]" : "text-white/90";
-  const navHoverClass = "hover:text-blue-400";
 
   const coreValues = [
     {
@@ -86,79 +63,16 @@ export default function AboutUsPage() {
     <div className="min-h-screen w-full bg-white relative overflow-x-hidden font-sans">
       
       {/* NAVBAR */}
-      <header
-        onMouseLeave={closeMenuWithDelay}
-        className={`w-full py-2.5 px-4 md:px-10 z-50 fixed top-0 transition-all duration-500 ease-out border-b ${
-          isScrolled 
-            ? "bg-white/95 backdrop-blur-xl shadow-md border-slate-200/60" 
-            : "bg-white/90 backdrop-blur-md border-slate-100"
-        }`}
-      >
-        <div className="w-full flex items-center justify-between gap-4 max-w-[1600px] mx-auto">
-          <div className="md:px-4 py-1.5 flex items-center justify-between flex-grow">
-            <Link href="/" className="flex items-center mr-2 md:mr-6 shrink-0">
-              <img 
-                src="/images/logo.png" 
-                alt="2all.ai Logo" 
-                className="h-10 md:h-14 w-auto object-contain mix-blend-multiply transition-all" 
-              />
-            </Link>
-            <nav className="hidden lg:flex items-center gap-8">
-              {[
-                { name: "SOLUTIONS", hasDropdown: true },
-                { name: "COMPANY", hasDropdown: true },
-                { name: "PARTNERS", hasDropdown: true },
-                { name: "PRICING", hasDropdown: false },
-              ].map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.name === "PRICING" ? "/pricing" : "#"}
-                  onMouseEnter={() => link.name !== "PRICING" ? openMenu(link.name) : openMenu(null)}
-                  className="text-[13px] font-bold text-[#0a1e3f] hover:text-blue-600 transition-colors flex items-center gap-1.5 tracking-wider pb-1"
-                >
-                  <span className="relative">
-                    {link.name}
-                    {activeHoverMenu === link.name && link.hasDropdown && (
-                      <motion.span layoutId="ls-nav-underline" className="absolute left-0 right-0 -bottom-1 h-0.5 rounded-full bg-blue-600" />
-                    )}
-                  </span>
-                  {link.hasDropdown && <ChevronDown className="w-3.5 h-3.5 opacity-60" />}
-                </Link>
-              ))}
-            </nav>
-            <div className="flex items-center gap-2 md:gap-4 shrink-0">
-              <Link href="/login" className="text-[13px] font-bold text-slate-700 hover:text-blue-600 px-3 py-2 transition-colors">
-                LOGIN
-              </Link>
-              <button
-                onClick={() => setIsDemoOpen(true)}
-                className="hidden md:inline-flex items-center justify-center px-5 py-2.5 rounded-full border border-slate-300 text-slate-800 text-[13px] font-bold hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
-              >
-                BOOK A DEMO
-              </button>
-              <Link
-                href="/register"
-                className="inline-flex items-center justify-center px-6 py-2.5 bg-blue-600 text-white rounded-full text-[13px] font-bold hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20"
-              >
-                START FREE TRIAL
-              </Link>
-            </div>
-          </div>
-        </div>
+      <Navbar />
 
-        <SolutionsMegamenu isOpen={activeHoverMenu === "SOLUTIONS"} onMouseEnter={() => openMenu("SOLUTIONS")} onMouseLeave={closeMenuWithDelay} />
-        <CompanyMegamenu isOpen={activeHoverMenu === "COMPANY"} onMouseEnter={() => openMenu("COMPANY")} onMouseLeave={closeMenuWithDelay} />
-        <PartnersMegamenu isOpen={activeHoverMenu === "PARTNERS"} onMouseEnter={() => openMenu("PARTNERS")} onMouseLeave={closeMenuWithDelay} />
-      </header>
+      <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
 
       {/* HERO SECTION */}
-      <section className="relative pt-24 pb-20 md:pt-32 md:pb-28 bg-gradient-to-b from-[#0b3c96] via-[#082b70] to-[#041d57] text-white overflow-hidden">
-        {/* Ambient background glow effects */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-500/15 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-10 right-10 w-96 h-96 bg-cyan-400/10 rounded-full blur-[100px] pointer-events-none" />
+      <section className="relative pt-2 pb-10 md:pt-3 md:pb-14 px-6 md:px-12 lg:px-16 bg-gradient-to-b from-[#0b3c96] via-[#082b70] to-[#041d57] text-white overflow-hidden">
+        <div className="absolute inset-0 opacity-10 bg-[radial-[#004bff]_1px,transparent_1px] [background-size:24px_24px]" />
 
-        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
-          <div className="flex justify-start text-left mb-6">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex justify-start text-left mb-3">
             <Breadcrumbs theme="dark" items={[ { label: "Home", href: "/" }, { label: "Company", href: "#" }, { label: "About Us" } ]} />
           </div>
 
@@ -166,17 +80,17 @@ export default function AboutUsPage() {
             initial="hidden"
             animate="visible"
             variants={stagger}
-            className="space-y-6 max-w-4xl mx-auto text-center"
+            className="space-y-4 max-w-4xl mx-auto text-center"
           >
             {/* Pill Badge */}
-            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-blue-200 border border-white/20 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 text-blue-200 border border-white/20 text-[10px] font-bold uppercase tracking-widest backdrop-blur-md">
+              <Sparkles className="w-3 h-3 text-cyan-400" />
               <span>AI-Powered Accessibility • Global Inclusion</span>
             </motion.div>
 
             <motion.h1 
               variants={fadeUp}
-              className="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.1] tracking-tight"
+              className="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight"
             >
               Making the web accessible to{" "}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-cyan-300 to-white">
@@ -186,24 +100,24 @@ export default function AboutUsPage() {
 
             <motion.p 
               variants={fadeUp}
-              className="text-lg md:text-xl text-blue-100/90 max-w-3xl mx-auto leading-relaxed font-normal"
+              className="text-base md:text-lg text-blue-100/90 max-w-3xl mx-auto leading-relaxed font-normal"
             >
               At 2all.ai, we are closing the digital accessibility gap. We combine autonomous AI scanning and real-time remediation with human expert auditing to make WCAG 2.2 AA & ADA compliance effortless for every organization.
             </motion.p>
 
             <motion.div 
               variants={fadeUp}
-              className="pt-6 flex flex-wrap justify-center gap-4"
+              className="pt-4 flex flex-wrap justify-center gap-4"
             >
               <Link 
                 href="/register" 
-                className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 hover:bg-blue-400 text-white font-extrabold rounded-full transition-all shadow-xl shadow-blue-500/30 hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 px-7 py-3 bg-blue-500 hover:bg-blue-400 text-white font-extrabold rounded-full transition-all shadow-xl shadow-blue-500/30 hover:scale-[1.02] text-sm"
               >
-                Start Free Trial <ArrowRight className="w-5 h-5" />
+                Start Free Trial <ArrowRight className="w-4 h-4" />
               </Link>
               <button 
                 onClick={() => setIsDemoOpen(true)}
-                className="inline-flex items-center justify-center px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold rounded-full transition-all hover:scale-[1.02] backdrop-blur-sm"
+                className="inline-flex items-center justify-center px-7 py-3 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold rounded-full transition-all hover:scale-[1.02] backdrop-blur-sm text-sm"
               >
                 Book a Demo
               </button>
@@ -212,18 +126,18 @@ export default function AboutUsPage() {
         </div>
       </section>
 
-      {/* STATS COUNTER BAR */}
-      <section className="relative z-20 -mt-10 max-w-7xl mx-auto px-4 md:px-8">
-        <div className="bg-white rounded-3xl p-8 md:p-10 shadow-2xl border border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-8 divide-x-0 md:divide-x divide-slate-100">
+      {/* STATS COUNTER BAR (COMPACT & SLEEK) */}
+      <section className="relative z-20 -mt-6 max-w-5xl mx-auto px-6 md:px-12">
+        <div className="bg-white rounded-2xl p-3 md:p-4 shadow-xl border border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 divide-x-0 md:divide-x divide-slate-100">
           {impactStats.map((stat, idx) => {
             const Icon = stat.icon;
             return (
-              <div key={idx} className="flex flex-col items-center text-center p-2 space-y-2">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-1">
-                  <Icon className="w-5 h-5" />
+              <div key={idx} className="flex flex-col items-center text-center p-1.5 space-y-1">
+                <div className="w-7 h-7 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center mb-0.5">
+                  <Icon className="w-3.5 h-3.5" />
                 </div>
-                <p className="text-3xl md:text-4xl font-black text-[#0a1e3f] tracking-tight">{stat.number}</p>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{stat.label}</p>
+                <p className="text-lg md:text-xl font-black text-[#0a1e3f] tracking-tight">{stat.number}</p>
+                <p className="text-[9px] md:text-[10px] font-extrabold text-slate-500 uppercase tracking-wider leading-tight">{stat.label}</p>
               </div>
             );
           })}
@@ -425,9 +339,7 @@ export default function AboutUsPage() {
 
 function AboutUsAnimation() {
   return (
-    <div className="relative h-[360px] sm:h-[400px] md:h-[460px] w-full rounded-[2.5rem] bg-blue-50/50 border border-slate-200/60 flex items-center justify-center select-none overflow-hidden shadow-lg">
-      <div className="absolute -inset-4 bg-blue-50/40 rounded-[2.5rem] -rotate-2 z-0" />
-      
+    <div className="relative h-[360px] sm:h-[400px] md:h-[460px] w-full rounded-[2.5rem] bg-slate-950 border border-slate-800 flex items-center justify-center select-none overflow-hidden shadow-2xl">
       {/* Animation Stage: Video Player */}
       <div className="relative w-full h-full overflow-hidden flex items-center justify-center rounded-[2.5rem] z-10">
         <video
@@ -436,14 +348,14 @@ function AboutUsAnimation() {
           loop
           muted
           playsInline
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover"
         />
       </div>
 
       {/* Floating Compliance Stats card */}
-      <div className="absolute bottom-6 right-6 z-20 bg-[#0b3c96] text-white p-5 rounded-2xl shadow-xl max-w-xs border border-white/20 hidden sm:block">
-        <p className="text-3xl font-black mb-0.5 text-cyan-300">99.9%</p>
-        <p className="text-xs font-bold uppercase tracking-wider text-blue-100">Compliance Accuracy with WCAG Standards</p>
+      <div className="absolute bottom-6 right-6 z-20 bg-[#0b3c96]/90 backdrop-blur-md text-white p-4 rounded-xl shadow-xl max-w-xs border border-white/20 hidden sm:block">
+        <p className="text-2xl font-black mb-0.5 text-cyan-300">99.9%</p>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-blue-100">Compliance Accuracy with WCAG Standards</p>
       </div>
     </div>
   );

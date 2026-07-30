@@ -9,6 +9,71 @@ export type SaturationMode = "normal" | "high" | "low" | "monochrome";
 export type TextAlignment = "default" | "left" | "right" | "center" | "justify";
 export type ProfileType = "none" | "dyslexia" | "adhd" | "low-vision" | "blind" | "motor-impaired" | "cognitive" | "reading" | "night" | "seizure";
 
+export function calculateAccessibilityScore(s: AccessibilityState): number {
+  let score = 70; // Baseline WCAG 2.1 AA System score
+
+  // 1. Active Profile / Mode (+10 Pts)
+  if (s.activeProfile && s.activeProfile !== "none") {
+    score += 10;
+  }
+
+  // 2. Readable Fonts (+5 Pts)
+  if (s.fontFamily && s.fontFamily !== "default") {
+    score += 5;
+  }
+
+  // 3. Font Size / Spacing / Line Height (+5 Pts)
+  if (
+    s.fontSize > 100 || 
+    s.letterSpacing > 0 || 
+    s.lineHeight !== 1.5 ||
+    s.wordSpacing > 0 ||
+    s.textAlignment !== "default"
+  ) {
+    score += 5;
+  }
+
+  // 4. Contrast / Dark / Light / Monochrome (+5 Pts)
+  if (
+    s.isHighContrast || 
+    s.isDarkMode || 
+    s.isLightMode || 
+    s.isSmartContrast ||
+    s.saturationMode !== "normal"
+  ) {
+    score += 5;
+  }
+
+  // 5. Colorblind Filter / Text Color (+5 Pts)
+  if (
+    (s.colorBlindMode && s.colorBlindMode !== "none") ||
+    (Boolean(s.textColor) && s.textColor !== "default")
+  ) {
+    score += 5;
+  }
+
+  // 6. Reading Mask / Ruler / Highlights / Motion (+5 Pts)
+  if (
+    s.readingMask || 
+    s.readingRuler || 
+    s.highlightFocus || 
+    s.textMagnifier || 
+    s.textToSpeech || 
+    s.autoReadSelection ||
+    s.readingMode !== "none" ||
+    s.highlightLinks ||
+    s.highlightHeadings ||
+    s.highlightButtons ||
+    s.voiceNavigation ||
+    s.reduceMotion ||
+    s.stopAnimations
+  ) {
+    score += 5;
+  }
+
+  return Math.min(100, score);
+}
+
 interface AccessibilityState {
   isPanelOpen: boolean;
   fontSize: number; // percentage, e.g., 100, 110
@@ -33,6 +98,7 @@ interface AccessibilityState {
   activeProfile: ProfileType;
   // Advanced features
   saturationMode: SaturationMode;
+  textColor: "default" | "black" | "white" | "yellow" | "blue" | "green" | "red";
   highlightFocus: boolean;
   textToSpeech: boolean;
   textMagnifier: boolean;
@@ -87,6 +153,7 @@ const defaultState: AccessibilityState = {
   colorBlindMode: "none",
   activeProfile: "none",
   saturationMode: "normal",
+  textColor: "default",
   highlightFocus: false,
   textToSpeech: false,
   textMagnifier: false,
@@ -143,6 +210,14 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     body.classList.remove("a11y-font-dyslexic", "a11y-font-lexend", "a11y-font-readable");
     if (s.fontFamily !== "default") {
       body.classList.add(`a11y-font-${s.fontFamily}`);
+    }
+
+    // Text Color
+    body.classList.remove("a11y-textcolor-black", "a11y-textcolor-white", "a11y-textcolor-yellow", "a11y-textcolor-blue", "a11y-textcolor-green", "a11y-textcolor-red");
+    html.classList.remove("a11y-textcolor-black", "a11y-textcolor-white", "a11y-textcolor-yellow", "a11y-textcolor-blue", "a11y-textcolor-green", "a11y-textcolor-red");
+    if (s.textColor && s.textColor !== "default") {
+      body.classList.add(`a11y-textcolor-${s.textColor}`);
+      html.classList.add(`a11y-textcolor-${s.textColor}`);
     }
 
     // Highlights
@@ -228,13 +303,39 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const updateSetting = <K extends keyof AccessibilityState>(key: K, value: AccessibilityState[K]) => {
     if (key === "voiceNavigation") {
-      setState(prev => ({ ...prev, [key]: value, lastVoiceCommand: "", activeProfile: "none" }));
+      setState(prev => ({ ...prev, [key]: value, lastVoiceCommand: "" }));
     } else {
-      setState(prev => ({ ...prev, [key]: value, activeProfile: "none" }));
+      setState(prev => ({ ...prev, [key]: value }));
     }
   };
 
   const applyProfile = (profile: ProfileType) => {
+    if (profile === "none" || profile === state.activeProfile) {
+      // Turning profile OFF: reset profile-specific modifications
+      setState(prev => ({
+        ...prev,
+        activeProfile: "none",
+        fontFamily: "default",
+        letterSpacing: 0,
+        wordSpacing: 0,
+        lineHeight: 1.5,
+        fontSize: 100,
+        isHighContrast: false,
+        readingMask: false,
+        readingRuler: false,
+        reduceMotion: false,
+        stopAnimations: false,
+        highlightLinks: false,
+        highlightHeadings: false,
+        highlightButtons: false,
+        highlightFocus: false,
+        textToSpeech: false,
+        cursorSize: "normal",
+        saturationMode: "normal"
+      }));
+      return;
+    }
+
     let newSettings: Partial<AccessibilityState> = {};
     
     switch (profile) {
@@ -245,13 +346,9 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         newSettings = { readingMask: true, reduceMotion: true, stopAnimations: true, highlightLinks: true };
         break;
       case "low-vision":
-        // Visually Impaired Mode profile — clean contrast & moderate scaling without blue boxes
         newSettings = { fontSize: 112, isHighContrast: true, cursorSize: "large", highlightHeadings: false };
         break;
       case "blind":
-        // Screen Reader profile — optimises the page for screen reader users
-        // Highlights interactive elements, enables TTS, uses a readable font,
-        // and boosts letter/line spacing for braille display compatibility
         newSettings = {
           highlightLinks: true,
           highlightHeadings: true,
@@ -265,9 +362,6 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         };
         break;
       case "cognitive":
-        // Cognitive Disability profile — simplifies the visual experience
-        // Uses a readable font, increases spacing, slows/stops animations,
-        // highlights navigation elements, and applies a reading ruler to guide focus
         newSettings = {
           fontFamily: "lexend",
           fontSize: 115,
@@ -283,9 +377,6 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         };
         break;
       case "reading":
-        // Reading Mode profile — maximises reading comfort
-        // Uses Lexend font (proven to improve reading speed), reading ruler for tracking,
-        // increased line & word spacing, and auto-reads selections on click
         newSettings = {
           readingRuler: true,
           fontFamily: "lexend",
@@ -309,7 +400,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         break;
     }
     
-    setState(prev => ({ ...defaultState, ...newSettings, isPanelOpen: prev.isPanelOpen, activeProfile: profile }));
+    setState(prev => ({ ...prev, ...newSettings, isPanelOpen: prev.isPanelOpen, activeProfile: profile }));
   };
 
   return (

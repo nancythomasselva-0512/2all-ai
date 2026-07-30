@@ -49,6 +49,8 @@ import DomainOnboarding from "@/components/dashboard/DomainOnboarding";
 import AdminApiKeysPanel from "@/components/admin/AdminApiKeysPanel";
 import AdminAccessibilityMenuManager from "./AdminAccessibilityMenuManager";
 import AdminDemoRequestsManager from "./AdminDemoRequestsManager";
+import AdminEmailTemplatesEditor from "./AdminEmailTemplatesEditor";
+import AdminSectionsManager from "./AdminSectionsManager";
 import { useAccessibility } from "@/context/AccessibilityContext";
 
 interface UserType {
@@ -151,11 +153,11 @@ function FormalToggle({
   description?: string;
 }) {
   return (
-    <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200/60 rounded-xl transition-all">
+    <div className="flex items-center justify-between p-4 bg-slate-50/80 border border-slate-200/80 rounded-2xl transition-all hover:bg-slate-50">
       {(label || description) && (
         <div className="pr-3 text-left">
-          {label && <h4 className="text-xs font-bold text-slate-800">{label}</h4>}
-          {description && <p className="text-[10.5px] text-slate-400 font-semibold mt-0.5">{description}</p>}
+          {label && <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">{label}</h4>}
+          {description && <p className="text-xs text-slate-600 font-medium mt-1 leading-relaxed">{description}</p>}
         </div>
       )}
       <button
@@ -422,7 +424,7 @@ export default function AdminDashboard({
 
           {/* Navigation Links Group 1: System Panel */}
           <div className="p-4 space-y-1">
-
+            <span className="block text-[11px] font-black text-blue-600 uppercase tracking-widest mb-2 px-3 leading-none">Main Management</span>
             {[
               { id: "overview", label: "Overview Panel", icon: LayoutGrid },
               { id: "accessibility", label: "Accessibility Suite Console", icon: Accessibility },
@@ -454,9 +456,11 @@ export default function AdminDashboard({
 
           {/* Navigation Links Group 2: Platform Builder Modules */}
           <div className="p-4 pt-1 space-y-1">
-            <span className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-3 leading-none">Platform Builder Modules</span>
+            <span className="block text-[11px] font-black text-blue-600 uppercase tracking-widest mb-2 px-3 leading-none">Platform Builder Modules</span>
             {[
+              { id: "sections", label: "Sections Builder (Dynamic)", icon: Layers },
               { id: "branding", label: "Branding & Email Config", icon: Mail },
+              { id: "templates", label: "Dynamic Email Templates", icon: FileCode },
               { id: "theme", label: "Theme Manager", icon: Palette },
               { id: "website", label: "Website Builder", icon: Globe },
               { id: "navigation", label: "Navigation Builder", icon: Layers },
@@ -514,6 +518,7 @@ export default function AdminDashboard({
               <Menu className="w-5 h-5" />
             </button>
             <h2 className="text-xs md:text-sm font-black text-slate-700 tracking-wider uppercase truncate">
+            {activeTab === "sections" && "Universal Website Sections Builder"}
             {activeTab === "overview" && "Telemetry Overview Panel"}
             {activeTab === "accessibility" && "Accessibility Suite Control Console"}
             {activeTab === "users" && "System User Profiles Registry"}
@@ -543,6 +548,11 @@ export default function AdminDashboard({
               <Check className="w-4 h-4 stroke-[3]" />
               {statusMessage.text}
             </div>
+          )}
+
+          {/* TAB: WEBSITE SECTIONS BUILDER */}
+          {activeTab === "sections" && (
+            <AdminSectionsManager />
           )}
 
           {/* TAB: ACCESSIBILITY SUITE ADMIN CONSOLE */}
@@ -1058,6 +1068,11 @@ export default function AdminDashboard({
             </div>
           )}
 
+          {/* TAB: DYNAMIC EMAIL TEMPLATES */}
+          {activeTab === "templates" && (
+            <AdminEmailTemplatesEditor />
+          )}
+
           {/* TAB 3: THEME MANAGER */}
           {activeTab === "theme" && (
             <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-2xl text-left animate-in fade-in duration-200">
@@ -1076,25 +1091,58 @@ export default function AdminDashboard({
               </div>
 
               <form onSubmit={handleSaveConfig} className="space-y-6 mt-6">
-                <div className="space-y-2">
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Primary Theme Color Accent</label>
-                  <div className="flex gap-3 items-center py-1">
-                    {["blue", "purple", "emerald", "indigo", "orange"].map((color) => {
-                      const bgClass = color === "blue" ? "bg-blue-600"
-                        : color === "purple" ? "bg-purple-600"
-                          : color === "emerald" ? "bg-emerald-600"
-                            : color === "indigo" ? "bg-indigo-600"
-                              : "bg-orange-600";
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Primary Theme Color Accent (Custom Hex Color Picker)</label>
+                  
+                  {/* Preset Swatches */}
+                  <div className="flex flex-wrap gap-2.5 items-center py-1">
+                    {[
+                      { name: "blue", hex: "#004bff", bg: "bg-blue-600" },
+                      { name: "purple", hex: "#9333ea", bg: "bg-purple-600" },
+                      { name: "emerald", hex: "#059669", bg: "bg-emerald-600" },
+                      { name: "indigo", hex: "#4f46e5", bg: "bg-indigo-600" },
+                      { name: "orange", hex: "#ea580c", bg: "bg-orange-600" },
+                      { name: "rose", hex: "#e11d48", bg: "bg-rose-600" },
+                      { name: "red", hex: "#dc2626", bg: "bg-red-600" },
+                      { name: "gold", hex: "#d97706", bg: "bg-amber-600" },
+                    ].map((item) => {
+                      const isSelected = editConfig.primaryColor === item.name || editConfig.primaryColor === item.hex;
                       return (
                         <button
-                          key={color}
+                          key={item.name}
                           type="button"
-                          onClick={() => setEditConfig({ ...editConfig, primaryColor: color })}
-                          className={`w-8 h-8 rounded-full border-2 ${bgClass} cursor-pointer transition-all ${editConfig.primaryColor === color ? "border-slate-800 scale-110 shadow-lg" : "border-transparent opacity-80 hover:opacity-100"
-                            }`}
+                          title={item.name}
+                          onClick={() => setEditConfig({ ...editConfig, primaryColor: item.hex })}
+                          className={`w-8 h-8 rounded-full border-2 ${item.bg} cursor-pointer transition-all ${isSelected ? "border-slate-900 scale-110 shadow-lg ring-2 ring-slate-400" : "border-transparent opacity-80 hover:opacity-100"}`}
                         />
                       );
                     })}
+                  </div>
+
+                  {/* Custom Hex Picker Input */}
+                  <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 p-2.5 rounded-xl">
+                    <input
+                      type="color"
+                      value={editConfig.primaryColor.startsWith("#") ? editConfig.primaryColor : "#004bff"}
+                      onChange={(e) => setEditConfig({ ...editConfig, primaryColor: e.target.value })}
+                      className="w-9 h-9 rounded-lg border-0 cursor-pointer bg-transparent"
+                    />
+                    <div className="flex-grow space-y-0.5">
+                      <span className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Custom Hex Color Code</span>
+                      <input
+                        type="text"
+                        value={editConfig.primaryColor}
+                        onChange={(e) => setEditConfig({ ...editConfig, primaryColor: e.target.value })}
+                        placeholder="#004bff"
+                        className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div
+                      className="w-10 h-10 rounded-xl border border-slate-300 shadow-sm shrink-0 flex items-center justify-center font-mono text-[9px] font-black text-white"
+                      style={{ backgroundColor: editConfig.primaryColor.startsWith("#") ? editConfig.primaryColor : "#004bff" }}
+                    >
+                      Preview
+                    </div>
                   </div>
                 </div>
 
@@ -1283,29 +1331,29 @@ export default function AdminDashboard({
 
           {/* TAB: NAVIGATION BUILDER */}
           {activeTab === "navigation" && (
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-3xl text-left animate-in fade-in duration-200 space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-4xl text-left animate-in fade-in duration-200 space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                  <h3 className="text-base font-black text-slate-800 tracking-tight">Navigation Builder & Link Hierarchy</h3>
-                  <p className="text-xs text-slate-400 font-bold mt-0.5">Customize global site navbar links, call-to-action buttons, and header layout.</p>
+                  <h3 className="text-lg font-bold text-[#0a1e3f] tracking-tight">Navigation Builder & Link Hierarchy</h3>
+                  <p className="text-xs md:text-sm text-slate-500 font-normal leading-relaxed mt-1">Customize global site navbar links, call-to-action buttons, and header layout.</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsAddItemModalOpen(true)}
-                  className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
+                  className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
                 >
                   <Plus className="w-4 h-4 stroke-[2.5]" /> Add Nav Link / Page
                 </button>
               </div>
 
               <form onSubmit={handleSaveConfig} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Header Call-To-Action Button Text</label>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Header Call-To-Action Button Text</label>
                   <input
                     type="text"
                     value={editConfig.trialButtonText || "START FREE TRIAL"}
                     onChange={(e) => setEditConfig({ ...editConfig, trialButtonText: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 text-xs md:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   />
                 </div>
 
@@ -1330,43 +1378,43 @@ export default function AdminDashboard({
 
           {/* TAB: LANDING PAGE BUILDER */}
           {activeTab === "landing" && (
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-3xl text-left animate-in fade-in duration-200 space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-4xl text-left animate-in fade-in duration-200 space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                  <h3 className="text-base font-black text-slate-800 tracking-tight">Landing Page Section Builder</h3>
-                  <p className="text-xs text-slate-400 font-bold mt-0.5">Edit hero title copy and toggle visibility of homepage presentation blocks.</p>
+                  <h3 className="text-lg font-bold text-[#0a1e3f] tracking-tight">Landing Page Section Builder</h3>
+                  <p className="text-xs md:text-sm text-slate-500 font-normal leading-relaxed mt-1">Edit hero title copy and toggle visibility of homepage presentation blocks.</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsAddItemModalOpen(true)}
-                  className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
+                  className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
                 >
                   <Plus className="w-4 h-4 stroke-[2.5]" /> Add New Section / Page
                 </button>
               </div>
 
-              <form onSubmit={handleSaveConfig} className="space-y-4">
+              <form onSubmit={handleSaveConfig} className="space-y-5">
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Main Hero Heading Title</label>
+                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Main Hero Heading Title</label>
                   <input
                     type="text"
                     value={editConfig.heroTitle || "Empower Every User with AI Web Accessibility"}
                     onChange={(e) => setEditConfig({ ...editConfig, heroTitle: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 text-xs md:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Hero Subtitle / Description</label>
+                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Hero Subtitle / Description</label>
                   <textarea
                     rows={2}
                     value={editConfig.heroSubtitle || "Automatically align your website with WCAG 2.1 AA & ADA compliance in under 48 hours."}
                     onChange={(e) => setEditConfig({ ...editConfig, heroSubtitle: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 text-xs md:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   />
                 </div>
 
-                <div className="space-y-3 pt-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                   {[
                     { key: "showHeroSection", label: "Show Hero Presentation Section", desc: "Main introductory header section" },
                     { key: "showShowcaseSection", label: "Show Interactive Widget Showcase", desc: "Live accessibility widget demonstration card" },
@@ -1387,7 +1435,7 @@ export default function AdminDashboard({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/10 transition-all cursor-pointer border-none uppercase tracking-wider"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-extrabold text-xs md:text-sm rounded-xl shadow-md shadow-blue-500/10 transition-all cursor-pointer border-none uppercase tracking-wider"
                 >
                   <Save className="w-4.5 h-4.5" />
                   {loading ? "Saving..." : "Save Landing Page Config"}
@@ -1398,43 +1446,42 @@ export default function AdminDashboard({
 
           {/* TAB 6: PAYMENTS */}
           {activeTab === "payments" && (
-            <div className="grid lg:grid-cols-2 gap-8 items-start animate-in fade-in duration-200 text-left">
+            <div className="grid md:grid-cols-2 gap-6 animate-in fade-in duration-200 text-left">
               {/* Stripe Panel */}
               <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-6">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
                       <CreditCard className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-base font-black text-slate-900 tracking-tight">Stripe Gateway</h3>
-                      <span className="text-xs text-slate-500 font-medium">Standard card checkout payments</span>
+                      <h3 className="text-lg font-bold text-[#0a1e3f] tracking-tight">Stripe Gateway</h3>
+                      <p className="text-xs text-slate-500 font-normal mt-0.5">Standard card checkout payments</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setEditConfig({ ...editConfig, stripeActive: !editConfig.stripeActive })}
-                    className="p-0 border-none bg-transparent cursor-pointer"
-                  >
-                    {editConfig.stripeActive ? <ToggleRight className="w-9 h-9 text-blue-600" /> : <ToggleLeft className="w-9 h-9 text-slate-400" />}
-                  </button>
                 </div>
 
-                <div className="space-y-4 opacity-90">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">Stripe Public Key</label>
-                    <input
-                      type="text"
-                      value="pk_test_51Mz2allAiSecretPublicKeyExample12345"
-                      disabled
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-mono font-semibold text-slate-600"
-                    />
-                  </div>
+                <FormalToggle
+                  checked={editConfig.stripeActive}
+                  onChange={(val) => setEditConfig({ ...editConfig, stripeActive: val })}
+                  label="Enable Stripe Credit Card Gateway"
+                  description="Accept Visa, Mastercard, AMEX, and Apple Pay payments"
+                />
+
+                <div className="space-y-1.5 pt-2">
+                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Stripe Public Key</label>
+                  <input
+                    type="text"
+                    value="pk_test_51Mz2allAiSecretPublicKeyExample12345"
+                    disabled
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-mono font-medium text-slate-600"
+                  />
                 </div>
               </div>
 
               {/* PayPal Panel */}
               <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-6">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-blue-600">
                       <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
@@ -1442,28 +1489,27 @@ export default function AdminDashboard({
                       </svg>
                     </div>
                     <div>
-                      <h3 className="text-base font-black text-slate-900 tracking-tight">PayPal Gateway</h3>
-                      <span className="text-xs text-slate-500 font-medium">Standard alternative payments checkout</span>
+                      <h3 className="text-lg font-bold text-[#0a1e3f] tracking-tight">PayPal Gateway</h3>
+                      <p className="text-xs text-slate-500 font-normal mt-0.5">Standard alternative payments checkout</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setEditConfig({ ...editConfig, paypalActive: !editConfig.paypalActive })}
-                    className="p-0 border-none bg-transparent cursor-pointer"
-                  >
-                    {editConfig.paypalActive ? <ToggleRight className="w-9 h-9 text-blue-600" /> : <ToggleLeft className="w-9 h-9 text-slate-400" />}
-                  </button>
                 </div>
 
-                <div className="space-y-4 opacity-90">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">PayPal Client ID</label>
-                    <input
-                      type="text"
-                      value="Af_2allAiPayPalClientIdMockExample998877"
-                      disabled
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-mono font-semibold text-slate-600"
-                    />
-                  </div>
+                <FormalToggle
+                  checked={editConfig.paypalActive}
+                  onChange={(val) => setEditConfig({ ...editConfig, paypalActive: val })}
+                  label="Enable PayPal Express Checkout"
+                  description="Accept PayPal balance and Venmo transactions"
+                />
+
+                <div className="space-y-1.5 pt-2">
+                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">PayPal Client ID</label>
+                  <input
+                    type="text"
+                    value="Af_2allAiPayPalClientIdMockExample998877"
+                    disabled
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-mono font-medium text-slate-600"
+                  />
                 </div>
               </div>
             </div>
@@ -1971,16 +2017,16 @@ export default function AdminDashboard({
 
           {/* TAB: FEATURE MANAGER */}
           {activeTab === "features" && (
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-3xl text-left animate-in fade-in duration-200 space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-4xl text-left animate-in fade-in duration-200 space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                  <h3 className="text-base font-black text-slate-800 tracking-tight">Accessibility Feature Manager</h3>
-                  <p className="text-xs text-slate-400 font-bold mt-0.5">Enable or disable core accessibility features provided to end users.</p>
+                  <h3 className="text-lg font-bold text-[#0a1e3f] tracking-tight">Accessibility Feature Manager</h3>
+                  <p className="text-xs md:text-sm text-slate-500 font-normal leading-relaxed mt-1">Enable or disable core accessibility features provided to end users.</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsAddItemModalOpen(true)}
-                  className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
+                  className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
                 >
                   <Plus className="w-4 h-4 stroke-[2.5]" /> Add Custom Feature
                 </button>
@@ -2021,8 +2067,8 @@ export default function AdminDashboard({
             <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-3xl text-left animate-in fade-in duration-200 space-y-6">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
-                  <h3 className="text-base font-black text-slate-800 tracking-tight">Customer Dashboard Builder</h3>
-                  <p className="text-xs text-slate-400 font-bold mt-0.5">Customize default layout, banner cards, and greeting text for customer accounts.</p>
+                  <h3 className="text-lg font-black text-slate-900 tracking-tight">Customer Dashboard Builder</h3>
+                  <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">Customize default layout, banner cards, and greeting text for customer accounts.</p>
                 </div>
                 <button
                   type="button"
@@ -2035,7 +2081,7 @@ export default function AdminDashboard({
 
               <form onSubmit={handleSaveConfig} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Welcome Greeting Header</label>
+                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">Welcome Greeting Header</label>
                   <input
                     type="text"
                     value={editConfig.welcomeGreeting || "Welcome to 2all.ai Accessibility Workspace"}
@@ -2075,8 +2121,8 @@ export default function AdminDashboard({
             <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-3xl text-left animate-in fade-in duration-200 space-y-6">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
-                  <h3 className="text-base font-black text-slate-800 tracking-tight">Authentication & Security Policy</h3>
-                  <p className="text-xs text-slate-400 font-bold mt-0.5">Configure login providers, OAuth settings, and password requirements.</p>
+                  <h3 className="text-lg font-black text-slate-900 tracking-tight">Authentication & Security Policy</h3>
+                  <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">Configure login providers, OAuth settings, and password requirements.</p>
                 </div>
                 <button
                   type="button"

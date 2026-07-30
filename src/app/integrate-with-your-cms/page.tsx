@@ -19,21 +19,24 @@ export default function CMSIntegrationsPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-16 pb-20 md:pt-24 md:pb-32 px-4 relative">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1 max-w-xl relative z-10">
-            <div className="text-[10px] font-bold tracking-[0.2em] uppercase mb-4 text-[#004bff]">CMS Integrations</div>
-            <Breadcrumbs theme="light" items={[ { label: "Home", href: "/" }, { label: "Products" }, { label: "CMS Integrations" } ]} />
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.1] tracking-tight text-[#0a1e3f]">
-              Connect natively with your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#004bff] to-[#00ff87] italic font-serif font-light">favorite CMS</span>.
+      <section className="pt-2 pb-12 md:pt-3 md:pb-16 px-6 md:px-10 relative bg-gradient-to-br from-[#0b132b] via-[#1c2541] to-[#2a385b] text-white overflow-hidden">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 relative z-10">
+          <div className="flex-1 max-w-xl">
+            <Breadcrumbs theme="dark" items={[ { label: "Home", href: "/" }, { label: "Products" }, { label: "CMS Integrations" } ]} />
+            <div className="text-[10px] font-bold tracking-[0.2em] uppercase mb-4 mt-3 text-cyan-400">CMS Integrations</div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.1] tracking-tight text-white">
+              Connect natively with your <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-emerald-400 italic font-serif font-light">favorite CMS</span>.
             </h1>
-            <p className="text-lg text-slate-600 mb-10 leading-relaxed font-medium">
+            <p className="text-lg text-slate-300 mb-10 leading-relaxed font-medium">
               Seamless 1-click installations for the world's most popular website builders. Make your site accessible in under five minutes, without touching a single line of code.
             </p>
             <div className="flex flex-wrap gap-4">
-              <button className="bg-[#0a1e3f] hover:bg-blue-900 text-white px-8 py-3.5 rounded-full font-bold text-sm transition-all shadow-lg hover:shadow-xl inline-flex items-center gap-2">
+              <Link
+                href="/dashboard/install"
+                className="no-underline bg-cyan-400 hover:bg-cyan-300 text-slate-950 px-8 py-3.5 rounded-full font-bold text-sm transition-all shadow-lg hover:shadow-xl inline-flex items-center gap-2"
+              >
                 EXPLORE PLATFORMS
-              </button>
+              </Link>
             </div>
           </div>
           <div className="flex-1 w-full relative h-[400px] md:h-[500px]">

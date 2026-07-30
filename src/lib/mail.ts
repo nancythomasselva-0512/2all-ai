@@ -94,9 +94,24 @@ const getFromHeader = () => {
 export async function sendPaymentSuccessEmail(toEmail: string, userName: string, planName: string, amount: number) {
   const transporter = getTransporter();
   const from = getFromHeader();
-  const subject = `Payment Confirmed - Your 2all.ai ${planName} Subscription is Active!`;
-  
-  const htmlContent = `
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+  const templateVars: Record<string, string> = {
+    "{{userName}}": userName || "Subscriber",
+    "{{userEmail}}": toEmail,
+    "{{planName}}": planName.toUpperCase(),
+    "{{amount}}": amount.toString(),
+    "{{baseUrl}}": baseUrl,
+  };
+
+  const customTpl = getCustomEmailTemplate("paymentSuccess");
+  const subject = customTpl?.subject
+    ? compileTemplate(customTpl.subject, templateVars)
+    : `Payment Confirmed - Your 2all.ai ${planName} Subscription is Active!`;
+
+  const htmlContent = customTpl?.body
+    ? compileTemplate(customTpl.body, templateVars)
+    : `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
       <h2 style="color: #004bff; margin-bottom: 8px;">2all.ai</h2>
       <hr style="border: 0; border-top: 1px solid #f1f5f9; margin-bottom: 20px;" />
@@ -104,7 +119,6 @@ export async function sendPaymentSuccessEmail(toEmail: string, userName: string,
       <p style="font-size: 14px; line-height: 1.5; color: #475569;">
         We are thrilled to confirm that your payment was successfully processed. Your 2all.ai <strong>${planName.toUpperCase()}</strong> plan is now active!
       </p>
-      
       <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 24px 0; font-size: 13px; line-height: 1.6;">
         <h4 style="margin: 0 0 10px 0; color: #0f172a; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;">Transaction Details</h4>
         <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
@@ -120,22 +134,9 @@ export async function sendPaymentSuccessEmail(toEmail: string, userName: string,
           <strong style="color: #10b981;">SUCCESSFUL</strong>
         </div>
       </div>
-
-      <p style="font-size: 14px; line-height: 1.5; color: #475569;">
-        You can now access automated accessibility scanning aligned with WCAG standards and expert remediation options directly from your user dashboard.
-      </p>
-      
       <div style="margin: 28px 0; text-align: center;">
-        <a href="${process.env.NEXTAUTH_URL || "http://localhost:3000"}/dashboard" 
-           style="background-color: #004bff; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; display: inline-block;">
-          Go to Dashboard
-        </a>
+        <a href="${baseUrl}/dashboard" style="background-color: #004bff; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; display: inline-block;">Go to Dashboard</a>
       </div>
-
-      <hr style="border: 0; border-top: 1px solid #f1f5f9; margin-top: 30px; margin-bottom: 16px;" />
-      <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0;">
-        &copy; ${new Date().getFullYear()} 2all.ai. All rights reserved.
-      </p>
     </div>
   `;
 
@@ -175,6 +176,28 @@ export const getAdminEmail = (): string => {
   return process.env.ADMIN_EMAIL || process.env.SMTP_USER || "nancythomasselva@gmail.com";
 };
 
+const getCustomEmailTemplate = (key: string) => {
+  try {
+    const tPath = path.join(process.cwd(), "src/data/email-templates.json");
+    if (fs.existsSync(tPath)) {
+      const data = JSON.parse(fs.readFileSync(tPath, "utf-8"));
+      if (data && data[key]) {
+        return data[key];
+      }
+    }
+  } catch (e) {}
+  return null;
+};
+
+const compileTemplate = (templateStr: string, variables: Record<string, string>) => {
+  let result = templateStr;
+  Object.keys(variables).forEach(k => {
+    const pattern = new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+    result = result.replace(pattern, variables[k] || "");
+  });
+  return result;
+};
+
 export async function sendDemoNotificationEmail(
   adminEmail: string,
   leadName: string,
@@ -193,14 +216,31 @@ export async function sendDemoNotificationEmail(
 
   const isSkipped = !meetingSlot || meetingSlot.toLowerCase().includes("skipped");
 
+  const templateVars: Record<string, string> = {
+    "{{leadName}}": leadName,
+    "{{leadEmail}}": leadEmail,
+    "{{leadPhone}}": leadPhone,
+    "{{leadWebsite}}": leadWebsite,
+    "{{meetingSlot}}": meetingSlot || "",
+    "{{meetLink}}": meetLink,
+    "{{meetLinkEnc}}": encodeURIComponent(meetLink),
+    "{{baseUrl}}": baseUrl,
+  };
+
   if (!isSkipped) {
     // =========================================================================
     // SCENARIO 1: SLOT IS CONFIRMED -> SEND DISTINCT CONFIRMED EMAILS
     // =========================================================================
-    
+    const customConfirmed = getCustomEmailTemplate("demoConfirmedCustomer");
+
     // 1. CONFIRMED EMAIL TO CUSTOMER
-    const customerSubject = `[CONFIRMED DEMO] Your 2all.ai Demo is Scheduled for ${meetingSlot}`;
-    const customerHtmlContent = `
+    const customerSubject = customConfirmed?.subject
+      ? compileTemplate(customConfirmed.subject, templateVars)
+      : `[CONFIRMED DEMO] Your 2all.ai Demo is Scheduled for ${meetingSlot}`;
+
+    const customerHtmlContent = customConfirmed?.body
+      ? compileTemplate(customConfirmed.body, templateVars)
+      : `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b; background-color: #ffffff;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px; margin-bottom: 20px;">
           <h2 style="color: #004bff; margin: 0; font-size: 22px;">2all.ai</h2>
@@ -311,9 +351,19 @@ export async function sendDemoNotificationEmail(
       `<a href="${baseUrl}/api/admin/demo/assign-slot?requestId=${reqId}&meetingSlot=${encodeURIComponent(slot)}" style="display: block; background-color: #ffffff; border: 1px solid #6366f1; color: #4338ca; padding: 12px 18px; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: bold; text-align: left; margin-bottom: 8px;">👉 Assign: ${slot} & Auto-Email Customer</a>`
     ).join("");
 
+    templateVars["{{slotButtonsHtml}}"] = slotButtonsHtml;
+
+    const customAdmin = getCustomEmailTemplate("demoAdminAction");
+    const customPending = getCustomEmailTemplate("demoPendingCustomer");
+
     // 1. Email to Admin with 1-Click Interactive Slot Assignment Buttons inside Gmail!
-    const adminSubject = `[ACTION REQUIRED] Demo Request from ${leadName} - Assign Slot`;
-    const adminHtmlContent = `
+    const adminSubject = customAdmin?.subject
+      ? compileTemplate(customAdmin.subject, templateVars)
+      : `[ACTION REQUIRED] Demo Request from ${leadName} - Assign Slot`;
+
+    const adminHtmlContent = customAdmin?.body
+      ? compileTemplate(customAdmin.body, templateVars)
+      : `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b; background-color: #ffffff;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px; margin-bottom: 20px;">
           <h2 style="color: #004bff; margin: 0; font-size: 22px;">2all.ai Admin</h2>
@@ -352,8 +402,13 @@ export async function sendDemoNotificationEmail(
     `;
 
     // 2. Email to Customer informing them that team will assign meeting slot
-    const customerSubject = `2all.ai Demo Request Received - We will assign your meeting slot shortly!`;
-    const customerHtmlContent = `
+    const customerSubject = customPending?.subject
+      ? compileTemplate(customPending.subject, templateVars)
+      : `2all.ai Demo Request Received - We will assign your meeting slot shortly!`;
+
+    const customerHtmlContent = customPending?.body
+      ? compileTemplate(customPending.body, templateVars)
+      : `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b; background-color: #ffffff;">
         <h2 style="color: #004bff; margin-top: 0;">2all.ai</h2>
         <p style="font-size: 15px; font-weight: bold; color: #0f172a;">Hi ${leadName},</p>

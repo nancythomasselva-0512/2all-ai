@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import DemoModal from "@/components/marketing/DemoModal";
 import { 
   Check, 
   Search, 
@@ -26,6 +27,7 @@ export default function CommunityPage() {
   const [scanUrl, setScanUrl] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [scanSuccess, setScanSuccess] = useState(false);
+  const [showDemo, setShowDemo] = useState(false);
 
   const heroAvatars = [
     "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
@@ -101,12 +103,21 @@ export default function CommunityPage() {
     <main className="min-h-screen bg-slate-50 flex flex-col font-sans select-none text-slate-800">
       <Navbar />
 
+      <DemoModal isOpen={showDemo} onClose={() => setShowDemo(false)} />
+
       {/* ── 1. HERO HEADER GALLERY ── */}
-      <section className="bg-gradient-to-b from-[#0b3c96] to-[#041d57] text-white pt-32 pb-24 px-6 text-center relative overflow-hidden shrink-0">
+      <section className="bg-gradient-to-b from-[#0b3c96] to-[#041d57] text-white pt-2 pb-10 md:pt-3 md:pb-14 px-6 md:px-12 lg:px-16 text-center relative overflow-hidden shrink-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(127,216,255,0.08)_0%,transparent_60%)] pointer-events-none" />
         
+        <div className="max-w-7xl mx-auto w-full relative z-10 text-left mb-6">
+          <Breadcrumbs 
+            theme="dark" 
+            items={[ { label: "Home", href: "/" }, { label: "Community" } ]} 
+          />
+        </div>
+
         {/* Avatars Grid Gallery Banner */}
-        <div className="max-w-7xl mx-auto grid grid-cols-4 md:grid-cols-8 gap-3 opacity-60 mb-10 select-none pointer-events-none">
+        <div className="max-w-7xl mx-auto grid grid-cols-4 md:grid-cols-8 gap-3 opacity-60 mb-8 select-none pointer-events-none">
           {heroAvatars.map((url, idx) => (
             <div key={idx} className="aspect-square rounded-2xl border border-white/10 shadow-lg overflow-hidden bg-slate-900">
               <img src={url} alt={`Community member ${idx + 1}`} className="w-full h-full object-cover" />
@@ -114,22 +125,20 @@ export default function CommunityPage() {
           ))}
         </div>
 
-        <div className="max-w-4xl mx-auto flex flex-col items-center space-y-6 relative z-10">
-          <Breadcrumbs 
-            theme="dark" 
-            items={[ { label: "Home", href: "/" }, { label: "Community" } ]} 
-          />
-          
+        <div className="max-w-4xl mx-auto flex flex-col items-center space-y-5 relative z-10">
           <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
             Join 2all.ai's <span className="text-[#C8FF4D]">Nonprofit</span> Community
           </h1>
           
-          <p className="text-slate-200 text-lg md:text-xl font-light max-w-2xl leading-relaxed">
+          <p className="text-slate-200 text-base md:text-lg font-light max-w-2xl leading-relaxed">
             Empowering nonprofits with free automated web compliance tools to make digital experiences accessible to everyone.
           </p>
           
-          <div className="pt-4">
-            <button className="bg-[#C8FF4D] hover:bg-[#b0e63c] text-slate-900 px-8 py-3.5 rounded-full font-black text-sm tracking-widest uppercase transition-all hover:scale-105 shadow-xl">
+          <div className="pt-3">
+            <button
+              onClick={() => setShowDemo(true)}
+              className="bg-[#C8FF4D] hover:bg-[#b0e63c] text-slate-900 px-8 py-3.5 rounded-full font-black text-sm tracking-widest uppercase transition-all hover:scale-105 shadow-xl cursor-pointer"
+            >
               Apply For Free License &rarr;
             </button>
           </div>
