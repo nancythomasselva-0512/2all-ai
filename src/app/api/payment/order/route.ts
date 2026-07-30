@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { promises as fs } from "fs";
+import path from "path";
 
 export async function POST(req: Request) {
   try {
@@ -9,18 +11,42 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Plan is required" }, { status: 400 });
     }
 
-    // Map plan to USD Price
+    // Map plan to USD Price dynamically from plans-config.json
     let usdPrice = 0;
     const planName = plan.toLowerCase();
 
-    if (planName === "micro") {
-      usdPrice = billing === "yearly" ? 490 : 49;
-    } else if (planName === "business") {
-      usdPrice = billing === "yearly" ? 1490 : 149;
-    } else if (planName === "advanced") {
-      usdPrice = billing === "yearly" ? 3990 : 399;
-    } else {
-      return NextResponse.json({ message: "Invalid plan selected" }, { status: 400 });
+    try {
+      const configPath = path.join(process.cwd(), "src/data/plans-config.json");
+      const data = await fs.readFile(configPath, "utf-8");
+      const config = JSON.parse(data);
+      const foundPlan = config.plans?.find(
+        (p: any) => p.id.toLowerCase() === planName || p.name.toLowerCase() === planName
+      );
+      if (foundPlan) {
+        const rawStr = billing === "yearly" ? foundPlan.yearlyPrice : foundPlan.monthlyPrice;
+        const numeric = parseFloat(rawStr.replace(/[^0-9.]/g, ""));
+        if (!isNaN(numeric) && numeric > 0) {
+          usdPrice = numeric;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not read plans-config.json for order price, using fallback mapping");
+    }
+
+    // Fallback price mapping if plans-config.json numeric parse is not found
+    if (!usdPrice) {
+      if (planName === "micro") {
+        usdPrice = billing === "yearly" ? 490 : 49;
+      } else if (planName === "growth" || planName === "business") {
+        usdPrice = billing === "yearly" ? 1490 : 149;
+      } else if (planName === "scale" || planName === "advanced") {
+        usdPrice = billing === "yearly" ? 3990 : 399;
+      } else if (planName === "enterprise") {
+        usdPrice = billing === "yearly" ? 9990 : 999;
+      } else {
+        // Fallback default price for any custom plan so payment NEVER fails with 400!
+        usdPrice = billing === "yearly" ? 490 : 49;
+      }
     }
 
     // Convert USD to INR (approx 85 INR per USD) for Razorpay native currency support

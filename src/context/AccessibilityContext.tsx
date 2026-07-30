@@ -128,6 +128,8 @@ interface AccessibilityContextProps {
   resetSettings: () => void;
   applyProfile: (profile: ProfileType) => void;
   updateSetting: <K extends keyof AccessibilityState>(key: K, value: AccessibilityState[K]) => void;
+  isFeatureEnabled: (id: string) => boolean;
+  disabledFeatureIds: string[];
 }
 
 const defaultState: AccessibilityState = {
@@ -277,6 +279,53 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     return defaultState;
   });
   const [mounted, setMounted] = useState(false);
+  const [disabledFeatureIds, setDisabledFeatureIds] = useState<string[]>([]);
+
+  const fetchAccessibilityConfig = async () => {
+    try {
+      const res = await fetch("/api/admin/accessibility-config");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.features)) {
+          const disabled = data.features
+            .filter((f: any) => f.enabled === false)
+            .map((f: any) => f.id);
+          setDisabledFeatureIds(disabled);
+        }
+      }
+    } catch (err) {
+      console.warn("Could not load accessibility menu config:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAccessibilityConfig();
+
+    const handleConfigUpdate = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (Array.isArray(detail)) {
+        const disabled = detail
+          .filter((f: any) => f.enabled === false)
+          .map((f: any) => f.id);
+        setDisabledFeatureIds(disabled);
+      } else {
+        fetchAccessibilityConfig();
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("a11y-config-updated", handleConfigUpdate);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("a11y-config-updated", handleConfigUpdate);
+      }
+    };
+  }, []);
+
+  const isFeatureEnabled = (id: string): boolean => {
+    return !disabledFeatureIds.includes(id);
+  };
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -373,7 +422,6 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
           highlightLinks: true,
           highlightButtons: true,
           readingRuler: true,
-          textAlignment: "left",
         };
         break;
       case "reading":
@@ -384,7 +432,6 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
           wordSpacing: 0.15,
           lineHeight: 1.9,
           fontSize: 108,
-          textAlignment: "left",
           highlightHeadings: true,
           autoReadSelection: true,
         };
@@ -404,7 +451,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AccessibilityContext.Provider value={{ state, setState, togglePanel, resetSettings, applyProfile, updateSetting }}>
+    <AccessibilityContext.Provider value={{ state, setState, togglePanel, resetSettings, applyProfile, updateSetting, isFeatureEnabled, disabledFeatureIds }}>
       {children}
       {mounted && <SpeechEngine />}
     </AccessibilityContext.Provider>

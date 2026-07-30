@@ -30,15 +30,41 @@ function CheckoutContent() {
   const [error, setError] = useState("");
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [verifying, setVerifying] = useState(false);
+  const [plansData, setPlansData] = useState<any[]>([]);
 
-  // Map plan price Copy
-  const planDetails: Record<string, { title: string; price: number; desc: string }> = {
-    micro: { title: "Micro Plan", price: billing === "yearly" ? 490 : 49, desc: "Under 999 pages website volume" },
-    business: { title: "Business Plan", price: billing === "yearly" ? 1490 : 149, desc: "Under 29,999 pages website volume" },
-    advanced: { title: "Advanced Plan", price: billing === "yearly" ? 3990 : 399, desc: "Under 999,999 pages website volume" }
+  useEffect(() => {
+    fetch("/api/admin/plans")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.plans) setPlansData(data.plans);
+      })
+      .catch(() => {});
+  }, []);
+
+  const getSelectedPlanInfo = () => {
+    const p = plan.toLowerCase();
+    const found = plansData.find((item: any) => item.id.toLowerCase() === p || item.name.toLowerCase() === p);
+    if (found) {
+      const displayPrice = billing === "yearly" ? found.yearlyPrice : found.monthlyPrice;
+      const numPrice = parseFloat(displayPrice.replace(/[^0-9.]/g, "")) || (billing === "yearly" ? 490 : 49);
+      return {
+        title: `${found.name} Plan`,
+        price: numPrice,
+        desc: found.description
+      };
+    }
+    const planDetailsMap: Record<string, { title: string; price: number; desc: string }> = {
+      micro: { title: "Micro Plan", price: billing === "yearly" ? 490 : 49, desc: "Under 999 pages website volume" },
+      growth: { title: "Growth Plan", price: billing === "yearly" ? 1490 : 149, desc: "Under 29,999 pages website volume" },
+      business: { title: "Growth Plan", price: billing === "yearly" ? 1490 : 149, desc: "Under 29,999 pages website volume" },
+      scale: { title: "Scale Plan", price: billing === "yearly" ? 3990 : 399, desc: "Under 999,999 pages website volume" },
+      advanced: { title: "Scale Plan", price: billing === "yearly" ? 3990 : 399, desc: "Under 999,999 pages website volume" },
+      enterprise: { title: "Enterprise Plan", price: billing === "yearly" ? 9990 : 999, desc: "Above 999,999 pages volume" }
+    };
+    return planDetailsMap[p] || planDetailsMap.micro;
   };
 
-  const selectedPlan = planDetails[plan.toLowerCase()] || planDetails.micro;
+  const selectedPlan = getSelectedPlanInfo();
 
   useEffect(() => {
     // 1. Enforce authentication

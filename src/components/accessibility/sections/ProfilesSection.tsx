@@ -86,12 +86,14 @@ const profiles = [
 ];
 
 export default function ProfilesSection({ searchQuery }: { searchQuery: string }) {
-  const { state, applyProfile } = useAccessibility();
+  const { state, applyProfile, isFeatureEnabled } = useAccessibility();
 
-  const filtered = profiles.filter(p => 
-    p.label.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    p.desc.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filtered = profiles
+    .filter(p => p.id !== "dyslexia" || isFeatureEnabled("dyslexiaFont"))
+    .filter(p => 
+      p.label.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      p.desc.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   return (
     <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-1.5">

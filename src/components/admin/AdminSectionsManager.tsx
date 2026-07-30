@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Layers,
   Plus,
@@ -251,6 +251,12 @@ export default function AdminSectionsManager() {
 
   const categories = [
     "All Categories",
+    "Home Page",
+    "Pricing Page",
+    "About Us Page",
+    "Compliance Page",
+    "Enterprise Page",
+    "Non-Profit Page",
     "Hero & Presentation",
     "Solutions & Platform",
     "Pricing & Subscriptions",
@@ -259,6 +265,26 @@ export default function AdminSectionsManager() {
     "Footer & Layout"
   ];
 
+  // Fetch sections from API on mount
+  useEffect(() => {
+    fetch("/api/admin/sections")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && Array.isArray(data.sections) && data.sections.length > 0) {
+          setSections(data.sections);
+        }
+      })
+      .catch((err) => console.warn("Could not load backend sections config:", err));
+  }, []);
+
+  const saveSectionsToBackend = (updatedSections: WebsiteSectionItem[]) => {
+    fetch("/api/admin/sections", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sections: updatedSections }),
+    }).catch((err) => console.error("Error saving sections:", err));
+  };
+
   const showToast = (text: string, type: "success" | "error" = "success") => {
     setToastMessage({ text, type });
     setTimeout(() => setToastMessage(null), 3000);
@@ -266,9 +292,11 @@ export default function AdminSectionsManager() {
 
   // Toggle Section Enabled State
   const handleToggleSection = (id: string) => {
-    setSections(prev =>
-      prev.map(sec => (sec.id === id ? { ...sec, enabled: !sec.enabled } : sec))
-    );
+    setSections(prev => {
+      const updated = prev.map(sec => (sec.id === id ? { ...sec, enabled: !sec.enabled } : sec));
+      saveSectionsToBackend(updated);
+      return updated;
+    });
     showToast("Section visibility updated!");
   };
 
@@ -288,6 +316,7 @@ export default function AdminSectionsManager() {
     // Update orders
     const updated = newArr.map((sec, idx) => ({ ...sec, order: idx + 1 }));
     setSections(updated);
+    saveSectionsToBackend(updated);
     showToast(`Moved "${temp.title.slice(0, 20)}..." ${direction}!`);
   };
 
@@ -311,9 +340,11 @@ export default function AdminSectionsManager() {
     e.preventDefault();
     if (!editingSection) return;
 
-    setSections(prev =>
-      prev.map(sec => (sec.id === editingSection.id ? editingSection : sec))
-    );
+    setSections(prev => {
+      const updated = prev.map(sec => (sec.id === editingSection.id ? editingSection : sec));
+      saveSectionsToBackend(updated);
+      return updated;
+    });
     setEditingSection(null);
     showToast(`Section "${editingSection.title.slice(0, 25)}..." updated successfully!`);
   };
@@ -347,14 +378,17 @@ export default function AdminSectionsManager() {
       order: insertTargetOrder !== null ? insertTargetOrder + 1 : sections.length + 1
     };
 
+    let updated: WebsiteSectionItem[] = [];
     if (insertTargetOrder !== null) {
       const newArr = [...sections];
       newArr.splice(insertTargetOrder, 0, newSec);
-      const reordered = newArr.map((sec, idx) => ({ ...sec, order: idx + 1 }));
-      setSections(reordered);
+      updated = newArr.map((sec, idx) => ({ ...sec, order: idx + 1 }));
     } else {
-      setSections(prev => [...prev, newSec]);
+      updated = [...sections, newSec];
     }
+
+    setSections(updated);
+    saveSectionsToBackend(updated);
 
     setIsAddModalOpen(false);
     setInsertTargetOrder(null);
@@ -370,7 +404,11 @@ export default function AdminSectionsManager() {
 
   // Delete Section
   const handleDeleteSection = (id: string) => {
-    setSections(prev => prev.filter(sec => sec.id !== id));
+    setSections(prev => {
+      const updated = prev.filter(sec => sec.id !== id);
+      saveSectionsToBackend(updated);
+      return updated;
+    });
     showToast("Section deleted cleanly from platform!");
   };
 
@@ -820,17 +858,40 @@ export default function AdminSectionsManager() {
                 </div>
               </div>
 
-              <div className="pt-3 flex gap-3">
+              {/* Category Selector */}
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Page / Category Assignment</label>
+                <select
+                  value={editingSection.category}
+                  onChange={(e) => setEditingSection({ ...editingSection, category: e.target.value as any })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800"
+                >
+                  <option value="Home Page">Home Page</option>
+                  <option value="Pricing Page">Pricing Page</option>
+                  <option value="About Us Page">About Us Page</option>
+                  <option value="Compliance Page">Compliance Page</option>
+                  <option value="Enterprise Page">Enterprise Page</option>
+                  <option value="Non-Profit Page">Non-Profit Page</option>
+                  <option value="Hero & Presentation">Hero & Presentation</option>
+                  <option value="Solutions & Platform">Solutions & Platform</option>
+                  <option value="Pricing & Subscriptions">Pricing & Subscriptions</option>
+                  <option value="Industries & Use Cases">Industries & Use Cases</option>
+                  <option value="Compliance & Legal">Compliance & Legal</option>
+                  <option value="Footer & Layout">Footer & Layout</option>
+                </select>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3 w-full shrink-0">
                 <button
                   type="button"
                   onClick={() => setEditingSection(null)}
-                  className="flex-1 py-2.5 bg-slate-100 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-200 cursor-pointer"
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all cursor-pointer border-none shrink-0"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-blue-600 text-white font-extrabold text-xs rounded-xl hover:bg-blue-700 shadow-md cursor-pointer border-none uppercase tracking-wider"
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/20 transition-all cursor-pointer border-none uppercase tracking-wider shrink-0"
                 >
                   Save Section Changes
                 </button>
@@ -867,12 +928,18 @@ export default function AdminSectionsManager() {
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Category</label>
+                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Page / Category Assignment</label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value as any)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-800"
                 >
+                  <option value="Home Page">Home Page</option>
+                  <option value="Pricing Page">Pricing Page</option>
+                  <option value="About Us Page">About Us Page</option>
+                  <option value="Compliance Page">Compliance Page</option>
+                  <option value="Enterprise Page">Enterprise Page</option>
+                  <option value="Non-Profit Page">Non-Profit Page</option>
                   <option value="Hero & Presentation">Hero & Presentation</option>
                   <option value="Solutions & Platform">Solutions & Platform</option>
                   <option value="Pricing & Subscriptions">Pricing & Subscriptions</option>
@@ -939,17 +1006,17 @@ export default function AdminSectionsManager() {
                 </div>
               </div>
 
-              <div className="pt-3 flex gap-3">
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3 w-full shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="flex-1 py-2.5 bg-slate-100 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-200 cursor-pointer"
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all cursor-pointer border-none shrink-0"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 bg-blue-600 text-white font-extrabold text-xs rounded-xl hover:bg-blue-700 shadow-md cursor-pointer border-none uppercase tracking-wider"
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/20 transition-all cursor-pointer border-none uppercase tracking-wider shrink-0"
                 >
                   Create & Insert Section
                 </button>

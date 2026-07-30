@@ -344,21 +344,26 @@ html.a11y-light-mode, body.a11y-light-mode {
   filter: grayscale(100%) !important;
 }
 
-/* Text Alignments */
-.a11y-align-left #app-content, 
-.a11y-align-left #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
+/* Text Alignments - Only target content body text while preserving centered headers */
+.a11y-align-left #app-content p,
+.a11y-align-left #app-content article,
+.a11y-align-left #app-content li {
   text-align: left !important;
 }
-.a11y-align-right #app-content, 
-.a11y-align-right #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
+.a11y-align-right #app-content p,
+.a11y-align-right #app-content article,
+.a11y-align-right #app-content li {
   text-align: right !important;
 }
-.a11y-align-center #app-content, 
-.a11y-align-center #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
+.a11y-align-center #app-content p,
+.a11y-align-center #app-content h1,
+.a11y-align-center #app-content h2,
+.a11y-align-center #app-content h3 {
   text-align: center !important;
 }
-.a11y-align-justify #app-content, 
-.a11y-align-justify #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
+.a11y-align-justify #app-content p,
+.a11y-align-justify #app-content article,
+.a11y-align-justify #app-content li {
   text-align: justify !important;
 }
 

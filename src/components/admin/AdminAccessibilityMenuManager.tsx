@@ -85,6 +85,9 @@ export default function AdminAccessibilityMenuManager() {
       if (res.ok) {
         setFeatures(updatedFeatures);
         showToast("Accessibility Menu updated and saved successfully!");
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("a11y-config-updated", { detail: updatedFeatures }));
+        }
       } else {
         showToast("Failed to save changes.", "error");
       }

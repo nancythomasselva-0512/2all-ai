@@ -53,7 +53,7 @@ function findBestTab(query: string): Tab | null {
 }
 
 export default function AccessibilityPanel() {
-  const { state, resetSettings, togglePanel } = useAccessibility();
+  const { state, resetSettings, togglePanel, isFeatureEnabled } = useAccessibility();
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   const [manualTab, setManualTab] = useState(false);
@@ -65,7 +65,7 @@ export default function AccessibilityPanel() {
     { id: "profiles", icon: UserCircle, label: "Modes" },
     { id: "features", icon: Settings2, label: "Features" },
     { id: "vision", icon: Palette, label: "Vision" },
-    { id: "ai", icon: Bot, label: "AI Assist" },
+    ...(isFeatureEnabled("aiAssistant") ? [{ id: "ai", icon: Bot, label: "AI Assist" }] : []),
   ];
 
   // Auto-switch tab when search query changes

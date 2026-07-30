@@ -21,7 +21,7 @@ const fadeUp = {
 };
 
 export default function CoreFeaturesSection({ searchQuery }: { searchQuery: string }) {
-  const { state, updateSetting } = useAccessibility();
+  const { state, updateSetting, isFeatureEnabled } = useAccessibility();
 
   const groups = [
     {
@@ -47,9 +47,9 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
           value: state.fontFamily,
           options: [
             { value: "default", label: "Default" },
-            { value: "dyslexic", label: "OpenDyslexic" },
+            ...(isFeatureEnabled("dyslexiaFont") ? [{ value: "dyslexic", label: "OpenDyslexic" }] : []),
             { value: "lexend", label: "Lexend" },
-            { value: "readable", label: "Readable (Verdana)" },
+            ...(isFeatureEnabled("readableFont") ? [{ value: "readable", label: "Readable (Verdana)" }] : []),
           ]
         },
         { 
@@ -237,104 +237,114 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
     }
   ];
 
-  const filterItems = (items: any[]) => items.filter(item => item.label.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filterItems = (items: any[]) => items.filter(item => isFeatureEnabled(item.id) && item.label.toLowerCase().includes(searchQuery.toLowerCase()));
   const filteredGroups = groups.map(g => ({ ...g, items: filterItems(g.items) })).filter(g => g.items.length > 0);
 
   return (
     <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-6 pb-10">
       
       {/* Readable Experience Section (Matching User Reference Images) */}
-      {(!searchQuery || "readable experience content scaling text magnifier readable font center aligned".includes(searchQuery.toLowerCase())) && (
+      {(isFeatureEnabled("fontSize") || isFeatureEnabled("textMagnifier") || isFeatureEnabled("readableFont") || isFeatureEnabled("textAlignment")) && (!searchQuery || "readable experience content scaling text magnifier readable font center aligned".includes(searchQuery.toLowerCase())) && (
         <motion.div variants={fadeUp} className="space-y-3">
           <h3 className="text-sm font-bold text-slate-800 px-1">Readable Experience</h3>
 
           {/* Card 1: Content Scaling */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col items-center justify-center gap-3 shadow-sm hover:border-slate-300 transition-all">
-            <span className="text-xs font-bold text-slate-900">Content Scaling</span>
-            <div className="flex items-center justify-between w-full max-w-[220px] px-2">
-              {/* Minus Button */}
-              <button
-                onClick={() => updateSetting("fontSize", Math.max(90, state.fontSize - 10))}
-                className="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg flex items-center justify-center border border-blue-500 shadow-md shadow-blue-500/20 cursor-pointer transition-all active:scale-95"
-                aria-label="Decrease content scaling"
-              >
-                <Minus className="w-4 h-4 stroke-[3]" />
-              </button>
+          {isFeatureEnabled("fontSize") && (
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col items-center justify-center gap-3 shadow-sm hover:border-slate-300 transition-all">
+              <span className="text-xs font-bold text-slate-900">Content Scaling</span>
+              <div className="flex items-center justify-between w-full max-w-[220px] px-2">
+                {/* Minus Button */}
+                <button
+                  onClick={() => updateSetting("fontSize", Math.max(90, state.fontSize - 10))}
+                  className="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg flex items-center justify-center border border-blue-500 shadow-md shadow-blue-500/20 cursor-pointer transition-all active:scale-95"
+                  aria-label="Decrease content scaling"
+                >
+                  <Minus className="w-4 h-4 stroke-[3]" />
+                </button>
 
-              {/* Center Label */}
-              <span className="text-xs font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200/60">
-                {state.fontSize === 100 ? "Default" : `${state.fontSize}%`}
-              </span>
+                {/* Center Label */}
+                <span className="text-xs font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200/60">
+                  {state.fontSize === 100 ? "Default" : `${state.fontSize}%`}
+                </span>
 
-              {/* Plus Button */}
-              <button
-                onClick={() => updateSetting("fontSize", Math.min(200, state.fontSize + 10))}
-                className="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg flex items-center justify-center border border-blue-500 shadow-md shadow-blue-500/20 cursor-pointer transition-all active:scale-95"
-                aria-label="Increase content scaling"
-              >
-                <Plus className="w-4 h-4 stroke-[3]" />
-              </button>
+                {/* Plus Button */}
+                <button
+                  onClick={() => updateSetting("fontSize", Math.min(200, state.fontSize + 10))}
+                  className="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg flex items-center justify-center border border-blue-500 shadow-md shadow-blue-500/20 cursor-pointer transition-all active:scale-95"
+                  aria-label="Increase content scaling"
+                >
+                  <Plus className="w-4 h-4 stroke-[3]" />
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Card 2: Text Magnifier */}
-          <button
-            onClick={() => updateSetting("textMagnifier", !state.textMagnifier)}
-            className={`w-full rounded-2xl p-3.5 flex items-center justify-center gap-3 transition-all cursor-pointer select-none ${
-              state.textMagnifier 
-                ? 'border-2 border-blue-500 bg-blue-50/80 text-blue-900 shadow-md shadow-blue-500/10' 
-                : 'border border-slate-200/80 bg-white text-slate-800 hover:border-blue-300 hover:shadow-md'
-            }`}
-          >
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-sm transition-colors ${
-              state.textMagnifier ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-600 border border-blue-100'
-            }`}>
-              <MessageSquarePlus className="w-4 h-4 stroke-[2]" />
-            </div>
-            <span className="text-xs font-bold">Text Magnifier</span>
-          </button>
+          {isFeatureEnabled("textMagnifier") && (
+            <button
+              onClick={() => updateSetting("textMagnifier", !state.textMagnifier)}
+              className={`w-full rounded-2xl p-3.5 flex items-center justify-center gap-3 transition-all cursor-pointer select-none ${
+                state.textMagnifier 
+                  ? 'border-2 border-blue-500 bg-blue-50/80 text-blue-900 shadow-md shadow-blue-500/10' 
+                  : 'border border-slate-200/80 bg-white text-slate-800 hover:border-blue-300 hover:shadow-md'
+              }`}
+            >
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-sm transition-colors ${
+                state.textMagnifier ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-600 border border-blue-100'
+              }`}>
+                <MessageSquarePlus className="w-4 h-4 stroke-[2]" />
+              </div>
+              <span className="text-xs font-bold">Text Magnifier</span>
+            </button>
+          )}
 
           {/* Card 3 & 4 Grid: Readable Font (Aa) & Center Aligned (Small Boxes) */}
-          <div className="grid grid-cols-2 gap-3 pt-1">
-            {/* Card 3: Readable Font (Aa) */}
-            <button
-              onClick={() => updateSetting("fontFamily", state.fontFamily === "readable" ? "default" : "readable")}
-              className={`rounded-2xl py-3.5 px-3 flex flex-col items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer select-none border-2 ${
-                state.fontFamily === "readable"
-                  ? 'border-[#0091ff] bg-sky-50/80 text-blue-950 shadow-sm scale-[1.01]' 
-                  : 'border-[#cbe2ff] bg-white text-slate-800 hover:border-[#0091ff] hover:shadow-sm'
-              }`}
-            >
-              <span className="text-2xl font-black text-[#0091ff] tracking-tight leading-none">
-                Aa
-              </span>
-              <span className="text-xs font-bold text-[#262626] text-center">
-                Readable Font
-              </span>
-            </button>
+          {(isFeatureEnabled("readableFont") || isFeatureEnabled("textAlignment")) && (
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              {/* Card 3: Readable Font (Aa) */}
+              {isFeatureEnabled("readableFont") && (
+                <button
+                  onClick={() => updateSetting("fontFamily", state.fontFamily === "readable" ? "default" : "readable")}
+                  className={`rounded-2xl py-3.5 px-3 flex flex-col items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer select-none border-2 ${
+                    state.fontFamily === "readable"
+                      ? 'border-[#0091ff] bg-sky-50/80 text-blue-950 shadow-sm scale-[1.01]' 
+                      : 'border-[#cbe2ff] bg-white text-slate-800 hover:border-[#0091ff] hover:shadow-sm'
+                  }`}
+                >
+                  <span className="text-2xl font-black text-[#0091ff] tracking-tight leading-none">
+                    Aa
+                  </span>
+                  <span className="text-xs font-bold text-[#262626] text-center">
+                    Readable Font
+                  </span>
+                </button>
+              )}
 
-            {/* Card 4: Center Aligned */}
-            <button
-              onClick={() => updateSetting("textAlignment", state.textAlignment === "center" ? "default" : "center")}
-              className={`rounded-2xl py-3.5 px-3 flex flex-col items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer select-none border-2 ${
-                state.textAlignment === "center"
-                  ? 'border-[#0091ff] bg-sky-50/80 text-blue-950 shadow-sm scale-[1.01]' 
-                  : 'border-[#cbe2ff] bg-white text-slate-800 hover:border-[#0091ff] hover:shadow-sm'
-              }`}
-            >
-              <div className="flex items-center justify-center h-6">
-                <svg width="26" height="21" viewBox="0 0 34 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="10" y="1" width="14" height="4.5" rx="2.25" fill="#0091ff" />
-                  <rect x="3" y="8.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
-                  <rect x="7" y="16" width="20" height="4.5" rx="2.25" fill="#0091ff" />
-                  <rect x="3" y="23.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
-                </svg>
-              </div>
-              <div className="text-xs font-bold text-[#262626] text-center leading-tight">
-                Center<br />Aligned
-              </div>
-            </button>
-          </div>
+              {/* Card 4: Center Aligned */}
+              {isFeatureEnabled("textAlignment") && (
+                <button
+                  onClick={() => updateSetting("textAlignment", state.textAlignment === "center" ? "default" : "center")}
+                  className={`rounded-2xl py-3.5 px-3 flex flex-col items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer select-none border-2 ${
+                    state.textAlignment === "center"
+                      ? 'border-[#0091ff] bg-sky-50/80 text-blue-950 shadow-sm scale-[1.01]' 
+                      : 'border-[#cbe2ff] bg-white text-slate-800 hover:border-[#0091ff] hover:shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-center justify-center h-6">
+                    <svg width="26" height="21" viewBox="0 0 34 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="10" y="1" width="14" height="4.5" rx="2.25" fill="#0091ff" />
+                      <rect x="3" y="8.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
+                      <rect x="7" y="16" width="20" height="4.5" rx="2.25" fill="#0091ff" />
+                      <rect x="3" y="23.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
+                    </svg>
+                  </div>
+                  <div className="text-xs font-bold text-[#262626] text-center leading-tight">
+                    Center<br />Aligned
+                  </div>
+                </button>
+              )}
+            </div>
+          )}
         </motion.div>
       )}
 

@@ -1,6 +1,8 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
+import { promises as fs } from "fs";
+import path from "path";
 import SuperAdminDashboard from "@/components/admin/SuperAdminDashboard";
 
 export default async function SuperAdminDashboardPage(props: { searchParams?: Promise<{ tab?: string }> }) {
@@ -55,12 +57,41 @@ export default async function SuperAdminDashboardPage(props: { searchParams?: Pr
     console.warn("Could not query users/projects for Super Admin:", err);
   }
 
+  // Read current site configuration
+  let config = {
+    brandName: "2all.ai",
+    tagline: "Intelligence that scans",
+    showDemoButton: true,
+    showTrialButton: true,
+    trialButtonText: "START FREE TRIAL",
+    demoButtonText: "BOOK A DEMO",
+    stripeActive: true,
+    paypalActive: false,
+    trialPeriodDays: 7,
+    primaryColor: "blue",
+    proPrice: 49,
+    auditBannerTitle: "Put your website to the test",
+    orbitIcon: "globe",
+    customCss: "/* Inject custom CSS here */\nbody { font-family: sans-serif; }",
+    customJs: "console.log('White label platform script injected');",
+    trackingScripts: "<!-- Google Analytics or Tracking pixels code -->"
+  };
+
+  try {
+    const configPath = path.join(process.cwd(), "src/data/site-config.json");
+    const data = await fs.readFile(configPath, "utf-8");
+    config = JSON.parse(data);
+  } catch (err) {
+    console.warn("Could not load config file in Super Admin Dashboard, using defaults.");
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 font-sans">
       <SuperAdminDashboard
         initialUsers={users as any}
         initialProjects={projects as any}
         initialDomains={domains as any}
+        initialConfig={config}
         currentUser={user as any}
         initialTab={tab}
       />

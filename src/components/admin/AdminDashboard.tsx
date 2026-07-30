@@ -51,7 +51,9 @@ import AdminAccessibilityMenuManager from "./AdminAccessibilityMenuManager";
 import AdminDemoRequestsManager from "./AdminDemoRequestsManager";
 import AdminEmailTemplatesEditor from "./AdminEmailTemplatesEditor";
 import AdminSectionsManager from "./AdminSectionsManager";
+import AdminPlansManager from "./AdminPlansManager";
 import { useAccessibility } from "@/context/AccessibilityContext";
+import AdminDashboardPage from "./AdminDashboardPage";
 
 interface UserType {
   id: string;
@@ -139,6 +141,7 @@ interface DashboardProps {
   initialConfig: ConfigType;
   currentUser?: { name?: string | null; email?: string | null };
   initialTab?: string;
+  isSuperAdminView?: boolean;
 }
 
 function FormalToggle({
@@ -183,7 +186,8 @@ export default function AdminDashboard({
   initialDomains = [],
   initialConfig,
   currentUser,
-  initialTab = "overview"
+  initialTab = "overview",
+  isSuperAdminView = false
 }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<string>(initialTab);
   const { state: a11yState, updateSetting: updateA11ySetting, applyProfile: applyA11yProfile, resetSettings: resetA11ySettings } = useAccessibility();
@@ -422,75 +426,81 @@ export default function AdminDashboard({
             </button>
           </div>
 
-          {/* Navigation Links Group 1: System Panel */}
+          {/* Navigation Links Group 1: Main Management */}
           <div className="p-4 space-y-1">
             <span className="block text-[11px] font-black text-blue-600 uppercase tracking-widest mb-2 px-3 leading-none">Main Management</span>
             {[
-              { id: "overview", label: "Overview Panel", icon: LayoutGrid },
-              { id: "accessibility", label: "Accessibility Suite Console", icon: Accessibility },
-              { id: "users", label: "User Database", icon: UserCog },
-              { id: "license-owner", label: "License Owner Info", icon: FileText },
-              { id: "payments", label: "Payments Gateway", icon: CreditCard },
-              { id: "domains", label: "Customer Workspace", icon: Globe },
-              { id: "api-keys", label: "API Keys Console", icon: KeyRound },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    handleTabChange(tab.id);
-                    setIsSidebarOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left text-sm font-black transition-all cursor-pointer border-none ${activeTab === tab.id
-                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                      : "bg-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50/50"
-                    }`}
-                >
-                  <Icon className="w-4.5 h-4.5 stroke-[2.5]" />
-                  {tab.label}
-                </button>
-              );
-            })}
+              { id: "dashboard", label: "Dashboard", icon: LayoutGrid, essential: true },
+{ id: "notification", label: "Notification", icon: LayoutGrid, essential: true },
+              { id: "users", label: "User Database", icon: UserCog, essential: true },
+              { id: "domains", label: "Customer Workspace", icon: Globe, essential: true },
+              { id: "api-keys", label: "API Keys Console", icon: KeyRound, essential: true },
+              { id: "license-owner", label: "License Owner Info", icon: FileText, essential: true },
+              { id: "accessibility", label: "Accessibility Suite Console", icon: Accessibility, essential: false },
+              { id: "payments", label: "Payments Gateway", icon: CreditCard, essential: false },
+              { id: "plans", label: "Plans & Feature Matrix", icon: Sliders, essential: false },
+            ]
+              .filter((tab) => isSuperAdminView || tab.essential)
+              .map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      handleTabChange(tab.id);
+                      setIsSidebarOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left text-sm font-black transition-all cursor-pointer border-none ${activeTab === tab.id
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                        : "bg-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50/50"
+                      }`}
+                  >
+                    <Icon className="w-4.5 h-4.5 stroke-[2.5]" />
+                    {tab.label}
+                  </button>
+                );
+              })}
           </div>
 
-          {/* Navigation Links Group 2: Platform Builder Modules */}
-          <div className="p-4 pt-1 space-y-1">
-            <span className="block text-[11px] font-black text-blue-600 uppercase tracking-widest mb-2 px-3 leading-none">Platform Builder Modules</span>
-            {[
-              { id: "sections", label: "Sections Builder (Dynamic)", icon: Layers },
-              { id: "branding", label: "Branding & Email Config", icon: Mail },
-              { id: "templates", label: "Dynamic Email Templates", icon: FileCode },
-              { id: "theme", label: "Theme Manager", icon: Palette },
-              { id: "website", label: "Website Builder", icon: Globe },
-              { id: "navigation", label: "Navigation Builder", icon: Layers },
-              { id: "landing", label: "Landing Page Builder", icon: Layout },
-              { id: "cms", label: "CMS (Content Management)", icon: Sliders },
-              { id: "features", label: "Feature Manager", icon: Settings },
-              { id: "dashboard", label: "Dashboard Builder", icon: LayoutGrid },
-              { id: "form", label: "Form Builder", icon: FileText },
-              { id: "auth", label: "Auth Configuration", icon: ShieldCheck },
-              { id: "cssjs", label: "Custom CSS/JS", icon: Code },
-              { id: "whitelabel", label: "White-Label Manager", icon: UserCog },
-              { id: "media", label: "Media Library", icon: FolderOpen },
-              { id: "translation", label: "Translation Config", icon: Languages }
-            ].map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => handleTabChange(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left text-sm font-black transition-all cursor-pointer border-none ${activeTab === tab.id
-                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                      : "bg-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50/50"
-                    }`}
-                >
-                  <Icon className="w-4.5 h-4.5 stroke-[2.5]" />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
+          {/* Navigation Links Group 2: Platform Builder Modules (Super Admin Only) */}
+          {isSuperAdminView && (
+            <div className="p-4 pt-1 space-y-1">
+              <span className="block text-[11px] font-black text-blue-600 uppercase tracking-widest mb-2 px-3 leading-none">Platform Builder Modules</span>
+              {[
+                { id: "sections", label: "Sections Builder (Dynamic)", icon: Layers },
+                { id: "branding", label: "Branding & Email Config", icon: Mail },
+                { id: "templates", label: "Dynamic Email Templates", icon: FileCode },
+                { id: "theme", label: "Theme Manager", icon: Palette },
+                { id: "website", label: "Website Builder", icon: Globe },
+                { id: "navigation", label: "Navigation Builder", icon: Layers },
+                { id: "landing", label: "Landing Page Builder", icon: Layout },
+                { id: "cms", label: "CMS (Content Management)", icon: Sliders },
+                { id: "features", label: "Feature Manager", icon: Settings },
+
+                { id: "form", label: "Form Builder", icon: FileText },
+                { id: "auth", label: "Auth Configuration", icon: ShieldCheck },
+                { id: "cssjs", label: "Custom CSS/JS", icon: Code },
+                { id: "whitelabel", label: "White-Label Manager", icon: UserCog },
+                { id: "media", label: "Media Library", icon: FolderOpen },
+                { id: "translation", label: "Translation Config", icon: Languages }
+              ].map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleTabChange(tab.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left text-sm font-black transition-all cursor-pointer border-none ${activeTab === tab.id
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                        : "bg-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50/50"
+                      }`}
+                  >
+                    <Icon className="w-4.5 h-4.5 stroke-[2.5]" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Footer Actions */}
@@ -616,29 +626,47 @@ export default function AdminDashboard({
                     {/* Voice Navigation Toggle */}
                     <div 
                       onClick={() => updateA11ySetting("voiceNavigation", !a11yState.voiceNavigation)}
-                      className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${a11yState.voiceNavigation ? 'bg-blue-50 border-blue-300' : 'bg-slate-50 border-slate-200'}`}
+                      className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-4 ${a11yState.voiceNavigation ? 'bg-blue-50 border-blue-300' : 'bg-slate-50 border-slate-200'}`}
                     >
                       <div>
                         <h4 className="text-base font-black text-slate-900">Voice Command Navigation</h4>
                         <p className="text-xs text-slate-500 font-medium mt-1">Control website by speaking any word (Pricing, VPAT, Footer, Solutions)</p>
                       </div>
-                      <div className={`w-11 h-6 rounded-full p-0.5 transition-colors ${a11yState.voiceNavigation ? 'bg-blue-600' : 'bg-slate-300'}`}>
-                        <div className={`w-5 h-5 bg-white rounded-full transition-transform shadow-sm ${a11yState.voiceNavigation ? 'translate-x-5' : 'translate-x-0'}`} />
-                      </div>
+                      <button
+                        type="button"
+                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                          a11yState.voiceNavigation ? "bg-blue-600 shadow-sm shadow-blue-500/30" : "bg-slate-300"
+                        }`}
+                      >
+                        <span
+                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                            a11yState.voiceNavigation ? "translate-x-5" : "translate-x-0"
+                          }`}
+                        />
+                      </button>
                     </div>
 
                     {/* Text-To-Speech Toggle */}
                     <div 
                       onClick={() => updateA11ySetting("textToSpeech", !a11yState.textToSpeech)}
-                      className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${a11yState.textToSpeech ? 'bg-blue-50 border-blue-300' : 'bg-slate-50 border-slate-200'}`}
+                      className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-4 ${a11yState.textToSpeech ? 'bg-blue-50 border-blue-300' : 'bg-slate-50 border-slate-200'}`}
                     >
                       <div>
                         <h4 className="text-base font-black text-slate-900">Read Aloud (Text-to-Speech Engine)</h4>
                         <p className="text-xs text-slate-500 font-medium mt-1">Hover or click elements to listen to spoken narration</p>
                       </div>
-                      <div className={`w-11 h-6 rounded-full p-0.5 transition-colors ${a11yState.textToSpeech ? 'bg-blue-600' : 'bg-slate-300'}`}>
-                        <div className={`w-5 h-5 bg-white rounded-full transition-transform shadow-sm ${a11yState.textToSpeech ? 'translate-x-5' : 'translate-x-0'}`} />
-                      </div>
+                      <button
+                        type="button"
+                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                          a11yState.textToSpeech ? "bg-blue-600 shadow-sm shadow-blue-500/30" : "bg-slate-300"
+                        }`}
+                      >
+                        <span
+                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                            a11yState.textToSpeech ? "translate-x-5" : "translate-x-0"
+                          }`}
+                        />
+                      </button>
                     </div>
 
                     <button 
@@ -749,111 +777,15 @@ export default function AdminDashboard({
 
             </div>
           )}
+{/* TAB 0: DASHBOARD */}
+{activeTab === "dashboard" && <AdminDashboardPage users={users} projects={projects} />}
 
-          {/* TAB 1: OVERVIEW */}
-          {activeTab === "overview" && (
+
+          {/* TAB 1: NOTIFICATION */}
+          {activeTab === "notification" && (
             <div className="space-y-8 animate-in fade-in duration-200 text-left">
-
-              {/* Telemetry Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {[
-                  { label: "Total Accounts", value: users.length, icon: Users, color: "text-blue-600 bg-blue-50 border-blue-100" },
-                  { label: "Active Domains", value: projects.length, icon: Globe, color: "text-emerald-600 bg-emerald-50 border-emerald-100" },
-                  { label: "Sandbox Licenses", value: users.filter(u => u.role === "ADMIN").length + projects.length, icon: Award, color: "text-purple-600 bg-purple-50 border-purple-100" },
-                  { label: "Virtual Trial Yield", value: `$${users.length * 49}`, icon: DollarSign, color: "text-amber-600 bg-amber-50 border-amber-100" },
-                ].map((card) => {
-                  const Icon = card.icon;
-                  return (
-                    <div key={card.label} className="bg-white border border-slate-200/80 rounded-2xl p-5 flex items-center justify-between shadow-sm">
-                      <div className="space-y-1.5">
-                        <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{card.label}</span>
-                        <span className="block text-2xl font-black text-slate-800 tracking-tight leading-none">{card.value}</span>
-                      </div>
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${card.color}`}>
-                        <Icon className="w-5 h-5 stroke-[2.5]" />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Data Lists Row */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-                {/* Users Table */}
-                <div className="lg:col-span-7 bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
-                  <div className="px-6 py-4 border-b border-slate-200/60 flex items-center justify-between">
-                    <h3 className="text-xs font-black text-slate-800 tracking-wider uppercase">Recent Registrations</h3>
-                    <TrendingUp className="w-4 h-4 text-slate-400" />
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full min-w-[500px] text-xs font-medium text-slate-600">
-                      <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400 tracking-widest border-b border-slate-200/60">
-                        <tr>
-                          <th className="px-4 md:px-6 py-3 text-left whitespace-nowrap">User</th>
-                          <th className="px-4 md:px-6 py-3 text-left whitespace-nowrap">Role</th>
-                          <th className="px-4 md:px-6 py-3 text-left whitespace-nowrap">Joined</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {users.slice(0, 5).map((user) => (
-                          <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="px-4 md:px-6 py-3.5 whitespace-nowrap">
-                              <span className="block font-black text-slate-800">{user.name || "Unnamed"}</span>
-                              <span className="block text-[10px] text-slate-400 font-bold">{user.email}</span>
-                            </td>
-                            <td className="px-4 md:px-6 py-3.5 whitespace-nowrap">
-                              <span className={`px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider ${user.role === "ADMIN" ? "bg-purple-50 text-purple-600 border border-purple-100" : "bg-blue-50 text-blue-600 border border-blue-100"
-                                }`}>
-                                {user.role}
-                              </span>
-                            </td>
-                            <td className="px-4 md:px-6 py-3.5 text-slate-400 font-bold whitespace-nowrap">
-                              {new Date(user.createdAt).toLocaleDateString()}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Projects Table */}
-                <div className="lg:col-span-5 bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
-                  <div className="px-6 py-4 border-b border-slate-200/60 flex items-center justify-between">
-                    <h3 className="text-xs font-black text-slate-800 tracking-wider uppercase">Active Projects</h3>
-                    <Globe className="w-4 h-4 text-slate-400" />
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full min-w-[400px] text-xs font-medium text-slate-600">
-                      <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400 tracking-widest border-b border-slate-200/60">
-                        <tr>
-                          <th className="px-6 py-3 text-left">Domain</th>
-                          <th className="px-6 py-3 text-left">Owner</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {projects.slice(0, 5).map((project) => (
-                          <tr key={project.id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="px-6 py-3.5">
-                              <span className="block font-black text-slate-800">{project.name}</span>
-                              <span className="block text-[9px] text-slate-400 font-bold truncate max-w-[150px]">{project.url}</span>
-                            </td>
-                            <td className="px-6 py-3.5">
-                              <span className="block text-[11px] font-black text-slate-700">{project.user?.name || "Unnamed"}</span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-              </div>
-
               {/* Enterprise Demo Requests & Slot Manager */}
               <AdminDemoRequestsManager />
-
             </div>
           )}
 
@@ -1515,6 +1447,11 @@ export default function AdminDashboard({
             </div>
           )}
 
+          {/* TAB: SUBSCRIPTION PLANS & FEATURE MATRIX MANAGER */}
+          {activeTab === "plans" && (
+            <AdminPlansManager />
+          )}
+
           {/* TAB 7: USERS DATABASE */}
           {activeTab === "users" && (
             <div className="space-y-6 animate-in fade-in duration-200 text-left">
@@ -2062,59 +1999,6 @@ export default function AdminDashboard({
             </div>
           )}
 
-          {/* TAB: DASHBOARD BUILDER */}
-          {activeTab === "dashboard" && (
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-3xl text-left animate-in fade-in duration-200 space-y-6">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                  <h3 className="text-lg font-black text-slate-900 tracking-tight">Customer Dashboard Builder</h3>
-                  <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">Customize default layout, banner cards, and greeting text for customer accounts.</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsAddItemModalOpen(true)}
-                  className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
-                >
-                  <Plus className="w-4 h-4 stroke-[2.5]" /> Add Dashboard Card
-                </button>
-              </div>
-
-              <form onSubmit={handleSaveConfig} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">Welcome Greeting Header</label>
-                  <input
-                    type="text"
-                    value={editConfig.welcomeGreeting || "Welcome to 2all.ai Accessibility Workspace"}
-                    onChange={(e) => setEditConfig({ ...editConfig, welcomeGreeting: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
-                  />
-                </div>
-
-                <FormalToggle
-                  checked={editConfig.showTrialCard ?? true}
-                  onChange={(val) => setEditConfig({ ...editConfig, showTrialCard: val })}
-                  label="Show Free Trial Progress Card"
-                  description="Display 7-day trial progress banner in customer dashboard header"
-                />
-
-                <FormalToggle
-                  checked={editConfig.showBenefitCards ?? true}
-                  onChange={(val) => setEditConfig({ ...editConfig, showBenefitCards: val })}
-                  label="Show Benefit Cards Grid"
-                  description="Display Expert Services, Tax Credit, SEO, and WCAG article cards"
-                />
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/10 transition-all cursor-pointer border-none uppercase tracking-wider"
-                >
-                  <Save className="w-4.5 h-4.5" />
-                  {loading ? "Saving..." : "Save Dashboard Layout"}
-                </button>
-              </form>
-            </div>
-          )}
 
           {/* TAB: AUTH CONFIGURATION */}
           {activeTab === "auth" && (

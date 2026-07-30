@@ -29,9 +29,25 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 export default function PricingPage() {
   const [isDemoOpen, setIsDemoOpen] = useState(false);
   const [activeHoverMenu, setActiveHoverMenu] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState("2allWidget");
+  const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
+  const [isVisitsInfoOpen, setIsVisitsInfoOpen] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("yearly");
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const [plansConfig, setPlansConfig] = useState<any[]>([]);
+
+  React.useEffect(() => {
+    fetch("/api/admin/plans")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.plans && Array.isArray(data.plans)) {
+          setPlansConfig(data.plans);
+        }
+      })
+      .catch((err) => console.error("Error loading plans config", err));
+  }, []);
 
   const toggleFaq = (index: number) => {
     if (activeFaq === index) {
@@ -246,7 +262,7 @@ export default function PricingPage() {
       </header>
 
       {/* TITLE & TOGGLES */}
-      <section className="relative bg-[#f8fafc] pt-6 pb-8 overflow-hidden text-center border-b border-slate-100">
+      <section className="relative bg-[#f8fafc] pt-6 pb-8 overflow-visible z-20 text-center border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 md:px-8 w-full relative z-10">
           <div className="flex justify-start text-left mb-2">
             <Breadcrumbs theme="light" items={[ { label: "Home", href: "/" }, { label: "Pricing" } ]} />
@@ -258,8 +274,94 @@ export default function PricingPage() {
             </h1>
           </div>
 
-          {/* Toggle Control */}
-          <div className="flex flex-col items-center gap-4 pt-4">
+          {/* Toggle Control & Product Selector */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6 max-w-4xl mx-auto">
+            {/* Show prices for: Dropdown */}
+            <div className="flex items-center gap-3 relative">
+              <span className="text-sm sm:text-base font-black text-slate-900 uppercase tracking-wider">Show prices for:</span>
+              <div className="relative">
+                <button
+                  onClick={() => setIsProductDropdownOpen(!isProductDropdownOpen)}
+                  className="flex items-center justify-between gap-3.5 bg-white border-2 border-slate-300 hover:border-blue-500 rounded-2xl px-5 py-3 text-base sm:text-lg font-black text-slate-900 shadow-sm cursor-pointer min-w-[260px] transition-all select-none"
+                >
+                  <span className="flex items-center gap-3">
+                    {selectedProduct === "2allWidget" && (
+                      <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6C4 4.89543 4.89543 4 6 4H14V16C14 18.2091 12.2091 20 10 20H6C4.89543 20 4 19.1046 4 18V6Z" fill="#004bff" />
+                        <circle cx="15" cy="9" r="4.5" fill="#38bdf8" opacity="0.9" />
+                      </svg>
+                    )}
+                    {selectedProduct === "2allFlow" && (
+                      <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" fill="#0d9488" />
+                        <path d="M12 6.5L15.5 12L12 17.5L8.5 12L12 6.5Z" fill="#ffffff" />
+                      </svg>
+                    )}
+                    {selectedProduct === "2allServices" && (
+                      <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none">
+                        <rect x="4" y="6" width="10" height="13" rx="2" fill="#a78bfa" />
+                        <rect x="10" y="10" width="10" height="9" rx="2" fill="#5b21b6" />
+                      </svg>
+                    )}
+                    <span>{selectedProduct}</span>
+                  </span>
+                  <ChevronDown className={`w-5 h-5 text-slate-500 transition-transform ${isProductDropdownOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                {isProductDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-full min-w-[260px] bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 p-2 space-y-1 text-left">
+                    {[
+                      {
+                        name: "2allWidget",
+                        icon: (
+                          <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 6C4 4.89543 4.89543 4 6 4H14V16C14 18.2091 12.2091 20 10 20H6C4.89543 20 4 19.1046 4 18V6Z" fill="#004bff" />
+                            <circle cx="15" cy="9" r="4.5" fill="#38bdf8" opacity="0.9" />
+                          </svg>
+                        )
+                      },
+                      {
+                        name: "2allFlow",
+                        icon: (
+                          <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" fill="#0d9488" />
+                            <path d="M12 6.5L15.5 12L12 17.5L8.5 12L12 6.5Z" fill="#ffffff" />
+                          </svg>
+                        )
+                      },
+                      {
+                        name: "2allServices",
+                        icon: (
+                          <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none">
+                            <rect x="4" y="6" width="10" height="13" rx="2" fill="#a78bfa" />
+                            <rect x="10" y="10" width="10" height="9" rx="2" fill="#5b21b6" />
+                          </svg>
+                        )
+                      },
+                    ].map((prod) => (
+                      <button
+                        key={prod.name}
+                        onClick={() => {
+                          setSelectedProduct(prod.name);
+                          setIsProductDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3.5 py-2.5 rounded-xl transition-colors flex items-center justify-between cursor-pointer border-none ${
+                          selectedProduct === prod.name ? "bg-blue-50 text-blue-600 font-black" : "text-slate-800 hover:bg-slate-50 font-bold"
+                        }`}
+                      >
+                        <span className="flex items-center gap-3 text-sm sm:text-base font-extrabold">
+                          {prod.icon}
+                          <span>{prod.name}</span>
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Pay Yearly / Monthly Toggle */}
             <div className="bg-slate-100/80 border border-slate-200/50 p-1 rounded-2xl flex items-center gap-1">
               <button
                 onClick={() => setBillingPeriod("yearly")}
@@ -280,193 +382,274 @@ export default function PricingPage() {
               </button>
             </div>
           </div>
+
+          {/* How monthly visits are calculated Popover Link */}
+          <div className="pt-4 flex justify-center">
+            <button
+              onClick={() => setIsVisitsInfoOpen(true)}
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 border-none bg-transparent cursor-pointer transition-colors"
+            >
+              How monthly visits are calculated
+              <HelpCircle className="w-4 h-4 text-blue-500" />
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* PRICING CARDS */}
-      <section className="py-12 md:py-20 max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-          
-          {/* Card 1: Micro */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-xl transition-all text-left">
-            <div className="space-y-6">
-              <div>
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Micro</span>
-                <div className="mt-2 flex items-baseline">
-                  <span className="text-3xl font-black text-slate-900">${getPrice(49)}</span>
-                  <span className="text-xs text-slate-400 font-bold ml-1">/{billingPeriod === "yearly" ? "yr" : "mo"}</span>
-                </div>
-                <p className="text-[11px] text-slate-500 font-bold mt-2">Under 999 pages website volume.</p>
-              </div>
-              
-              <Link
-                href={`/checkout?plan=micro&billing=${billingPeriod}`}
-                className="w-full py-3 bg-[#004bff] hover:bg-[#003edd] text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/10 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-1.5 transition-all"
-              >
-                Buy Now
-                <ChevronRight className="w-4 h-4" />
-              </Link>
+      {/* How Monthly Visits Are Calculated Modal */}
+      {isVisitsInfoOpen && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl relative border border-slate-100 text-left space-y-4"
+          >
+            <button
+              onClick={() => setIsVisitsInfoOpen(false)}
+              className="absolute top-5 right-5 p-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors border-none cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
 
-              <div className="border-t border-slate-100 pt-6 space-y-4 text-sm font-semibold text-slate-700">
-                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">Automated Accessibility</span>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-2.5">
-                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
-                    <span>2all.ai Widget (AI-Powered Overlay)</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
-                    <span>Automated Screen Reader adjustments</span>
-                  </li>
-                </ul>
+            <h3 className="text-lg font-black text-slate-900 pr-6">
+              How monthly visits are calculated
+            </h3>
 
-                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block pt-2">Support</span>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-2.5">
-                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
-                    <span>Standard support helpdesk</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+              <strong>2all.ai</strong> subscription plans are priced according to your website's monthly traffic. We calculate the average monthly visits (non-unique, desktop, and mobile) to your domain based on data from the past six months.
+            </p>
 
-          {/* Card 2: Business */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-xl transition-all text-left">
-            <div className="space-y-6">
-              <div>
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Business</span>
-                <div className="mt-2 flex items-baseline">
-                  <span className="text-3xl font-black text-slate-900">${getPrice(149)}</span>
-                  <span className="text-xs text-slate-400 font-bold ml-1">/{billingPeriod === "yearly" ? "yr" : "mo"}</span>
-                </div>
-                <p className="text-[11px] text-slate-500 font-bold mt-2">Under 29,999 pages website volume.</p>
-              </div>
-              
-              <Link
-                href={`/checkout?plan=business&billing=${billingPeriod}`}
-                className="w-full py-3 bg-[#004bff] hover:bg-[#003edd] text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/10 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-1.5 transition-all"
-              >
-                Buy Now
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-
-              <div className="border-t border-slate-100 pt-6 space-y-4 text-sm font-semibold text-slate-700">
-                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">Everything in Micro, plus:</span>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-2.5">
-                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
-                    <span>Larger scan volume capacity</span>
-                  </li>
-                </ul>
-
-                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block pt-2">Premium Features</span>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-2.5">
-                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
-                    <span>Full widget customization</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
-                    <span>White-label brand dashboard removal</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 3: Advanced */}
-          <div className="bg-white border-2 border-blue-600 rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-xl transition-all relative text-left">
-            <span className="absolute top-0 right-4 lg:right-6 -translate-y-1/2 bg-blue-600 text-white font-black text-[9px] uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
-              <Star className="w-3 h-3 fill-white" />
-              Most Popular
-            </span>
-            <div className="space-y-6">
-              <div>
-                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block font-sans">Advanced</span>
-                <div className="mt-2 flex items-baseline">
-                  <span className="text-3xl font-black text-slate-900">${getPrice(399)}</span>
-                  <span className="text-xs text-slate-400 font-bold ml-1">/{billingPeriod === "yearly" ? "yr" : "mo"}</span>
-                </div>
-                <p className="text-[11px] text-slate-500 font-bold mt-2">Under 999,999 pages website volume.</p>
-              </div>
-              
-              <Link
-                href={`/checkout?plan=advanced&billing=${billingPeriod}`}
-                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/20 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-1.5 transition-all"
-              >
-                Buy Now
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-
-              <div className="border-t border-slate-100 pt-6 space-y-4 text-sm font-semibold text-slate-700">
-                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">Everything in Business, plus:</span>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-2.5">
-                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
-                    <span>Top-tier site crawling engines</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
-                    <span>Dedicated account success advisor</span>
-                  </li>
-                </ul>
-
-                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block pt-2">Compliance & Reports</span>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-2.5">
-                    <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
-                    <span>Scheduled compliance scanning reports</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 4: Enterprise */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-xl transition-all text-left">
-            <div className="space-y-6">
-              <div>
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Enterprise</span>
-                <div className="mt-2 flex items-baseline">
-                  <span className="text-3xl font-black text-slate-900">Custom</span>
-                </div>
-                <p className="text-[11px] text-slate-500 font-bold mt-2">Above 999,999 pages volume.</p>
-              </div>
-              
+            <div className="pt-2 flex justify-end">
               <button
-                onClick={() => setIsDemoOpen(true)}
-                className="w-full py-3 bg-slate-900 hover:bg-slate-850 text-white font-extrabold text-xs rounded-xl tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-1.5 transition-all"
+                onClick={() => setIsVisitsInfoOpen(false)}
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-extrabold tracking-wider uppercase border-none cursor-pointer shadow-md shadow-blue-500/20"
               >
-                Get a Quote
-                <ChevronRight className="w-4 h-4" />
+                Got it
               </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
-              <div className="border-t border-slate-100 pt-6 space-y-4 text-xs font-semibold text-slate-600">
-                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">Everything in Advanced, plus:</span>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                    <span>Unlimited crawling and custom volume</span>
-                  </li>
-                </ul>
+      {/* PRICING CARDS SECTION */}
+      <section className="py-12 md:py-20 max-w-7xl mx-auto px-4 sm:px-6">
+        {selectedProduct === "2allFlow" ? (
+          <div className="space-y-10">
+            {/* 2allFlow 3-Column Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 text-left">
+              {/* Card 1: Essential */}
+              <div className="bg-white border-2 border-slate-200/90 rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-2xl transition-all relative">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900 tracking-wider uppercase">ESSENTIAL</h3>
+                    <p className="text-xs text-slate-500 font-bold mt-1">Up to 1,000 web pages</p>
+                  </div>
 
-                <span className="text-xs font-black text-slate-400 uppercase tracking-widest block pt-2">Integrations & Security</span>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                    <span>Single Sign-On (SSO) Support</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                    <span>Custom SLA compliance guarantees</span>
-                  </li>
-                </ul>
+                  <button
+                    onClick={() => setIsDemoOpen(true)}
+                    className="w-full py-3.5 bg-[#004bff] hover:bg-[#003edd] text-white font-extrabold text-xs rounded-2xl shadow-md shadow-blue-500/20 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-2 transition-all"
+                  >
+                    BOOK A DEMO
+                    <ArrowRight className="w-4 h-4 stroke-[3]" />
+                  </button>
+
+                  <div className="border-t border-slate-100 pt-6">
+                    <ul className="space-y-3 text-xs sm:text-sm font-semibold text-slate-700">
+                      {[
+                        "Up to 2 domains",
+                        "Up to 2 users",
+                        "Automatic monthly scans",
+                        "AI based auditing & monitoring",
+                        "20 daily on demand page scans",
+                        "10 user journey recordings",
+                        "Ticketing system integrations",
+                        "Dedicated onboarding",
+                        "In-app fix guidance",
+                        "Commit-ready code remediation",
+                        "Dynamic accessibility statement generator",
+                        "Auto-resolve (user based session fixes)",
+                      ].map((item, i) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5 stroke-[3]" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 2: Professional */}
+              <div className="bg-white border-2 border-slate-200/90 rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-2xl transition-all relative">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900 tracking-wider uppercase">PROFESSIONAL</h3>
+                    <p className="text-xs text-slate-500 font-bold mt-1">Up to 10,000 web pages</p>
+                  </div>
+
+                  <button
+                    onClick={() => setIsDemoOpen(true)}
+                    className="w-full py-3.5 bg-[#004bff] hover:bg-[#003edd] text-white font-extrabold text-xs rounded-2xl shadow-md shadow-blue-500/20 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-2 transition-all"
+                  >
+                    BOOK A DEMO
+                    <ArrowRight className="w-4 h-4 stroke-[3]" />
+                  </button>
+
+                  <div className="border-t border-slate-100 pt-6 space-y-4">
+                    <span className="text-xs font-black text-slate-400 uppercase tracking-wider block">Everything in Essential, plus:</span>
+                    <ul className="space-y-3 text-xs sm:text-sm font-semibold text-slate-700">
+                      {[
+                        "Up to 10 domains",
+                        "Up to 10 users",
+                        "Bi-weekly scan frequency",
+                        "50 daily on demand page scans",
+                        "50 user journey recordings",
+                        "Federated Login using Google",
+                        "CI/CD integrations (SDK)",
+                        "MCP",
+                      ].map((item, i) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5 stroke-[3]" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 3: Enterprise */}
+              <div className="bg-white border-2 border-slate-200/90 rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-2xl transition-all relative">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900 tracking-wider uppercase">ENTERPRISE</h3>
+                    <p className="text-xs text-slate-500 font-bold mt-1">10,000+ web pages</p>
+                  </div>
+
+                  <button
+                    onClick={() => setIsDemoOpen(true)}
+                    className="w-full py-3.5 bg-[#004bff] hover:bg-[#003edd] text-white font-extrabold text-xs rounded-2xl shadow-md shadow-blue-500/20 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-2 transition-all"
+                  >
+                    BOOK A DEMO
+                    <ArrowRight className="w-4 h-4 stroke-[3]" />
+                  </button>
+
+                  <div className="border-t border-slate-100 pt-6 space-y-4">
+                    <span className="text-xs font-black text-slate-400 uppercase tracking-wider block">Everything in Professional, plus:</span>
+                    <ul className="space-y-3 text-xs sm:text-sm font-semibold text-slate-700">
+                      {[
+                        "Up to 100 domains",
+                        "No user limits",
+                        "Weekly scan frequency",
+                        "150 daily on demand page scans",
+                        "150 user journey recordings",
+                        "Custom Legal and SLA",
+                        "Single Sign-On",
+                      ].map((item, i) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5 stroke-[3]" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-        </div>
+            {/* Note text at bottom of 2allFlow */}
+            <div className="text-left pt-4">
+              <p className="text-xs text-slate-500 font-medium">
+                NOTE: For a list of accessibility issues that are not remediated by 2allWidget, read our{" "}
+                <Link href="/compliance" className="text-blue-600 underline font-bold hover:text-blue-700">
+                  excluded issues article
+                </Link>
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+            
+            {/* Dynamic Plans Mapping */}
+            {(plansConfig.length > 0 ? plansConfig : [
+              { id: "micro", name: "MICRO", description: "Under 999 pages website volume.", monthlyPrice: "$49", yearlyPrice: "$490", isRecommended: false },
+              { id: "growth", name: "GROWTH", description: "Under 29,999 pages website volume.", monthlyPrice: "$149", yearlyPrice: "$1,490", isRecommended: false },
+              { id: "scale", name: "SCALE", description: "Under 999,999 pages website volume.", monthlyPrice: "$399", yearlyPrice: "$3,990", isRecommended: true },
+              { id: "enterprise", name: "ENTERPRISE", description: "Above 999,999 pages volume.", monthlyPrice: "Custom", yearlyPrice: "Custom", isRecommended: false },
+            ]).map((plan: any) => {
+              const displayPrice = billingPeriod === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
+              const isCustom = displayPrice === "Custom";
+
+              return (
+                <div 
+                  key={plan.id}
+                  className={`bg-white border rounded-3xl p-6 lg:p-8 flex flex-col justify-between hover:shadow-xl transition-all text-left relative ${
+                    plan.isRecommended ? "border-2 border-blue-600" : "border-slate-200/80"
+                  }`}
+                >
+                  {plan.isRecommended && (
+                    <span className="absolute top-0 right-4 lg:right-6 -translate-y-1/2 bg-blue-600 text-white font-black text-[9px] uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                      <Star className="w-3 h-3 fill-white" />
+                      {plan.badge || "Most Popular"}
+                    </span>
+                  )}
+
+                  <div className="space-y-6">
+                    <div className="min-h-[160px] flex flex-col justify-between">
+                      <div>
+                        <h3 className={`text-xl sm:text-2xl font-black tracking-wider uppercase ${plan.isRecommended ? "text-blue-600" : "text-[#02183a]"}`}>
+                          {plan.name}
+                        </h3>
+                        <div className="mt-1 flex items-baseline">
+                          <span className="text-3xl font-black text-slate-900">{displayPrice}</span>
+                          {!isCustom && (
+                            <span className="text-xs text-slate-400 font-bold ml-1">/{billingPeriod === "yearly" ? "yr" : "mo"}</span>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-slate-500 font-normal mt-1">{plan.description}</p>
+                    </div>
+
+                    {isCustom ? (
+                      <button
+                        onClick={() => setIsDemoOpen(true)}
+                        className="w-full py-3 bg-slate-900 hover:bg-slate-850 text-white font-extrabold text-xs rounded-xl tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-1.5 transition-all"
+                      >
+                        Get a Quote
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    ) : (
+                      <Link
+                        href={`/checkout?plan=${plan.id}&billing=${billingPeriod}`}
+                        className="w-full py-3 bg-[#004bff] hover:bg-[#003edd] text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/10 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-1.5 transition-all"
+                      >
+                        Buy Now
+                        <ChevronRight className="w-4 h-4" />
+                      </Link>
+                    )}
+
+                    <div className="border-t border-slate-100 pt-6 space-y-4 text-sm font-semibold text-slate-700">
+                      <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">Included Features</span>
+                      <ul className="space-y-3">
+                        {(plan.bulletFeatures || [
+                          "2all.ai Widget (AI-Powered Overlay)",
+                          "Automated Screen Reader adjustments",
+                          "Standard support helpdesk"
+                        ]).map((feat: string, fi: number) => (
+                          <li key={fi} className="flex items-start gap-2.5">
+                            <Check className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
+                            <span>{feat}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+          </div>
+        )}
       </section>
 
       {/* FEATURE COMPARISON TABLE */}
@@ -484,7 +667,7 @@ export default function PricingPage() {
                 : "bg-white text-slate-500 border-slate-200 hover:text-slate-700"
             }`}
           >
-            Yearly (save 30%)
+            Yearly (save 20%)
           </button>
           <button
             onClick={() => setBillingPeriod("monthly")}
@@ -502,96 +685,197 @@ export default function PricingPage() {
           <table className="w-full min-w-[900px] lg:min-w-full border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-slate-200">
-                <th className="p-5 text-xs font-black text-slate-500 uppercase tracking-wider bg-white w-1/3 sticky left-0 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Features</th>
-                {[
-                  { name: "Micro", volume: "Up to 1k monthly visits", price: getPrice(49), href: `/checkout?plan=micro&billing=${billingPeriod}`, highlight: false },
-                  { name: "Growth", volume: "Up to 30k monthly visits", price: getPrice(149), href: `/checkout?plan=business&billing=${billingPeriod}`, highlight: true },
-                  { name: "Scale", volume: "Up to 100k monthly visits", price: getPrice(399), href: `/checkout?plan=advanced&billing=${billingPeriod}`, highlight: false },
-                  { name: "Enterprise", volume: "Over 100k monthly visits", price: null, href: null, highlight: false },
-                ].map((col) => (
-                  <th
-                    key={col.name}
-                    className={`p-5 text-center align-top ${col.highlight ? "bg-blue-50" : "bg-white"}`}
-                  >
-                    {col.highlight && (
-                      <div className="flex items-center justify-center gap-1 mb-1">
-                        <Sparkles className="w-3 h-3 text-blue-500" />
-                        <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">Recommended</span>
+                <th className="p-6 text-base sm:text-lg font-black text-slate-900 uppercase tracking-wider bg-white w-1/3 sticky left-0 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Features</th>
+                {(plansConfig.length > 0 ? plansConfig : [
+                  { id: "micro", name: "MICRO", description: "Under 999 pages website volume.", monthlyPrice: "$49", yearlyPrice: "$490", isRecommended: false },
+                  { id: "growth", name: "GROWTH", description: "Under 29,999 pages website volume.", monthlyPrice: "$149", yearlyPrice: "$1,490", isRecommended: false },
+                  { id: "scale", name: "SCALE", description: "Under 999,999 pages website volume.", monthlyPrice: "$399", yearlyPrice: "$3,990", isRecommended: true },
+                  { id: "enterprise", name: "ENTERPRISE", description: "Above 999,999 pages volume.", monthlyPrice: "Custom", yearlyPrice: "Custom", isRecommended: false },
+                ]).map((col: any) => {
+                  const displayPrice = billingPeriod === "yearly" ? col.yearlyPrice : col.monthlyPrice;
+                  const isCustom = displayPrice === "Custom";
+
+                  return (
+                    <th
+                      key={col.id}
+                      className={`p-5 text-center align-top ${col.isRecommended ? "bg-blue-50" : "bg-white"}`}
+                    >
+                      <div className="h-full flex flex-col justify-between min-h-[175px]">
+                        <div>
+                          {col.isRecommended ? (
+                            <div className="flex items-center justify-center mb-2.5 h-6">
+                              <span className="bg-[#004bff] text-white font-black text-[9px] uppercase tracking-widest px-3 py-1 rounded-full inline-flex items-center gap-1 shadow-md shadow-blue-500/20">
+                                <Star className="w-3 h-3 fill-white stroke-none" />
+                                RECOMMENDED
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="h-6 mb-2.5" />
+                          )}
+                          <h4 className="text-lg sm:text-xl font-black text-slate-900 uppercase tracking-wider mb-1">
+                            {col.name}
+                          </h4>
+                          <p className="text-xs text-slate-500 font-normal leading-snug">{col.description}</p>
+                        </div>
+
+                        <div>
+                          <p className="text-xl font-black text-slate-900 mt-2">
+                            {displayPrice}
+                            {!isCustom && (
+                              <span className="text-xs text-slate-400 font-normal ml-1">/{billingPeriod === "yearly" ? "year" : "mo"}</span>
+                            )}
+                          </p>
+                          <div className="mt-3 px-1">
+                            {!isCustom ? (
+                              <Link
+                                href={`/checkout?plan=${col.id}&billing=${billingPeriod}`}
+                                className={`flex items-center justify-center text-center w-full px-4 py-2.5 rounded-full text-[11px] font-black uppercase tracking-wider transition-all select-none whitespace-nowrap ${
+                                  col.isRecommended
+                                    ? "bg-[#004bff] hover:bg-[#003edd] text-white shadow-md shadow-blue-500/20"
+                                    : "bg-[#02183a] hover:bg-slate-800 text-white shadow-sm"
+                                }`}
+                              >
+                                BUY NOW
+                              </Link>
+                            ) : (
+                              <button
+                                onClick={() => setIsDemoOpen(true)}
+                                className="flex items-center justify-center text-center w-full px-4 py-2.5 rounded-full text-[11px] font-black uppercase tracking-wider transition-all bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 cursor-pointer shadow-sm select-none whitespace-nowrap"
+                              >
+                                CONTACT SALES
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    )}
-                    <p className="text-[10px] text-slate-400 font-bold">{col.volume}</p>
-                    <p className="text-xl font-black text-slate-900 mt-1">
-                      {col.price !== null ? (
-                        <>${col.price}<span className="text-xs text-slate-400 font-normal ml-1">/{billingPeriod === "yearly" ? "year" : "mo"}</span></>
-                      ) : (
-                        <span className="text-blue-600">Custom price</span>
-                      )}
-                    </p>
-                    <p className="text-sm font-black text-slate-700 mt-0.5">{col.name}</p>
-                    <div className="mt-3">
-                      {col.href ? (
-                        <Link
-                          href={col.href}
-                          className={`block w-full py-2 rounded-xl text-[10px] font-extrabold uppercase tracking-wider text-center transition-all ${
-                            col.highlight
-                              ? "bg-blue-600 hover:bg-blue-700 text-white"
-                              : "bg-slate-900 hover:bg-slate-800 text-white"
-                          }`}
-                        >
-                          Buy plan
-                        </Link>
-                      ) : (
-                        <button
-                          onClick={() => setIsDemoOpen(true)}
-                          className="block w-full py-2 rounded-xl text-[10px] font-extrabold uppercase tracking-wider text-center transition-all bg-transparent border border-slate-300 text-slate-600 hover:bg-slate-50 cursor-pointer"
-                        >
-                          Contact sales
-                        </button>
-                      )}
-                    </div>
-                  </th>
-                ))}
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
-            <tbody className="text-xs text-slate-600">
-              {[
-                { feature: "AI powered accessibility", values: [true, true, true, true] },
-                { feature: "Compliance for ADA, ACDA, EAA", values: [true, true, true, true] },
-                { feature: "Automated proof of effort", values: [true, true, true, true] },
-                { feature: "Customer support", values: [true, true, true, true] },
-                { feature: "First response SLA", values: [false, true, true, true] },
-                { feature: "Litigation support package", values: ["48hr", "48hr", "48hr", "24hr"] },
-                { feature: "Litigation pledge", values: [false, true, true, true] },
-                { feature: "Detailed remediation report", values: [false, "$15k", "$20k", "$20k"] },
-                { feature: "Google Analytics", values: [true, true, true, true] },
-                { feature: "Multi-account management", values: [false, true, true, true] },
-                { feature: "User & team management", values: [false, true, true, true] },
-                { feature: "APIs & batch management", values: [false, true, true, true] },
-                { feature: "Manual testing", values: [false, true, true, true] },
-                { feature: "Custom fixes to improve accessibility conformance", values: [false, false, true, true] },
-                { feature: "Custom code fixes", values: [false, false, "Yearly", "Yearly + custom"] },
-                { feature: "Single sign-on (SSO)", values: [false, false, true, true] },
-                { feature: "Dedicated account manager", values: [false, false, true, true] },
-                { feature: "Custom legal terms", values: [false, false, false, true] },
-              ].map((row, ri) => (
-                <tr key={ri} className={`border-t border-slate-100 ${ri % 2 === 0 ? "bg-white" : "bg-slate-50"}`}>
-                  <td className="px-5 py-4 font-semibold text-slate-700 sticky left-0 z-10 bg-inherit shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">{row.feature}</td>
-                  {row.values.map((val, vi) => (
-                    <td
-                      key={vi}
-                      className={`px-5 py-4 text-center ${vi === 1 ? "bg-blue-50/60" : ""}`}
-                    >
-                      {val === true ? (
-                        <Check className="w-4 h-4 text-blue-600 mx-auto stroke-[2.5]" />
-                      ) : val === false ? (
-                        <span className="text-slate-300 font-black">—</span>
-                      ) : (
-                        <span className="text-slate-600 font-bold">{val}</span>
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+            <tbody className="text-sm sm:text-base text-slate-800">
+              {(() => {
+                const isToolIncludedInPlan = (toolId: string, planIndex: number): boolean => {
+                  const planIds = ["micro", "growth", "scale", "enterprise"];
+                  const targetId = planIds[planIndex];
+                  const foundPlan = plansConfig.find((p: any) => p.id === targetId);
+                  if (!foundPlan || !Array.isArray(foundPlan.includedFeatureIds)) {
+                    if (toolId === "voiceNavigation" || toolId === "textToSpeech" || toolId === "aiAssistant" || toolId === "readEntirePage" || toolId === "autoReadSelection") {
+                      return planIndex >= 2;
+                    }
+                    if (toolId === "dyslexiaFont" || toolId === "readingMask" || toolId === "readingRuler" || toolId === "wordSpacing" || toolId === "lineHeight") {
+                      return planIndex >= 1;
+                    }
+                    return true;
+                  }
+                  return foundPlan.includedFeatureIds.includes(toolId);
+                };
+
+                const rows = [
+                  // Category 1: Speech & Voice Tools
+                  { isCategory: true, category: "Speech & Voice Navigation Tools" },
+                  { id: "voiceNavigation", feature: "Voice Command Navigation Engine" },
+                  { id: "textToSpeech", feature: "Read Aloud (Text-to-Speech Engine)" },
+                  { id: "readEntirePage", feature: "Read Entire Page Narrator" },
+                  { id: "autoReadSelection", feature: "Auto Read Selection Mode" },
+                  { id: "highlightWord", feature: "Highlight Spoken Word" },
+                  { id: "highlightSentence", feature: "Highlight Spoken Sentence" },
+                  { id: "autoScroll", feature: "Auto Scroll Page Narrator" },
+                  { id: "aiAssistant", feature: "Anna AI Virtual Accessibility Assistant" },
+
+                  // Category 2: Typography & Font Controls
+                  { isCategory: true, category: "Typography & Readable Fonts" },
+                  { id: "fontSize", feature: "Content Scaling (Font Size Controls)" },
+                  { id: "textMagnifier", feature: "Text Magnifier Bubble" },
+                  { id: "readableFont", feature: "Readable Font (Verdana & Custom)" },
+                  { id: "dyslexiaFont", feature: "OpenDyslexic Font & Reader Mode" },
+                  { id: "textAlignment", feature: "Text Alignment Controls (Left / Center)" },
+                  { id: "letterSpacing", feature: "Letter Spacing (Kerning Adjuster)" },
+                  { id: "wordSpacing", feature: "Word Spacing Adjuster" },
+                  { id: "lineHeight", feature: "Line Height Multiplier" },
+
+                  // Category 3: Visual & Color Adjustments
+                  { isCategory: true, category: "Visual & Color Adjustments" },
+                  { id: "darkMode", feature: "Dark Contrast & Night Mode" },
+                  { id: "monochrome", feature: "Monochrome Contrast Mode" },
+                  { id: "highSaturation", feature: "High Saturation Mode" },
+                  { id: "lowSaturation", feature: "Low Saturation Mode" },
+
+                  // Category 4: Focus & Reading Tools
+                  { isCategory: true, category: "Focus & Reading Assistive Tools" },
+                  { id: "readingMask", feature: "Reading Mask Spotlight" },
+                  { id: "readingRuler", feature: "Reading Guide Ruler" },
+                  { id: "highlightLinks", feature: "Highlight Links & Anchors" },
+                  { id: "highlightHeadings", feature: "Highlight Headings (H1-H6)" },
+                  { id: "highlightButtons", feature: "Highlight Action Buttons" },
+                  { id: "reduceMotion", feature: "Reduce Motion & Animation Pauser" },
+                  { id: "cursorSize", feature: "Big Pointer / Cursor Mode" },
+
+                  // Category 5: Compliance & Audit Tools
+                  { isCategory: true, category: "Compliance & Audit Services" },
+                  { feature: "ADA, WCAG 2.2 AA, Sec 508 & EAA Conformance", values: [true, true, true, true] },
+                  { feature: "Automated Site Crawling & Scan Engine", values: ["1k pages", "30k pages", "100k pages", "Unlimited"] },
+                  { feature: "Automated Proof of Effort Statements", values: [true, true, true, true] },
+                  { feature: "Scheduled Compliance Scanning Reports", values: [false, true, true, true] },
+                  { feature: "White-Label (Remove 2all.ai Branding)", values: [false, true, true, true] },
+                  { feature: "Dedicated Account Manager & Advisor", values: [false, false, true, true] },
+                ];
+
+                return rows.map((row, ri) => {
+                  if (row.isCategory) {
+                    return (
+                      <tr key={`cat-${ri}`} className="bg-[#02183a] text-white">
+                        <td
+                          colSpan={5}
+                          className="px-6 py-3.5 font-black text-xs sm:text-sm uppercase tracking-widest text-blue-300 bg-[#02183a] border-t border-slate-800"
+                        >
+                          {row.category}
+                        </td>
+                      </tr>
+                    );
+                  }
+
+                  const isDynamicTool = "id" in row && typeof row.id === "string";
+
+                  return (
+                    <tr key={ri} className={`border-t border-slate-100 ${ri % 2 === 0 ? "bg-white" : "bg-slate-50"}`}>
+                      <td className="px-6 py-4 font-bold text-slate-900 sticky left-0 z-10 bg-inherit shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                        {row.feature}
+                      </td>
+                      {[0, 1, 2, 3].map((colIndex) => {
+                        let isChecked = false;
+                        let customVal: any = null;
+
+                        if (isDynamicTool) {
+                          isChecked = isToolIncludedInPlan((row as any).id, colIndex);
+                        } else if ("values" in row && Array.isArray((row as any).values)) {
+                          const val = (row as any).values[colIndex];
+                          if (typeof val === "boolean") {
+                            isChecked = val;
+                          } else {
+                            customVal = val;
+                          }
+                        }
+
+                        return (
+                          <td
+                            key={colIndex}
+                            className={`px-6 py-4 text-center ${colIndex === 1 ? "bg-blue-50/60" : ""}`}
+                          >
+                            {customVal !== null ? (
+                              <span className="text-slate-700 font-extrabold text-xs sm:text-sm">{customVal}</span>
+                            ) : isChecked ? (
+                              <Check className="w-4 h-4 text-blue-600 mx-auto stroke-[2.5]" />
+                            ) : (
+                              <span className="text-slate-300 font-black">—</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                });
+              })()}
             </tbody>
           </table>
         </div>
