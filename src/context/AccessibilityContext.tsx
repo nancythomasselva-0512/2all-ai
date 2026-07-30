@@ -193,7 +193,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const saved = localStorage.getItem("2all_accessibility");
         if (saved) {
-          return { ...defaultState, ...JSON.parse(saved), isPanelOpen: false };
+          return { ...defaultState, ...JSON.parse(saved), isPanelOpen: false, lastVoiceCommand: "" };
         }
       } catch {
         console.error("Failed to load accessibility settings");
@@ -211,11 +211,12 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => clearTimeout(timer);
   }, []);
 
-  // Save to localStorage when state changes (except isPanelOpen)
+  // Save to localStorage when state changes (except isPanelOpen and lastVoiceCommand)
   useEffect(() => {
     if (mounted) {
       const stateToSave = { ...state };
       delete (stateToSave as any).isPanelOpen;
+      delete (stateToSave as any).lastVoiceCommand;
       localStorage.setItem("2all_accessibility", JSON.stringify(stateToSave));
       applyDOMChanges(state);
     }
@@ -226,7 +227,11 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   const resetSettings = () => setState(defaultState);
 
   const updateSetting = <K extends keyof AccessibilityState>(key: K, value: AccessibilityState[K]) => {
-    setState(prev => ({ ...prev, [key]: value, activeProfile: "none" }));
+    if (key === "voiceNavigation") {
+      setState(prev => ({ ...prev, [key]: value, lastVoiceCommand: "", activeProfile: "none" }));
+    } else {
+      setState(prev => ({ ...prev, [key]: value, activeProfile: "none" }));
+    }
   };
 
   const applyProfile = (profile: ProfileType) => {

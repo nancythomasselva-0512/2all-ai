@@ -12,16 +12,32 @@ export default function ContactUsPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/admin/demo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: "Message: " + formData.message,
+          website: formData.siteUrl || "Not specified"
+        }),
+      });
+
+      if (res.ok) {
+        setSubmitted(true);
+        setFormData({ name: "", email: "", siteUrl: "", message: "" });
+      }
+    } catch (err) {
+      console.error("Contact form error:", err);
+    } finally {
       setLoading(false);
-      setSubmitted(true);
-      setFormData({ name: "", email: "", siteUrl: "", message: "" });
-    }, 1500);
+    }
   };
 
   return (

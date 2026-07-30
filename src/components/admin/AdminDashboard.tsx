@@ -41,7 +41,8 @@ import {
   RefreshCcw,
   Crown,
   Plus,
-  X
+  X,
+  Mail
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import DomainOnboarding from "@/components/dashboard/DomainOnboarding";
@@ -73,6 +74,7 @@ interface ProjectType {
 
 interface ConfigType {
   brandName: string;
+  notificationAdminEmail?: string;
   tagline: string;
   logoText?: string;
   footerCopyrightText?: string;
@@ -859,6 +861,24 @@ export default function AdminDashboard({
                 </div>
 
                 <form onSubmit={handleSaveConfig} className="space-y-4">
+                  {/* Dynamic Admin Notification Email Receiver */}
+                  <div className="p-4 bg-blue-50/70 border border-blue-200/80 rounded-2xl space-y-2">
+                    <label className="block text-xs font-black text-blue-900 uppercase tracking-wider flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-blue-600" />
+                      Notification Admin Email (All Leads & System Alerts Receiver)
+                    </label>
+                    <input
+                      type="email"
+                      value={editConfig.notificationAdminEmail || "nancythomasselva@gmail.com"}
+                      onChange={(e) => setEditConfig({ ...editConfig, notificationAdminEmail: e.target.value })}
+                      placeholder="nancythomasselva@gmail.com"
+                      className="w-full bg-white border border-blue-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-sm"
+                    />
+                    <p className="text-[11px] text-blue-700 font-medium">
+                      All demo requests, contact form messages, user signup alerts, and license updates are dynamically dispatched to this email address.
+                    </p>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider">Brand Name</label>

@@ -578,6 +578,371 @@ export default function SpeechEngine() {
     };
   }, [state.selectedText, state.voice, state.speed, state.pitch, state.volume, state.speechStatus, voices, state.highlightWord, state.highlightSentence, state.autoScroll]);
 
+  // Auto-dismiss lastVoiceCommand toast notification after 3.5 seconds
+  useEffect(() => {
+    if (state.lastVoiceCommand) {
+      const timer = setTimeout(() => {
+        updateSetting("lastVoiceCommand", "");
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [state.lastVoiceCommand]);
+
+  const recognitionRef = useRef<any>(null);
+
+  // Execute Spoken or Typed Voice Command across pages & DOM elements
+  const executeVoiceCommand = (rawTranscript: string) => {
+    if (!rawTranscript.trim()) return;
+
+    // Remove punctuation
+    const transcript = rawTranscript
+      .replace(/[.,?!;:'"()]/g, "")
+      .toLowerCase()
+      .trim();
+
+    console.log("[Voice Command Spoken Raw]:", rawTranscript, "[Cleaned]:", transcript);
+
+    // 1. Clean conversational command prefixes/suffixes
+    let cleanQuery = transcript
+      .replace(/^(go to|navigate to|open|show|take me to|scroll to|find|search|where is|jump to|i want to go to|please open|please go to|can you open|can you go to)\s+/i, "")
+      .replace(/\s+(po|page|section|option|button|link|text)$/i, "")
+      .trim();
+
+    // Alias mapping for speech variants
+    const aliases: Record<string, string> = {
+      "vpat": "vpat",
+      "v pat": "vpat",
+      "veepatt": "vpat",
+      "weepatt": "vpat",
+      "bpat": "vpat",
+      "pricing": "pricing",
+      "price": "pricing",
+      "prices": "pricing",
+      "plans": "pricing",
+      "plan": "pricing",
+      "cost": "pricing",
+      "solution": "solutions",
+      "solutions": "solutions",
+      "service": "services",
+      "services": "services",
+      "footer": "footer",
+      "bottom": "footer",
+      "contact": "contact",
+      "about": "about",
+      "security": "security",
+      "trust": "trust",
+      "audit": "audit",
+      "compliance": "compliance",
+      "features": "features",
+      "showcase": "features"
+    };
+
+    if (aliases[cleanQuery]) {
+      cleanQuery = aliases[cleanQuery];
+    }
+
+    // 2. Special system commands check
+    if (transcript.includes("open accessibility") || transcript.includes("open menu") || transcript.includes("open panel")) {
+      if (!stateRef.current.isPanelOpen) setState(prev => ({ ...prev, isPanelOpen: true }));
+      updateSetting("lastVoiceCommand", `Opened Accessibility Panel ("${rawTranscript}")`);
+      return;
+    }
+    if (transcript.includes("close accessibility") || transcript.includes("close menu") || transcript.includes("close panel")) {
+      if (stateRef.current.isPanelOpen) setState(prev => ({ ...prev, isPanelOpen: false }));
+      updateSetting("lastVoiceCommand", `Closed Accessibility Panel ("${rawTranscript}")`);
+      return;
+    }
+    if (transcript.includes("dark mode") || transcript.includes("dark contrast")) {
+      updateSetting("isDarkMode", true);
+      updateSetting("lastVoiceCommand", `Applied Dark Contrast ("${rawTranscript}")`);
+      return;
+    }
+    if (transcript.includes("monochrome")) {
+      updateSetting("saturationMode", "monochrome");
+      updateSetting("lastVoiceCommand", `Applied Monochrome ("${rawTranscript}")`);
+      return;
+    }
+    if (transcript.includes("reset settings") || transcript.includes("reset accessibility")) {
+      updateSetting("lastVoiceCommand", `Reset Settings ("${rawTranscript}")`);
+      return;
+    }
+
+    // Direct Page Route Map for Instant Voice Navigation across ALL app pages
+    const PAGE_ROUTES: Record<string, string> = {
+      // Home Page (Highest priority)
+      "home": "/",
+      "home page": "/",
+      "homepage": "/",
+      "main": "/",
+      "main page": "/",
+      "index": "/",
+      "landing": "/",
+      "landing page": "/",
+      "start": "/",
+      "welcome": "/",
+
+      // About Us
+      "about": "/about-us",
+      "about us": "/about-us",
+      "about page": "/about-us",
+      "company": "/about-us",
+      "who we are": "/about-us",
+
+      // Pricing
+      "pricing": "/pricing",
+      "prices": "/pricing",
+      "plan": "/pricing",
+      "plans": "/pricing",
+      "cost": "/pricing",
+      "pricing page": "/pricing",
+
+      // VPAT
+      "vpat": "/vpat",
+      "v pat": "/vpat",
+      "vpat page": "/vpat",
+      "veepatt": "/vpat",
+      "weepatt": "/vpat",
+      "bpat": "/vpat",
+      "accessibility report": "/vpat",
+      "conformance report": "/vpat",
+
+      // Services & Solutions
+      "services": "/services",
+      "service": "/services",
+      "solutions": "/services",
+      "services page": "/services",
+
+      // Contact Us
+      "contact": "/contact-us",
+      "contact us": "/contact-us",
+      "contact page": "/contact-us",
+      "get in touch": "/contact-us",
+
+      // Demo
+      "demo": "/demo",
+      "book demo": "/demo",
+      "book a demo": "/demo",
+      "schedule demo": "/demo",
+
+      // Agency & Partners
+      "agency": "/agency",
+      "agencies": "/agency",
+      "partner": "/agency",
+      "partners": "/agency",
+      "partner program": "/agency",
+      "partner network": "/agency",
+
+      // Enterprise
+      "enterprise": "/enterprise",
+      "enterprise plan": "/enterprise",
+
+      // Small & Mid Business
+      "small business": "/small-business",
+      "mid large business": "/mid-large-business",
+      "large business": "/mid-large-business",
+      "non profit": "/non-profit",
+      "nonprofit": "/non-profit",
+
+      // Security & Privacy
+      "security": "/security-and-privacy",
+      "privacy": "/security-and-privacy",
+      "security and privacy": "/security-and-privacy",
+      "privacy policy": "/privacy-notice",
+      "privacy notice": "/privacy-notice",
+      "cookie policy": "/cookie-policy",
+      "terms": "/terms-of-service",
+      "terms of service": "/terms-of-service",
+
+      // Compliance & AI
+      "compliance": "/compliance",
+      "artificial intelligence": "/artificial-intelligence",
+      "ai": "/artificial-intelligence",
+      "platform": "/platform",
+
+      // Marketing & Media
+      "blog": "/blog",
+      "news": "/blog",
+      "case studies": "/case-studies",
+      "case study": "/case-studies",
+      "customer examples": "/customer-examples",
+      "webinar": "/webinar",
+      "webinars": "/webinar",
+      "why choose us": "/why-choose-2all-ai",
+      "why choose 2all ai": "/why-choose-2all-ai",
+      "community": "/community",
+      "careers": "/careers",
+      "jobs": "/careers",
+
+      // Tools & Audit
+      "audit": "/expert-audit",
+      "expert audit": "/expert-audit",
+      "access scan": "/access-scan",
+      "scan": "/access-scan",
+      "access widget": "/access-widget",
+      "widget": "/access-widget",
+      "develop accessible code": "/develop-accessible-code",
+      "developer code": "/develop-accessible-code",
+      "dyslexia": "/dyslexia-simulation",
+      "dyslexia simulation": "/dyslexia-simulation",
+      "glossary": "/glossary",
+      "help": "/help-center",
+      "help center": "/help-center",
+      "support": "/help-center",
+      "industries": "/industries",
+      "industry reports": "/industry-reports",
+      "cms": "/integrate-with-your-cms",
+      "cms integrations": "/integrate-with-your-cms",
+      "litigation": "/litigation-support",
+      "litigation support": "/litigation-support",
+      "user testing": "/user-testing",
+
+      // Account & Dashboards
+      "dashboard": "/dashboard",
+      "account": "/dashboard",
+      "my account": "/dashboard",
+      "login": "/login",
+      "sign in": "/login",
+      "register": "/register",
+      "sign up": "/register",
+      "admin": "/admin/dashboard",
+      "admin dashboard": "/admin/dashboard",
+      "super admin": "/super-admin/dashboard"
+    };
+
+    // 1. Direct key match check (cleanQuery or transcript)
+    let targetRoute = PAGE_ROUTES[cleanQuery] || PAGE_ROUTES[transcript];
+
+    // 2. Substring / Keyword fallback matching
+    if (!targetRoute) {
+      if (/\b(home|homepage|landing|start|index)\b/i.test(transcript) || /\b(home|homepage|landing|start|index)\b/i.test(cleanQuery)) {
+        targetRoute = "/";
+      } else {
+        const sortedKeys = Object.keys(PAGE_ROUTES).sort((a, b) => b.length - a.length);
+        for (const key of sortedKeys) {
+          if (key !== "home" && key !== "start" && (transcript.includes(key) || cleanQuery.includes(key))) {
+            targetRoute = PAGE_ROUTES[key];
+            break;
+          }
+        }
+      }
+    }
+
+    // 3. Execute Route Navigation if target identified
+    if (targetRoute) {
+      if (targetRoute === "/") {
+        updateSetting("lastVoiceCommand", `Voice Command Heard: "${rawTranscript}" ➔ Opening Home Page...`);
+        setTimeout(() => {
+          if (window.location.pathname !== "/") {
+            window.location.href = "/";
+          } else {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        }, 400);
+        return;
+      }
+
+      updateSetting("lastVoiceCommand", `Voice Command Heard: "${rawTranscript}" ➔ Opening ${targetRoute}...`);
+      setTimeout(() => {
+        window.location.href = targetRoute;
+      }, 400);
+      return;
+    }
+
+    if (!cleanQuery) {
+      updateSetting("lastVoiceCommand", `Voice Command Heard: "${rawTranscript}"`);
+      return;
+    }
+
+    // 3. UNIVERSAL TOKENIZED DOM ELEMENT SEARCH ALGORITHM
+    let targetElement: HTMLElement | null = null;
+    let matchReason = "";
+
+    const stopWords = new Set(["the", "a", "an", "and", "or", "to", "for", "in", "on", "of", "with", "is", "it", "at", "by"]);
+    const words = cleanQuery.split(/\s+/).filter((w: string) => w.length > 2 && !stopWords.has(w));
+    const searchCandidates = Array.from(new Set([cleanQuery, ...words]));
+
+    for (const q of searchCandidates) {
+      if (targetElement) break;
+
+      const elById = document.getElementById(q) || 
+                     document.querySelector(`[id*="${q}"]`) as HTMLElement;
+      if (elById) {
+        targetElement = elById;
+        matchReason = `id matches "${q}"`;
+        break;
+      }
+
+      const headings = Array.from(document.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6, .font-heading"));
+      for (const h of headings) {
+        const text = (h.innerText || "").toLowerCase();
+        if (text.includes(q)) {
+          targetElement = h;
+          matchReason = `Heading: "${h.innerText.trim().substring(0, 25)}..."`;
+          break;
+        }
+      }
+      if (targetElement) break;
+
+      const clickables = Array.from(document.querySelectorAll<HTMLElement>("a, button, [role='button'], input[type='submit']"));
+      for (const c of clickables) {
+        const text = (c.innerText || c.getAttribute("aria-label") || c.getAttribute("title") || c.getAttribute("alt") || "").toLowerCase();
+        const href = (c.getAttribute("href") || "").toLowerCase();
+        if (text.includes(q) || href.includes(q)) {
+          targetElement = c;
+          matchReason = `Link/Button: "${(c.innerText || q).trim().substring(0, 25)}"`;
+          break;
+        }
+      }
+      if (targetElement) break;
+
+      const textBlocks = Array.from(document.querySelectorAll<HTMLElement>("section, footer, header, nav, main, article, div[class*='card'], p, li, span"));
+      for (const el of textBlocks) {
+        if (el.closest("#accessibility-panel") || el.closest(".fixed")) continue;
+        const text = (el.innerText || "").toLowerCase();
+        if (text.includes(q) && el.children.length < 6) {
+          targetElement = el;
+          matchReason = `Text Element: "${q}"`;
+          break;
+        }
+      }
+      if (targetElement) break;
+
+      if (q.includes("footer") || q.includes("bottom")) {
+        const footerEl = document.querySelector("footer") || document.getElementById("footer");
+        if (footerEl) {
+          targetElement = footerEl as HTMLElement;
+          matchReason = "Footer Section";
+          break;
+        }
+      }
+    }
+
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      targetElement.classList.add("ring-4", "ring-blue-500", "ring-offset-4", "rounded-xl", "transition-all", "duration-500");
+      setTimeout(() => {
+        targetElement?.classList.remove("ring-4", "ring-blue-500", "ring-offset-4", "rounded-xl");
+      }, 3500);
+
+      const anchor = (targetElement.tagName.toLowerCase() === "a" 
+        ? targetElement 
+        : targetElement.closest("a") || targetElement.querySelector("a")) as HTMLAnchorElement | null;
+      const href = anchor?.getAttribute("href");
+
+      if (anchor && href && href.startsWith("/") && href !== "#" && !href.startsWith("#")) {
+        updateSetting("lastVoiceCommand", `Opening page "${cleanQuery}" (${href})...`);
+        setTimeout(() => {
+          anchor.click();
+        }, 600);
+      } else {
+        updateSetting("lastVoiceCommand", `Jumped to "${cleanQuery}" (${matchReason})`);
+      }
+    } else {
+      updateSetting("lastVoiceCommand", `Voice Command Heard: "${rawTranscript}"`);
+    }
+  };
+
   // ========================================================
   // Voice Command Navigation Effect (SpeechRecognition API)
   // ========================================================
@@ -592,315 +957,89 @@ export default function SpeechEngine() {
       return;
     }
 
-    let recognition: any = null;
-    let isStoppedManually = false;
-
     if (state.voiceNavigation) {
-      try {
-        recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = false;
-        recognition.lang = "en-US";
+      if (!recognitionRef.current) {
+        try {
+          const rec = new SpeechRecognition();
+          rec.continuous = false; // Fast, reliable per-utterance recognition in Chrome
+          rec.interimResults = true;
+          rec.lang = "en-US";
 
-        recognition.onstart = () => {
-          updateSetting("isVoiceListening", true);
-        };
-
-        recognition.onresult = (event: any) => {
-          const lastIndex = event.results.length - 1;
-          const rawTranscript = event.results[lastIndex][0].transcript.trim();
-          
-          // Remove all punctuation (periods, commas, question marks) added by browser SpeechRecognition
-          const transcript = rawTranscript
-            .replace(/[.,?!;:'"()]/g, "")
-            .toLowerCase()
-            .trim();
-
-          console.log("[Voice Command Spoken Raw]:", rawTranscript, "[Cleaned]:", transcript);
-
-          // 1. Clean conversational command prefixes/suffixes
-          let cleanQuery = transcript
-            .replace(/^(go to|navigate to|open|show|take me to|scroll to|find|search|where is|jump to|i want to go to)\s+/i, "")
-            .replace(/\s+(po|page|section|option|button|link|text)$/i, "")
-            .trim();
-
-          // Alias mapping for speech variants
-          const aliases: Record<string, string> = {
-            "vpat": "vpat",
-            "v pat": "vpat",
-            "veepatt": "vpat",
-            "weepatt": "vpat",
-            "bpat": "vpat",
-            "pricing": "pricing",
-            "price": "pricing",
-            "plans": "pricing",
-            "plan": "pricing",
-            "cost": "pricing",
-            "solution": "solutions",
-            "solutions": "solutions",
-            "service": "solutions",
-            "services": "solutions",
-            "footer": "footer",
-            "bottom": "footer",
-            "contact": "contact",
-            "about": "about",
-            "security": "security",
-            "trust": "trust",
-            "audit": "audit",
-            "compliance": "compliance",
-            "features": "features",
-            "showcase": "features"
+          rec.onstart = () => {
+            updateSetting("isVoiceListening", true);
+            console.log("[Voice Navigation Engine] Listening for voice commands...");
           };
 
-          if (aliases[cleanQuery]) {
-            cleanQuery = aliases[cleanQuery];
-          }
+          rec.onresult = (event: any) => {
+            let interimTranscript = "";
+            let finalTranscript = "";
 
-          // 2. Special system commands check
-          if (transcript.includes("open accessibility") || transcript.includes("open menu") || transcript.includes("open panel")) {
-            if (!stateRef.current.isPanelOpen) setState(prev => ({ ...prev, isPanelOpen: true }));
-            updateSetting("lastVoiceCommand", `Opened Accessibility Panel ("${rawTranscript}")`);
-            return;
-          }
-          if (transcript.includes("close accessibility") || transcript.includes("close menu") || transcript.includes("close panel")) {
-            if (stateRef.current.isPanelOpen) setState(prev => ({ ...prev, isPanelOpen: false }));
-            updateSetting("lastVoiceCommand", `Closed Accessibility Panel ("${rawTranscript}")`);
-            return;
-          }
-          if (transcript.includes("dark mode") || transcript.includes("dark contrast")) {
-            updateSetting("isDarkMode", true);
-            updateSetting("lastVoiceCommand", `Applied Dark Contrast ("${rawTranscript}")`);
-            return;
-          }
-          if (transcript.includes("monochrome")) {
-            updateSetting("saturationMode", "monochrome");
-            updateSetting("lastVoiceCommand", `Applied Monochrome ("${rawTranscript}")`);
-            return;
-          }
-          if (transcript.includes("reset settings") || transcript.includes("reset accessibility")) {
-            updateSetting("lastVoiceCommand", `Reset Settings ("${rawTranscript}")`);
-            return;
-          }
-          // Direct Page Route Map for Instant Voice Navigation
-          const PAGE_ROUTES: Record<string, string> = {
-            "about": "/about-us",
-            "about us": "/about-us",
-            "about page": "/about-us",
-            "pricing": "/pricing",
-            "prices": "/pricing",
-            "plan": "/pricing",
-            "plans": "/pricing",
-            "cost": "/pricing",
-            "vpat": "/vpat",
-            "v pat": "/vpat",
-            "veepatt": "/vpat",
-            "weepatt": "/vpat",
-            "bpat": "/vpat",
-            "contact": "/contact-us",
-            "contact us": "/contact-us",
-            "contact page": "/contact-us",
-            "services": "/services",
-            "service": "/services",
-            "solutions": "/services",
-            "careers": "/careers",
-            "career": "/careers",
-            "jobs": "/careers",
-            "enterprise": "/enterprise",
-            "mid large business": "/mid-large-business",
-            "small business": "/small-business",
-            "agency": "/agency",
-            "non profit": "/non-profit",
-            "security": "/security-and-privacy",
-            "privacy": "/security-and-privacy",
-            "security and privacy": "/security-and-privacy",
-            "compliance": "/compliance",
-            "blog": "/blog",
-            "case studies": "/case-studies",
-            "case study": "/case-studies",
-            "demo": "/demo",
-            "access scan": "/access-scan",
-            "audit": "/expert-audit",
-            "expert audit": "/expert-audit",
-            "glossary": "/glossary",
-            "help": "/help-center",
-            "help center": "/help-center",
-            "user testing": "/user-testing",
-            "webinar": "/webinar",
-            "why choose us": "/why-choose-2all-ai",
-            "why choose 2all ai": "/why-choose-2all-ai",
-            "dyslexia": "/dyslexia-simulation",
-            "dashboard": "/dashboard",
-            "admin": "/admin/dashboard",
-            "super admin": "/super-admin/dashboard",
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+              const transcriptChunk = event.results[i][0].transcript;
+              if (event.results[i].isFinal) {
+                finalTranscript += transcriptChunk;
+              } else {
+                interimTranscript += transcriptChunk;
+              }
+            }
+
+            if (interimTranscript.trim()) {
+              updateSetting("lastVoiceCommand", `Listening: "${interimTranscript.trim()}"...`);
+            }
+
+            if (finalTranscript.trim()) {
+              console.log("[Voice Navigation Final Speech Captured]:", finalTranscript.trim());
+              executeVoiceCommand(finalTranscript.trim());
+            }
           };
 
-          if (PAGE_ROUTES[cleanQuery]) {
-            const targetRoute = PAGE_ROUTES[cleanQuery];
-            updateSetting("lastVoiceCommand", `Voice Command Heard: "${rawTranscript}" ➔ Opening ${targetRoute}...`);
-            setTimeout(() => {
-              window.location.href = targetRoute;
-            }, 600);
-            return;
-          }
-
-          if (cleanQuery === "home" || cleanQuery === "top" || cleanQuery === "start") {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            updateSetting("lastVoiceCommand", `Navigated to Home ("${rawTranscript}")`);
-            return;
-          }
-
-          if (!cleanQuery) return;
-
-          // 3. UNIVERSAL TOKENIZED DOM ELEMENT SEARCH ALGORITHM
-          let targetElement: HTMLElement | null = null;
-          let matchReason = "";
-
-          // Extract candidate tokens (full query + non-stop words)
-          const stopWords = new Set(["the", "a", "an", "and", "or", "to", "for", "in", "on", "of", "with", "is", "it", "at", "by"]);
-          const words = cleanQuery.split(/\s+/).filter((w: string) => w.length > 2 && !stopWords.has(w));
-          const searchCandidates = Array.from(new Set([cleanQuery, ...words]));
-
-          for (const q of searchCandidates) {
-            if (targetElement) break;
-
-            // Priority A: Search elements with ID matching candidate
-            const elById = document.getElementById(q) || 
-                           document.querySelector(`[id*="${q}"]`) as HTMLElement;
-            if (elById) {
-              targetElement = elById;
-              matchReason = `Section #${q}`;
-              break;
+          rec.onerror = (e: any) => {
+            if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+              updateSetting("lastVoiceCommand", "Microphone access blocked. Please allow microphone in browser.");
+            } else if (e.error === "audio-capture") {
+              updateSetting("lastVoiceCommand", "No microphone detected on your device.");
+            } else if (e.error !== "no-speech") {
+              console.warn("[Voice Navigation Error]:", e.error);
             }
+          };
 
-            // Priority B: Explicit VPAT match
-            if (q === "vpat") {
-              const vpatEl = Array.from(document.querySelectorAll<HTMLElement>("a, button, h1, h2, h3, h4, span, div")).find(el => {
-                const txt = (el.innerText || "").toLowerCase();
-                const href = (el.getAttribute("href") || "").toLowerCase();
-                return txt.includes("vpat") || href.includes("vpat");
-              });
-              if (vpatEl) {
-                targetElement = vpatEl;
-                matchReason = "VPAT Link & Reference";
-                break;
-              }
-            }
-
-            // Priority C: Search headings (h1, h2, h3, h4, h5, h6, .font-heading)
-            const headings = Array.from(document.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6, .font-heading"));
-            for (const h of headings) {
-              const text = (h.innerText || "").toLowerCase();
-              if (text.includes(q)) {
-                targetElement = h;
-                matchReason = `Heading: "${h.innerText.trim().substring(0, 25)}..."`;
-                break;
-              }
-            }
-            if (targetElement) break;
-
-            // Priority D: Search clickable links and buttons (a, button, [role='button'])
-            const clickables = Array.from(document.querySelectorAll<HTMLElement>("a, button, [role='button'], input[type='submit']"));
-            for (const c of clickables) {
-              const text = (c.innerText || c.getAttribute("aria-label") || c.getAttribute("title") || c.getAttribute("alt") || "").toLowerCase();
-              const href = (c.getAttribute("href") || "").toLowerCase();
-              if (text.includes(q) || href.includes(q)) {
-                targetElement = c;
-                matchReason = `Link/Button: "${(c.innerText || q).trim().substring(0, 25)}"`;
-                break;
-              }
-            }
-            if (targetElement) break;
-
-            // Priority E: Search content text blocks (section, div, p, li, span)
-            const textBlocks = Array.from(document.querySelectorAll<HTMLElement>("section, footer, header, nav, main, article, div[class*='card'], p, li, span"));
-            for (const el of textBlocks) {
-              if (el.closest("#accessibility-panel") || el.closest(".fixed")) continue;
-              const text = (el.innerText || "").toLowerCase();
-              if (text.includes(q) && el.children.length < 6) {
-                targetElement = el;
-                matchReason = `Text Element: "${q}"`;
-                break;
-              }
-            }
-            if (targetElement) break;
-
-            // Priority F: Footer fallback search
-            if (q.includes("footer") || q.includes("bottom")) {
-              const footerEl = document.querySelector("footer") || document.getElementById("footer");
-              if (footerEl) {
-                targetElement = footerEl as HTMLElement;
-                matchReason = "Footer Section";
-                break;
-              }
-            }
-          }
-
-          // 4. SCROLL, HIGHLIGHT AND NAVIGATE ON SUCCESS MATCH
-          if (targetElement) {
-            targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
-
-            // Flash glowing ring highlight on the target element
-            targetElement.classList.add("ring-4", "ring-blue-500", "ring-offset-4", "rounded-xl", "transition-all", "duration-500");
-            setTimeout(() => {
-              targetElement?.classList.remove("ring-4", "ring-blue-500", "ring-offset-4", "rounded-xl");
-            }, 3500);
-
-            // Check if matched element is an anchor link or contains one
-            const anchor = (targetElement.tagName.toLowerCase() === "a" 
-              ? targetElement 
-              : targetElement.closest("a") || targetElement.querySelector("a")) as HTMLAnchorElement | null;
-            const href = anchor?.getAttribute("href");
-
-            if (anchor && href && href.startsWith("/") && href !== "#" && !href.startsWith("#")) {
-              updateSetting("lastVoiceCommand", `Opening page "${cleanQuery}" (${href})...`);
+          rec.onend = () => {
+            updateSetting("isVoiceListening", false);
+            if (stateRef.current.voiceNavigation) {
               setTimeout(() => {
-                anchor.click();
-              }, 1200);
-            } else {
-              updateSetting("lastVoiceCommand", `Jumped to "${cleanQuery}" (${matchReason})`);
+                try {
+                  if (stateRef.current.voiceNavigation && recognitionRef.current) {
+                    recognitionRef.current.start();
+                  }
+                } catch (err) {
+                  // Ignore start collision if already running
+                }
+              }, 150);
             }
+          };
 
-            // Auto-dismiss notification toast after 4 seconds
-            setTimeout(() => {
-              updateSetting("lastVoiceCommand", "");
-            }, 4000);
-          } else {
-            // Silence background noise/unmatched speech error toasts for a clean experience
-            console.log("[Voice Navigation Unmatched Ambient Speech]:", rawTranscript);
-          }
-        };
-
-        recognition.onerror = (e: any) => {
-          if (e.error !== "no-speech") {
-            console.warn("Speech Recognition Error:", e.error);
-          }
-        };
-
-        recognition.onend = () => {
-          updateSetting("isVoiceListening", false);
-          if (stateRef.current.voiceNavigation && !isStoppedManually) {
-            try {
-              recognition.start();
-            } catch (err) {
-              // Ignore restart collision
-            }
-          }
-        };
-
-        recognition.start();
-      } catch (e) {
-        console.error("Failed to start speech recognition:", e);
+          recognitionRef.current = rec;
+          rec.start();
+        } catch (e) {
+          console.error("Failed to start speech recognition:", e);
+        }
+      }
+    } else {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {}
+        recognitionRef.current = null;
       }
     }
 
     return () => {
-      isStoppedManually = true;
-      if (recognition) {
+      if (!state.voiceNavigation && recognitionRef.current) {
         try {
-          recognition.stop();
+          recognitionRef.current.stop();
         } catch (e) {}
+        recognitionRef.current = null;
       }
-      updateSetting("isVoiceListening", false);
     };
   }, [state.voiceNavigation]);
 
@@ -1108,7 +1247,7 @@ export default function SpeechEngine() {
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             className="fixed top-5 left-1/2 -translate-x-1/2 z-[2147483647] flex flex-col items-center gap-2 pointer-events-none select-none font-sans"
           >
-            {/* Listening Mic Badge */}
+            {/* Listening Mic Badge & Command Input */}
             <div className="bg-slate-900/95 text-white backdrop-blur-md px-4 py-2 rounded-full border border-blue-500/40 shadow-2xl flex items-center gap-3 text-xs font-bold pointer-events-auto">
               <div className="relative flex items-center justify-center">
                 <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-cyan-400 opacity-75" />
@@ -1117,9 +1256,48 @@ export default function SpeechEngine() {
               <span className="text-blue-300 font-extrabold uppercase tracking-wider text-[10px]">
                 Voice Navigation Active
               </span>
-              <span className="text-slate-300 font-medium">
+              <span className="text-slate-300 font-medium hidden md:inline">
                 Say <strong className="text-white font-bold">"Go to pricing"</strong>, <strong className="text-white font-bold">"Solutions"</strong>, or <strong className="text-white font-bold">"Plans"</strong>
               </span>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget;
+                  const input = form.elements.namedItem("commandInput") as HTMLInputElement;
+                  if (input && input.value) {
+                    executeVoiceCommand(input.value);
+                    input.value = "";
+                  }
+                }}
+                className="flex items-center gap-1.5 ml-1"
+              >
+                <input
+                  name="commandInput"
+                  type="text"
+                  placeholder="Type or say command..."
+                  className="bg-slate-800/90 text-white text-xs px-2.5 py-1 rounded-lg border border-slate-700 focus:outline-none focus:border-cyan-400 w-36 placeholder:text-slate-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateSetting("lastVoiceCommand", "Listening for voice... Speak now!");
+                    if (recognitionRef.current) {
+                      try { recognitionRef.current.start(); } catch(e) {}
+                    }
+                  }}
+                  className="bg-cyan-600 hover:bg-cyan-500 text-white px-2 py-1 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center justify-center gap-1"
+                  title="Click & Speak Command"
+                >
+                  <Mic className="w-3.5 h-3.5 text-white" />
+                  <span className="text-[10px] uppercase font-black">Speak</span>
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all border-none cursor-pointer"
+                >
+                  Go
+                </button>
+              </form>
               <button
                 onClick={() => updateSetting("voiceNavigation", false)}
                 className="ml-2 w-5 h-5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer border-none"

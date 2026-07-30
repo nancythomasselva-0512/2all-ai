@@ -35,9 +35,9 @@ export async function POST(req: Request) {
 
     // Trigger SMTP notification (non-blocking)
     try {
-      const { sendDemoNotificationEmail } = await import("@/lib/mail");
+      const { sendDemoNotificationEmail, getAdminEmail } = await import("@/lib/mail");
       sendDemoNotificationEmail(
-        process.env.SMTP_USER || "aiadmin@gmail.com",
+        getAdminEmail(),
         name,
         email,
         phone,

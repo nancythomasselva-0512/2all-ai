@@ -145,7 +145,20 @@ export async function sendPaymentSuccessEmail(toEmail: string, userName: string,
   }
 }
 
-export const getAdminEmail = () => process.env.ADMIN_EMAIL || process.env.SMTP_USER || "aachinancy@gmail.com";
+export const getAdminEmail = (): string => {
+  try {
+    const configPath = path.join(process.cwd(), "src/data/site-config.json");
+    if (fs.existsSync(configPath)) {
+      const configData = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+      if (configData.notificationAdminEmail && typeof configData.notificationAdminEmail === "string" && configData.notificationAdminEmail.trim()) {
+        return configData.notificationAdminEmail.trim();
+      }
+    }
+  } catch (e) {
+    // Fallback if file read fails
+  }
+  return process.env.ADMIN_EMAIL || process.env.SMTP_USER || "nancythomasselva@gmail.com";
+};
 
 export async function sendDemoNotificationEmail(
   adminEmail: string,

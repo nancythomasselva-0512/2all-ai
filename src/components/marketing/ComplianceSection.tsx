@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Check, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function ComplianceSection() {
   const badges = [
@@ -68,13 +69,13 @@ export default function ComplianceSection() {
 
         {/* CTA Button */}
         <div className="mb-20">
-          <a
-            href="#call"
+          <Link
+            href="/contact-us"
             className="btn-premium inline-flex items-center gap-2 bg-[#02183a] hover:bg-[#06224e] text-white rounded-full px-8 py-4 text-sm font-extrabold tracking-wide transition-all shadow-md group"
           >
             BOOK A CALL
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 stroke-[2.5]" />
-          </a>
+          </Link>
         </div>
 
         {/* Badges Row */}
