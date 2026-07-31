@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, CheckCircle2, Loader2, ChevronDown, Calendar, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -22,11 +22,20 @@ const COUNTRIES = [
 ];
 
 export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
+  const [config, setConfig] = useState<any>({
+    demoFormTitle: "Schedule an Accessibility Demo",
+    demoFormSuccessMsg: "Demo Request Submitted!",
+    requirePhoneNumber: true,
+    requireWebsiteUrl: true,
+    demoButtonText: "SCHEDULE A DEMO",
+  });
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phonePrefix, setPhonePrefix] = useState("+91");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [website, setWebsite] = useState("");
+  const [customFields, setCustomFields] = useState<Record<string, string>>({});
   const [agreed, setAgreed] = useState(true);
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]);
@@ -38,6 +47,17 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
   const [slotConfirmed, setSlotConfirmed] = useState(false);
   const [slotLoading, setSlotLoading] = useState(false);
   const [isSkipped, setIsSkipped] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetch("/api/admin/config", { cache: "no-store" })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) setConfig((prev: any) => ({ ...prev, ...data }));
+        })
+        .catch(() => {});
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,14 +109,14 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="bg-white border border-slate-100 rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full mx-4 relative z-10 text-left select-none"
+            className="bg-white border border-slate-200/90 rounded-3xl shadow-2xl p-6 sm:p-8 pt-8 max-w-md w-full mx-4 relative z-10 text-left select-none max-h-[90vh] overflow-y-auto"
           >
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors border-none bg-transparent cursor-pointer"
+              className="absolute top-5 right-5 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition-colors border-none cursor-pointer z-20"
             >
-              <X className="w-5 h-5 stroke-[2.5]" />
+              <X className="w-4 h-4 stroke-[2.5]" />
             </button>
 
             {success ? (
@@ -179,7 +199,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                           await fetch("/api/admin/demo", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ name: name || "Client", email: email || "client@example.com", phone: phoneNumber || "+1", website: website || "https://2all.ai", meetingSlot: selectedDate }),
+                            body: JSON.stringify({ name: name || "Client", email: email || "client@2all.ai", phone: phoneNumber || "+1", website: website || "https://2all.ai", meetingSlot: selectedDate }),
                           });
                         } catch (e) {}
                         setSlotLoading(false);
@@ -221,8 +241,12 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                 
                 {/* Header */}
                 <div className="pb-1 font-sans">
-                  <p className="no-scale font-sans text-lg font-black text-slate-900 tracking-tight leading-snug">Schedule an Accessibility Demo</p>
-                  <p className="no-scale font-sans text-sm font-medium text-slate-600 mt-1 leading-relaxed">Let our experts walk you through our scanning and alignment features.</p>
+                  <p className="no-scale font-sans text-lg font-black text-slate-900 tracking-tight leading-snug">
+                    {config.demoFormTitle || "Schedule an Accessibility Demo"}
+                  </p>
+                  <p className="no-scale font-sans text-sm font-medium text-slate-600 mt-1 leading-relaxed">
+                    Let our experts walk you through our scanning and alignment features.
+                  </p>
                 </div>
 
                 {error && (
@@ -247,24 +271,24 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                 </div>
 
                 {/* Email */}
-                <div className="space-y-1">
-                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">
+                <div className="space-y-1 font-sans">
+                  <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider font-sans">
                     Business Email <span className="text-red-500 font-bold">*</span>
                   </label>
                   <input
                     type="email"
                     required
-                    placeholder="name@company.com"
+                    placeholder="Enter your business email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border border-slate-200/80 bg-slate-50 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
+                    className="w-full border border-slate-200/80 bg-slate-50 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold font-sans"
                   />
                 </div>
 
                 {/* Phone */}
                 <div className="space-y-1">
                   <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">
-                    Phone number <span className="text-red-500 font-bold">*</span>
+                    Phone number {config.requirePhoneNumber !== false && <span className="text-red-500 font-bold">*</span>}
                   </label>
                   <div className="flex items-center gap-2 font-sans">
                     {/* Custom Country Code Dropdown */}
@@ -311,7 +335,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                     {/* Phone Input */}
                     <input
                       type="tel"
-                      required
+                      required={config.requirePhoneNumber !== false}
                       placeholder="Phone number"
                       value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
@@ -323,17 +347,47 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                 {/* Website */}
                 <div className="space-y-1">
                   <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">
-                    Website link <span className="text-red-500 font-bold">*</span>
+                    Website link {config.requireWebsiteUrl !== false && <span className="text-red-500 font-bold">*</span>}
                   </label>
                   <input
                     type="url"
-                    required
-                    placeholder="https://example.com"
+                    required={config.requireWebsiteUrl !== false}
+                    placeholder="https://yourwebsite.com"
                     value={website}
                     onChange={(e) => setWebsite(e.target.value)}
                     className="w-full border border-slate-200/80 bg-slate-50 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
                   />
                 </div>
+
+                {/* Additional Custom Form Template Fields (Company, Notes, Custom Fields) */}
+                {config.formFields && config.formFields
+                  .filter((f: any) => f.enabled !== false && !["name", "email", "phone", "website"].includes(f.id))
+                  .map((f: any) => (
+                    <div key={f.id} className="space-y-1">
+                      <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">
+                        {f.label} {f.required && <span className="text-red-500 font-bold">*</span>}
+                      </label>
+                      {f.type === "textarea" ? (
+                        <textarea
+                          rows={2}
+                          required={f.required}
+                          placeholder={f.placeholder || ""}
+                          value={customFields[f.id] || ""}
+                          onChange={(e) => setCustomFields({ ...customFields, [f.id]: e.target.value })}
+                          className="w-full border border-slate-200/80 bg-slate-50 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
+                        />
+                      ) : (
+                        <input
+                          type={f.type || "text"}
+                          required={f.required}
+                          placeholder={f.placeholder || ""}
+                          value={customFields[f.id] || ""}
+                          onChange={(e) => setCustomFields({ ...customFields, [f.id]: e.target.value })}
+                          className="w-full border border-slate-200/80 bg-slate-50 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
+                        />
+                      )}
+                    </div>
+                  ))}
 
                 {/* Consent checkbox notice ABOVE button */}
                 <label className="flex items-start gap-2.5 cursor-pointer pt-2 select-none text-left">
@@ -363,7 +417,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                   className="w-full py-3.5 mt-2 bg-[#004bff] hover:bg-[#003edd] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/10 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-2 transition-all"
                 >
                   {loading && <Loader2 className="w-4.5 h-4.5 animate-spin" />}
-                  {loading ? "Scheduling..." : "SCHEDULE A DEMO"}
+                  {loading ? "Scheduling..." : (config.demoButtonText || "SCHEDULE A DEMO")}
                 </button>
               </form>
             )}

@@ -39,15 +39,15 @@ html {
   overflow-x: hidden;
   overflow-y: scroll;
   max-width: 100%;
-  font-size: 125%; /* Scaled base size for maximum visibility */
+  font-size: 100%;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: 'Times New Roman', Times, Georgia, serif !important;
-  font-size: 1.25rem; /* ~22px base body size */
-  line-height: 1.75;
+  font-size: 1rem;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -62,8 +62,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 
 /* High visibility contrast & size defaults for serif text */
 #app-content p:not(.no-scale) {
-  font-size: 1.15rem;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
 .text-slate-500:not(.alex-chat-popover *), .text-slate-400:not(.alex-chat-popover *) {
@@ -303,14 +302,14 @@ html.a11y-light-mode, body.a11y-light-mode {
 
 /* Cursors - Base64 encoded SVGs to work properly in modern browsers */
 .a11y-cursor-large, .a11y-cursor-large * {
-  cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJibGFjayIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNCA0bDE2IDE2LTYgMS00IDYtNi0yM3oiLz48L3N2Zz4='), auto !important;
+  cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJibGFjayIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNCA0bDE2IDE2LTYgMS04IDYtNi0yM3oiLz48L3N2Zz4='), auto !important;
 }
 
 .a11y-cursor-huge, .a11y-cursor-huge * {
-  cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJibGFjayIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNCA0bDE2IDE2LTYgMS00IDYtNi0yM3oiLz48L3N2Zz4='), auto !important;
+  cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJibGFjayIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNCA0bDE2IDE2LTYgMS04IDYtNi0yM3oiLz48L3N2Zz4='), auto !important;
 }
 
-/* Color Blindness Filters (SVG definitions embedded in layout) */
+/* Color Blindness Filters */
 .a11y-cb-protanopia {
   filter: url('#cb-protanopia') !important;
 }
@@ -344,7 +343,7 @@ html.a11y-light-mode, body.a11y-light-mode {
   filter: grayscale(100%) !important;
 }
 
-/* Text Alignments - Only target content body text while preserving centered headers */
+/* Text Alignments */
 .a11y-align-left #app-content p,
 .a11y-align-left #app-content article,
 .a11y-align-left #app-content li {

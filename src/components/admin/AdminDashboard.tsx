@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import {
   Users,
@@ -13,6 +14,7 @@ import {
   UserCog,
   Check,
   Trash2,
+  Edit,
   Search,
   LogOut,
   Save,
@@ -26,6 +28,7 @@ import {
   Layout,
   Layers,
   Settings,
+  AlertTriangle,
   FileText,
   FolderOpen,
   Languages,
@@ -42,13 +45,17 @@ import {
   Crown,
   Plus,
   X,
-  Mail
+  Mail,
+  BellRing,
+  Upload,
+  Image as ImageIcon
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import DomainOnboarding from "@/components/dashboard/DomainOnboarding";
 import AdminApiKeysPanel from "@/components/admin/AdminApiKeysPanel";
 import AdminAccessibilityMenuManager from "./AdminAccessibilityMenuManager";
 import AdminDemoRequestsManager from "./AdminDemoRequestsManager";
+import AdminNotificationCenter from "./AdminNotificationCenter";
 import AdminEmailTemplatesEditor from "./AdminEmailTemplatesEditor";
 import AdminSectionsManager from "./AdminSectionsManager";
 import AdminPlansManager from "./AdminPlansManager";
@@ -75,6 +82,43 @@ interface ProjectType {
     name: string | null;
     email: string | null;
   } | null;
+}
+
+export interface FormFieldType {
+  id: string;
+  label: string;
+  type: string;
+  placeholder?: string;
+  required: boolean;
+  enabled: boolean;
+}
+
+export interface SEOPageData {
+  seoTitle: string;
+  metaDescription: string;
+  metaKeywords: string;
+  canonicalUrl: string;
+  seoSlug: string;
+  robotsIndex: string;
+  robotsFollow: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  ogUrl?: string;
+  ogType?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterImage?: string;
+  twitterCard?: string;
+  twitterHandle?: string;
+  imageAltAttr?: string;
+  imageTitleAttr?: string;
+  imageCaptionAttr?: string;
+  schemaType?: string;
+  schemaJsonPayload?: string;
+  includeInSitemap?: boolean;
+  sitemapPriority?: string;
+  sitemapChangefreq?: string;
 }
 
 interface ConfigType {
@@ -115,23 +159,32 @@ interface ConfigType {
   enableScreenReader?: boolean;
   welcomeGreeting?: string;
   showTrialCard?: boolean;
-  showBenefitCards?: boolean;
   demoFormTitle?: string;
   demoFormSuccessMsg?: string;
+  licenseFormTitle?: string;
+  licenseFormSubtitle?: string;
+  licenseRequirePhone?: boolean;
+  licenseRequireCompany?: boolean;
   requirePhoneNumber?: boolean;
+  requireWebsiteUrl?: boolean;
   allowGoogleOAuth?: boolean;
   allowCredentialsLogin?: boolean;
   requireEmailVerification?: boolean;
-  customCss: string;
-  customJs: string;
-  trackingScripts: string;
   whiteLabelEnabled?: boolean;
   agencyName?: string;
   customFooterLogo?: string;
   heroBannerImage?: string;
   widgetIconImage?: string;
+  customCss?: string;
+  customJs?: string;
+  trackingScripts?: string;
   defaultLanguage?: string;
   enableAutoTranslate?: boolean;
+  customAssets?: { name: string; url: string }[];
+  brandPresets?: { name: string; logo: string }[];
+  supportedLanguages?: string[];
+  formFields?: FormFieldType[];
+  seoPagesConfig?: Record<string, SEOPageData>;
 }
 
 interface DashboardProps {
@@ -159,8 +212,8 @@ function FormalToggle({
     <div className="flex items-center justify-between p-4 bg-slate-50/80 border border-slate-200/80 rounded-2xl transition-all hover:bg-slate-50">
       {(label || description) && (
         <div className="pr-3 text-left">
-          {label && <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">{label}</h4>}
-          {description && <p className="text-xs text-slate-600 font-medium mt-1 leading-relaxed">{description}</p>}
+          {label && <h4 className="font-bold text-slate-800 uppercase tracking-wider" style={{ fontSize: "11px", fontFamily: '"Times New Roman", Times, serif' }}>{label}</h4>}
+          {description && <p className="text-slate-600 font-normal mt-0.5 leading-normal" style={{ fontSize: "12px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.35", fontWeight: 400 }}>{description}</p>}
         </div>
       )}
       <button
@@ -176,6 +229,97 @@ function FormalToggle({
           }`}
         />
       </button>
+    </div>
+  );
+}
+
+interface ImageUploadInputProps {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+  description?: string;
+}
+
+function ImageUploadInput({ label, value, onChange, placeholder = "/images/sample.png", description }: ImageUploadInputProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          onChange(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <div className="space-y-2 p-4 bg-slate-50 border border-slate-200/80 rounded-2xl text-left">
+      <div className="flex items-center justify-between gap-2">
+        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider">{label}</label>
+        {description && <span className="text-[10px] text-slate-400 font-bold">{description}</span>}
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+        {/* Live Image Thumbnail Preview */}
+        {value ? (
+          <div className="w-16 h-16 rounded-xl border border-slate-200 bg-white p-1 shrink-0 flex items-center justify-center overflow-hidden shadow-sm relative group">
+            <img src={value} alt="Preview" className="max-w-full max-h-full object-contain rounded-lg" />
+            <button
+              type="button"
+              onClick={() => onChange("")}
+              className="absolute inset-0 bg-slate-900/80 text-white text-[10px] font-black opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer rounded-lg border-none"
+            >
+              Remove
+            </button>
+          </div>
+        ) : (
+          <div className="w-16 h-16 rounded-xl border-2 border-dashed border-slate-300 bg-white shrink-0 flex flex-col items-center justify-center text-slate-400 text-[9px] font-black">
+            <ImageIcon className="w-5 h-5 mb-0.5 text-slate-300" />
+            No Photo
+          </div>
+        )}
+
+        <div className="flex-grow space-y-2">
+          {/* File path or Data URL input */}
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 shadow-inner"
+          />
+
+          {/* Hidden File Input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
+          />
+
+          {/* Upload Image Photo Button */}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 cursor-pointer border-none uppercase tracking-wider"
+            >
+              <Upload className="w-3.5 h-3.5 stroke-[2.5]" />
+              Upload Image Photo
+            </button>
+
+            <span className="text-[11px] font-bold text-slate-400">
+              Pick photo from computer or enter URL
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -228,28 +372,345 @@ export default function AdminDashboard({
   const [demoRequests, setDemoRequests] = useState<any[]>([]);
   const [loadingDemoRequests, setLoadingDemoRequests] = useState(false);
 
-  // Universal Add Item / Page Modal State
+  // Universal Add Item / Page / Asset Modal State
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
   const [newItemTitle, setNewItemTitle] = useState("");
   const [newItemPath, setNewItemPath] = useState("");
   const [newItemContent, setNewItemContent] = useState("");
+  const [newItemCategory, setNewItemCategory] = useState("Banners & Headers");
+  const [newItemColor, setNewItemColor] = useState("#004bff");
+
+  // Form Field Builder State
+  const [isAddFieldModalOpen, setIsAddFieldModalOpen] = useState(false);
+  const [editingField, setEditingField] = useState<FormFieldType | null>(null);
+  const [newFieldLabel, setNewFieldLabel] = useState("");
+  const [newFieldType, setNewFieldType] = useState("text");
+  const [newFieldPlaceholder, setNewFieldPlaceholder] = useState("");
+  const [newFieldRequired, setNewFieldRequired] = useState(false);
+
+  const defaultFormFields: FormFieldType[] = [
+    { id: "name", label: "Full Name", type: "text", placeholder: "Enter your full name", required: true, enabled: true },
+    { id: "email", label: "Business Email", type: "email", placeholder: "name@company.com", required: true, enabled: true },
+    { id: "phone", label: "Phone Number", type: "tel", placeholder: "9876543210", required: true, enabled: true },
+    { id: "website", label: "Website URL", type: "url", placeholder: "https://company.com", required: true, enabled: true },
+    { id: "company", label: "Company / Organization", type: "text", placeholder: "Acme Inc.", required: false, enabled: true },
+    { id: "notes", label: "Project Notes & WCAG Goals", type: "textarea", placeholder: "Tell us about your website accessibility goals...", required: false, enabled: true },
+  ];
+
+  const handleToggleFormField = (fieldId: string, property: "required" | "enabled", val: boolean) => {
+    const currentFields = editConfig.formFields || defaultFormFields;
+    const updated = currentFields.map(f => f.id === fieldId ? { ...f, [property]: val } : f);
+    setEditConfig({ ...editConfig, formFields: updated });
+  };
+
+  const handleAddFieldSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newFieldLabel.trim()) return;
+    const fieldId = newFieldLabel.toLowerCase().replace(/[^a-z0-9]/g, "_");
+    const currentFields = editConfig.formFields || defaultFormFields;
+    const updated = [
+      ...currentFields,
+      {
+        id: fieldId,
+        label: newFieldLabel.trim(),
+        type: newFieldType,
+        placeholder: newFieldPlaceholder.trim(),
+        required: newFieldRequired,
+        enabled: true,
+      }
+    ];
+    setEditConfig({ ...editConfig, formFields: updated });
+    setIsAddFieldModalOpen(false);
+    setNewFieldLabel("");
+    setNewFieldPlaceholder("");
+    showToast(`Custom field "${newFieldLabel}" added to form template!`);
+  };
+
+  const handleEditFieldSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingField) return;
+    const currentFields = editConfig.formFields || defaultFormFields;
+    const updated = currentFields.map(f => f.id === editingField.id ? editingField : f);
+    setEditConfig({ ...editConfig, formFields: updated });
+    setEditingField(null);
+    showToast(`Field "${editingField.label}" updated!`);
+  };
+
+  const handleDeleteField = (fieldId: string) => {
+    const currentFields = editConfig.formFields || defaultFormFields;
+    const updated = currentFields.filter(f => f.id !== fieldId);
+    setEditConfig({ ...editConfig, formFields: updated });
+    showToast("Field removed from form template!");
+  };
+
+  // SEO Management State & Helper Functions
+  const [selectedSeoPage, setSelectedSeoPage] = useState<string>("/");
+  const [seoSubTab, setSeoSubTab] = useState<"general" | "social" | "image" | "schema" | "sitemap">("general");
+
+  const defaultSeoPageData: SEOPageData = {
+    seoTitle: "2all.ai | Enterprise AI Web Accessibility & Compliance Platform",
+    metaDescription: "Automate WCAG 2.1 AA & ADA compliance scanning, remediation, and live accessibility widgets for enterprise websites in under 48 hours.",
+    metaKeywords: "web accessibility, WCAG 2.1 AA, ADA compliance, automated remediation, AI accessibility widget, VPAT",
+    canonicalUrl: "https://2all.ai",
+    seoSlug: "/",
+    robotsIndex: "index",
+    robotsFollow: "follow",
+    ogTitle: "2all.ai | Enterprise Web Accessibility & Compliance",
+    ogDescription: "Automate web accessibility and legal compliance with AI-powered remediation.",
+    ogImage: "https://2all.ai/images/dashboard/expert_services.png",
+    ogUrl: "https://2all.ai",
+    ogType: "website",
+    twitterTitle: "2all.ai | Enterprise Web Accessibility & Compliance",
+    twitterDescription: "Automate web accessibility and legal compliance with AI-powered remediation.",
+    twitterImage: "https://2all.ai/images/dashboard/expert_services.png",
+    twitterCard: "summary_large_image",
+    twitterHandle: "@2all_ai",
+    imageAltAttr: "2all.ai Enterprise Software & Accessibility Suite",
+    imageTitleAttr: "2all.ai Brand Logo",
+    imageCaptionAttr: "Powering platforms that scale your business.",
+    schemaType: "Organization",
+    schemaJsonPayload: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "2all.ai",
+      "url": "https://2all.ai",
+      "logo": "https://2all.ai/icon.jpeg",
+      "sameAs": ["https://linkedin.com/company/2allai", "https://twitter.com/2all_ai"]
+    }, null, 2),
+    includeInSitemap: true,
+    sitemapPriority: "1.0",
+    sitemapChangefreq: "daily"
+  };
+
+  const getSeoDataForPage = (path: string): SEOPageData => {
+    const existing = editConfig.seoPagesConfig?.[path];
+    if (existing) return { ...defaultSeoPageData, ...existing };
+    return {
+      ...defaultSeoPageData,
+      seoSlug: path,
+      canonicalUrl: `https://2all.ai${path === "/" ? "" : path}`,
+      seoTitle: path === "/" ? defaultSeoPageData.seoTitle : `${path.replace("/", "").replace(/-/g, " ").toUpperCase()} | 2all.ai Compliance`,
+      ogTitle: path === "/" ? defaultSeoPageData.ogTitle : `${path.replace("/", "").replace(/-/g, " ").toUpperCase()} | 2all.ai Compliance`,
+      twitterTitle: path === "/" ? defaultSeoPageData.twitterTitle : `${path.replace("/", "").replace(/-/g, " ").toUpperCase()} | 2all.ai Compliance`,
+    };
+  };
+
+  const handleUpdateSeoPageField = (path: string, field: keyof SEOPageData, value: string) => {
+    const currentSeoMap = editConfig.seoPagesConfig || {};
+    const pageData = currentSeoMap[path] || getSeoDataForPage(path);
+    const updatedMap = {
+      ...currentSeoMap,
+      [path]: {
+        ...pageData,
+        [field]: value
+      }
+    };
+    setEditConfig({
+      ...editConfig,
+      seoPagesConfig: updatedMap
+    });
+  };
+
+  const handleGenerateAiSeo = (path: string) => {
+    const pageNames: Record<string, string> = {
+      "/": "Homepage (Home)",
+      "/about-us": "About Us & Enterprise Accessibility Mission",
+      "/pricing": "Pricing Plans & Licensing Options",
+      "/services": "Accessibility Remediation & Training Services",
+      "/vpat": "VPAT 2.4 WCAG Level AA Conformance Report",
+      "/small-business": "Small Business Web Accessibility Compliance",
+      "/mid-large-business": "Enterprise & Mid-Large Corporate Accessibility",
+      "/demo": "Schedule Live Accessibility Platform Walkthrough",
+      "/contact-us": "Contact Support & Compliance Experts",
+      "/login": "User Account Portal Login",
+      "/register": "Create Free Accessibility Account",
+    };
+    const title = `${pageNames[path] || path} | 2all.ai Web Accessibility`;
+    const desc = `Optimize digital accessibility and compliance for ${pageNames[path] || path} with 2all.ai automated WCAG 2.1 AA & ADA compliance scanning, real-time remediation, and VPAT reporting.`;
+    const keywords = `accessibility, WCAG 2.1 AA, ADA compliance, ${path.replace("/", "") || "home"}, 2all.ai, audit, remediation`;
+    
+    handleUpdateSeoPageField(path, "seoTitle", title);
+    handleUpdateSeoPageField(path, "metaDescription", desc);
+    handleUpdateSeoPageField(path, "metaKeywords", keywords);
+    showToast(`AI SEO generated for page "${path}"!`);
+  };
+
+  const handleResetSeo = (path: string) => {
+    const currentSeoMap = { ...(editConfig.seoPagesConfig || {}) };
+    delete currentSeoMap[path];
+    setEditConfig({
+      ...editConfig,
+      seoPagesConfig: currentSeoMap
+    });
+    showToast(`SEO settings reset for "${path}"!`);
+  };
+
+  // Edit License Owner User State
+  const [licenseSubTab, setLicenseSubTab] = useState<"users" | "template">("users");
+  const [editingLicenseUser, setEditingLicenseUser] = useState<any | null>(null);
+  const [licenseEditName, setLicenseEditName] = useState("");
+  const [licenseEditEmail, setLicenseEditEmail] = useState("");
+  const [licenseEditPhone, setLicenseEditPhone] = useState("");
+  const [licenseEditPlan, setLicenseEditPlan] = useState("");
+  const [isSavingLicenseUser, setIsSavingLicenseUser] = useState(false);
+
+  const handleUpdateLicenseUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingLicenseUser) return;
+    setIsSavingLicenseUser(true);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: editingLicenseUser.id,
+          name: licenseEditName,
+          email: licenseEditEmail,
+          phone: licenseEditPhone,
+          plan: licenseEditPlan,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setUsers(users.map(u => u.id === editingLicenseUser.id ? {
+          ...u,
+          name: licenseEditName,
+          email: licenseEditEmail,
+          phone: licenseEditPhone,
+          plan: licenseEditPlan,
+        } : u));
+        showToast("License owner info updated successfully!");
+        setEditingLicenseUser(null);
+      } else {
+        showToast(data.message || "Failed to update license owner info", "error");
+      }
+    } catch (err) {
+      showToast("Network error updating license owner info", "error");
+    } finally {
+      setIsSavingLicenseUser(false);
+    }
+  };
+
+  // Edit Lead Modal State
+  const [editingLead, setEditingLead] = useState<any | null>(null);
+
+  const handleEditLeadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingLead) return;
+
+    try {
+      const res = await fetch("/api/admin/demo", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editingLead),
+      });
+      if (res.ok) {
+        showToast(`Submission for "${editingLead.name}" updated!`);
+        fetchDemoRequests();
+        setEditingLead(null);
+      }
+    } catch (e) {
+      showToast("Failed to update lead", "error");
+    }
+  };
+
+  const handleDeleteLead = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete the submission for "${name}"?`)) return;
+
+    try {
+      const res = await fetch(`/api/admin/demo?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        showToast(`Submission for "${name}" deleted!`);
+        fetchDemoRequests();
+      }
+    } catch (e) {
+      showToast("Failed to delete submission", "error");
+    }
+  };
 
   const handleAddItemSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newItemTitle.trim()) {
-      showToast("Title is required", "error");
+      showToast("Title / Name field is required", "error");
       return;
     }
-    const currentLinks = editConfig.navLinks || [];
-    const updatedLinks = [...currentLinks, { label: newItemTitle.trim(), href: newItemPath.trim() || `/${newItemTitle.toLowerCase().replace(/\s+/g, "-")}` }];
-    const updatedConfig = { ...editConfig, navLinks: updatedLinks };
+
+    if (activeTab === "form") {
+      try {
+        const res = await fetch("/api/admin/demo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: newItemTitle.trim(),
+            email: newItemPath.trim() || "client@example.com",
+            phone: newItemCategory.trim() || "+1 555 0199",
+            website: newItemContent.trim() || "https://example.com",
+          }),
+        });
+        if (res.ok) {
+          showToast(`Form Submission for "${newItemTitle}" added!`);
+          fetchDemoRequests();
+        }
+      } catch (e) {
+        console.error("Error adding demo request", e);
+      }
+
+      setIsAddItemModalOpen(false);
+      setNewItemTitle("");
+      setNewItemPath("");
+      setNewItemContent("");
+      setNewItemCategory("Banners & Headers");
+      setNewItemColor("#004bff");
+      return;
+    }
+
+    let updatedConfig = { ...editConfig };
+
+    if (activeTab === "media") {
+      const currentAssets = editConfig.customAssets || [];
+      updatedConfig.customAssets = [
+        ...currentAssets,
+        { name: newItemTitle.trim(), url: newItemPath.trim() || "/images/dashboard/custom_banner.png" }
+      ];
+      showToast(`Media Asset "${newItemTitle}" added successfully!`);
+    } else if (activeTab === "whitelabel") {
+      const presets = editConfig.brandPresets || [];
+      updatedConfig.brandPresets = [
+        ...presets,
+        { name: newItemTitle.trim(), logo: newItemPath.trim() || "/images/agency_logo.png" }
+      ];
+      showToast(`Agency Brand Preset "${newItemTitle}" created!`);
+    } else if (activeTab === "cssjs") {
+      const existingJs = editConfig.customJs || "";
+      updatedConfig.customJs = `${existingJs}\n/* [${newItemCategory}] ${newItemTitle} */\n${newItemContent}`;
+      showToast(`Custom script snippet "${newItemTitle}" injected!`);
+    } else if (activeTab === "translation") {
+      const langs = editConfig.supportedLanguages || ["en", "es", "fr", "de", "ta"];
+      const code = newItemPath.trim() || "ja";
+      if (!langs.includes(code)) {
+        updatedConfig.supportedLanguages = [...langs, code];
+      }
+      showToast(`New Language "${newItemTitle} (${code})" enabled!`);
+    } else if (activeTab === "branding") {
+      showToast(`Brand identity asset "${newItemTitle}" saved!`);
+    } else {
+      const currentLinks = editConfig.navLinks || [];
+      updatedConfig.navLinks = [
+        ...currentLinks,
+        { label: newItemTitle.trim(), href: newItemPath.trim() || `/${newItemTitle.toLowerCase().replace(/\s+/g, "-")}` }
+      ];
+      showToast(`New Page / Link "${newItemTitle}" created and saved!`);
+    }
+
     setEditConfig(updatedConfig);
     setIsAddItemModalOpen(false);
     setNewItemTitle("");
     setNewItemPath("");
     setNewItemContent("");
-    
-    // Save to server
+    setNewItemCategory("Banners & Headers");
+    setNewItemColor("#004bff");
+
+    // Persist changes to server API
     try {
       const res = await fetch("/api/admin/config", {
         method: "POST",
@@ -257,10 +718,11 @@ export default function AdminDashboard({
         body: JSON.stringify(updatedConfig),
       });
       if (res.ok) {
-        showToast(`New item/page "${newItemTitle}" added and saved!`);
+        const data = await res.json();
+        if (data.config) setConfig(data.config);
       }
     } catch (e) {
-      showToast("Added locally, click Save Changes to persist", "success");
+      console.error("Error saving updated config", e);
     }
   };
 
@@ -308,23 +770,24 @@ export default function AdminDashboard({
     }
   };
 
+  const fetchDemoRequests = async () => {
+    setLoadingDemoRequests(true);
+    try {
+      const res = await fetch("/api/admin/demo");
+      if (res.ok) {
+        const data = await res.json();
+        setDemoRequests(data.requests || []);
+      }
+    } catch (e) {
+      console.error("Failed to load demo requests", e);
+    } finally {
+      setLoadingDemoRequests(false);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === "form") {
-      const fetchDemos = async () => {
-        setLoadingDemoRequests(true);
-        try {
-          const res = await fetch("/api/admin/demo");
-          if (res.ok) {
-            const data = await res.json();
-            setDemoRequests(data.requests || []);
-          }
-        } catch (e) {
-          console.error("Failed to load demo requests", e);
-        } finally {
-          setLoadingDemoRequests(false);
-        }
-      };
-      fetchDemos();
+      fetchDemoRequests();
     }
   }, [activeTab]);
 
@@ -403,7 +866,7 @@ export default function AdminDashboard({
   );
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden font-sans text-slate-800">
+    <div className="flex h-screen bg-slate-50 overflow-hidden text-slate-800 super-admin-typography">
       {/* MOBILE OVERLAY */}
       {isSidebarOpen && (
         <div
@@ -431,7 +894,7 @@ export default function AdminDashboard({
             <span className="block text-[11px] font-black text-blue-600 uppercase tracking-widest mb-2 px-3 leading-none">Main Management</span>
             {[
               { id: "dashboard", label: "Dashboard", icon: LayoutGrid, essential: true },
-{ id: "notification", label: "Notification", icon: LayoutGrid, essential: true },
+              { id: "notification", label: "Notification", icon: BellRing, essential: true, badge: (users.length + projects.length) || 7 },
               { id: "users", label: "User Database", icon: UserCog, essential: true },
               { id: "domains", label: "Customer Workspace", icon: Globe, essential: true },
               { id: "api-keys", label: "API Keys Console", icon: KeyRound, essential: true },
@@ -443,6 +906,7 @@ export default function AdminDashboard({
               .filter((tab) => isSuperAdminView || tab.essential)
               .map((tab) => {
                 const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
                 return (
                   <button
                     key={tab.id}
@@ -450,13 +914,25 @@ export default function AdminDashboard({
                       handleTabChange(tab.id);
                       setIsSidebarOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left text-sm font-black transition-all cursor-pointer border-none ${activeTab === tab.id
+                    className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl text-left text-sm font-black transition-all cursor-pointer border-none ${isActive
                         ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                         : "bg-transparent text-slate-600 hover:text-blue-600 hover:bg-blue-50/50"
                       }`}
                   >
-                    <Icon className="w-4.5 h-4.5 stroke-[2.5]" />
-                    {tab.label}
+                    <span className="flex items-center gap-3">
+                      <Icon className="w-4.5 h-4.5 stroke-[2.5]" />
+                      {tab.label}
+                    </span>
+
+                    {tab.badge && (
+                      <span className={`px-2 py-0.5 text-[10px] font-black rounded-full transition-all ${
+                        isActive
+                          ? "bg-white text-blue-700 shadow-sm"
+                          : "bg-red-500 text-white shadow-sm animate-pulse"
+                      }`}>
+                        {tab.badge}
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -482,7 +958,8 @@ export default function AdminDashboard({
                 { id: "cssjs", label: "Custom CSS/JS", icon: Code },
                 { id: "whitelabel", label: "White-Label Manager", icon: UserCog },
                 { id: "media", label: "Media Library", icon: FolderOpen },
-                { id: "translation", label: "Translation Config", icon: Languages }
+                { id: "translation", label: "Translation Config", icon: Languages },
+                { id: "seo", label: "SEO Management", icon: Search }
               ].map((tab) => {
                 const Icon = tab.icon;
                 return (
@@ -549,14 +1026,311 @@ export default function AdminDashboard({
         {/* CONTENT VIEW */}
         <main className="flex-grow p-4 md:p-8 overflow-y-auto">
 
-          {/* TOAST TO NOTIFY SUCCESS/ERROR */}
-          {statusMessage && (
-            <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs font-black transition-all animate-in fade-in slide-in-from-top-4 duration-300 ${statusMessage.type === "success"
-                ? "bg-emerald-50 text-emerald-800 border border-emerald-100"
-                : "bg-red-50 text-red-800 border border-red-100"
-              }`}>
-              <Check className="w-4 h-4 stroke-[3]" />
-              {statusMessage.text}
+          {/* UNIVERSAL ADD ITEM / ASSET / PAGE / LINK MODAL */}
+          {isAddItemModalOpen && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6 text-left animate-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <h3 className="text-base font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                    <Plus className="w-5 h-5 text-blue-600" />
+                    {activeTab === "media" && "Add New Media Asset"}
+                    {activeTab === "whitelabel" && "Add New Agency Brand Preset"}
+                    {activeTab === "branding" && "Add Identity Branding Asset"}
+                    {activeTab === "navigation" && "Add Navigation Link / Menu Item"}
+                    {activeTab === "cssjs" && "Inject Custom Script / CSS Tag"}
+                    {activeTab === "translation" && "Add New Supported Language"}
+                    {activeTab === "website" && "Add New Website Page"}
+                    {activeTab === "landing" && "Add New Landing Section"}
+                    {activeTab === "cms" && "Add CMS Content Page"}
+                    {activeTab === "form" && "Add New Form Submission Lead"}
+                    {!["media", "whitelabel", "branding", "navigation", "cssjs", "translation", "website", "landing", "cms", "form"].includes(activeTab) && "Add Custom Page / Item"}
+                  </h3>
+                  <button
+                    onClick={() => setIsAddItemModalOpen(false)}
+                    className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer border-none bg-transparent"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleAddItemSubmit} className="space-y-4">
+                  {/* FORM TAB SPECIFIC FIELDS */}
+                  {activeTab === "form" ? (
+                    <>
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Customer Name</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Thomas Selva"
+                          value={newItemTitle}
+                          onChange={(e) => setNewItemTitle(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Business Email Address</label>
+                        <input
+                          type="email"
+                          placeholder="e.g. thomas@company.com"
+                          value={newItemPath}
+                          onChange={(e) => setNewItemPath(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Phone Number</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. +91 9876543210"
+                          value={newItemCategory}
+                          onChange={(e) => setNewItemCategory(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Website URL</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. https://company.com"
+                          value={newItemContent}
+                          onChange={(e) => setNewItemContent(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                      </div>
+                    </>
+                  ) : activeTab === "media" ? (
+                    <>
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Asset Title / Name</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Header Hero Banner Dark"
+                          value={newItemTitle}
+                          onChange={(e) => setNewItemTitle(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Asset Category</label>
+                        <select
+                          value={newItemCategory}
+                          onChange={(e) => setNewItemCategory(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                        >
+                          <option value="Banners & Headers">Banners & Headers</option>
+                          <option value="Logos & Badges">Logos & Badges</option>
+                          <option value="Icons & Graphics">Icons & Graphics</option>
+                          <option value="Widgets & Overlays">Widgets & Overlays</option>
+                          <option value="General Assets">General Assets</option>
+                        </select>
+                      </div>
+
+                      <ImageUploadInput
+                        label="Asset Photo / Image File"
+                        value={newItemPath}
+                        onChange={(val) => setNewItemPath(val)}
+                        placeholder="/images/dashboard/custom_banner.png"
+                        description="Upload photo from computer or enter URL"
+                      />
+                    </>
+                  ) : activeTab === "whitelabel" ? (
+                    <>
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Agency / Brand Preset Name</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Apex Media Reseller"
+                          value={newItemTitle}
+                          onChange={(e) => setNewItemTitle(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <ImageUploadInput
+                        label="Agency Custom Logo Photo"
+                        value={newItemPath}
+                        onChange={(val) => setNewItemPath(val)}
+                        placeholder="/images/agency_logo.png"
+                        description="Upload agency logo photo"
+                      />
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Primary Accent Color (Hex)</label>
+                        <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 p-2.5 rounded-xl">
+                          <input
+                            type="color"
+                            value={newItemColor.startsWith("#") ? newItemColor : "#004bff"}
+                            onChange={(e) => setNewItemColor(e.target.value)}
+                            className="w-8 h-8 rounded-lg border-0 cursor-pointer bg-transparent"
+                          />
+                          <input
+                            type="text"
+                            value={newItemColor}
+                            onChange={(e) => setNewItemColor(e.target.value)}
+                            placeholder="#004bff"
+                            className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  ) : activeTab === "translation" ? (
+                    <>
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Language Display Name</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Japanese (日本語)"
+                          value={newItemTitle}
+                          onChange={(e) => setNewItemTitle(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">ISO 639-1 Language Code</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. ja"
+                          value={newItemPath}
+                          onChange={(e) => setNewItemPath(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+                    </>
+                  ) : activeTab === "cssjs" ? (
+                    <>
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Script / Tag Title</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Google Tag Manager Script"
+                          value={newItemTitle}
+                          onChange={(e) => setNewItemTitle(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Injection Position</label>
+                        <select
+                          value={newItemCategory}
+                          onChange={(e) => setNewItemCategory(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                        >
+                          <option value="Head Tag (<head>)">Head Tag (&lt;head&gt;)</option>
+                          <option value="Body Start (<body>)">Body Start (&lt;body&gt;)</option>
+                          <option value="Body End (</body>)">Body End (&lt;/body&gt;)</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Custom JS / CSS Code Snippet</label>
+                        <textarea
+                          rows={4}
+                          placeholder="// Enter JavaScript / CSS snippet here"
+                          value={newItemContent}
+                          onChange={(e) => setNewItemContent(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs font-mono text-emerald-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                    </>
+                  ) : activeTab === "navigation" ? (
+                    <>
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Navigation Link Text</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Enterprise Pricing"
+                          value={newItemTitle}
+                          onChange={(e) => setNewItemTitle(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Target URL / HREF Link</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. /pricing#enterprise"
+                          value={newItemPath}
+                          onChange={(e) => setNewItemPath(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Page / Section Title</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Accessibility Audit Calculator"
+                          value={newItemTitle}
+                          onChange={(e) => setNewItemTitle(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">URL Slug / Path</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. /audit-calculator"
+                          value={newItemPath}
+                          onChange={(e) => setNewItemPath(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                      </div>
+
+                      <ImageUploadInput
+                        label="Featured Header Image Photo (Optional)"
+                        value={newItemContent}
+                        onChange={(val) => setNewItemContent(val)}
+                        placeholder="/images/dashboard/custom_page_header.png"
+                        description="Upload page header photo"
+                      />
+                    </>
+                  )}
+
+                  <div className="pt-4 flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddItemModalOpen(false)}
+                      className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border-none transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl border-none transition-colors cursor-pointer shadow-md shadow-blue-500/20 uppercase tracking-wider flex items-center justify-center gap-2"
+                    >
+                      <Plus className="w-4 h-4 stroke-[3]" />
+                      {activeTab === "form" && "Add Form Submission"}
+                      {activeTab === "media" && "Save Media Asset"}
+                      {activeTab === "whitelabel" && "Add Brand Preset"}
+                      {activeTab === "translation" && "Add Language"}
+                      {activeTab === "cssjs" && "Inject Script Tag"}
+                      {activeTab === "navigation" && "Add Navigation Link"}
+                      {activeTab === "branding" && "Save Brand Asset"}
+                      {["website", "landing", "cms"].includes(activeTab) && "Create New Page"}
+                      {!["form", "media", "whitelabel", "translation", "cssjs", "navigation", "branding", "website", "landing", "cms"].includes(activeTab) && "Save Item"}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           )}
 
@@ -777,16 +1551,13 @@ export default function AdminDashboard({
 
             </div>
           )}
-{/* TAB 0: DASHBOARD */}
-{activeTab === "dashboard" && <AdminDashboardPage users={users} projects={projects} />}
+{/* TAB 0: DASHBOARD & OVERVIEW */}
+{(activeTab === "dashboard" || activeTab === "overview") && <AdminDashboardPage users={users} projects={projects} domains={initialDomains} />}
 
 
-          {/* TAB 1: NOTIFICATION */}
+          {/* TAB 1: UNIFIED NOTIFICATION CENTER */}
           {activeTab === "notification" && (
-            <div className="space-y-8 animate-in fade-in duration-200 text-left">
-              {/* Enterprise Demo Requests & Slot Manager */}
-              <AdminDemoRequestsManager />
-            </div>
+            <AdminNotificationCenter users={users} projects={projects} />
           )}
 
           {/* TAB 2: BRANDING MANAGER */}
@@ -810,19 +1581,23 @@ export default function AdminDashboard({
 
                 <form onSubmit={handleSaveConfig} className="space-y-6">
                   {/* Dynamic Email System Manager Card */}
-                  <div className="p-5 bg-[#0b3c96]/5 border border-blue-200 rounded-2xl space-y-4">
-                    <div className="flex items-center gap-2 border-b border-blue-200/60 pb-3">
-                      <Mail className="w-5 h-5 text-blue-600" />
+                  <div className="p-4 bg-blue-50/50 border border-blue-200/80 rounded-2xl space-y-4">
+                    <div className="flex items-start gap-2.5 border-b border-blue-200/60 pb-3.5">
+                      <Mail className="w-5 h-5 text-blue-600 shrink-0 mt-1" />
                       <div>
-                        <h4 className="text-sm font-black text-slate-900 tracking-tight">Dynamic Email Engine & SMTP Dispatcher</h4>
-                        <p className="text-[11px] text-slate-500 font-medium">Configure dynamic FROM sender email, display name, and TO admin receiver address for all site forms, login, demo, and support scripts.</p>
+                        <h4 className="font-black text-slate-900 tracking-tight" style={{ fontSize: "17px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.3" }}>
+                          Dynamic Email Engine &amp; SMTP Dispatcher
+                        </h4>
+                        <p className="text-slate-600 font-normal" style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.7", marginTop: "8px" }}>
+                          Configure dynamic FROM sender email, display name, and TO admin receiver address for all site forms, login, demo, and support scripts.
+                        </p>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* FROM Sender Email */}
                       <div className="space-y-1.5">
-                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                        <label className="block font-black text-slate-700 uppercase tracking-wider" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}>
                           Outbound FROM Email Sender
                         </label>
                         <input
@@ -830,14 +1605,17 @@ export default function AdminDashboard({
                           value={editConfig.smtpFromEmail || "aachinancy@gmail.com"}
                           onChange={(e) => setEditConfig({ ...editConfig, smtpFromEmail: e.target.value })}
                           placeholder="aachinancy@gmail.com"
-                          className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-sm"
+                          className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-xs"
+                          style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif' }}
                         />
-                        <p className="text-[10px] text-slate-500">Address used in the 'From' header for all dispatched emails.</p>
+                        <p className="text-slate-500 font-normal" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.6", marginTop: "5px" }}>
+                          Address used in the 'From' header for all dispatched emails.
+                        </p>
                       </div>
 
                       {/* FROM Display Name */}
                       <div className="space-y-1.5">
-                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">
+                        <label className="block font-black text-slate-700 uppercase tracking-wider" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}>
                           Outbound FROM Sender Name
                         </label>
                         <input
@@ -845,16 +1623,19 @@ export default function AdminDashboard({
                           value={editConfig.smtpFromName || "2all.ai Team"}
                           onChange={(e) => setEditConfig({ ...editConfig, smtpFromName: e.target.value })}
                           placeholder="2all.ai Team"
-                          className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-sm"
+                          className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-xs"
+                          style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif' }}
                         />
-                        <p className="text-[10px] text-slate-500">Brand display name shown in user email inboxes.</p>
+                        <p className="text-slate-500 font-normal" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.6", marginTop: "5px" }}>
+                          Brand display name shown in user email inboxes.
+                        </p>
                       </div>
                     </div>
 
                     {/* TO Admin Notification Email Receiver */}
                     <div className="space-y-1.5 pt-2 border-t border-blue-200/50">
-                      <label className="block text-xs font-black text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
-                        <ShieldCheck className="w-4 h-4 text-blue-600" />
+                      <label className="block font-black text-blue-900 uppercase tracking-wider flex items-center gap-1.5" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}>
+                        <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
                         Inbound TO Admin Notification Email Receiver
                       </label>
                       <input
@@ -862,9 +1643,10 @@ export default function AdminDashboard({
                         value={editConfig.notificationAdminEmail || "nancythomasselva@gmail.com"}
                         onChange={(e) => setEditConfig({ ...editConfig, notificationAdminEmail: e.target.value })}
                         placeholder="nancythomasselva@gmail.com"
-                        className="w-full bg-white border border-blue-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-sm"
+                        className="w-full bg-white border border-blue-300 rounded-xl px-4 py-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-xs"
+                        style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif' }}
                       />
-                      <p className="text-[11px] text-blue-700 font-medium">
+                      <p className="text-blue-600 font-normal" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.6", marginTop: "5px" }}>
                         All demo requests, contact form entries, user signup alerts, login activity, and script support inquiries are dynamically delivered to this email address.
                       </p>
                     </div>
@@ -1263,114 +2045,273 @@ export default function AdminDashboard({
 
           {/* TAB: NAVIGATION BUILDER */}
           {activeTab === "navigation" && (
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-4xl text-left animate-in fade-in duration-200 space-y-6">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-5xl text-left animate-in fade-in duration-200 space-y-6">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                  <h3 className="text-lg font-bold text-[#0a1e3f] tracking-tight">Navigation Builder & Link Hierarchy</h3>
-                  <p className="text-xs md:text-sm text-slate-500 font-normal leading-relaxed mt-1">Customize global site navbar links, call-to-action buttons, and header layout.</p>
+                  <h3 className="font-black text-slate-900 tracking-tight" style={{ fontSize: "17px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.3" }}>Navigation Builder &amp; Link Hierarchy</h3>
+                  <p className="text-slate-600 font-normal" style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.7", marginTop: "8px" }}>Customize global site navbar links, megamenu items, call-to-action buttons, and header/footer link layout.</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsAddItemModalOpen(true)}
-                  className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
+                  style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}
                 >
                   <Plus className="w-4 h-4 stroke-[2.5]" /> Add Nav Link / Page
                 </button>
               </div>
 
-              <form onSubmit={handleSaveConfig} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Header Call-To-Action Button Text</label>
-                  <input
-                    type="text"
-                    value={editConfig.trialButtonText || "START FREE TRIAL"}
-                    onChange={(e) => setEditConfig({ ...editConfig, trialButtonText: e.target.value })}
-                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 text-xs md:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                  />
+              <form onSubmit={handleSaveConfig} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-blue-50/40 p-4 border border-blue-100 rounded-2xl">
+                  <div className="space-y-1.5">
+                    <label className="block font-black text-slate-700 uppercase tracking-wider mb-1.5" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}>Header Call-To-Action Button Text</label>
+                    <input
+                      type="text"
+                      value={editConfig.trialButtonText || "START FREE TRIAL"}
+                      onChange={(e) => setEditConfig({ ...editConfig, trialButtonText: e.target.value })}
+                      className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
+                      style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif' }}
+                    />
+                  </div>
+
+                  <div className="pt-6">
+                    <FormalToggle
+                      checked={editConfig.showNavCta ?? true}
+                      onChange={(val) => setEditConfig({ ...editConfig, showNavCta: val })}
+                      label="Show Header CTA Buttons"
+                      description="Toggle visibility of Login, Book Demo, and Start Trial in top navigation bar"
+                    />
+                  </div>
                 </div>
 
-                <FormalToggle
-                  checked={editConfig.showNavCta ?? true}
-                  onChange={(val) => setEditConfig({ ...editConfig, showNavCta: val })}
-                  label="Show Header CTA Buttons"
-                  description="Toggle visibility of Login, Book Demo, and Start Trial in top navigation bar"
-                />
+                {/* Global Navigation Links Directory & Editor */}
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-black text-slate-900 tracking-tight" style={{ fontSize: "16px", fontFamily: '"Times New Roman", Times, serif' }}>
+                      Active Site Navigation Links ({((editConfig.navLinks && editConfig.navLinks.length > 0) ? editConfig.navLinks : [
+                        { label: "Solutions", href: "/solutions", type: "Header Megamenu" },
+                        { label: "Company", href: "/company", type: "Header Megamenu" },
+                        { label: "Partners", href: "/partners", type: "Header Megamenu" },
+                        { label: "Pricing", href: "/pricing", type: "Header Link" },
+                        { label: "Book Demo", href: "/demo", type: "Header Link" },
+                        { label: "Agency Workspace", href: "/agency", type: "Header Link" },
+                        { label: "Accessibility Suite", href: "/compliance", type: "Footer Link" },
+                        { label: "Privacy Policy", href: "/privacy", type: "Footer Link" },
+                        { label: "Terms of Service", href: "/terms", type: "Footer Link" },
+                      ]).length})
+                    </h4>
+                    <span className="text-slate-500 font-normal" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}>
+                      Edit labels or URL paths directly below
+                    </span>
+                  </div>
+
+                  <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-xs bg-white">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-slate-100/80 border-b border-slate-200/80 text-slate-700">
+                            <th className="py-3 px-4 font-black uppercase tracking-wider" style={{ fontSize: "12px", fontFamily: '"Times New Roman", Times, serif' }}>Link Label</th>
+                            <th className="py-3 px-4 font-black uppercase tracking-wider" style={{ fontSize: "12px", fontFamily: '"Times New Roman", Times, serif' }}>URL Path / Href</th>
+                            <th className="py-3 px-4 font-black uppercase tracking-wider" style={{ fontSize: "12px", fontFamily: '"Times New Roman", Times, serif' }}>Menu Type</th>
+                            <th className="py-3 px-4 font-black uppercase tracking-wider text-right" style={{ fontSize: "12px", fontFamily: '"Times New Roman", Times, serif' }}>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {((editConfig.navLinks && editConfig.navLinks.length > 0) ? editConfig.navLinks : [
+                            { label: "Solutions", href: "/solutions", type: "Header Megamenu" },
+                            { label: "Company", href: "/company", type: "Header Megamenu" },
+                            { label: "Partners", href: "/partners", type: "Header Megamenu" },
+                            { label: "Pricing", href: "/pricing", type: "Header Link" },
+                            { label: "Book Demo", href: "/demo", type: "Header Link" },
+                            { label: "Agency Workspace", href: "/agency", type: "Header Link" },
+                            { label: "Accessibility Suite", href: "/compliance", type: "Footer Link" },
+                            { label: "Privacy Policy", href: "/privacy", type: "Footer Link" },
+                            { label: "Terms of Service", href: "/terms", type: "Footer Link" },
+                          ]).map((link: any, idx: number) => {
+                            const currentLinks = (editConfig.navLinks && editConfig.navLinks.length > 0) ? editConfig.navLinks : [
+                              { label: "Solutions", href: "/solutions", type: "Header Megamenu" },
+                              { label: "Company", href: "/company", type: "Header Megamenu" },
+                              { label: "Partners", href: "/partners", type: "Header Megamenu" },
+                              { label: "Pricing", href: "/pricing", type: "Header Link" },
+                              { label: "Book Demo", href: "/demo", type: "Header Link" },
+                              { label: "Agency Workspace", href: "/agency", type: "Header Link" },
+                              { label: "Accessibility Suite", href: "/compliance", type: "Footer Link" },
+                              { label: "Privacy Policy", href: "/privacy", type: "Footer Link" },
+                              { label: "Terms of Service", href: "/terms", type: "Footer Link" },
+                            ];
+                            return (
+                              <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
+                                <td className="py-2.5 px-4">
+                                  <input
+                                    type="text"
+                                    value={link.label}
+                                    onChange={(e) => {
+                                      const updated = [...currentLinks];
+                                      updated[idx] = { ...updated[idx], label: e.target.value };
+                                      setEditConfig({ ...editConfig, navLinks: updated });
+                                    }}
+                                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                                    style={{ fontSize: "14px", fontFamily: '"Times New Roman", Times, serif' }}
+                                  />
+                                </td>
+                                <td className="py-2.5 px-4">
+                                  <input
+                                    type="text"
+                                    value={link.href}
+                                    onChange={(e) => {
+                                      const updated = [...currentLinks];
+                                      updated[idx] = { ...updated[idx], href: e.target.value };
+                                      setEditConfig({ ...editConfig, navLinks: updated });
+                                    }}
+                                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                                    style={{ fontSize: "14px", fontFamily: '"Times New Roman", Times, serif' }}
+                                  />
+                                </td>
+                                <td className="py-2.5 px-4 whitespace-nowrap">
+                                  <span className={`inline-block px-2.5 py-1 rounded-md font-bold ${
+                                    (link.type || "Header Link").includes("Megamenu")
+                                      ? "bg-purple-50 text-purple-700 border border-purple-200"
+                                      : (link.type || "Header Link").includes("Footer")
+                                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                      : "bg-blue-50 text-blue-700 border border-blue-200"
+                                  }`} style={{ fontSize: "12px", fontFamily: '"Times New Roman", Times, serif' }}>
+                                    {link.type || "Header Link"}
+                                  </span>
+                                </td>
+                                <td className="py-2.5 px-4 text-right whitespace-nowrap">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updated = currentLinks.filter((_: any, i: number) => i !== idx);
+                                      setEditConfig({ ...editConfig, navLinks: updated });
+                                    }}
+                                    className="p-1.5 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white rounded-lg transition-colors border border-red-200 cursor-pointer"
+                                    title="Delete Navigation Link"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/10 transition-all cursor-pointer border-none uppercase tracking-wider"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold rounded-xl shadow-md shadow-blue-500/10 transition-all cursor-pointer border-none uppercase tracking-wider"
+                  style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}
                 >
                   <Save className="w-4.5 h-4.5" />
-                  {loading ? "Saving..." : "Save Navigation Settings"}
+                  {loading ? "Saving..." : "Save All Navigation Settings"}
                 </button>
               </form>
             </div>
           )}
 
-          {/* TAB: LANDING PAGE BUILDER */}
-          {activeTab === "landing" && (
+          {/* TAB: LANDING PAGE BUILDER & WEBSITE CONFIGURATION */}
+          {(activeTab === "landing" || activeTab === "website") && (
             <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-4xl text-left animate-in fade-in duration-200 space-y-6">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                  <h3 className="text-lg font-bold text-[#0a1e3f] tracking-tight">Landing Page Section Builder</h3>
-                  <p className="text-xs md:text-sm text-slate-500 font-normal leading-relaxed mt-1">Edit hero title copy and toggle visibility of homepage presentation blocks.</p>
+                  <h3 className="font-black text-slate-900 tracking-tight" style={{ fontSize: "17px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.3" }}>Website Builder Configuration</h3>
+                  <p className="text-slate-600 font-normal" style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.7", marginTop: "8px" }}>Customize global site titles, hero banners, theme accents, and audit callouts.</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsAddItemModalOpen(true)}
-                  className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
+                  style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}
                 >
-                  <Plus className="w-4 h-4 stroke-[2.5]" /> Add New Section / Page
+                  <Plus className="w-4 h-4 stroke-[2.5]" /> Add New Page
                 </button>
               </div>
 
               <form onSubmit={handleSaveConfig} className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block font-black text-slate-700 uppercase tracking-wider mb-1.5" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}>Site Brand Name</label>
+                    <input
+                      type="text"
+                      value={editConfig.brandName || "2all.ai"}
+                      onChange={(e) => setEditConfig({ ...editConfig, brandName: e.target.value })}
+                      className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                      style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif' }}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block font-black text-slate-700 uppercase tracking-wider mb-1.5" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}>Site Tagline</label>
+                    <input
+                      type="text"
+                      value={editConfig.tagline || "Intelligence that scans & remediates web accessibility"}
+                      onChange={(e) => setEditConfig({ ...editConfig, tagline: e.target.value })}
+                      className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                      style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif' }}
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Main Hero Heading Title</label>
+                  <label className="block font-black text-slate-700 uppercase tracking-wider mb-1.5" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}>Hero Banner Heading Title</label>
                   <input
                     type="text"
                     value={editConfig.heroTitle || "Empower Every User with AI Web Accessibility"}
                     onChange={(e) => setEditConfig({ ...editConfig, heroTitle: e.target.value })}
-                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 text-xs md:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                    style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif' }}
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Hero Subtitle / Description</label>
+                  <label className="block font-black text-slate-700 uppercase tracking-wider mb-1.5" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}>Hero Banner Subtitle</label>
                   <textarea
                     rows={2}
                     value={editConfig.heroSubtitle || "Automatically align your website with WCAG 2.1 AA & ADA compliance in under 48 hours."}
                     onChange={(e) => setEditConfig({ ...editConfig, heroSubtitle: e.target.value })}
-                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 text-xs md:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                    style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif' }}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block font-black text-slate-700 uppercase tracking-wider mb-1.5" style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}>Audit Banner Title</label>
+                  <input
+                    type="text"
+                    value={editConfig.auditBannerTitle || "Put your website to the accessibility test"}
+                    onChange={(e) => setEditConfig({ ...editConfig, auditBannerTitle: e.target.value })}
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-4 py-2.5 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                    style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif' }}
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                  {[
-                    { key: "showHeroSection", label: "Show Hero Presentation Section", desc: "Main introductory header section" },
-                    { key: "showShowcaseSection", label: "Show Interactive Widget Showcase", desc: "Live accessibility widget demonstration card" },
-                    { key: "showProfilesSection", label: "Show Accessibility Profiles Grid", desc: "Dyslexia, ADHD, Vision Impairment profile cards" },
-                    { key: "showPricingSection", label: "Show Subscription Pricing Section", desc: "Monthly and annual subscription tier grid" },
-                    { key: "showVpatBanner", label: "Show VPAT Conformance Banner", desc: "Legal VPAT 2.4 compliance certificate banner" },
-                  ].map((sec) => (
-                    <FormalToggle
-                      key={sec.key}
-                      checked={Boolean(editConfig[sec.key as keyof ConfigType] ?? true)}
-                      onChange={(val) => setEditConfig({ ...editConfig, [sec.key]: val })}
-                      label={sec.label}
-                      description={sec.desc}
-                    />
-                  ))}
+                  <FormalToggle
+                    checked={editConfig.showTrialButton ?? true}
+                    onChange={(val) => setEditConfig({ ...editConfig, showTrialButton: val })}
+                    label="Show Free Trial CTA"
+                    description="Display Start Free Trial button on homepage"
+                  />
+                  <FormalToggle
+                    checked={editConfig.showDemoButton ?? true}
+                    onChange={(val) => setEditConfig({ ...editConfig, showDemoButton: val })}
+                    label="Show Book Demo CTA"
+                    description="Display Book A Demo button on homepage"
+                  />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-extrabold text-xs md:text-sm rounded-xl shadow-md shadow-blue-500/10 transition-all cursor-pointer border-none uppercase tracking-wider"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold rounded-xl shadow-md shadow-blue-500/10 transition-all cursor-pointer border-none uppercase tracking-wider"
+                  style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}
                 >
                   <Save className="w-4.5 h-4.5" />
-                  {loading ? "Saving..." : "Save Landing Page Config"}
+                  {loading ? "Saving..." : "Save Website Configuration"}
                 </button>
               </form>
             </div>
@@ -1633,17 +2574,130 @@ export default function AdminDashboard({
                 </span>
               </div>
 
-              {/* Search */}
-              <div className="relative max-w-sm">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search by name, email or phone..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all"
-                />
+              {/* Subtab Navigation */}
+              <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
+                <button
+                  type="button"
+                  onClick={() => setLicenseSubTab("users")}
+                  className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+                    licenseSubTab === "users"
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                      : "text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  <Users className="w-4 h-4" />
+                  Registered Customers ({users.filter(u => u.role === "CUSTOMER").length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLicenseSubTab("template")}
+                  className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+                    licenseSubTab === "template"
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                      : "text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  <FileCode className="w-4 h-4" />
+                  License Form Template Editor
+                </button>
               </div>
+
+              {licenseSubTab === "template" ? (
+                <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-6">
+                  <div className="border-b border-slate-100 pb-4">
+                    <h3 className="text-base font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                      <FileCode className="w-5 h-5 text-blue-600" />
+                      Customize License Owner Form Template
+                    </h3>
+                    <p className="text-xs text-slate-400 font-medium mt-0.5">
+                      Customize the form headings, copy, and mandatory contact fields displayed to customers when filling out their License Owner Info in their dashboard.
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleSaveConfig} className="space-y-5">
+                    {/* Form Title */}
+                    <div>
+                      <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                        Form Heading Title
+                      </label>
+                      <input
+                        type="text"
+                        value={editConfig.licenseFormTitle || "License Owner Information & Legal Compliance Contact"}
+                        onChange={(e) => setEditConfig({ ...editConfig, licenseFormTitle: e.target.value })}
+                        placeholder="Form Heading Title..."
+                        className="w-full px-3.5 py-2.5 text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                      />
+                    </div>
+
+                    {/* Form Subtitle */}
+                    <div>
+                      <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                        Form Help / Subtitle Description
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={editConfig.licenseFormSubtitle || "Contact details required for your accessibility license statement & WCAG compliance badge."}
+                        onChange={(e) => setEditConfig({ ...editConfig, licenseFormSubtitle: e.target.value })}
+                        placeholder="Form Description..."
+                        className="w-full px-3.5 py-2.5 text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition-all resize-none"
+                      />
+                    </div>
+
+                    {/* Toggles - Clean unboxed layout */}
+                    <div className="space-y-4 pt-2 border-t border-slate-100">
+                      <div className="flex items-center justify-between py-2 border-b border-slate-100/80">
+                        <div>
+                          <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">Require Phone Number</h4>
+                          <p className="text-xs text-slate-400 font-medium mt-0.5">Require customer to provide phone number</p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={editConfig.licenseRequirePhone !== false}
+                          onChange={(e) => setEditConfig({ ...editConfig, licenseRequirePhone: e.target.checked })}
+                          className="w-4 h-4 rounded text-blue-600 cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between py-2">
+                        <div>
+                          <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">Require Company / Org Name</h4>
+                          <p className="text-xs text-slate-400 font-medium mt-0.5">Require company/organization name</p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={editConfig.licenseRequireCompany !== false}
+                          onChange={(e) => setEditConfig({ ...editConfig, licenseRequireCompany: e.target.checked })}
+                          className="w-4 h-4 rounded text-blue-600 cursor-pointer"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Save Button */}
+                    <div className="pt-4 flex justify-end">
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 uppercase tracking-wider"
+                      >
+                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        Save License Form Template
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              ) : (
+                <>
+                  {/* Search */}
+                  <div className="relative max-w-sm">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Search by name, email or phone..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 transition-all"
+                    />
+                  </div>
 
               {/* Users table */}
               <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
@@ -1656,6 +2710,7 @@ export default function AdminDashboard({
                         <th className="px-6 py-3.5 text-left whitespace-nowrap">Phone Number</th>
                         <th className="px-6 py-3.5 text-left whitespace-nowrap">Plan</th>
                         <th className="px-6 py-3.5 text-left whitespace-nowrap">Registered</th>
+                        <th className="px-6 py-3.5 text-right whitespace-nowrap">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -1699,11 +2754,27 @@ export default function AdminDashboard({
                             <td className="px-6 py-4 text-xs text-slate-500 font-bold whitespace-nowrap">
                               {new Date(user.createdAt).toLocaleDateString()}
                             </td>
+                            <td className="px-6 py-4 text-right whitespace-nowrap">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingLicenseUser(user);
+                                  setLicenseEditName(user.name || "");
+                                  setLicenseEditEmail(user.email || "");
+                                  setLicenseEditPhone(user.phone || "");
+                                  setLicenseEditPlan(user.plan || "NONE");
+                                }}
+                                className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                                Edit Info
+                              </button>
+                            </td>
                           </tr>
                         ))}
                       {users.filter(u => u.role === "CUSTOMER").length === 0 && (
                         <tr>
-                          <td colSpan={5} className="px-6 py-12 text-center text-xs text-slate-400 font-semibold">
+                          <td colSpan={6} className="px-6 py-12 text-center text-xs text-slate-400 font-semibold">
                             No customers registered yet.
                           </td>
                         </tr>
@@ -1713,30 +2784,574 @@ export default function AdminDashboard({
                 </div>
               </div>
 
+              {/* EDIT LICENSE OWNER INFO MODAL */}
+              {editingLicenseUser && (
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                  <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-6 text-left animate-in zoom-in-95 duration-200">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                      <div>
+                        <h3 className="text-base font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                          <UserCog className="w-5 h-5 text-blue-600" />
+                          Edit License Owner Info
+                        </h3>
+                        <p className="text-xs text-slate-400 font-medium mt-0.5">Modify owner profile and contact fields</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setEditingLicenseUser(null)}
+                        className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleUpdateLicenseUser} className="space-y-4">
+                      {/* Name */}
+                      <div>
+                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                          Owner Full Name
+                        </label>
+                        <input
+                          type="text"
+                          value={licenseEditName}
+                          onChange={(e) => setLicenseEditName(e.target.value)}
+                          placeholder="e.g. Aaron Isaac Sam"
+                          className="w-full px-3.5 py-2.5 text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                          required
+                        />
+                      </div>
+
+                      {/* Email */}
+                      <div>
+                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                          Email Address
+                        </label>
+                        <input
+                          type="email"
+                          value={licenseEditEmail}
+                          onChange={(e) => setLicenseEditEmail(e.target.value)}
+                          placeholder="e.g. user@example.com"
+                          className="w-full px-3.5 py-2.5 text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                          required
+                        />
+                      </div>
+
+                      {/* Phone */}
+                      <div>
+                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                          Phone Number
+                        </label>
+                        <input
+                          type="text"
+                          value={licenseEditPhone}
+                          onChange={(e) => setLicenseEditPhone(e.target.value)}
+                          placeholder="e.g. +91 7904327211"
+                          className="w-full px-3.5 py-2.5 text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
+                        />
+                      </div>
+
+                      {/* Plan Tier */}
+                      <div>
+                        <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                          Subscription Plan Tier
+                        </label>
+                        <select
+                          value={licenseEditPlan}
+                          onChange={(e) => setLicenseEditPlan(e.target.value)}
+                          className="w-full px-3.5 py-2.5 text-xs font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition-all cursor-pointer"
+                        >
+                          <option value="NONE">NONE (Default)</option>
+                          <option value="FREE">FREE</option>
+                          <option value="PRO">PRO</option>
+                          <option value="ENTERPRISE">ENTERPRISE</option>
+                        </select>
+                      </div>
+
+                      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                        <button
+                          type="button"
+                          onClick={() => setEditingLicenseUser(null)}
+                          className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={isSavingLicenseUser}
+                          className="px-5 py-2.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                        >
+                          {isSavingLicenseUser ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                          {isSavingLicenseUser ? "Saving..." : "Save Changes"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
             </div>
           )}
 
-          {/* TAB 8: FORM BUILDER (DEMO REQUESTS MANAGER) */}
+          {/* TAB 8: FORM BUILDER (DEMO REQUESTS & FORM CUSTOMIZER) */}
           {activeTab === "form" && (
-            <div className="space-y-6 animate-in fade-in duration-200 text-left">
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col space-y-2">
-                <h3 className="text-base font-black text-slate-800 tracking-tight">Form Submissions: Demo Schedule Requests</h3>
-                <p className="text-xs text-slate-400 font-bold">Review and contact customer accounts that scheduled accessibility platform walkthroughs.</p>
+            <div className="space-y-8 animate-in fade-in duration-200 text-left">
+              
+              {/* ADD CUSTOM FIELD MODAL */}
+              {isAddFieldModalOpen && (
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                  <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6 text-left animate-in zoom-in-95 duration-200">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                      <h3 className="text-base font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <Plus className="w-5 h-5 text-blue-600" />
+                        Add New Custom Form Field
+                      </h3>
+                      <button
+                        onClick={() => setIsAddFieldModalOpen(false)}
+                        className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer border-none bg-transparent"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleAddFieldSubmit} className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Field Display Label</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Job Title / Role"
+                          value={newFieldLabel}
+                          onChange={(e) => setNewFieldLabel(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Input Element Type</label>
+                        <select
+                          value={newFieldType}
+                          onChange={(e) => setNewFieldType(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                        >
+                          <option value="text">Single Line Text Input</option>
+                          <option value="email">Email Input</option>
+                          <option value="tel">Phone Number Input</option>
+                          <option value="url">Website URL Input</option>
+                          <option value="textarea">Multi-line Text Area</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Placeholder Hint Text</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Enter your company role"
+                          value={newFieldPlaceholder}
+                          onChange={(e) => setNewFieldPlaceholder(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                      </div>
+
+                      <div className="pt-2 flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+                        <div>
+                          <p className="text-xs font-extrabold text-slate-800">Mandatory Required Field</p>
+                          <p className="text-[10px] text-slate-500 font-medium">Require customer to fill out this field</p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={newFieldRequired}
+                          onChange={(e) => setNewFieldRequired(e.target.checked)}
+                          className="w-4 h-4 rounded border-slate-300 text-blue-600 cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="pt-4 flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setIsAddFieldModalOpen(false)}
+                          className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border-none transition-colors cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl border-none transition-colors cursor-pointer shadow-md shadow-blue-500/20 uppercase tracking-wider flex items-center justify-center gap-2"
+                        >
+                          <Plus className="w-4 h-4 stroke-[3]" /> Add Field to Form
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+
+              {/* EDIT FIELD MODAL */}
+              {editingField && (
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                  <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6 text-left animate-in zoom-in-95 duration-200">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                      <h3 className="text-base font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <Edit className="w-5 h-5 text-blue-600" />
+                        Edit Form Field ({editingField.id})
+                      </h3>
+                      <button
+                        onClick={() => setEditingField(null)}
+                        className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer border-none bg-transparent"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleEditFieldSubmit} className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Field Label</label>
+                        <input
+                          type="text"
+                          value={editingField.label}
+                          onChange={(e) => setEditingField({ ...editingField, label: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Input Element Type</label>
+                        <select
+                          value={editingField.type}
+                          onChange={(e) => setEditingField({ ...editingField, type: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                        >
+                          <option value="text">Single Line Text Input</option>
+                          <option value="email">Email Input</option>
+                          <option value="tel">Phone Number Input</option>
+                          <option value="url">Website URL Input</option>
+                          <option value="textarea">Multi-line Text Area</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Placeholder Hint</label>
+                        <input
+                          type="text"
+                          value={editingField.placeholder || ""}
+                          onChange={(e) => setEditingField({ ...editingField, placeholder: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 pt-2">
+                        <label className="flex items-center gap-2.5 p-3 bg-slate-50 rounded-xl border border-slate-200/80 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={editingField.required}
+                            onChange={(e) => setEditingField({ ...editingField, required: e.target.checked })}
+                            className="w-4 h-4 rounded border-slate-300 text-blue-600 cursor-pointer"
+                          />
+                          <span className="text-xs font-bold text-slate-800">Required Field</span>
+                        </label>
+
+                        <label className="flex items-center gap-2.5 p-3 bg-slate-50 rounded-xl border border-slate-200/80 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={editingField.enabled}
+                            onChange={(e) => setEditingField({ ...editingField, enabled: e.target.checked })}
+                            className="w-4 h-4 rounded border-slate-300 text-blue-600 cursor-pointer"
+                          />
+                          <span className="text-xs font-bold text-slate-800">Enabled Field</span>
+                        </label>
+                      </div>
+
+                      <div className="pt-4 flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setEditingField(null)}
+                          className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border-none transition-colors cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl border-none transition-colors cursor-pointer shadow-md shadow-blue-500/20 uppercase tracking-wider flex items-center justify-center gap-2"
+                        >
+                          <Save className="w-4 h-4" /> Save Field Changes
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+
+              {/* EDIT LEAD MODAL */}
+              {editingLead && (
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                  <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6 text-left animate-in zoom-in-95 duration-200">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                      <h3 className="text-base font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <Edit className="w-5 h-5 text-blue-600" />
+                        Edit Lead / Form Submission
+                      </h3>
+                      <button
+                        onClick={() => setEditingLead(null)}
+                        className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer border-none bg-transparent"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleEditLeadSubmit} className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Customer Name</label>
+                        <input
+                          type="text"
+                          value={editingLead.name || ""}
+                          onChange={(e) => setEditingLead({ ...editingLead, name: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Business Email Address</label>
+                        <input
+                          type="email"
+                          value={editingLead.email || ""}
+                          onChange={(e) => setEditingLead({ ...editingLead, email: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Phone Number</label>
+                        <input
+                          type="text"
+                          value={editingLead.phone || ""}
+                          onChange={(e) => setEditingLead({ ...editingLead, phone: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Website URL</label>
+                        <input
+                          type="text"
+                          value={editingLead.website || ""}
+                          onChange={(e) => setEditingLead({ ...editingLead, website: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                      </div>
+
+                      <div className="pt-4 flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setEditingLead(null)}
+                          className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border-none transition-colors cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl border-none transition-colors cursor-pointer shadow-md shadow-blue-500/20 uppercase tracking-wider flex items-center justify-center gap-2"
+                        >
+                          <Save className="w-4 h-4" /> Save Lead Changes
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+
+              {/* FORM BUILDER & FIELD CUSTOMIZER CARD */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-50 border border-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+                      <LayoutGrid className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-[#0a1e3f] tracking-tight">Form Customizer & Lead Schedule Settings</h3>
+                      <p className="text-xs text-slate-500 font-normal mt-0.5">Customize public demo request form headings, confirmation copy, and field requirements</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleSaveConfig}
+                    disabled={loading}
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-xs font-extrabold rounded-xl border-none transition-all shadow-md shadow-blue-500/10 cursor-pointer flex items-center gap-2 uppercase tracking-wider"
+                  >
+                    <Save className="w-4 h-4" />
+                    {loading ? "Saving..." : "Save Form Config"}
+                  </button>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Demo Form Title Heading</label>
+                    <input
+                      type="text"
+                      value={editConfig.demoFormTitle || "Schedule a Live Accessibility Demo"}
+                      onChange={(e) => setEditConfig({ ...editConfig, demoFormTitle: e.target.value })}
+                      placeholder="e.g. Schedule a Live Walkthrough"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Form Success Confirmation Copy</label>
+                    <input
+                      type="text"
+                      value={editConfig.demoFormSuccessMsg || "Thank you! Our accessibility team will email your meeting slot details."}
+                      onChange={(e) => setEditConfig({ ...editConfig, demoFormSuccessMsg: e.target.value })}
+                      placeholder="e.g. Thank you! We will email you shortly."
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4 pt-2">
+                  <FormalToggle
+                    checked={Boolean(editConfig.requirePhoneNumber ?? true)}
+                    onChange={(val) => setEditConfig({ ...editConfig, requirePhoneNumber: val })}
+                    label="Require Phone Number Field"
+                    description="Make customer phone number mandatory on schedule form"
+                  />
+                  <FormalToggle
+                    checked={Boolean(editConfig.requireWebsiteUrl ?? true)}
+                    onChange={(val) => setEditConfig({ ...editConfig, requireWebsiteUrl: val })}
+                    label="Require Website URL Field"
+                    description="Make customer target website domain mandatory"
+                  />
+                </div>
               </div>
 
-              {loadingDemoRequests ? (
-                <div className="bg-white border border-slate-200/80 rounded-2xl p-12 text-center text-xs text-slate-400 font-bold flex items-center justify-center gap-2 shadow-sm">
-                  <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
-                  Loading demo requests...
+              {/* INTERACTIVE FORM TEMPLATE & FIELDS BUILDER CARD */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                      <Sliders className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-[#0a1e3f] tracking-tight">Form Template Fields Builder</h3>
+                      <p className="text-xs text-slate-500 font-normal mt-0.5">Customize, reorder, edit labels, placeholders, or add new custom fields to the live form template</p>
+                    </div>
+                  </div>
+                  
+                  <button
+                    onClick={() => setIsAddFieldModalOpen(true)}
+                    className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold rounded-xl border-none transition-all shadow-md shadow-blue-500/10 cursor-pointer flex items-center gap-2 uppercase tracking-wider"
+                  >
+                    <Plus className="w-4 h-4 stroke-[3]" /> Add New Custom Field
+                  </button>
                 </div>
-              ) : demoRequests.length === 0 ? (
-                <div className="bg-white border border-slate-200/80 rounded-2xl p-12 text-center text-xs text-slate-400 font-bold shadow-sm">
-                  No demo requests scheduled yet.
+
+                {/* FIELDS LIST TABLE */}
+                <div className="overflow-x-auto border border-slate-200/80 rounded-2xl shadow-sm">
+                  <table className="w-full min-w-[700px] text-xs font-medium text-slate-600">
+                    <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400 tracking-widest border-b border-slate-200/60">
+                      <tr>
+                        <th className="px-6 py-3.5 text-left">Field ID / Key</th>
+                        <th className="px-6 py-3.5 text-left">Display Label</th>
+                        <th className="px-6 py-3.5 text-left">Input Type</th>
+                        <th className="px-6 py-3.5 text-left">Placeholder</th>
+                        <th className="px-6 py-3.5 text-center">Required</th>
+                        <th className="px-6 py-3.5 text-center">Enabled</th>
+                        <th className="px-6 py-3.5 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {(editConfig.formFields || defaultFormFields).map((field) => (
+                        <tr key={field.id} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="px-6 py-4 font-mono font-bold text-slate-700">{field.id}</td>
+                          <td className="px-6 py-4 font-black text-slate-900">{field.label}</td>
+                          <td className="px-6 py-4">
+                            <span className="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 rounded-lg text-xs font-mono font-bold uppercase">
+                              {field.type}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-slate-400 font-medium italic">{field.placeholder || "—"}</td>
+                          <td className="px-6 py-4 text-center">
+                            <input
+                              type="checkbox"
+                              checked={field.required}
+                              onChange={(e) => handleToggleFormField(field.id, "required", e.target.checked)}
+                              className="w-4 h-4 rounded border-slate-300 text-blue-600 cursor-pointer"
+                            />
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <input
+                              type="checkbox"
+                              checked={field.enabled}
+                              onChange={(e) => handleToggleFormField(field.id, "enabled", e.target.checked)}
+                              className="w-4 h-4 rounded border-slate-300 text-blue-600 cursor-pointer"
+                            />
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => setEditingField(field)}
+                                className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer border-none bg-transparent"
+                                title="Edit Field Settings"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              {!["name", "email"].includes(field.id) && (
+                                <button
+                                  onClick={() => handleDeleteField(field.id)}
+                                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer border-none bg-transparent"
+                                  title="Delete Custom Field"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              ) : (
-                <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    onClick={handleSaveConfig}
+                    disabled={loading}
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-xs font-extrabold rounded-xl border-none transition-all shadow-md shadow-blue-500/10 cursor-pointer flex items-center gap-2 uppercase tracking-wider"
+                  >
+                    <Save className="w-4 h-4" />
+                    {loading ? "Saving..." : "Save Form Template & Fields"}
+                  </button>
+                </div>
+              </div>
+
+              {/* FORM SUBMISSIONS TABLE */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-base font-black text-slate-800 tracking-tight">Form Submissions: Demo Schedule Requests</h3>
+                    <p className="text-xs text-slate-400 font-bold mt-0.5">Review, edit, add, or manage customer accounts that submitted accessibility platform walkthroughs</p>
+                  </div>
+                  <button
+                    onClick={() => setIsAddItemModalOpen(true)}
+                    className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold rounded-xl border-none transition-all shadow-md shadow-blue-500/10 cursor-pointer flex items-center gap-2 uppercase tracking-wider"
+                  >
+                    <Plus className="w-4 h-4 stroke-[3]" /> Add Form Submission
+                  </button>
+                </div>
+
+                {loadingDemoRequests ? (
+                  <div className="p-12 text-center text-xs text-slate-400 font-bold flex items-center justify-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                    Loading demo requests...
+                  </div>
+                ) : demoRequests.length === 0 ? (
+                  <div className="p-12 text-center text-xs text-slate-400 font-bold">
+                    No demo requests scheduled yet. Click "+ ADD FORM SUBMISSION" to add one manually.
+                  </div>
+                ) : (
                   <div className="overflow-x-auto">
-                    <table className="w-full min-w-[750px] text-xs font-medium text-slate-600">
+                    <table className="w-full min-w-[850px] text-xs font-medium text-slate-600">
                       <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400 tracking-widest border-b border-slate-200/60">
                         <tr>
                           <th className="px-6 py-3.5 text-left">Customer Name</th>
@@ -1744,6 +3359,7 @@ export default function AdminDashboard({
                           <th className="px-6 py-3.5 text-left">Phone Number</th>
                           <th className="px-6 py-3.5 text-left">Website URL</th>
                           <th className="px-6 py-3.5 text-left">Submitted</th>
+                          <th className="px-6 py-3.5 text-right">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
@@ -1754,7 +3370,7 @@ export default function AdminDashboard({
                             <td className="px-6 py-4 text-slate-700 font-semibold">{req.phone}</td>
                             <td className="px-6 py-4">
                               <a 
-                                href={req.website} 
+                                href={req.website.startsWith("http") ? req.website : `https://${req.website}`} 
                                 target="_blank" 
                                 rel="noreferrer"
                                 className="text-slate-500 hover:text-blue-600 font-bold underline"
@@ -1765,13 +3381,31 @@ export default function AdminDashboard({
                             <td className="px-6 py-4 text-slate-400 font-bold">
                               {new Date(req.createdAt).toLocaleString()}
                             </td>
+                            <td className="px-6 py-4 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => setEditingLead(req)}
+                                  className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer border-none bg-transparent"
+                                  title="Edit Lead Details"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteLead(req.id, req.name)}
+                                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer border-none bg-transparent"
+                                  title="Delete Form Submission"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
 
@@ -1785,50 +3419,6 @@ export default function AdminDashboard({
             <AdminApiKeysPanel />
           )}
 
-          {/* TAB: NAVIGATION BUILDER */}
-          {activeTab === "navigation" && (
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm max-w-3xl text-left animate-in fade-in duration-200 space-y-6">
-              <div>
-                <h3 className="text-base font-black text-slate-800 tracking-tight">Navigation Builder & Link Hierarchy</h3>
-                <p className="text-xs text-slate-400 font-bold mt-0.5">Customize global site navbar links, call-to-action buttons, and header layout.</p>
-              </div>
-
-              <form onSubmit={handleSaveConfig} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Header Call-To-Action Button Text</label>
-                  <input
-                    type="text"
-                    value={editConfig.trialButtonText || "START FREE TRIAL"}
-                    onChange={(e) => setEditConfig({ ...editConfig, trialButtonText: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200/60 rounded-xl">
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-800">Show Header CTA Buttons</h4>
-                    <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Toggle visibility of Login, Book Demo, and Start Trial in top navigation bar</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setEditConfig({ ...editConfig, showNavCta: !(editConfig.showNavCta ?? true) })}
-                    className="p-0 border-none bg-transparent cursor-pointer"
-                  >
-                    {(editConfig.showNavCta ?? true) ? <ToggleRight className="w-8 h-8 text-blue-600" /> : <ToggleLeft className="w-8 h-8 text-slate-400" />}
-                  </button>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-500/10 transition-all cursor-pointer border-none uppercase tracking-wider"
-                >
-                  <Save className="w-4.5 h-4.5" />
-                  {loading ? "Saving..." : "Save Navigation Settings"}
-                </button>
-              </form>
-            </div>
-          )}
 
           {/* TAB: LANDING PAGE BUILDER */}
           {activeTab === "landing" && (
@@ -2097,7 +3687,7 @@ export default function AdminDashboard({
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
                   <h3 className="text-base font-black text-slate-800 tracking-tight">Media Library & Asset URLs</h3>
-                  <p className="text-xs text-slate-400 font-bold mt-0.5">Manage image paths and graphic assets used across landing page & widgets.</p>
+                  <p className="text-xs text-slate-400 font-bold mt-0.5">Upload image files directly from your computer or manage asset paths used across landing page & widgets.</p>
                 </div>
                 <button
                   type="button"
@@ -2109,25 +3699,21 @@ export default function AdminDashboard({
               </div>
 
               <form onSubmit={handleSaveConfig} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Primary Hero Banner Image Path</label>
-                  <input
-                    type="text"
-                    value={editConfig.heroBannerImage || "/images/dashboard/expert_services.png"}
-                    onChange={(e) => setEditConfig({ ...editConfig, heroBannerImage: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
-                  />
-                </div>
+                <ImageUploadInput
+                  label="Primary Hero Banner Image Photo"
+                  value={editConfig.heroBannerImage || "/images/dashboard/expert_services.png"}
+                  onChange={(val) => setEditConfig({ ...editConfig, heroBannerImage: val })}
+                  placeholder="/images/dashboard/expert_services.png"
+                  description="Main header presentation banner image"
+                />
 
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Widget Icon Badge Image Path</label>
-                  <input
-                    type="text"
-                    value={editConfig.widgetIconImage || "/icon.jpeg"}
-                    onChange={(e) => setEditConfig({ ...editConfig, widgetIconImage: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-all"
-                  />
-                </div>
+                <ImageUploadInput
+                  label="Widget Icon Badge Image Photo"
+                  value={editConfig.widgetIconImage || "/icon.jpeg"}
+                  onChange={(val) => setEditConfig({ ...editConfig, widgetIconImage: val })}
+                  placeholder="/icon.jpeg"
+                  description="Floating accessibility widget icon badge"
+                />
 
                 <button
                   type="submit"
@@ -2192,6 +3778,681 @@ export default function AdminDashboard({
               </form>
             </div>
           )}
+
+          {/* TAB: SEO MANAGEMENT SYSTEM */}
+          {activeTab === "seo" && (() => {
+            const seoData = getSeoDataForPage(selectedSeoPage);
+            const titleLen = seoData.seoTitle?.length || 0;
+            const descLen = seoData.metaDescription?.length || 0;
+
+            // Compute Real-Time SEO Score (0-100)
+            let score = 0;
+            if (seoData.seoTitle) score += 20;
+            if (titleLen >= 10 && titleLen <= 60) score += 15;
+            if (seoData.metaDescription) score += 20;
+            if (descLen >= 100 && descLen <= 160) score += 15;
+            if (seoData.metaKeywords) score += 10;
+            if (seoData.canonicalUrl) score += 10;
+            if (seoData.ogImage) score += 10;
+
+            const radius = 64;
+            const circumference = 2 * Math.PI * radius;
+            const strokeDashoffset = circumference - (score / 100) * circumference;
+
+            return (
+              <div className="space-y-6 text-left animate-in fade-in duration-200">
+                
+                {/* EDIT SECTION HEADER CARD */}
+                <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-11 h-11 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center text-blue-600 shrink-0">
+                        <Search className="w-6 h-6 stroke-[2.5]" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-0.5">EDIT SECTION</span>
+                        <h2 className="text-2xl font-black text-slate-900 tracking-tight">seo management</h2>
+                        <p className="text-xs text-slate-500 font-medium mt-1">Configure search engine optimization, canonicals, social meta cards, structured schema markup, and sitemaps dynamically.</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => handleResetSeo(selectedSeoPage)}
+                        className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer border-none"
+                      >
+                        Reset All
+                      </button>
+
+                      <a
+                        href="/sitemap.xml"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center gap-2 no-underline"
+                      >
+                        <Globe className="w-4 h-4 text-blue-600" />
+                        Download Sitemap
+                      </a>
+
+                      <button
+                        type="button"
+                        onClick={handleSaveConfig}
+                        disabled={loading}
+                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-xs font-black rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 cursor-pointer border-none uppercase tracking-wider"
+                      >
+                        <Save className="w-4 h-4" />
+                        {loading ? "Saving..." : "Save Page SEO"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 2-COLUMN LAYOUT GRID */}
+                  <div className="grid lg:grid-cols-12 gap-8 items-start">
+                    
+                    {/* LEFT COLUMN: MAIN FORM (8 COLS) */}
+                    <div className="lg:col-span-8 space-y-6">
+                      
+                      {/* SELECT WEBSITE PAGE BAR */}
+                      <div className="p-5 bg-slate-50/80 border border-slate-200/80 rounded-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <div className="flex-grow space-y-1.5">
+                          <label className="block text-[11px] font-black text-slate-600 uppercase tracking-wider">Select Website Page</label>
+                          <select
+                            value={selectedSeoPage}
+                            onChange={(e) => setSelectedSeoPage(e.target.value)}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-black text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm cursor-pointer"
+                          >
+                            <option value="/">Homepage (Home)</option>
+                            <option value="/about-us">About Us Page (/about-us)</option>
+                            <option value="/pricing">Pricing Plans Page (/pricing)</option>
+                            <option value="/services">Services & Consulting (/services)</option>
+                            <option value="/vpat">VPAT Conformance Report (/vpat)</option>
+                            <option value="/small-business">Small Business Suite (/small-business)</option>
+                            <option value="/mid-large-business">Enterprise Mid-Large Business (/mid-large-business)</option>
+                            <option value="/demo">Schedule Demo Page (/demo)</option>
+                            <option value="/contact-us">Contact Us Page (/contact-us)</option>
+                            <option value="/login">User Account Login (/login)</option>
+                            <option value="/register">User Account Register (/register)</option>
+                          </select>
+                        </div>
+
+                        <div className="sm:self-end">
+                          <button
+                            type="button"
+                            onClick={() => handleGenerateAiSeo(selectedSeoPage)}
+                            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer border-none"
+                          >
+                            <Sparkles className="w-4 h-4 text-amber-300" />
+                            Generate SEO
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* SUB-TABS NAVIGATION */}
+                      <div className="flex border-b border-slate-200/80 gap-2 overflow-x-auto pt-2">
+                        {[
+                          { id: "general", label: "General Settings" },
+                          { id: "social", label: "Social Meta Tags" },
+                          { id: "image", label: "Image Alt/SEO" },
+                          { id: "schema", label: "Structured Schema" },
+                          { id: "sitemap", label: "Sitemap Config" },
+                        ].map((tab) => (
+                          <button
+                            key={tab.id}
+                            type="button"
+                            onClick={() => setSeoSubTab(tab.id as any)}
+                            className={`px-5 py-3 text-xs font-black transition-all cursor-pointer bg-transparent border-none ${
+                              seoSubTab === tab.id
+                                ? "border-b-2 border-blue-600 text-blue-600"
+                                : "border-b-2 border-transparent text-slate-500 hover:text-slate-800"
+                            }`}
+                          >
+                            {tab.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* SUB-TAB 1: GENERAL SETTINGS */}
+                      {seoSubTab === "general" && (
+                        <div className="space-y-6 animate-in fade-in duration-150 pt-2">
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">SEO Title *</label>
+                              <span className={`text-[11px] font-black ${titleLen > 60 ? "text-amber-600 font-bold" : "text-emerald-600"}`}>
+                                {titleLen} / 60 chars
+                              </span>
+                            </div>
+                            <input
+                              type="text"
+                              value={seoData.seoTitle}
+                              onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "seoTitle", e.target.value)}
+                              placeholder="e.g. 2all.ai | Enterprise Software Engineering & Web Accessibility"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">Meta Description *</label>
+                              <span className={`text-[11px] font-black ${descLen > 160 ? "text-amber-600 font-bold" : "text-emerald-600"}`}>
+                                {descLen} / 160 chars
+                              </span>
+                            </div>
+                            <textarea
+                              rows={3}
+                              value={seoData.metaDescription}
+                              onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "metaDescription", e.target.value)}
+                              placeholder="e.g. 2all.ai delivers enterprise-grade software engineering, web accessibility remediation, and security audit systems."
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">Meta Keywords</label>
+                            <input
+                              type="text"
+                              value={seoData.metaKeywords}
+                              onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "metaKeywords", e.target.value)}
+                              placeholder="e.g. accessibility, WCAG 2.1 AA, ADA compliance, security audit, React, Next.js"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">Canonical URL</label>
+                              <input
+                                type="text"
+                                value={seoData.canonicalUrl}
+                                onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "canonicalUrl", e.target.value)}
+                                placeholder="https://2all.ai"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">SEO Slug (URL Path)</label>
+                              <input
+                                type="text"
+                                value={seoData.seoSlug}
+                                onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "seoSlug", e.target.value)}
+                                placeholder="/"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">Robots Indexing</label>
+                              <select
+                                value={seoData.robotsIndex || "index"}
+                                onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "robotsIndex", e.target.value)}
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                              >
+                                <option value="index">Index (Recommended - show in Google & search engines)</option>
+                                <option value="noindex">Noindex (Hide page from search engines)</option>
+                              </select>
+                            </div>
+
+                            <div className="space-y-2">
+                              <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">Robots Links Follow</label>
+                              <select
+                                value={seoData.robotsFollow || "follow"}
+                                onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "robotsFollow", e.target.value)}
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                              >
+                                <option value="follow">Follow (Follow all links on this page)</option>
+                                <option value="nofollow">Nofollow (Do not follow links on page)</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* SUB-TAB 2: SOCIAL META TAGS (EXACT SCREENSHOT 2) */}
+                      {seoSubTab === "social" && (
+                        <div className="space-y-6 animate-in fade-in duration-150 pt-2">
+                          <div className="space-y-4">
+                            <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                              <Globe className="w-4 h-4 text-blue-600" />
+                              OPEN GRAPH (OG) FACEBOOK CONFIGURATION
+                            </h4>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">OG Title</label>
+                                <input
+                                  type="text"
+                                  value={seoData.ogTitle || seoData.seoTitle}
+                                  onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "ogTitle", e.target.value)}
+                                  placeholder="2all.ai | Enterprise Software & Accessibility"
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                              </div>
+
+                              <div className="space-y-1.5">
+                                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">OG Image URL</label>
+                                <input
+                                  type="text"
+                                  value={seoData.ogImage || "https://2all.ai/images/dashboard/expert_services.png"}
+                                  onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "ogImage", e.target.value)}
+                                  placeholder="https://2all.ai/images/logo.png"
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">OG Page URL</label>
+                                <input
+                                  type="text"
+                                  value={seoData.ogUrl || seoData.canonicalUrl}
+                                  onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "ogUrl", e.target.value)}
+                                  placeholder="https://2all.ai"
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                              </div>
+
+                              <div className="space-y-1.5">
+                                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">OG Content Type</label>
+                                <input
+                                  type="text"
+                                  value={seoData.ogType || "website"}
+                                  onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "ogType", e.target.value)}
+                                  placeholder="website"
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">OG Description</label>
+                              <textarea
+                                rows={2}
+                                value={seoData.ogDescription || seoData.metaDescription}
+                                onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "ogDescription", e.target.value)}
+                                placeholder="Enterprise-grade software engineering, DevOps automation, and security audits."
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-4 pt-4 border-t border-slate-100">
+                            <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                              <Search className="w-4 h-4 text-blue-600" />
+                              TWITTER CARD INTEGRATION
+                            </h4>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Twitter Card Title</label>
+                                <input
+                                  type="text"
+                                  value={seoData.twitterTitle || seoData.seoTitle}
+                                  onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "twitterTitle", e.target.value)}
+                                  placeholder="2all.ai | Enterprise Software"
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                              </div>
+
+                              <div className="space-y-1.5">
+                                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Twitter Preview Image URL</label>
+                                <input
+                                  type="text"
+                                  value={seoData.twitterImage || seoData.ogImage}
+                                  onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "twitterImage", e.target.value)}
+                                  placeholder="https://2all.ai/images/logo.png"
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div className="space-y-1.5">
+                                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Twitter Card Type</label>
+                                <select
+                                  value={seoData.twitterCard || "summary_large_image"}
+                                  onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "twitterCard", e.target.value)}
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                                >
+                                  <option value="summary_large_image">Summary Card with Large Image</option>
+                                  <option value="summary">Summary Card</option>
+                                </select>
+                              </div>
+
+                              <div className="space-y-1.5">
+                                <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Twitter Card Description</label>
+                                <textarea
+                                  rows={2}
+                                  value={seoData.twitterDescription || seoData.metaDescription}
+                                  onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "twitterDescription", e.target.value)}
+                                  placeholder="Enterprise-grade software engineering..."
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* SUB-TAB 3: IMAGE ALT/SEO (EXACT SCREENSHOT 1) */}
+                      {seoSubTab === "image" && (
+                        <div className="space-y-6 animate-in fade-in duration-150 pt-2">
+                          <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                            <ImageIcon className="w-4 h-4 text-blue-600" />
+                            DYNAMIC PAGE IMAGE ALT & TITLE CONFIGURATION
+                          </h4>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                              <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Global Image Alt Attribute</label>
+                              <input
+                                type="text"
+                                value={seoData.imageAltAttr || "2all.ai Enterprise Software Solutions"}
+                                onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "imageAltAttr", e.target.value)}
+                                placeholder="e.g. 2all.ai Enterprise Solutions"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              />
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Global Image Title Attribute</label>
+                              <input
+                                type="text"
+                                value={seoData.imageTitleAttr || "2all.ai Brand Logo"}
+                                onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "imageTitleAttr", e.target.value)}
+                                placeholder="e.g. 2all.ai Logo"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Global Image Caption / Tooltip</label>
+                            <textarea
+                              rows={3}
+                              value={seoData.imageCaptionAttr || "Powering platforms that scale your business."}
+                              onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "imageCaptionAttr", e.target.value)}
+                              placeholder="Powering platforms that scale your business."
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* SUB-TAB 4: STRUCTURED SCHEMA (EXACT SCREENSHOT 3) */}
+                      {seoSubTab === "schema" && (
+                        <div className="space-y-6 animate-in fade-in duration-150 pt-2">
+                          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                            <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                              <Code className="w-4 h-4 text-blue-600" />
+                              JSON-LD STRUCTURED DATA SCHEMA
+                            </h4>
+                            <span className="px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200/80 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                              <Check className="w-3.5 h-3.5 stroke-[3]" /> JSON SYNTAX VALID
+                            </span>
+                          </div>
+
+                          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                            <div className="flex-grow space-y-1.5">
+                              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider">SELECT SCHEMA TEMPLATE</label>
+                              <select
+                                value={seoData.schemaType || "Organization"}
+                                onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "schemaType", e.target.value)}
+                                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                              >
+                                <option value="Organization">Organization Schema (Logo, Social links)</option>
+                                <option value="WebSite">WebSite Schema (Search Box & Identity)</option>
+                                <option value="SoftwareApplication">SoftwareApplication Schema (App & SaaS)</option>
+                              </select>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const payload = JSON.stringify({
+                                  "@context": "https://schema.org",
+                                  "@type": seoData.schemaType || "Organization",
+                                  "name": editConfig.brandName || "2all.ai",
+                                  "url": seoData.canonicalUrl,
+                                  "logo": "https://2all.ai/icon.jpeg",
+                                  "sameAs": ["https://linkedin.com/company/2allai"]
+                                }, null, 2);
+                                handleUpdateSeoPageField(selectedSeoPage, "schemaJsonPayload", payload);
+                                showToast("Schema template payload loaded!");
+                              }}
+                              className="sm:self-end px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold rounded-xl border-none cursor-pointer transition-colors"
+                            >
+                              Load Template
+                            </button>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">Custom JSON-LD Payload Editor</label>
+                            <textarea
+                              rows={10}
+                              value={seoData.schemaJsonPayload || defaultSeoPageData.schemaJsonPayload}
+                              onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "schemaJsonPayload", e.target.value)}
+                              className="w-full bg-[#0B1528] text-emerald-400 font-mono text-xs p-4 rounded-2xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed shadow-inner"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* SUB-TAB 5: SITEMAP CONFIG (EXACT SCREENSHOT 4) */}
+                      {seoSubTab === "sitemap" && (
+                        <div className="space-y-6 animate-in fade-in duration-150 pt-2">
+                          <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                            <Globe className="w-4 h-4 text-blue-600" />
+                            SITEMAP XML & CRAWLER SETTINGS
+                          </h4>
+
+                          <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-4">
+                            <div>
+                              <p className="text-xs font-black text-slate-800">Include in Sitemap.xml</p>
+                              <p className="text-[11px] text-slate-500 font-normal mt-0.5">Toggle whether search bots are directed to this page in sitemaps.</p>
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={seoData.includeInSitemap !== false}
+                              onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "includeInSitemap", e.target.checked as any)}
+                              className="w-5 h-5 rounded border-slate-300 text-blue-600 cursor-pointer accent-blue-600"
+                            />
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">Sitemap Priority Score</label>
+                                <span className="text-xs font-black text-blue-600">{seoData.sitemapPriority || "1.0"}</span>
+                              </div>
+                              <input
+                                type="range"
+                                min="0.1"
+                                max="1.0"
+                                step="0.1"
+                                value={seoData.sitemapPriority || "1.0"}
+                                onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "sitemapPriority", e.target.value)}
+                                className="w-full cursor-pointer accent-blue-600"
+                              />
+                              <div className="flex justify-between text-[10px] font-bold text-slate-400">
+                                <span>0.1 (Low)</span>
+                                <span>0.5</span>
+                                <span>1.0 (High)</span>
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <label className="block text-xs font-black text-slate-700 uppercase tracking-wider">Change Frequency</label>
+                              <select
+                                value={seoData.sitemapChangefreq || "daily"}
+                                onChange={(e) => handleUpdateSeoPageField(selectedSeoPage, "sitemapChangefreq", e.target.value)}
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                              >
+                                <option value="daily">Daily Crawl</option>
+                                <option value="weekly">Weekly (Standard static content)</option>
+                                <option value="monthly">Monthly Crawl</option>
+                                <option value="always">Always (Real-time updates)</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                    </div>
+
+                    {/* RIGHT COLUMN: SIDEBAR WIDGETS (4 COLS - EXACT SCREENSHOTS) */}
+                    <div className="lg:col-span-4 space-y-6">
+                      
+                      {/* WIDGET 1: REAL-TIME SEO SCORE GAUGE (HIGH-TECH MODERN REDESIGN) */}
+                      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 text-white border border-slate-800/90 rounded-3xl p-6 sm:p-7 shadow-xl shadow-indigo-950/20 text-center space-y-5 relative overflow-hidden group hover:border-slate-700/80 transition-all">
+                        
+                        {/* Background Aura Glow Effect */}
+                        <div className="absolute -top-12 -right-12 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/20 transition-all" />
+                        <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-blue-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-blue-500/20 transition-all" />
+
+                        {/* Widget Header with Live Indicator */}
+                        <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                          <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <TrendingUp className="w-4 h-4 text-emerald-400" />
+                            REAL-TIME SEO SCORE
+                          </span>
+                          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-black text-emerald-400 uppercase tracking-wider">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                            LIVE ANALYTICS
+                          </span>
+                        </div>
+                        
+                        {/* Circular Score Gauge with Glow & Gradient */}
+                        <div className="relative w-44 h-44 mx-auto flex items-center justify-center my-2">
+                          <svg className="w-full h-full transform -rotate-90 filter drop-shadow-[0_0_12px_rgba(16,185,129,0.35)]" viewBox="0 0 140 140">
+                            <defs>
+                              <linearGradient id="seoScoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#10b981" />
+                                <stop offset="50%" stopColor="#06b6d4" />
+                                <stop offset="100%" stopColor="#3b82f6" />
+                              </linearGradient>
+                            </defs>
+                            <circle
+                              cx="70"
+                              cy="70"
+                              r={radius}
+                              stroke="#1e293b"
+                              strokeWidth="11"
+                              fill="transparent"
+                            />
+                            <circle
+                              cx="70"
+                              cy="70"
+                              r={radius}
+                              stroke="url(#seoScoreGrad)"
+                              strokeWidth="11"
+                              strokeDasharray={circumference}
+                              strokeDashoffset={strokeDashoffset}
+                              strokeLinecap="round"
+                              fill="transparent"
+                              className="transition-all duration-1000 ease-out"
+                            />
+                          </svg>
+
+                          <div className="absolute flex flex-col items-center justify-center text-center">
+                            <span className="text-4xl font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent tracking-tight leading-none drop-shadow-sm font-mono">
+                              {score}
+                            </span>
+                            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-1 px-2 py-0.5 rounded-md bg-slate-800/80 border border-slate-700/50">
+                              / 100 SCORE
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Breakdown Chips */}
+                        <div className="grid grid-cols-3 gap-2 pt-1">
+                          <div className="p-2 rounded-xl bg-slate-800/50 border border-slate-800 text-center">
+                            <span className="text-[9px] font-black text-slate-400 uppercase block">TITLE</span>
+                            <span className="text-xs font-black text-emerald-400">{titleLen > 0 && titleLen <= 60 ? "100%" : "80%"}</span>
+                          </div>
+                          <div className="p-2 rounded-xl bg-slate-800/50 border border-slate-800 text-center">
+                            <span className="text-[9px] font-black text-slate-400 uppercase block">META</span>
+                            <span className="text-xs font-black text-emerald-400">{descLen >= 100 ? "100%" : "75%"}</span>
+                          </div>
+                          <div className="p-2 rounded-xl bg-slate-800/50 border border-slate-800 text-center">
+                            <span className="text-[9px] font-black text-slate-400 uppercase block">SCHEMA</span>
+                            <span className="text-xs font-black text-cyan-400">100%</span>
+                          </div>
+                        </div>
+
+                        {/* Glowing Status Badge Pill */}
+                        <div className="pt-2">
+                          <span className={`w-full py-2.5 px-4 rounded-2xl text-xs font-black tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg border border-white/10 ${
+                            score >= 80 
+                              ? "bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white shadow-emerald-500/30" 
+                              : score >= 50 
+                              ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-amber-500/30" 
+                              : "bg-gradient-to-r from-rose-500 to-red-600 text-white shadow-rose-500/30"
+                          }`}>
+                            <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+                            {score >= 80 ? "EXCELLENT SEO HEALTH" : score >= 50 ? "MODERATE SEO HEALTH" : "NEEDS OPTIMIZATION"}
+                          </span>
+                        </div>
+
+                      </div>
+
+                      {/* WIDGET 2: ACTIONABLE RECOMMENDATIONS */}
+                      <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-4">
+                        <h4 className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-amber-500" />
+                          ACTIONABLE RECOMMENDATIONS
+                        </h4>
+
+                        <div className="space-y-3">
+                          {titleLen > 60 && (
+                            <div className="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl space-y-1">
+                              <p className="text-xs font-black text-amber-900 flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                                Title is too long
+                              </p>
+                              <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
+                                Shorten title length below 60 characters to prevent search engine truncation.
+                              </p>
+                            </div>
+                          )}
+
+                          {descLen < 100 && (
+                            <div className="p-3.5 bg-blue-50/70 border border-blue-200/80 rounded-2xl space-y-1">
+                              <p className="text-xs font-black text-blue-900 flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
+                                Expand Meta Description
+                              </p>
+                              <p className="text-[11px] text-blue-700 font-medium leading-relaxed">
+                                Provide 120-160 characters describing the page value proposition.
+                              </p>
+                            </div>
+                          )}
+
+                          {titleLen <= 60 && descLen >= 100 && (
+                            <div className="p-3.5 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl space-y-1">
+                              <p className="text-xs font-black text-emerald-900 flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                                Meta Tags Well Formatted
+                              </p>
+                              <p className="text-[11px] text-emerald-700 font-medium leading-relaxed">
+                                SEO Title and Meta Description lengths are within optimal search engine limits!
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+            );
+          })()}
 
         </main>
       </div>

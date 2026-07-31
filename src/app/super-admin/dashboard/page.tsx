@@ -5,13 +5,16 @@ import { promises as fs } from "fs";
 import path from "path";
 import SuperAdminDashboard from "@/components/admin/SuperAdminDashboard";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function SuperAdminDashboardPage(props: { searchParams?: Promise<{ tab?: string }> }) {
   const searchParams = await props.searchParams;
   const tab = searchParams?.tab || "users";
   const session = await auth();
 
   const user = session?.user;
-  const isSuperAdmin = user && ((user as any)?.role === "SUPER_ADMIN" || (user as any)?.role === "ADMIN");
+  const isSuperAdmin = user && (user as any)?.role === "SUPER_ADMIN";
 
   if (!isSuperAdmin) {
     redirect("/super-admin/login");
@@ -32,7 +35,9 @@ export default async function SuperAdminDashboardPage(props: { searchParams?: Pr
         role: true,
         plan: true,
         paymentStatus: true,
+        phone: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -45,12 +50,29 @@ export default async function SuperAdminDashboardPage(props: { searchParams?: Pr
             email: true,
           },
         },
+        scans: {
+          select: {
+            id: true,
+            status: true,
+            score: true,
+            issuesCount: true,
+            createdAt: true,
+          },
+        },
       },
     });
 
     if ((prisma as any).domain) {
       domains = await (prisma as any).domain.findMany({
         orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
       });
     }
   } catch (err) {

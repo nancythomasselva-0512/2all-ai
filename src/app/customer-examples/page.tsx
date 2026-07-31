@@ -16,21 +16,21 @@ export default function CustomerExamplesPage() {
       industry: "Retail",
       status: "Remediated",
       image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=400&q=80",
-      link: "https://example.com"
+      link: "https://2all.ai"
     },
     {
       name: "CarePlus Patient Portal",
       industry: "Healthcare",
       status: "Compliant",
       image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=400&q=80",
-      link: "https://example.com"
+      link: "https://demo.2all.ai"
     },
     {
       name: "Metro Transit Authority",
       industry: "Public Sector",
       status: "Remediated",
       image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=400&q=80",
-      link: "https://example.com"
+      link: "https://agency.2all.ai"
     }
   ];
 

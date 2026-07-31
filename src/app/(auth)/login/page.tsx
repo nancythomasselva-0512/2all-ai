@@ -104,17 +104,17 @@ function LoginForm() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
             
             {error && (
-              <div className="p-3 bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-xl">
+              <div className="p-3.5 bg-red-50 border border-red-100 text-red-600 text-sm font-bold rounded-xl">
                 {error}
               </div>
             )}
 
             {/* Email Field */}
-            <div className="space-y-1">
-              <label htmlFor="auth-email" className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">
+            <div className="space-y-1.5">
+              <label htmlFor="auth-email" className="block text-xs font-black text-slate-700 uppercase tracking-wider">
                 Email address <span className="text-red-500 font-bold">*</span>
               </label>
               <input
@@ -122,17 +122,17 @@ function LoginForm() {
                 name="auth-email"
                 type="email"
                 required
-                placeholder="name@company.com"
+                placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="off"
-                className="w-full border border-slate-200/80 bg-slate-50 rounded-xl px-4 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
+                className="w-full border border-slate-200/80 bg-slate-50 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold"
               />
             </div>
 
             {/* Password Field */}
-            <div className="space-y-1">
-              <label htmlFor="auth-password" className="block text-[11px] font-black text-slate-500 uppercase tracking-wider">
+            <div className="space-y-1.5">
+              <label htmlFor="auth-password" className="block text-xs font-black text-slate-700 uppercase tracking-wider">
                 Password <span className="text-red-500 font-bold">*</span>
               </label>
               <div className="relative">
@@ -145,20 +145,20 @@ function LoginForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="new-password"
-                  className="w-full border border-slate-200/80 bg-slate-50 rounded-xl pl-4 pr-10 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-semibold"
+                  className="w-full border border-slate-200/80 bg-slate-50 rounded-xl pl-4 pr-10 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 transition-colors border-none bg-transparent cursor-pointer"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
 
             {/* Forgot Password */}
-            <div className="flex justify-start text-sm sm:text-base pt-1">
+            <div className="flex justify-start text-sm pt-1">
               <a href="#" className="font-extrabold text-blue-600 hover:text-blue-700 transition-colors">
                 Forgot your password?
               </a>
@@ -168,11 +168,11 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-[#004bff] hover:bg-[#003edd] disabled:bg-blue-400 text-white font-extrabold text-sm rounded-xl shadow-md shadow-blue-500/10 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-2 transition-all"
+              className="w-full py-4 bg-[#004bff] hover:bg-[#003edd] disabled:bg-blue-400 text-white font-extrabold text-sm rounded-xl shadow-md shadow-blue-500/10 tracking-wider uppercase border-none cursor-pointer flex items-center justify-center gap-2 transition-all"
             >
-              {loading && <Loader2 className="w-4.5 h-4.5 animate-spin" />}
+              {loading && <Loader2 className="w-5 h-5 animate-spin" />}
               {loading ? "Signing In..." : "Sign In"}
-              {!loading && <ChevronRight className="w-4.5 h-4.5 stroke-[2.5]" />}
+              {!loading && <ChevronRight className="w-5 h-5 stroke-[2.5]" />}
             </button>
           </form>
 

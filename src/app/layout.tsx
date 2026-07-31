@@ -8,6 +8,11 @@ import ChatWidgetWrapper from "@/components/ChatWidgetWrapper";
 import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import AccessibilityWidget from "@/components/accessibility/AccessibilityWidget";
 import ScrollToTopButton from "@/components/ui/ScrollToTopButton";
+import DynamicThemeInjector from "@/components/DynamicThemeInjector";
+import DynamicSeoHead from "@/components/DynamicSeoHead";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const inter = Inter({
   variable: "--font-inter",
@@ -133,6 +138,8 @@ export default async function RootLayout({
         {trackingScripts && <div dangerouslySetInnerHTML={{ __html: trackingScripts }} style={{ display: "none" }} />}
         
         <AccessibilityProvider>
+          <DynamicThemeInjector initialColor={primaryColorHex} />
+          <DynamicSeoHead />
           <div id="app-content">
             {children}
           </div>

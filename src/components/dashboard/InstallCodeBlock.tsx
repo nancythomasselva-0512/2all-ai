@@ -35,7 +35,7 @@ export default function InstallCodeBlock({
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [selectedKey, setSelectedKey] = useState<string>("");
   const [domains, setDomains] = useState<Domain[]>([]);
-  const [selectedDomain, setSelectedDomain] = useState<string>(domain || "example.com");
+  const [selectedDomain, setSelectedDomain] = useState<string>(domain || "yourwebsite.com");
   const [newDomainInput, setNewDomainInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -43,6 +43,54 @@ export default function InstallCodeBlock({
 
   // Status & Verification State
   const [installStatus, setInstallStatus] = useState<"IDLE" | "CHECKING" | "VERIFIED" | "PENDING">("IDLE");
+  const [lastCheckedAt, setLastCheckedAt] = useState<string | null>(null);
+
+  // Fetch API Keys and Registered Domains from backend
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+        const [keysRes, domainsRes] = await Promise.all([
+          fetch("/api/api-keys"),
+          fetch("/api/domains")
+        ]);
+
+        if (keysRes.ok) {
+          const keysData = await keysRes.json();
+          const list = keysData.apiKeys || [];
+          setApiKeys(list);
+          if (list.length > 0) {
+            setSelectedKey(list[0].key);
+          }
+        }
+
+        if (domainsRes.ok) {
+          const domData = await domainsRes.json();
+          const list = domData.domains || [];
+          setDomains(list);
+          if (list.length > 0 && !domain) {
+            setSelectedDomain(list[0].domain);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load installation data:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [domain]);
+
+  const getSnippet = () => {
+    const key = selectedKey || "pk_live_2all_ai_prod_key_778899";
+    let targetDomain = domain || "yourwebsite.com";
+    return `<!-- AI Widget -->
+<script src="https://cdn.example.com/widget.js" 
+        data-api-key="${key}"
+        data-domain="${targetDomain}"></script>`;
+  };
+
   const [installDetails, setInstallDetails] = useState<any>(null);
   const [verifyingDomainId, setVerifyingDomainId] = useState<string | null>(null);
 
@@ -414,7 +462,7 @@ export default function InstallCodeBlock({
                         setSelectedDomain(e.target.value);
                         if (onDomainChange) onDomainChange(e.target.value);
                       }}
-                      placeholder="example.com"
+                      placeholder="yourwebsite.com"
                       className="bg-transparent text-slate-800 text-sm font-bold focus:outline-none w-36 border-none mt-0.5 font-sans"
                     />
                   )}

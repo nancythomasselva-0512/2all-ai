@@ -5,6 +5,9 @@ import { promises as fs } from "fs";
 import path from "path";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminDashboardPage(props: { searchParams?: Promise<{ tab?: string }> }) {
   const searchParams = await props.searchParams;
   const tab = searchParams?.tab || "overview";
@@ -35,6 +38,7 @@ export default async function AdminDashboardPage(props: { searchParams?: Promise
         paymentStatus: true,
         phone: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -45,6 +49,15 @@ export default async function AdminDashboardPage(props: { searchParams?: Promise
           select: {
             name: true,
             email: true,
+          },
+        },
+        scans: {
+          select: {
+            id: true,
+            status: true,
+            score: true,
+            issuesCount: true,
+            createdAt: true,
           },
         },
       },

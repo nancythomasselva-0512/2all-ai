@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
@@ -8,6 +8,14 @@ import { CheckCircle2, Loader2, Sparkles, ShieldCheck, Mail, Phone, Calendar, Ch
 import { motion } from "framer-motion";
 
 export default function DemoPage() {
+  const [config, setConfig] = useState<any>({
+    demoFormTitle: "Schedule a Demo",
+    demoFormSuccessMsg: "Thank you! Our accessibility team will contact you shortly.",
+    requirePhoneNumber: true,
+    requireWebsiteUrl: true,
+    demoButtonText: "SCHEDULE DEMO NOW",
+  });
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phonePrefix, setPhonePrefix] = useState("+91");
@@ -21,6 +29,15 @@ export default function DemoPage() {
   const [slotConfirmed, setSlotConfirmed] = useState(false);
   const [slotLoading, setSlotLoading] = useState(false);
   const [isSkipped, setIsSkipped] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/config", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) setConfig((prev: any) => ({ ...prev, ...data }));
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +94,7 @@ export default function DemoPage() {
           
           <div className="max-w-3xl mx-auto text-center space-y-3">
             <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight text-center">
-              Schedule a <span className="text-[#C8FF4D]">Demo</span>
+              {config.demoFormTitle || "Schedule a Demo"}
             </h1>
             
             <p className="text-slate-200 text-base md:text-lg font-light max-w-2xl mx-auto leading-relaxed text-center">
@@ -319,9 +336,12 @@ export default function DemoPage() {
                     </div>
                   </div>
                   <div className="space-y-1.5 sm:col-span-2">
-                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider px-1">Phone Number</label>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider px-1">
+                      Phone Number {config.requirePhoneNumber !== false && <span className="text-red-500 font-bold">*</span>}
+                    </label>
                     <input
                       type="tel"
+                      required={config.requirePhoneNumber !== false}
                       value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
                       placeholder="9876543210"
@@ -331,9 +351,11 @@ export default function DemoPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider px-1">Website URL *</label>
+                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider px-1">
+                    Website URL {config.requireWebsiteUrl !== false && <span className="text-red-500 font-bold">*</span>}
+                  </label>
                   <input
-                    required
+                    required={config.requireWebsiteUrl !== false}
                     type="url"
                     value={website}
                     onChange={(e) => setWebsite(e.target.value)}
@@ -351,7 +373,7 @@ export default function DemoPage() {
                     {loading ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
-                      "Submit Request"
+                      config.demoButtonText || "Schedule Demo Now"
                     )}
                   </button>
                 </div>

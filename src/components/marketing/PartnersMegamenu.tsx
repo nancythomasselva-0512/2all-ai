@@ -45,9 +45,9 @@ export default function PartnersMegamenu({ isOpen, onMouseEnter, onMouseLeave }:
 
           {/* LEFT PANEL: PROGRAMS */}
           <div className="w-full p-2 space-y-3">
-            <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest leading-none border-b border-slate-100 pb-2.5">
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-normal leading-none border-b border-slate-100 pb-2.5">
               Programs
-            </h4>
+            </p>
             <div className="space-y-2">
               {[
                 { title: "Agency", desc: "Explore your agency's offering", icon: Building2, href: "/agency" },
@@ -65,10 +65,10 @@ export default function PartnersMegamenu({ isOpen, onMouseEnter, onMouseLeave }:
                       <Icon className="w-4 h-4 stroke-[2]" />
                     </div>
                     <div>
-                      <span className="block text-xs md:text-sm font-extrabold text-slate-900 group-hover/item:text-blue-600 transition-colors">
+                      <span style={{ textTransform: "none", letterSpacing: "normal" }} className="block text-xs md:text-sm font-bold text-slate-900 group-hover/item:text-blue-600 transition-colors normal-case tracking-normal">
                         {item.title}
                       </span>
-                      <span className="block text-[11px] text-slate-500 font-medium leading-snug">
+                      <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: "normal" }} className="block text-[11px] text-slate-500 font-normal leading-snug normal-case tracking-normal">
                         {item.desc}
                       </span>
                     </div>

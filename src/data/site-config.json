@@ -77,5 +77,91 @@
   "heroBannerImage": "/images/dashboard/expert_services.png",
   "widgetIconImage": "/icon.jpeg",
   "defaultLanguage": "en",
-  "enableAutoTranslate": true
+  "enableAutoTranslate": true,
+  "formFields": [
+    {
+      "id": "name",
+      "label": "Full Name",
+      "type": "text",
+      "placeholder": "Enter your full name",
+      "required": true,
+      "enabled": true
+    },
+    {
+      "id": "email",
+      "label": "Business Email",
+      "type": "email",
+      "placeholder": "name@company.com",
+      "required": true,
+      "enabled": true
+    },
+    {
+      "id": "phone",
+      "label": "Phone Number",
+      "type": "tel",
+      "placeholder": "9876543210",
+      "required": true,
+      "enabled": true
+    },
+    {
+      "id": "website",
+      "label": "Website URL",
+      "type": "url",
+      "placeholder": "https://company.com",
+      "required": true,
+      "enabled": true
+    },
+    {
+      "id": "company",
+      "label": "Company / Organization",
+      "type": "text",
+      "placeholder": "Acme Inc.",
+      "required": false,
+      "enabled": true
+    },
+    {
+      "id": "notes",
+      "label": "Project Notes & WCAG Goals",
+      "type": "textarea",
+      "placeholder": "Tell us about your website accessibility goals...",
+      "required": false,
+      "enabled": true
+    }
+  ],
+  "seoPagesConfig": {
+    "/": {
+      "seoTitle": "2all.ai | Enterprise AI Web Accessibility & Compliance Platform",
+      "metaDescription": "Automate WCAG 2.1 AA & ADA compliance scanning, remediation, and live accessibility widgets for enterprise websites in under 48 hours.",
+      "metaKeywords": "web accessibility, WCAG 2.1 AA, ADA compliance, automated remediation, AI accessibility widget, VPAT",
+      "canonicalUrl": "https://2all.ai",
+      "seoSlug": "/",
+      "robotsIndex": "index",
+      "robotsFollow": "follow",
+      "ogTitle": "2all.ai | Enterprise Web Accessibility",
+      "ogDescription": "Automate web accessibility and legal compliance with AI-powered remediation.",
+      "ogImage": "/images/dashboard/expert_services.png",
+      "twitterCard": "summary_large_image",
+      "twitterHandle": "@2all_ai",
+      "schemaType": "Organization",
+      "sitemapPriority": "1.0",
+      "sitemapChangefreq": "daily"
+    },
+    "/pricing": {
+      "seoTitle": "Pricing Plans & Licensing | 2all.ai",
+      "metaDescription": "Explore flexible web accessibility pricing plans for small businesses, agencies, and enterprise organizations.",
+      "metaKeywords": "accessibility pricing, ADA audit cost, WCAG compliance plans",
+      "canonicalUrl": "https://2all.ai/pricing",
+      "seoSlug": "/pricing",
+      "robotsIndex": "index",
+      "robotsFollow": "follow",
+      "ogTitle": "2all.ai Pricing Plans",
+      "ogDescription": "Simple, transparent pricing for WCAG 2.1 AA & ADA web accessibility compliance.",
+      "ogImage": "/images/dashboard/expert_services.png",
+      "twitterCard": "summary_large_image",
+      "twitterHandle": "@2all_ai",
+      "schemaType": "SoftwareApplication",
+      "sitemapPriority": "0.9",
+      "sitemapChangefreq": "weekly"
+    }
+  }
 }

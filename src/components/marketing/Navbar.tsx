@@ -10,7 +10,11 @@ import SolutionsMegamenu from "./SolutionsMegamenu";
 import CompanyMegamenu from "./CompanyMegamenu";
 import PartnersMegamenu from "./PartnersMegamenu";
 
-export default function Navbar() {
+interface NavbarProps {
+  onOpenDemo?: () => void;
+}
+
+export default function Navbar({ onOpenDemo }: NavbarProps) {
   const [activeMenu, setActiveMenu] = useState<"solutions" | "company" | "partners" | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -36,25 +40,26 @@ export default function Navbar() {
   };
 
   return (
-    <header className="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50 px-6 py-4 relative">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 h-20 flex items-center justify-between gap-4">
         
-        {/* Left Section: Brand Logo */}
-        <Link href="/" className="flex items-center gap-2 group shrink-0 select-none">
-          <Logo height={42} className="self-center" />
-        </Link>
+        {/* Left Section: Logo */}
+        <div className="flex items-center gap-2">
+          <Logo />
+        </div>
 
-        {/* Center Section: Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-7 select-none">
+        {/* Center Section: Navigation Links & Megamenus */}
+        <nav className="hidden lg:flex items-center gap-8 text-xs font-bold uppercase tracking-widest text-slate-700">
           
-          {/* Solutions Link */}
+          {/* Solutions Megamenu Trigger */}
           <div 
+            className="static"
             onMouseEnter={() => handleMouseEnter("solutions")}
             onMouseLeave={handleMouseLeave}
-            className="py-2"
           >
-            <button className={`flex items-center gap-1.5 text-xs font-black uppercase tracking-widest transition-colors ${
-              activeMenu === "solutions" ? "text-blue-600" : "text-slate-700 hover:text-slate-900"
+            <button 
+              className={`flex items-center gap-1 py-2 hover:text-slate-900 transition-colors bg-transparent border-none cursor-pointer font-bold text-xs uppercase tracking-widest ${
+              activeMenu === "solutions" ? "text-blue-600 font-extrabold" : "text-slate-700"
             }`}>
               Solutions
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -68,14 +73,15 @@ export default function Navbar() {
             />
           </div>
 
-          {/* Company Link */}
+          {/* Company Megamenu Trigger */}
           <div 
+            className="static"
             onMouseEnter={() => handleMouseEnter("company")}
             onMouseLeave={handleMouseLeave}
-            className="py-2"
           >
-            <button className={`flex items-center gap-1.5 text-xs font-black uppercase tracking-widest transition-colors ${
-              activeMenu === "company" ? "text-blue-600" : "text-slate-700 hover:text-slate-900"
+            <button 
+              className={`flex items-center gap-1 py-2 hover:text-slate-900 transition-colors bg-transparent border-none cursor-pointer font-bold text-xs uppercase tracking-widest ${
+              activeMenu === "company" ? "text-blue-600 font-extrabold" : "text-slate-700"
             }`}>
               Company
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -89,14 +95,15 @@ export default function Navbar() {
             />
           </div>
 
-          {/* Partners Link */}
+          {/* Partners Megamenu Trigger */}
           <div 
+            className="static"
             onMouseEnter={() => handleMouseEnter("partners")}
             onMouseLeave={handleMouseLeave}
-            className="py-2"
           >
-            <button className={`flex items-center gap-1.5 text-xs font-black uppercase tracking-widest transition-colors ${
-              activeMenu === "partners" ? "text-blue-600" : "text-slate-700 hover:text-slate-900"
+            <button 
+              className={`flex items-center gap-1 py-2 hover:text-slate-900 transition-colors bg-transparent border-none cursor-pointer font-bold text-xs uppercase tracking-widest ${
+              activeMenu === "partners" ? "text-blue-600 font-extrabold" : "text-slate-700"
             }`}>
               Partners
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -113,7 +120,7 @@ export default function Navbar() {
           {/* Pricing Link */}
           <Link 
             href="/pricing" 
-            className="text-xs font-black uppercase tracking-widest text-slate-700 hover:text-slate-900 transition-colors py-2"
+            className="text-xs font-bold uppercase tracking-widest text-slate-700 hover:text-slate-900 transition-colors py-2"
           >
             Pricing
           </Link>
@@ -128,12 +135,22 @@ export default function Navbar() {
           >
             Login
           </Link>
-          <Link 
-            href="/demo" 
-            className="hidden md:inline-flex items-center justify-center border border-slate-300/80 hover:border-blue-500/60 bg-white hover:bg-blue-50/60 text-slate-800 hover:text-blue-600 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-lg hover:shadow-blue-500/20"
-          >
-            Book A Demo
-          </Link>
+          {onOpenDemo ? (
+            <button 
+              type="button"
+              onClick={onOpenDemo}
+              className="hidden md:inline-flex items-center justify-center border border-slate-300/80 hover:border-blue-500/60 bg-white hover:bg-blue-50/60 text-slate-800 hover:text-blue-600 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-lg hover:shadow-blue-500/20 cursor-pointer"
+            >
+              Book A Demo
+            </button>
+          ) : (
+            <Link 
+              href="/demo" 
+              className="hidden md:inline-flex items-center justify-center border border-slate-300/80 hover:border-blue-500/60 bg-white hover:bg-blue-50/60 text-slate-800 hover:text-blue-600 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-lg hover:shadow-blue-500/20"
+            >
+              Book A Demo
+            </Link>
+          )}
           <Link 
             href="/register" 
             className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-200 shadow-md shadow-blue-600/25 hover:shadow-xl hover:shadow-blue-600/40 hover:scale-105 active:scale-95"

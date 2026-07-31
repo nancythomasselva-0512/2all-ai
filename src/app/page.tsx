@@ -23,7 +23,6 @@ export default function Home() {
   const [activeCard, setActiveCard] = useState<number | null>(null);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
 
-
   const prefersReducedMotion = useReducedMotion();
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
@@ -47,7 +46,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-full bg-white relative overflow-x-hidden selection:bg-slate-100">
-      <Navbar />
+      <Navbar onOpenDemo={() => setIsDemoOpen(true)} />
       
       {/* SECTION 1: Intro Screen (First Viewport) */}
       <div 
@@ -89,13 +88,13 @@ export default function Home() {
             >
               <motion.span 
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-                className="px-4 py-1.5 bg-blue-50/90 backdrop-blur-md border border-blue-200/60 rounded-full text-[11px] font-extrabold text-[#004bff] uppercase tracking-widest block font-sans shadow-sm shadow-blue-500/10"
+                className="px-4 py-1.5 bg-blue-50/90 backdrop-blur-md border border-blue-200/60 rounded-full text-[11px] font-extrabold text-[#004bff] uppercase tracking-widest block shadow-sm shadow-blue-500/10"
               >
                 AI-POWERED • EXPERT-VALIDATED • UNIVERSAL ACCESS
               </motion.span>
             </motion.div>
             
-            <h1 className="text-4xl sm:text-5xl md:text-[56px] font-black text-slate-950 leading-[1.12] tracking-tight font-sans max-w-4xl pt-2">
+            <h1 className="text-4xl sm:text-5xl md:text-[56px] font-black text-slate-950 leading-[1.12] tracking-tight max-w-4xl pt-2">
               <span className="overflow-hidden block">
                 <motion.span variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } }} className="block">
                   Digital inclusion built as
@@ -242,7 +241,7 @@ export default function Home() {
       <CommunityInvolvement />
 
       {/* SECTION 2.995: Legal Compliance Badges Section */}
-      <ComplianceSection />
+      <ComplianceSection onOpenDemo={() => setIsDemoOpen(true)} />
 
       {/* SECTION 2.998: Highest Security Standards Section */}
       <SecuritySection />

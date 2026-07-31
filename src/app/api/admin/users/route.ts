@@ -48,30 +48,39 @@ export async function POST(req: Request) {
   }
 }
 
-// Handle User Role Update
+// Handle User Details Update (Name, Email, Phone, Plan, Role)
 export async function PUT(req: Request) {
   try {
-    const { userId, role } = await req.json();
+    const { userId, name, email, phone, plan, role } = await req.json();
 
-    if (!userId || !role) {
-      return NextResponse.json({ message: "User ID and Role are required" }, { status: 400 });
+    if (!userId) {
+      return NextResponse.json({ message: "User ID is required" }, { status: 400 });
     }
+
+    const updateData: any = {};
+    if (name !== undefined) updateData.name = name;
+    if (email !== undefined) updateData.email = email.trim().toLowerCase();
+    if (phone !== undefined) updateData.phone = phone;
+    if (plan !== undefined) updateData.plan = plan;
+    if (role !== undefined) updateData.role = role;
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { role },
+      data: updateData,
       select: {
         id: true,
         name: true,
         email: true,
+        phone: true,
+        plan: true,
         role: true,
         createdAt: true,
       },
     });
 
-    return NextResponse.json({ message: "User role updated successfully", user: updatedUser });
+    return NextResponse.json({ message: "User updated successfully", user: updatedUser });
   } catch (error) {
-    console.error("User role update error:", error);
+    console.error("User update error:", error);
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }

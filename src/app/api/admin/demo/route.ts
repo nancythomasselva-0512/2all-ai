@@ -72,3 +72,41 @@ export async function GET() {
     return NextResponse.json({ requests: [] });
   }
 }
+
+export async function PUT(req: Request) {
+  try {
+    const body = await req.json();
+    const { id, name, email, phone, website, meetingSlot } = body;
+    if (!id) return NextResponse.json({ message: "ID is required" }, { status: 400 });
+
+    const dataPath = path.join(process.cwd(), "src/data/demo-requests.json");
+    const fileData = await fs.readFile(dataPath, "utf-8");
+    let requests: any[] = JSON.parse(fileData);
+
+    requests = requests.map(r => r.id === id ? { ...r, name, email, phone, website, meetingSlot } : r);
+    await fs.writeFile(dataPath, JSON.stringify(requests, null, 2), "utf-8");
+
+    return NextResponse.json({ message: "Updated successfully", requests });
+  } catch (err) {
+    return NextResponse.json({ message: "Failed to update demo request" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id) return NextResponse.json({ message: "ID is required" }, { status: 400 });
+
+    const dataPath = path.join(process.cwd(), "src/data/demo-requests.json");
+    const fileData = await fs.readFile(dataPath, "utf-8");
+    let requests: any[] = JSON.parse(fileData);
+
+    requests = requests.filter(r => r.id !== id);
+    await fs.writeFile(dataPath, JSON.stringify(requests, null, 2), "utf-8");
+
+    return NextResponse.json({ message: "Deleted successfully", requests });
+  } catch (err) {
+    return NextResponse.json({ message: "Failed to delete demo request" }, { status: 500 });
+  }
+}

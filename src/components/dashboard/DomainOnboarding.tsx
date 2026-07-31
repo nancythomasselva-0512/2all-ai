@@ -458,7 +458,7 @@ export default function DomainOnboarding({
             <div className="relative">
               <input
                 type="text"
-                placeholder="example.com or website name"
+                placeholder="yourwebsite.com"
                 value={domainSearch}
                 onChange={(e) => setDomainSearch(e.target.value)}
                 className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#0052ff] shadow-sm transition-all font-sans"
@@ -546,7 +546,7 @@ export default function DomainOnboarding({
                               setActiveModal({ type: "details", domain: d });
                             }
                           }}
-                          className="font-bold text-xs text-slate-900 hover:text-[#0052ff] transition-colors cursor-pointer"
+                          className="font-black text-sm text-slate-900 hover:text-[#0052ff] transition-colors cursor-pointer"
                         >
                           {d.domain}
                         </span>
@@ -560,7 +560,7 @@ export default function DomainOnboarding({
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                      <p className="text-[10px] text-slate-400 font-medium font-sans mt-0.5">
                         Canonical: {d.canonicalDomain || d.domain}
                       </p>
                       {d.websiteName && d.websiteName !== d.domain && (

@@ -312,7 +312,7 @@ export default function AdminApiKeysPanel() {
       </div>
 
       {/* API Keys Table Card */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm">
         {loading ? (
           <div className="text-center py-16 text-slate-400 text-sm font-semibold">
             Loading platform API keys...
@@ -328,157 +328,160 @@ export default function AdminApiKeysPanel() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[800px] text-left border-collapse">
+          <div className="w-full">
+            <table className="w-full text-left border-collapse text-xs sm:text-sm">
               <thead>
-                <tr className="bg-slate-50/70 border-b border-slate-100 text-sm font-extrabold text-slate-400 uppercase tracking-wider">
-                  <th className="py-4 px-6">PUBLIC KEY</th>
-                  <th className="py-4 px-6">CUSTOMER</th>
-                  <th className="py-4 px-6">DOMAIN</th>
-                  <th className="py-4 px-6">STATUS</th>
-                  <th className="py-4 px-6">LAST USED</th>
-                  <th className="py-4 px-6">CREATED</th>
-                  <th className="py-4 px-6 text-right">ACTION</th>
+                <tr className="bg-slate-50/70 border-b border-slate-100 text-xs font-black text-slate-500 uppercase tracking-wider">
+                  <th className="py-3.5 px-3 sm:px-4 rounded-tl-3xl">PUBLIC KEY</th>
+                  <th className="py-3.5 px-3 sm:px-4">CUSTOMER</th>
+                  <th className="py-3.5 px-3 sm:px-4">DOMAIN</th>
+                  <th className="py-3.5 px-3 sm:px-4">STATUS</th>
+                  <th className="py-3.5 px-3 sm:px-4">LAST USED</th>
+                  <th className="py-3.5 px-3 sm:px-4">CREATED</th>
+                  <th className="py-3.5 px-3 sm:px-4 text-right rounded-tr-3xl">ACTION</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-sm">
-                {filteredKeys.map((k) => (
-                  <tr key={k.id} className="hover:bg-slate-50/50 transition-colors">
-                    
-                    {/* Public Key & Label */}
-                    <td className="py-4 px-6">
-                      <div className="font-mono font-bold text-slate-900 text-sm flex items-center gap-2">
-                        {k.key}
-                      </div>
-                      <div className="text-xs font-medium text-slate-400 mt-0.5">
-                        {k.name}
-                      </div>
-                    </td>
+              <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
+                {filteredKeys.map((k, idx) => {
+                  const isNearBottom = idx >= Math.max(0, filteredKeys.length - 2);
+                  return (
+                    <tr key={k.id} className="hover:bg-slate-50/50 transition-colors">
+                      
+                      {/* Public Key & Label */}
+                      <td className="py-3.5 px-3 sm:px-4">
+                        <div className="font-mono font-bold text-slate-900 text-xs sm:text-sm max-w-[160px] truncate" title={k.key}>
+                          {k.key}
+                        </div>
+                        <div className="text-[11px] font-medium text-slate-400 mt-0.5 truncate">
+                          {k.name}
+                        </div>
+                      </td>
 
-                    {/* Customer */}
-                    <td className="py-4 px-6 font-semibold text-sm text-slate-700">
-                      {k.user?.name || k.user?.email || "Demo Customer"}
-                    </td>
+                      {/* Customer */}
+                      <td className="py-3.5 px-3 sm:px-4 font-semibold text-xs sm:text-sm text-slate-700 whitespace-nowrap">
+                        {k.user?.name || k.user?.email || "Demo Customer"}
+                      </td>
 
-                    {/* Domain Link */}
-                    <td className="py-4 px-6">
-                      {k.domainName ? (
-                        <a 
-                          href={`http://${k.domainName}`} 
-                          target="_blank" 
-                          rel="noreferrer" 
-                          className="font-bold text-[#0052ff] hover:underline flex items-center gap-1"
-                        >
-                          {k.domainName}
-                        </a>
-                      ) : (
-                        <span className="text-slate-400 font-medium">All domains</span>
-                      )}
-                    </td>
-
-                    {/* Status Pill */}
-                    <td className="py-4 px-6">
-                      {k.status === "ACTIVE" && (
-                        <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200/60 rounded-full text-sm font-bold inline-block">
-                          Active
-                        </span>
-                      )}
-                      {k.status === "REVOKED" && (
-                        <span className="px-2.5 py-1 bg-red-50 text-red-600 border border-red-200/60 rounded-full text-sm font-bold inline-block">
-                          Revoked
-                        </span>
-                      )}
-                      {k.status === "EXPIRED" && (
-                        <span className="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-200/60 rounded-full text-sm font-bold inline-block">
-                          Expired
-                        </span>
-                      )}
-                    </td>
-
-                    {/* Last Used */}
-                    <td className="py-4 px-6 text-slate-500 font-medium">
-                      {k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString() : "Never"}
-                    </td>
-
-                    {/* Created */}
-                    <td className="py-4 px-6 text-slate-500 font-medium whitespace-nowrap">
-                      {new Date(k.createdAt).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })}
-                    </td>
-
-                    {/* Action Dropdown */}
-                    <td className="py-4 px-6 text-right relative">
-                      <div className="inline-block relative" ref={activeDropdownId === k.id ? dropdownRef : null}>
-                        <button 
-                          type="button"
-                          onClick={() => setActiveDropdownId(activeDropdownId === k.id ? null : k.id)}
-                          className="px-3.5 py-1.5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-bold text-slate-700 flex items-center gap-1.5 shadow-2xs hover:bg-slate-50 transition-all cursor-pointer ml-auto"
-                        >
-                          Actions
-                          <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                        </button>
-
-                        {/* Dropdown Menu */}
-                        {activeDropdownId === k.id && (
-                          <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200/90 rounded-2xl shadow-xl py-2 z-30 text-left animate-in fade-in zoom-in-95 duration-150">
-                            
-                            <button
-                              type="button"
-                              onClick={() => handleCopyKey(k.id, k.key)}
-                              className="w-full px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
-                            >
-                              {copiedId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
-                              Copy API Key
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleCopyScript(k.id, k.key)}
-                              className="w-full px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
-                            >
-                              {copiedScriptId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Code2 className="w-3.5 h-3.5 text-slate-400" />}
-                              Copy Install Script
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleRotateKey(k.id)}
-                              disabled={k.status !== "ACTIVE" || rotatingId === k.id}
-                              className={`w-full px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
-                            >
-                              <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${rotatingId === k.id ? "animate-spin" : ""}`} />
-                              Rotate API Key
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleRevokeKey(k.id)}
-                              disabled={k.status !== "ACTIVE"}
-                              className={`w-full px-4 py-2 text-sm font-bold text-amber-600 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
-                            >
-                              <Trash2 className="w-3.5 h-3.5 text-amber-500" />
-                              Revoke API Key
-                            </button>
-
-                            <div className="h-px bg-slate-100 my-1" />
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActiveDropdownId(null);
-                                window.location.href = `/dashboard/reports?domain=${encodeURIComponent(k.domainName || "")}`;
-                              }}
-                              className="w-full px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
-                            >
-                              <Activity className="w-3.5 h-3.5 text-blue-500" />
-                              View Usage
-                            </button>
-                          </div>
+                      {/* Domain Link */}
+                      <td className="py-3.5 px-3 sm:px-4">
+                        {k.domainName ? (
+                          <a 
+                            href={`http://${k.domainName}`} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="font-bold text-[#0052ff] hover:underline flex items-center gap-1 whitespace-nowrap"
+                          >
+                            {k.domainName}
+                          </a>
+                        ) : (
+                          <span className="text-slate-400 font-medium whitespace-nowrap">All domains</span>
                         )}
-                      </div>
-                    </td>
+                      </td>
 
-                  </tr>
-                ))}
+                      {/* Status Pill */}
+                      <td className="py-3.5 px-3 sm:px-4">
+                        {k.status === "ACTIVE" && (
+                          <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-200/60 rounded-full text-xs font-bold inline-block whitespace-nowrap">
+                            Active
+                          </span>
+                        )}
+                        {k.status === "REVOKED" && (
+                          <span className="px-2.5 py-0.5 bg-red-50 text-red-600 border border-red-200/60 rounded-full text-xs font-bold inline-block whitespace-nowrap">
+                            Revoked
+                          </span>
+                        )}
+                        {k.status === "EXPIRED" && (
+                          <span className="px-2.5 py-0.5 bg-amber-50 text-amber-600 border border-amber-200/60 rounded-full text-xs font-bold inline-block whitespace-nowrap">
+                            Expired
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Last Used */}
+                      <td className="py-3.5 px-3 sm:px-4 text-slate-500 font-medium whitespace-nowrap">
+                        {k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString() : "Never"}
+                      </td>
+
+                      {/* Created */}
+                      <td className="py-3.5 px-3 sm:px-4 text-slate-500 font-medium whitespace-nowrap">
+                        {new Date(k.createdAt).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })}
+                      </td>
+
+                      {/* Action Dropdown */}
+                      <td className="py-3.5 px-3 sm:px-4 text-right relative">
+                        <div className="inline-block relative" ref={activeDropdownId === k.id ? dropdownRef : null}>
+                          <button 
+                            type="button"
+                            onClick={() => setActiveDropdownId(activeDropdownId === k.id ? null : k.id)}
+                            className="px-3 py-1 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-bold text-slate-700 flex items-center gap-1 shadow-2xs hover:bg-slate-50 transition-all cursor-pointer ml-auto whitespace-nowrap"
+                          >
+                            Actions
+                            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                          </button>
+
+                          {/* Dropdown Menu - Smart positioning so bottom rows open UPWARDS */}
+                          {activeDropdownId === k.id && (
+                            <div className={`absolute right-0 ${isNearBottom ? "bottom-full mb-2" : "top-full mt-2"} w-52 bg-white border border-slate-200/90 rounded-2xl shadow-2xl py-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150`}>
+                              
+                              <button
+                                type="button"
+                                onClick={() => handleCopyKey(k.id, k.key)}
+                                className="w-full px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
+                              >
+                                {copiedId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+                                Copy API Key
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleCopyScript(k.id, k.key)}
+                                className="w-full px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
+                              >
+                                {copiedScriptId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Code2 className="w-3.5 h-3.5 text-slate-400" />}
+                                Copy Install Script
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleRotateKey(k.id)}
+                                disabled={k.status !== "ACTIVE" || rotatingId === k.id}
+                                className={`w-full px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
+                              >
+                                <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${rotatingId === k.id ? "animate-spin" : ""}`} />
+                                Rotate API Key
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleRevokeKey(k.id)}
+                                disabled={k.status !== "ACTIVE"}
+                                className={`w-full px-4 py-2 text-xs sm:text-sm font-bold text-amber-600 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
+                              >
+                                <Trash2 className="w-3.5 h-3.5 text-amber-500" />
+                                Revoke API Key
+                              </button>
+                              
+                              <div className="h-px bg-slate-100 my-1" />
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveDropdownId(null);
+                                  window.location.href = `/dashboard/reports?domain=${encodeURIComponent(k.domainName || "")}`;
+                                }}
+                                className="w-full px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
+                              >
+                                <Activity className="w-3.5 h-3.5 text-blue-500" />
+                                View Usage
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

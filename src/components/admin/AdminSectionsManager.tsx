@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Layers,
   Plus,
@@ -224,6 +224,75 @@ const DEFAULT_SECTIONS: WebsiteSectionItem[] = [
     order: 8
   }
 ];
+
+interface ImageUploadInputProps {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+}
+
+function ImageUploadInput({ label, value, onChange, placeholder = "/images/hero_banner.png" }: ImageUploadInputProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          onChange(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-[11px] font-bold text-slate-600 uppercase">{label}</label>
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="flex-grow bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        />
+
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+        />
+
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
+        >
+          <Upload className="w-3.5 h-3.5" /> Upload Photo
+        </button>
+      </div>
+
+      {value && (
+        <div className="mt-1 flex items-center gap-2 p-1.5 bg-slate-100/90 rounded-xl border border-slate-200/80 w-fit">
+          <img src={value} alt="Preview" className="w-8 h-8 object-contain rounded-lg border border-slate-200 bg-white" />
+          <span className="text-[10px] font-bold text-slate-500 max-w-[140px] truncate">{value}</span>
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-[10px] text-red-500 font-black hover:underline cursor-pointer border-none bg-transparent"
+          >
+            Clear
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AdminSectionsManager() {
   const [sections, setSections] = useState<WebsiteSectionItem[]>(DEFAULT_SECTIONS);
@@ -506,24 +575,26 @@ export default function AdminSectionsManager() {
                 <div className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                   <div className="space-y-1.5 flex-grow min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded-md">
+                      <span className="font-black uppercase tracking-wider px-2.5 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded-md" style={{ fontSize: "12px", fontFamily: '"Times New Roman", Times, serif' }}>
                         {sec.badgeText}
                       </span>
-                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                      <span className="font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md" style={{ fontSize: "12px", fontFamily: '"Times New Roman", Times, serif' }}>
                         {sec.category}
                       </span>
                       {sec.isCustom && (
-                        <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-100 rounded-md">
+                        <span className="font-black uppercase tracking-wider px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-100 rounded-md" style={{ fontSize: "12px", fontFamily: '"Times New Roman", Times, serif' }}>
                           Custom Section
                         </span>
                       )}
                     </div>
 
-                    {/* Section Title with Custom Styling Applied */}
-                    <h3 className={`font-bold tracking-tight ${sec.fontSize} ${sec.fontFamily} text-[#0a1e3f]`}>
+                    {/* Section Title with Target Times New Roman Styling */}
+                    <h3 className="font-black text-slate-900 tracking-tight" style={{ fontSize: "17px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.3" }}>
                       {sec.title}
                     </h3>
-                    <p className="text-xs text-slate-500 font-normal leading-relaxed">{sec.subtitle}</p>
+                    <p className="text-slate-600 font-normal" style={{ fontSize: "15px", fontFamily: '"Times New Roman", Times, serif', lineHeight: "1.7", marginTop: "8px" }}>
+                      {sec.subtitle}
+                    </p>
                   </div>
 
                   {/* Actions & Position Controls */}
@@ -652,7 +723,8 @@ export default function AdminSectionsManager() {
               <div className="flex justify-center pt-1 pb-2">
                 <button
                   onClick={() => handleOpenAddModal(idx + 1)}
-                  className="px-3.5 py-1 bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 text-[11px] font-extrabold rounded-full border border-dashed border-slate-300 hover:border-blue-300 transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                  className="px-4 py-1.5 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 font-bold rounded-full border border-dashed border-slate-300 hover:border-blue-300 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  style={{ fontSize: "13px", fontFamily: '"Times New Roman", Times, serif' }}
                 >
                   <Plus className="w-3.5 h-3.5" /> Add Section Below Here
                 </button>
@@ -792,16 +864,12 @@ export default function AdminSectionsManager() {
                 </span>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="block text-[11px] font-bold text-slate-600 uppercase">Photo / Image URL</label>
-                    <input
-                      type="text"
-                      placeholder="/images/hero_banner.png"
-                      value={editingSection.imageUrl}
-                      onChange={(e) => setEditingSection({ ...editingSection, imageUrl: e.target.value })}
-                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-800"
-                    />
-                  </div>
+                  <ImageUploadInput
+                    label="Photo / Image URL"
+                    value={editingSection.imageUrl}
+                    onChange={(val) => setEditingSection({ ...editingSection, imageUrl: val })}
+                    placeholder="/images/hero_banner.png"
+                  />
                   <div className="space-y-1">
                     <label className="block text-[11px] font-bold text-slate-600 uppercase">Video Embed URL (YouTube/MP4)</label>
                     <input
@@ -984,16 +1052,12 @@ export default function AdminSectionsManager() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Photo / Image URL</label>
-                  <input
-                    type="text"
-                    placeholder="/images/hero_banner.png"
-                    value={newImageUrl}
-                    onChange={(e) => setNewImageUrl(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800"
-                  />
-                </div>
+                <ImageUploadInput
+                  label="Photo / Image URL"
+                  value={newImageUrl}
+                  onChange={(val) => setNewImageUrl(val)}
+                  placeholder="/images/hero_banner.png"
+                />
                 <div className="space-y-1">
                   <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Video Embed URL</label>
                   <input
