@@ -7,6 +7,7 @@ import {
   ArrowLeftRight, 
   Briefcase, 
   Heart,
+  Headphones,
   TrendingUp,
   ArrowRight,
   Play
@@ -50,10 +51,11 @@ export default function CompanyMegamenu({ isOpen, onMouseEnter, onMouseLeave }: 
             <p className="text-xs font-bold text-slate-500 uppercase tracking-normal leading-none border-b border-slate-100 pb-2.5">
               Overview
             </p>
-            <div className="space-y-2">
+            <div className="space-y-1">
               {[
                 { title: "About us", desc: "Find out what makes us different", icon: Info, href: "/about-us" },
                 { title: "Why choose 2all.ai", desc: "Compare us to competitors", icon: ArrowLeftRight, href: "/why-choose-2all-ai" },
+                { title: "Contact us", desc: "Get in touch with our team", icon: Headphones, href: "/contact-us" },
                 { title: "Careers", desc: "Work at 2all.ai", icon: Briefcase, href: "/careers" },
                 { title: "Community", desc: "Join the 2all.ai community", icon: Heart, href: "/community" },
               ].map((item) => {
@@ -64,7 +66,7 @@ export default function CompanyMegamenu({ isOpen, onMouseEnter, onMouseLeave }: 
                     href={item.href} 
                     className="flex items-center gap-3 group/item hover:bg-blue-50/50 p-2 rounded-2xl transition-all"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/60 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
+                    <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/60 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
                       <Icon className="w-4 h-4 stroke-[2]" />
                     </div>
                     <div>
@@ -82,7 +84,7 @@ export default function CompanyMegamenu({ isOpen, onMouseEnter, onMouseLeave }: 
           </div>
 
           {/* RIGHT PANEL: PROMO CARD WITH VIDEO */}
-          <div className="w-full bg-blue-600 text-white p-4 md:p-5 rounded-3xl relative overflow-hidden flex flex-col justify-between h-[340px] max-h-[340px]">
+          <div className="w-full bg-blue-600 text-white p-4 md:p-5 rounded-3xl relative overflow-hidden flex flex-col justify-between min-h-[350px]">
             {/* Visual design accent */}
             <div className="absolute top-0 right-0 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" />
             

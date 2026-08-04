@@ -2,14 +2,20 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, Globe, Check, Loader2 } from "lucide-react";
 
 export default function FreeTrialModal() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [website, setWebsite] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (searchParams.get("trial") === "1") {
@@ -25,7 +31,7 @@ export default function FreeTrialModal() {
     const url = new URL(window.location.href);
     url.searchParams.delete("trial");
     url.searchParams.delete("site");
-    window.history.replaceState({}, "", url.pathname);
+    window.history.replaceState({}, "", url.toString());
   };
 
   const handleStartTrial = async (e: React.FormEvent) => {
@@ -65,11 +71,11 @@ export default function FreeTrialModal() {
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col md:flex-row">
+  return createPortal(
+    <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[999999] flex items-center justify-center p-4 a11y-modal-portal">
+      <div className="bg-white border border-slate-200/90 rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col md:flex-row a11y-modal-card">
         
         {/* LEFT: Form Panel */}
         <div className="flex-1 p-6 md:p-10 text-left">
@@ -189,6 +195,7 @@ export default function FreeTrialModal() {
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

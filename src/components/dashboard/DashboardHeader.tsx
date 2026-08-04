@@ -51,9 +51,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
 
       {/* LEFT: Logo & Main Nav */}
       <div className="flex items-center gap-10">
-        <Link href="/" className="flex items-center gap-2 group shrink-0">
-          <Logo height={36} className="self-center" />
-        </Link>
+        <Logo height={36} className="self-center" />
 
         {/* Navigation Items */}
         <nav className="hidden md:flex items-center gap-6">

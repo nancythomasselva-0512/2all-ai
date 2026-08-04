@@ -149,11 +149,9 @@ function RegisterForm() {
         </div>
 
         {/* Center: Centered Logo */}
-        <div className="flex justify-center shrink-0">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="hidden md:block"><Logo height={52} className="self-center" /></div>
-            <div className="block md:hidden"><Logo height={32} className="self-center" /></div>
-          </Link>
+        <div className="flex justify-center shrink-0 items-center gap-2">
+          <div className="hidden md:block"><Logo height={52} className="self-center" /></div>
+          <div className="block md:hidden"><Logo height={32} className="self-center" /></div>
         </div>
 
         {/* Right: Log in link */}

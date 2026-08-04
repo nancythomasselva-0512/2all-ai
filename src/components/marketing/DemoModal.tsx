@@ -1,6 +1,5 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, CheckCircle2, Loader2, ChevronDown, Calendar, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -22,6 +21,7 @@ const COUNTRIES = [
 ];
 
 export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
+  const [mounted, setMounted] = useState(false);
   const [config, setConfig] = useState<any>({
     demoFormTitle: "Schedule an Accessibility Demo",
     demoFormSuccessMsg: "Demo Request Submitted!",
@@ -29,6 +29,10 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
     requireWebsiteUrl: true,
     demoButtonText: "SCHEDULE A DEMO",
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -90,17 +94,19 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
     }
   };
 
-  return (
+  if (!isOpen || !mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center a11y-modal-portal">
           {/* Backdrop Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm cursor-pointer"
+            className="absolute inset-0 bg-slate-950/70 backdrop-blur-md cursor-pointer"
           />
 
           {/* Modal Container */}
@@ -109,7 +115,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="bg-white border border-slate-200/90 rounded-3xl shadow-2xl p-6 sm:p-8 pt-8 max-w-md w-full mx-4 relative z-10 text-left select-none max-h-[90vh] overflow-y-auto"
+            className="bg-white border border-slate-200/90 rounded-3xl shadow-2xl p-6 sm:p-8 pt-8 max-w-md w-full mx-4 relative z-10 text-left select-none max-h-[90vh] overflow-y-auto a11y-modal-card"
           >
             {/* Close Button */}
             <button
@@ -296,7 +302,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                       <button
                         type="button"
                         onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
-                        className="flex items-center gap-1.5 px-3 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-800 hover:bg-slate-100 transition-all cursor-pointer border-none font-sans"
+                        className="flex items-center gap-1.5 px-3 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-800 hover:bg-slate-100 transition-all cursor-pointer border-none font-sans a11y-country-btn"
                       >
                         <span className="text-base leading-none">{selectedCountry.flag}</span>
                         <span>{selectedCountry.code}</span>
@@ -306,7 +312,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                       {countryDropdownOpen && (
                         <>
                           <div className="fixed inset-0 z-40" onClick={() => setCountryDropdownOpen(false)} />
-                          <div className="absolute left-0 mt-1 w-52 bg-white border border-slate-200/90 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150 max-h-56 overflow-y-auto no-scrollbar font-sans text-left">
+                          <div className="absolute left-0 mt-1 w-52 bg-white border border-slate-200/90 rounded-2xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150 max-h-56 overflow-y-auto no-scrollbar font-sans text-left a11y-dropdown-menu">
                             {COUNTRIES.map((c, idx) => (
                               <button
                                 key={`${c.name}-${idx}`}
@@ -316,8 +322,8 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                                   setPhonePrefix(c.code);
                                   setCountryDropdownOpen(false);
                                 }}
-                                className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-bold text-left transition-colors cursor-pointer border-none bg-transparent ${
-                                  selectedCountry.name === c.name ? "bg-blue-50 text-blue-600" : "text-slate-700 hover:bg-slate-50"
+                                className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-bold text-left transition-colors cursor-pointer border-none a11y-dropdown-item ${
+                                  selectedCountry.name === c.name ? "bg-blue-50 text-blue-600 font-black" : "text-slate-700 hover:bg-slate-50"
                                 }`}
                               >
                                 <div className="flex items-center gap-2">
@@ -424,6 +430,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

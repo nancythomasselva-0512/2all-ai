@@ -351,11 +351,16 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   const resetSettings = () => setState(defaultState);
 
   const updateSetting = <K extends keyof AccessibilityState>(key: K, value: AccessibilityState[K]) => {
-    if (key === "voiceNavigation") {
-      setState(prev => ({ ...prev, [key]: value, lastVoiceCommand: "" }));
-    } else {
-      setState(prev => ({ ...prev, [key]: value }));
-    }
+    setState(prev => {
+      const nextState = { ...prev, [key]: value };
+      if (key === "voiceNavigation") {
+        nextState.lastVoiceCommand = "";
+      }
+      if (key === "isDarkMode" && !value && prev.activeProfile === "night") {
+        nextState.activeProfile = "none";
+      }
+      return nextState;
+    });
   };
 
   const applyProfile = (profile: ProfileType) => {
@@ -370,6 +375,8 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         lineHeight: 1.5,
         fontSize: 100,
         isHighContrast: false,
+        isDarkMode: false,
+        isLightMode: false,
         readingMask: false,
         readingRuler: false,
         reduceMotion: false,
@@ -379,6 +386,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         highlightButtons: false,
         highlightFocus: false,
         textToSpeech: false,
+        autoReadSelection: false,
         cursorSize: "normal",
         saturationMode: "normal"
       }));

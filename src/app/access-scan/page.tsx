@@ -25,7 +25,13 @@ const stagger = {
 
 export default function AccessScanPage() {
   const [isDemoOpen, setIsDemoOpen] = useState(false);
+  const [url, setUrl] = useState("");
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  const handleGetAuditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsDemoOpen(true);
+  };
 
   const toggleFaq = (idx: number) => {
     setActiveFaq(activeFaq === idx ? null : idx);
@@ -69,16 +75,22 @@ export default function AccessScanPage() {
                 <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-cyan-300" /> Completely free</span>
               </div>
 
-              <div className="max-w-xl mx-auto w-full bg-white rounded-full p-1.5 flex shadow-xl border-2 border-white/30">
+              <form onSubmit={handleGetAuditSubmit} className="max-w-xl mx-auto w-full bg-white rounded-full p-1.5 flex shadow-xl border-2 border-white/30">
                 <input 
                   type="text" 
                   placeholder="mywebsite.com" 
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
                   className="flex-1 bg-transparent border-none outline-none px-4 text-[#0a1e3f] font-semibold text-sm placeholder:text-slate-400"
                 />
-                <button className="bg-[#0a1e3f] hover:bg-[#06122b] text-white px-6 py-2.5 rounded-full font-bold tracking-wider uppercase text-xs transition-colors shrink-0">
+                <button 
+                  type="submit"
+                  onClick={() => setIsDemoOpen(true)}
+                  className="bg-[#0a1e3f] hover:bg-[#06122b] text-white px-6 py-2.5 rounded-full font-bold tracking-wider uppercase text-xs transition-colors shrink-0 cursor-pointer"
+                >
                   Get Audit
                 </button>
-              </div>
+              </form>
             </div>
           </motion.div>
         </section>
@@ -96,6 +108,7 @@ export default function AccessScanPage() {
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
                {/* Step 1 */}
                <motion.div variants={fadeUp} className="bg-white border border-slate-200 rounded-3xl p-8 relative flex flex-col hover:shadow-lg transition-shadow">
+                  <div className="text-5xl font-black text-slate-200 absolute top-6 left-6 -z-0">1</div>
                   <div className="relative z-10 pt-10">
                      <h3 className="text-lg font-black text-[#0a1e3f] mb-3">Enter website URL</h3>
                      <p className="text-slate-500 text-sm font-semibold leading-relaxed">Paste your domain name and hit get audit</p>
@@ -170,26 +183,7 @@ export default function AccessScanPage() {
           </div>
         </section>
 
-        {/* ── BLUE STRIP CTA ── */}
-        <section className="w-full bg-[#004bff] text-white py-16 px-6 md:px-10">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-tight md:w-1/2">
-              <span className="italic font-serif text-cyan-300">Find out now</span> if your<br/>website is accessible
-            </h2>
-            <div className="w-full md:w-1/2 flex items-center">
-              <div className="w-full bg-white/10 rounded-full p-2 flex border border-white/30 backdrop-blur-sm shadow-xl">
-                <input 
-                  type="text" 
-                  placeholder="mywebsite.com" 
-                  className="flex-1 bg-transparent border-none outline-none px-6 text-white font-semibold placeholder:text-white/50"
-                />
-                <button className="bg-white hover:bg-slate-100 text-[#004bff] px-6 md:px-8 py-3 rounded-full font-extrabold tracking-widest uppercase text-xs transition-colors shrink-0">
-                  Get Audit
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
+
 
         {/* ── 3 CARDS GRID ── */}
         <section className="w-full py-24 px-6 md:px-10 bg-white">
@@ -291,7 +285,7 @@ export default function AccessScanPage() {
                        )}
                     </button>
                     {activeFaq === idx && (
-                       <div className="pb-5 text-sm text-slate-600 leading-relaxed pr-8 animate-in fade-in slide-in-from-top-2 duration-200">
+                       <div className="pb-5 text-sm text-[#475569] leading-relaxed pr-8 animate-in fade-in slide-in-from-top-2 duration-200">
                           {faq.a}
                        </div>
                     )}
@@ -301,25 +295,7 @@ export default function AccessScanPage() {
           </div>
         </section>
 
-        {/* ── BOTTOM CTA (Light Background) ── */}
-        <section className="w-full bg-[#f8fafc] py-24 px-6 md:px-10 border-t border-slate-100">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-[#0a1e3f]">
-              Not sure if you're accessible?<br/>
-              Audit your website <span className="italic font-serif text-blue-600">for free</span>
-            </h2>
-            <div className="max-w-xl mx-auto bg-white rounded-full p-2 flex shadow-lg border border-slate-200">
-              <input 
-                type="text" 
-                placeholder="mywebsite.com" 
-                className="flex-1 bg-transparent border-none outline-none px-6 text-[#0a1e3f] font-semibold placeholder:text-slate-400"
-              />
-              <button className="bg-[#0a1e3f] hover:bg-[#06122b] text-white px-8 md:px-10 py-3.5 rounded-full font-extrabold tracking-widest uppercase text-xs transition-colors shrink-0">
-                Get Audit
-              </button>
-            </div>
-          </div>
-        </section>
+
       </main>
 
       <Footer />

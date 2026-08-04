@@ -189,14 +189,6 @@ h1, h2, h3, h4, h5, h6, .font-heading {
    ACCESSIBILITY CENTER GLOBAL STYLES
    ================================================== */
 
-/* Contrast Modes */
-.a11y-high-contrast #app-content > *:not(header):not(.fixed),
-.a11y-high-contrast #app-content > div > *:not(header):not(.fixed),
-.a11y-high-contrast #app-content header,
-.a11y-high-contrast #app-content > div > header {
-  filter: contrast(150%) saturate(150%) !important;
-}
-
 /* Backgrounds */
 html.a11y-dark-mode, body.a11y-dark-mode {
   background-color: #121212 !important;
@@ -205,37 +197,104 @@ html.a11y-light-mode, body.a11y-light-mode {
   background-color: #ffffff !important;
 }
 
-/* Filters */
-.a11y-dark-mode #app-content > *:not(header):not(.fixed),
-.a11y-dark-mode #app-content > div > *:not(header):not(.fixed),
-.a11y-dark-mode #app-content header,
-.a11y-dark-mode #app-content > div > header {
-  filter: invert(1) hue-rotate(180deg) !important;
+/* Contrast Modes */
+.a11y-high-contrast #app-content,
+.a11y-high-contrast #app-content * {
+  filter: contrast(150%) saturate(150%);
 }
-.a11y-dark-mode #app-content > *:not(header):not(.fixed) img, 
-.a11y-dark-mode #app-content > *:not(header):not(.fixed) video, 
-.a11y-dark-mode #app-content > *:not(header):not(.fixed) svg,
-.a11y-dark-mode #app-content > *:not(header):not(.fixed) iframe,
-.a11y-dark-mode #app-content > div > *:not(header):not(.fixed) img, 
-.a11y-dark-mode #app-content > div > *:not(header):not(.fixed) video, 
-.a11y-dark-mode #app-content > div > *:not(header):not(.fixed) svg,
-.a11y-dark-mode #app-content > div > *:not(header):not(.fixed) iframe,
-.a11y-dark-mode #app-content header img, 
-.a11y-dark-mode #app-content header video, 
-.a11y-dark-mode #app-content header svg,
-.a11y-dark-mode #app-content header iframe,
-.a11y-dark-mode #app-content > div > header img, 
-.a11y-dark-mode #app-content > div > header video, 
-.a11y-dark-mode #app-content > div > header svg,
-.a11y-dark-mode #app-content > div > header iframe {
+
+/* Filters */
+.a11y-dark-mode #app-content {
   filter: invert(1) hue-rotate(180deg) !important;
 }
 
-.a11y-light-mode #app-content > *:not(header):not(.fixed),
-.a11y-light-mode #app-content > div > *:not(header):not(.fixed),
-.a11y-light-mode #app-content header,
-.a11y-light-mode #app-content > div > header {
+.a11y-dark-mode #app-content img, 
+.a11y-dark-mode #app-content video, 
+.a11y-dark-mode #app-content svg,
+.a11y-dark-mode #app-content iframe {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+.a11y-light-mode #app-content {
   filter: invert(0) !important;
+}
+
+/* Ensure Modals, Fixed Overlays, and Accessibility Panel are NEVER trapped by CSS filters or double-inverted */
+.a11y-modal-portal,
+.a11y-modal-card,
+#accessibility-panel,
+#accessibility-widget,
+[id^="a11y-"],
+[role="dialog"] {
+  filter: none !important;
+}
+
+/* Dedicated Night Mode styling for Modals and Portals */
+.a11y-dark-mode .a11y-modal-card {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #1e293b !important;
+}
+
+/* Modal Inputs, Textareas, Selects & Country Code Buttons */
+.a11y-dark-mode .a11y-modal-card input,
+.a11y-dark-mode .a11y-modal-card select,
+.a11y-dark-mode .a11y-modal-card textarea,
+.a11y-dark-mode .a11y-modal-card .a11y-country-btn,
+.a11y-dark-mode .a11y-modal-card button.bg-slate-50,
+.a11y-dark-mode .a11y-modal-card button.bg-slate-100 {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.a11y-dark-mode .a11y-modal-card input::placeholder,
+.a11y-dark-mode .a11y-modal-card textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Dropdown Menus inside Modals & Portals */
+.a11y-dark-mode .a11y-dropdown-menu,
+.a11y-dark-mode .a11y-modal-card .a11y-dropdown-menu {
+  background-color: #020617 !important;
+  border-color: #334155 !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Dropdown Items inside Dropdown Menus */
+.a11y-dark-mode .a11y-dropdown-item,
+.a11y-dark-mode .a11y-modal-card .a11y-dropdown-item {
+  color: #f8fafc !important;
+  background-color: transparent !important;
+}
+
+.a11y-dark-mode .a11y-dropdown-item:hover,
+.a11y-dark-mode .a11y-modal-card .a11y-dropdown-item:hover {
+  background-color: #1e293b !important;
+}
+
+.a11y-dark-mode .a11y-dropdown-item span,
+.a11y-dark-mode .a11y-modal-card .a11y-dropdown-item span {
+  color: #f8fafc !important;
+}
+
+.a11y-dark-mode .a11y-dropdown-item span.text-slate-400,
+.a11y-dark-mode .a11y-modal-card .a11y-dropdown-item span.text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+/* Labels, Paragraphs, Headings inside Modals */
+.a11y-dark-mode .a11y-modal-card label,
+.a11y-dark-mode .a11y-modal-card p,
+.a11y-dark-mode .a11y-modal-card h2,
+.a11y-dark-mode .a11y-modal-card h3,
+.a11y-dark-mode .a11y-modal-card h4,
+.a11y-dark-mode .a11y-modal-card h5 {
+  color: #f8fafc !important;
+}
+
+.a11y-dark-mode .a11y-modal-card span:not(.a11y-dropdown-item span) {
+  color: inherit;
 }
 
 /* Fonts */

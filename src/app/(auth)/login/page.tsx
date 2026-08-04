@@ -62,9 +62,7 @@ function LoginForm() {
 
       {/* HEADER SECTION */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 flex flex-col items-center">
-        <Link href="/" className="flex items-center justify-center shrink-0">
-          <Logo height={56} className="self-center" />
-        </Link>
+        <Logo height={56} className="self-center" />
         <h2 className="mt-4 text-center text-[26px] font-black text-slate-900 tracking-tight leading-none">
           Welcome to 2all.ai
         </h2>
