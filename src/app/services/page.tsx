@@ -18,178 +18,22 @@ import {
   Menu,
   X
 } from "lucide-react";
+import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import DemoModal from "@/components/marketing/DemoModal";
-import SolutionsMegamenu from "@/components/marketing/SolutionsMegamenu";
-import CompanyMegamenu from "@/components/marketing/CompanyMegamenu";
-import PartnersMegamenu from "@/components/marketing/PartnersMegamenu";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function ServicesPage() {
   const [isDemoOpen, setIsDemoOpen] = useState(false);
-  const [activeHoverMenu, setActiveHoverMenu] = useState<string | null>(null);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen w-full bg-white relative font-sans text-slate-800">
       
-      {/* HEADER SECTION (Same as home page for consistency) */}
-      <header 
-        onMouseLeave={() => setActiveHoverMenu(null)}
-        className="w-full py-2 px-4 md:px-10 z-50 shrink-0 bg-white border-b border-slate-100 relative"
-      >
-        <div className="w-full flex items-center justify-between gap-2 md:gap-4">
-
-          {/* Left Capsule */}
-          <div className="bg-transparent md:px-4 py-1.5 flex items-center justify-between flex-grow">
-            <Link href="/" className="flex items-center group mr-2 md:mr-6 shrink-0">
-              <img
-                src="/images/logo.png"
-                alt="2all.ai Logo"
-                className="h-10 md:h-16 w-auto object-contain mix-blend-multiply"
-              />
-            </Link>
-
-            <nav className="hidden lg:flex items-center gap-8">
-              {[
-                { name: "SOLUTIONS", hasDropdown: true },
-                { name: "COMPANY", hasDropdown: true },
-                { name: "PARTNERS", hasDropdown: true },
-                { name: "PRICING", hasDropdown: false },
-              ].map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.name === "PRICING" ? "/pricing" : "#"}
-                  onMouseEnter={() => {
-                    if (link.name === "SOLUTIONS") {
-                      setActiveHoverMenu("SOLUTIONS");
-                    } else if (link.name === "COMPANY") {
-                      setActiveHoverMenu("COMPANY");
-                    } else if (link.name === "PARTNERS") {
-                      setActiveHoverMenu("PARTNERS");
-                    } else {
-                      setActiveHoverMenu(null);
-                    }
-                  }}
-                  className="text-[13px] font-bold text-[#374b6c] hover:text-blue-600 transition-colors flex items-center gap-1.5 tracking-wider"
-                >
-                  {link.name}
-                  {link.hasDropdown && (
-                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-[3.5] stroke-current fill-none">
-                      <path d="M19 9l-7 7-7-7" />
-                    </svg>
-                  )}
-                </Link>
-              ))}
-            </nav>
-
-            <Link
-              href="/login"
-              className="hidden md:block text-[13px] font-bold text-[#0a1e3f] hover:text-blue-600 tracking-wider mr-2"
-            >
-              LOGIN
-            </Link>
-          </div>
-
-          {/* Right Capsule */}
-          <div className="bg-transparent py-1.5 md:pl-6 flex items-center gap-2 sm:gap-3 md:gap-5 shrink-0">
-            <button
-              onClick={() => setIsDemoOpen(true)}
-              className="hidden md:block text-[13px] font-bold text-blue-600 hover:text-blue-700 tracking-wider border-none bg-transparent cursor-pointer"
-            >
-              BOOK A DEMO
-            </button>
-            <Link
-              href="/register"
-              className="flex items-center gap-1 md:gap-2 bg-[#004bff] hover:bg-[#003edd] text-white rounded-xl px-3.5 sm:px-4 md:px-6 py-2 md:py-3 text-[10px] md:text-[12px] font-extrabold tracking-wider transition-all shadow-md shadow-blue-500/20 whitespace-nowrap"
-            >
-              <span className="hidden sm:inline">START FREE TRIAL</span>
-              <span className="sm:hidden">START TRIAL</span>
-              <svg viewBox="0 0 24 24" className="w-3 h-3 stroke-[3] stroke-current fill-none">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </Link>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg border border-slate-200/60 bg-slate-50 text-slate-700 hover:bg-slate-100 active:bg-slate-200 transition-colors shadow-sm"
-            >
-              {isMobileMenuOpen ? <X className="w-5 h-5 stroke-[2]" /> : <Menu className="w-5 h-5 stroke-[2]" />}
-            </button>
-          </div>
-
-        </div>
-
-        {/* Solutions Megamenu Overlay */}
-        <SolutionsMegamenu 
-          isOpen={activeHoverMenu === "SOLUTIONS"} 
-          onMouseEnter={() => setActiveHoverMenu("SOLUTIONS")}
-          onMouseLeave={() => setActiveHoverMenu(null)}
-        />
-
-        {/* Company Megamenu Overlay */}
-        <CompanyMegamenu 
-          isOpen={activeHoverMenu === "COMPANY"} 
-          onMouseEnter={() => setActiveHoverMenu("COMPANY")}
-          onMouseLeave={() => setActiveHoverMenu(null)}
-        />
-
-        {/* Partners Megamenu Overlay */}
-        <PartnersMegamenu 
-          isOpen={activeHoverMenu === "PARTNERS"} 
-          onMouseEnter={() => setActiveHoverMenu("PARTNERS")}
-          onMouseLeave={() => setActiveHoverMenu(null)}
-        />
-
-        {/* Mobile Menu Dropdown */}
-        {isMobileMenuOpen && (
-          <div className="absolute top-full left-0 w-full bg-white shadow-lg shadow-slate-200/50 border-t border-slate-100 lg:hidden flex flex-col py-6 px-6 gap-6 z-50">
-            <nav className="flex flex-col gap-5">
-              {[
-                { name: "SOLUTIONS", href: "#" },
-                { name: "COMPANY", href: "#" },
-                { name: "PARTNERS", href: "#" },
-                { name: "PRICING", href: "/pricing" },
-              ].map((link) => (
-                <button
-                  key={link.name}
-                  onClick={() => {
-                    if (["SOLUTIONS", "COMPANY", "PARTNERS"].includes(link.name)) {
-                      setActiveHoverMenu(link.name);
-                      setIsMobileMenuOpen(false);
-                    } else {
-                      window.location.href = link.href;
-                    }
-                  }}
-                  className="text-[14px] font-bold text-[#374b6c] hover:text-blue-600 transition-colors text-left"
-                >
-                  {link.name}
-                </button>
-              ))}
-              <Link
-                href="/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-[14px] font-bold text-[#0a1e3f] hover:text-blue-600 border-t border-slate-100 pt-5 mt-2"
-              >
-                LOGIN
-              </Link>
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsDemoOpen(true);
-                }}
-                className="text-left text-[14px] font-bold text-blue-600 hover:text-blue-700"
-              >
-                BOOK A DEMO
-              </button>
-            </nav>
-          </div>
-        )}
-      </header>
+      {/* Standard Header Navbar */}
+      <Navbar onOpenDemo={() => setIsDemoOpen(true)} />
 
       {/* HERO SECTION */}
-      <section className="relative bg-white pt-24 pb-20 border-b border-transparent">
+      <section className="relative bg-white pt-4 pb-16 border-b border-transparent">
         <div className="max-w-6xl mx-auto px-6 text-center space-y-6 relative z-10">
           <Breadcrumbs theme="light" items={[ { label: "Home", href: "/" }, { label: "Services" } ]} />
               <h1 className="text-4xl sm:text-5xl md:text-[54px] font-black text-[#0f172a] leading-[1.1] tracking-tight max-w-4xl mx-auto">
