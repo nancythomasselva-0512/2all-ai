@@ -297,6 +297,32 @@ html.a11y-light-mode, body.a11y-light-mode {
   color: inherit;
 }
 
+/* Fix for icons turning blue-on-blue when hover/active on megamenus & components */
+.group\/item:hover .group-hover\/item\:bg-blue-600,
+.group\/item:focus .group-hover\/item\:bg-blue-600,
+.group\/item:active .group-hover\/item\:bg-blue-600,
+.group:hover .group-hover\:bg-blue-600,
+.group:focus .group-hover\:bg-blue-600,
+.group:active .group-hover\:bg-blue-600 {
+  background-color: #004bff !important;
+}
+
+.group\/item:hover .group-hover\/item\:bg-blue-600 svg,
+.group\/item:focus .group-hover\/item\:bg-blue-600 svg,
+.group\/item:active .group-hover\/item\:bg-blue-600 svg,
+.group\/item:hover .group-hover\/item\:text-white,
+.group\/item:hover .group-hover\/item\:text-white svg,
+.group\/item:focus .group-hover\/item\:text-white,
+.group\/item:focus .group-hover\/item\:text-white svg,
+.group\/item:active .group-hover\/item\:text-white,
+.group\/item:active .group-hover\/item\:text-white svg,
+.group:hover .group-hover\:text-white,
+.group:hover .group-hover\:text-white svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none;
+}
+
 /* Fonts */
 @font-face {
   font-family: 'OpenDyslexic';

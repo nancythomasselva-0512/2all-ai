@@ -72,7 +72,7 @@ export default function SolutionsMegamenu({ isOpen, onMouseEnter, onMouseLeave }
                     className="flex items-center gap-3.5 group/item hover:bg-blue-50/50 p-2.5 rounded-2xl transition-all"
                   >
                     <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/60 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
-                      <Icon className="w-5 h-5 stroke-[2]" />
+                      <Icon className="w-5 h-5 stroke-[2] text-blue-600 group-hover/item:!text-white group-hover/item:!stroke-white transition-colors" />
                     </div>
                     <div>
                       <span style={{ textTransform: "none", letterSpacing: "normal" }} className="block text-xs md:text-sm font-bold text-slate-900 group-hover/item:text-blue-600 transition-colors normal-case tracking-normal">
@@ -115,7 +115,7 @@ export default function SolutionsMegamenu({ isOpen, onMouseEnter, onMouseLeave }
                     className="flex items-center gap-3.5 group/item hover:bg-blue-50/50 p-2.5 rounded-2xl transition-all"
                   >
                     <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/60 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
-                      <Icon className="w-5 h-5 stroke-[2]" />
+                      <Icon className="w-5 h-5 stroke-[2] text-blue-600 group-hover/item:!text-white group-hover/item:!stroke-white transition-colors" />
                     </div>
                     <div>
                       <span style={{ textTransform: "none", letterSpacing: "normal" }} className="block text-xs md:text-sm font-bold text-slate-900 group-hover/item:text-blue-600 transition-colors normal-case tracking-normal">
@@ -151,7 +151,7 @@ export default function SolutionsMegamenu({ isOpen, onMouseEnter, onMouseLeave }
                     className="flex items-center gap-3.5 group/item hover:bg-blue-50/50 p-2.5 rounded-2xl transition-all"
                   >
                     <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/60 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
-                      <Icon className="w-5 h-5 stroke-[2]" />
+                      <Icon className="w-5 h-5 stroke-[2] text-blue-600 group-hover/item:!text-white group-hover/item:!stroke-white transition-colors" />
                     </div>
                     <div>
                       <span style={{ textTransform: "none", letterSpacing: "normal" }} className="block text-xs md:text-sm font-bold text-slate-900 group-hover/item:text-blue-600 transition-colors normal-case tracking-normal">
