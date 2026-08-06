@@ -1,16 +1,8 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import SuperAdminLoginForm from "@/components/admin/SuperAdminLoginForm";
 
 export default async function SuperAdminLoginPage(props: { searchParams?: Promise<{ error?: string }> }) {
   const searchParams = await props.searchParams;
   const error = searchParams?.error;
-  const session = await auth();
-
-  // If already authenticated as Super Admin, redirect to Super Admin dashboard
-  if (session?.user && (session.user as any).role === "SUPER_ADMIN") {
-    redirect("/super-admin/dashboard");
-  }
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 relative overflow-hidden font-sans">
