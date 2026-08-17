@@ -52,6 +52,10 @@ interface DomainType {
   installed?: boolean;
   notes?: string;
   createdAt: string;
+  apiKeys?: ApiKeyType[];
+  _count?: {
+    apiKeys?: number;
+  };
   user?: {
     id: string;
     name?: string;
@@ -61,6 +65,18 @@ interface DomainType {
   };
   apiKeysCount?: number;
 }
+
+export const getDomainApiKeysCount = (d: any): number => {
+  if (d?.apiKeysCount !== undefined) return d.apiKeysCount;
+  if (d?._count?.apiKeys !== undefined) return d._count.apiKeys;
+  if (d?.apiKeys && Array.isArray(d.apiKeys)) return d.apiKeys.length;
+  if (d?.user?.apiKeys && Array.isArray(d.user.apiKeys)) {
+    const matching = d.user.apiKeys.filter((k: any) => k.domainId === d.id || k.domainName === d.domain);
+    if (matching.length > 0) return matching.length;
+    return d.user.apiKeys.length;
+  }
+  return 0;
+};
 
 interface DomainOnboardingProps {
   initialDomains: DomainType[];
@@ -244,7 +260,7 @@ export default function DomainOnboarding({
 
       if (res.ok) {
         const newKey = await res.json();
-        const currentCount = d.apiKeysCount !== undefined ? d.apiKeysCount : (d.user?.apiKeys?.length || 0);
+        const currentCount = getDomainApiKeysCount(d);
         const updatedDomains = domains.map((dom) =>
           dom.id === d.id ? { ...dom, apiKeysCount: currentCount + 1 } : dom
         );
@@ -267,7 +283,7 @@ export default function DomainOnboarding({
     }
 
     try {
-      const currentCount = d.apiKeysCount !== undefined ? d.apiKeysCount : (d.user?.apiKeys?.length || 0);
+      const currentCount = getDomainApiKeysCount(d);
       if (currentCount === 0) {
         showToast("No active API keys to revoke.", "error");
         return;
@@ -531,7 +547,7 @@ export default function DomainOnboarding({
             <tbody className="divide-y divide-slate-100">
               {filteredDomains.map((d) => {
                 const isVerified = d.verified || d.status === "ACTIVE" || d.status === "VERIFIED";
-                const apiKeysCount = d.apiKeysCount !== undefined ? d.apiKeysCount : (d.user?.apiKeys?.length || 0);
+                const apiKeysCount = getDomainApiKeysCount(d);
                 const isPublished = d.widgetStatus === "PUBLISHED" || (d.user?.widgetConfigs && d.user.widgetConfigs.some((c: any) => c.publishedConfig));
 
                 return (
