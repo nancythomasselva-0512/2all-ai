@@ -73,7 +73,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           <p className="text-xs text-gray-500 mt-1">
             Last scan:{" "}
             {latestScan
-              ? new Date(latestScan.createdAt).toLocaleString()
+              ? new Date(latestScan.createdAt).toLocaleString("en-US")
               : "Never scanned"}
           </p>
         </div>

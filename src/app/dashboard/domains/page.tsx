@@ -23,13 +23,17 @@ export default async function DomainsPage() {
       where: { userId },
       orderBy: { createdAt: "desc" },
       include: {
+        apiKeys: {
+          select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true },
+          orderBy: { createdAt: "desc" },
+        },
         user: {
           select: {
             id: true,
             name: true,
             email: true,
             apiKeys: {
-              select: { id: true, name: true, key: true, status: true, createdAt: true },
+              select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true },
               orderBy: { createdAt: "desc" },
             },
             widgetConfigs: {

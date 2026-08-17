@@ -2539,7 +2539,7 @@ export default function AdminDashboard({
                             </span>
                           </td>
                           <td className="px-4 md:px-6 py-4 text-xs text-slate-600 font-bold whitespace-nowrap">
-                            {new Date(user.createdAt).toLocaleDateString()}
+                            {new Date(user.createdAt).toLocaleDateString("en-US")}
                           </td>
                           <td className="px-4 md:px-6 py-4 text-center whitespace-nowrap">
                             <button
@@ -2752,7 +2752,7 @@ export default function AdminDashboard({
                               </span>
                             </td>
                             <td className="px-6 py-4 text-xs text-slate-500 font-bold whitespace-nowrap">
-                              {new Date(user.createdAt).toLocaleDateString()}
+                              {new Date(user.createdAt).toLocaleDateString("en-US")}
                             </td>
                             <td className="px-6 py-4 text-right whitespace-nowrap">
                               <button
@@ -3379,7 +3379,7 @@ export default function AdminDashboard({
                               </a>
                             </td>
                             <td className="px-6 py-4 text-slate-400 font-bold">
-                              {new Date(req.createdAt).toLocaleString()}
+                              {new Date(req.createdAt).toLocaleString("en-US")}
                             </td>
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end gap-2">

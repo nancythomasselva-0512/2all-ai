@@ -52,9 +52,14 @@ export async function POST(req: Request) {
     cleanDomain = cleanDomain.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "");
 
     const db = getDb();
-    const existing = await db.domain.findUnique({ where: { domain: cleanDomain } });
+    const existing = await db.domain.findUnique({ where: { domain: cleanDomain }, include: { user: true } });
     if (existing) {
-      return NextResponse.json({ message: "Domain already registered" }, { status: 409 });
+      if (existing.user) {
+        return NextResponse.json({ message: "Domain already registered" }, { status: 409 });
+      } else {
+        await db.apiKey.deleteMany({ where: { domainId: existing.id } });
+        await db.domain.delete({ where: { id: existing.id } });
+      }
     }
 
     const verificationToken = `2all-verify=${Math.random().toString(36).substring(2, 15)}`;

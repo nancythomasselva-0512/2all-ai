@@ -1251,7 +1251,7 @@ export default function AdminDashboardPage({
                         </span>
                       </td>
                       <td className="px-6 py-3.5 text-slate-400 font-bold whitespace-nowrap">
-                        {new Date(user.createdAt).toLocaleDateString()}
+                        {new Date(user.createdAt).toLocaleDateString("en-US")}
                       </td>
                     </tr>
                   );

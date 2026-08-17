@@ -34,10 +34,18 @@ export async function POST(req: Request) {
 
     const db = getDb();
     let targetUserId = userId;
-    if (domainId) {
+    let resolvedDomainId: string | null = null;
+    let resolvedDomainName: string | null = domainName || null;
+
+    if (domainId || domainName) {
       try {
         const dom = await db.domain.findFirst({
-          where: { OR: [{ id: domainId }, { domain: domainId }] },
+          where: {
+            OR: [
+              ...(domainId ? [{ id: domainId }, { domain: domainId }, { canonicalDomain: domainId }] : []),
+              ...(domainName ? [{ id: domainName }, { domain: domainName }, { canonicalDomain: domainName }] : []),
+            ],
+          },
         });
         if (dom) {
           const isDomVerified = dom.verified === true || dom.status === "ACTIVE" || dom.status === "VERIFIED";
@@ -47,6 +55,8 @@ export async function POST(req: Request) {
           if (dom.userId) {
             targetUserId = dom.userId;
           }
+          resolvedDomainId = dom.id;
+          resolvedDomainName = dom.domain;
         }
       } catch (domErr) {
         console.warn("Could not query domain for owner userId:", domErr);
@@ -67,8 +77,8 @@ export async function POST(req: Request) {
           name: name.trim(),
           key: generatedKey,
           status: "ACTIVE",
-          domainId: domainId || null,
-          domainName: domainName || null,
+          domainId: resolvedDomainId,
+          domainName: resolvedDomainName,
         },
       });
     } catch (createErr: any) {

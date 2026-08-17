@@ -399,7 +399,7 @@ export default function AdminApiKeysPanel() {
 
                       {/* Last Used */}
                       <td className="py-3.5 px-3 sm:px-4 text-slate-500 font-medium whitespace-nowrap">
-                        {k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString() : "Never"}
+                        {k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString("en-US") : "Never"}
                       </td>
 
                       {/* Created */}

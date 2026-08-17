@@ -68,13 +68,30 @@ interface DomainType {
 
 export const getDomainApiKeysCount = (d: any): number => {
   if (d?.apiKeysCount !== undefined) return d.apiKeysCount;
-  if (d?._count?.apiKeys !== undefined) return d._count.apiKeys;
-  if (d?.apiKeys && Array.isArray(d.apiKeys)) return d.apiKeys.length;
-  if (d?.user?.apiKeys && Array.isArray(d.user.apiKeys)) {
-    const matching = d.user.apiKeys.filter((k: any) => k.domainId === d.id || k.domainName === d.domain);
-    if (matching.length > 0) return matching.length;
-    return d.user.apiKeys.length;
+
+  const keysList: any[] = [];
+  if (d?.apiKeys && Array.isArray(d.apiKeys)) keysList.push(...d.apiKeys);
+  if (d?.user?.apiKeys && Array.isArray(d.user.apiKeys)) keysList.push(...d.user.apiKeys);
+
+  if (keysList.length > 0) {
+    const uniqueKeyIds = new Set<string>();
+    for (const k of keysList) {
+      if (!k) continue;
+      const isMatch =
+        k.domainId === d.id ||
+        (k.domainName && d.domain && k.domainName.toLowerCase() === d.domain.toLowerCase()) ||
+        (k.domainName && d.canonicalDomain && k.domainName.toLowerCase() === d.canonicalDomain.toLowerCase());
+
+      if (isMatch) {
+        uniqueKeyIds.add(k.id || k.key || JSON.stringify(k));
+      }
+    }
+    if (uniqueKeyIds.size > 0) return uniqueKeyIds.size;
   }
+
+  if (d?._count?.apiKeys !== undefined && d._count.apiKeys > 0) return d._count.apiKeys;
+  if (d?.apiKeys && Array.isArray(d.apiKeys)) return d.apiKeys.length;
+  if (d?._count?.apiKeys !== undefined) return d._count.apiKeys;
   return 0;
 };
 
@@ -109,6 +126,7 @@ export default function DomainOnboarding({
   const [verificationMethod, setVerificationMethod] = useState("META");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Verification modal state (Step 3 & Step 4)
   const [verifyMethod, setVerifyMethod] = useState("META");
@@ -156,8 +174,9 @@ export default function DomainOnboarding({
   // STEP 2: Save Domain
   const handleCreateDomain = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
     if (!domainName.trim() || !websiteName.trim()) {
-      showToast("Website Name and Domain Name are required.", "error");
+      setFormError("Website Name and Domain Name are required.");
       return;
     }
 
@@ -193,10 +212,10 @@ export default function DomainOnboarding({
         showToast(`Domain ${formattedDom.domain} added! Verification token generated.`, "success");
       } else {
         const err = await res.json();
-        showToast(err.message || "Failed to add domain", "error");
+        setFormError(err.message || "Failed to add domain");
       }
     } catch (err: any) {
-      showToast("Network error creating domain.", "error");
+      setFormError("Network error creating domain.");
     } finally {
       setLoading(false);
     }
@@ -455,6 +474,7 @@ export default function DomainOnboarding({
                 setEnvironment("Production");
                 setVerificationMethod("META");
                 setNotes("");
+                setFormError(null);
                 setActiveModal({ type: "add" });
               }}
               className="px-6 py-2.5 rounded-xl bg-[#0052ff] hover:bg-blue-700 text-white font-extrabold text-sm shadow-lg shadow-blue-500/25 transition-all cursor-pointer border-none flex items-center gap-2 whitespace-nowrap shrink-0 font-sans"
@@ -868,6 +888,13 @@ export default function DomainOnboarding({
             <form onSubmit={handleCreateDomain} className="flex flex-col flex-1 overflow-hidden">
               {/* BODY: Independently Scrollable Body */}
               <div className="p-6 space-y-5 overflow-y-auto flex-1 relative">
+                
+                {formError && (
+                  <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs font-bold text-red-700 flex items-center gap-2.5 animate-in fade-in duration-200">
+                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                    <span>{formError}</span>
+                  </div>
+                )}
                 
                 {/* Section 1: Website Information */}
                 <div className="space-y-3">

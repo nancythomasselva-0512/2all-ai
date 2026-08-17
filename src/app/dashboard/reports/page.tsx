@@ -246,7 +246,7 @@ export default function ReportsPage() {
                       </div>
                     </div>
                     <span className="text-xs text-slate-400 font-medium shrink-0">
-                      {new Date(log.createdAt).toLocaleString()}
+                      {new Date(log.createdAt).toLocaleString("en-US")}
                     </span>
                   </div>
                 );

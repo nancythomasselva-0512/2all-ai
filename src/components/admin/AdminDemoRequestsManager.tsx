@@ -122,7 +122,7 @@ export default function AdminDemoRequestsManager() {
                     <div>
                       <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
                         {req.name}
-                        <span className="text-[10px] font-bold text-slate-400">({new Date(req.createdAt).toLocaleDateString()})</span>
+                        <span className="text-[10px] font-bold text-slate-400">({new Date(req.createdAt).toLocaleDateString("en-US")})</span>
                       </h4>
                       <div className="flex items-center gap-3 text-xs text-slate-500 font-semibold mt-0.5">
                         <span className="flex items-center gap-1"><Mail className="w-3.5 h-3.5 text-blue-600" /> {req.email}</span>

@@ -118,9 +118,16 @@ export async function POST(req: Request) {
           { domain: `www.${cleanDomain}` },
         ],
       },
+      include: { user: true },
     });
     if (existing) {
-      return NextResponse.json({ message: "Domain is already registered in the platform." }, { status: 409 });
+      if (existing.user) {
+        return NextResponse.json({ message: "Domain is already registered in the platform." }, { status: 409 });
+      } else {
+        // Orphaned domain from deleted user — purge stale record so new owner can register
+        await db.apiKey.deleteMany({ where: { domainId: existing.id } });
+        await db.domain.delete({ where: { id: existing.id } });
+      }
     }
 
     const verificationToken = `2all-verify-${Math.random().toString(36).substring(2, 15)}-${Math.random().toString(36).substring(2, 15)}`;

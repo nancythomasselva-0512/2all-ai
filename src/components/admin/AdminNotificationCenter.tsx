@@ -272,7 +272,7 @@ export default function AdminNotificationCenter({ users = [], projects = [] }: P
                           <User className="w-3 h-3 text-slate-400" /> {item.user?.name || item.user?.email || "System User"}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-slate-400" /> {new Date(item.timestamp).toLocaleString()}
+                          <Clock className="w-3 h-3 text-slate-400" /> {new Date(item.timestamp).toLocaleString("en-US")}
                         </span>
                       </div>
                     </div>

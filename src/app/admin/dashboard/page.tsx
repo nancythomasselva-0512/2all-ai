@@ -71,12 +71,18 @@ export default async function AdminDashboardPage(props: { searchParams?: Promise
       domains = await (prisma as any).domain.findMany({
         orderBy: { createdAt: "desc" },
         include: {
+          apiKeys: {
+            select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true }
+          },
+          _count: {
+            select: { apiKeys: true }
+          },
           user: {
             select: {
               id: true,
               name: true,
               email: true,
-              apiKeys: { select: { id: true, status: true } },
+              apiKeys: { select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true } },
               widgetConfigs: { select: { id: true, publishedConfig: true, draftConfig: true } },
             },
           },
