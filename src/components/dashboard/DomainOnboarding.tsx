@@ -378,12 +378,15 @@ export default function DomainOnboarding({
         }),
       });
 
-      if (res.ok || true) {
+      if (res.ok) {
         const updatedDomains = domains.map((dom) =>
           dom.id === d.id ? { ...dom, widgetStatus: "PUBLISHED" } : dom
         );
         setDomains(updatedDomains);
         showToast(`Widget configuration published to global CDN for ${d.domain}!`, "success");
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        showToast(errData.message || "Error publishing widget", "error");
       }
     } catch (err) {
       showToast("Error publishing widget", "error");

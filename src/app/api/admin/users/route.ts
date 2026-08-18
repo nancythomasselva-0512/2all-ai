@@ -2,6 +2,50 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/db";
 
+// Fetch all users or single user by ID
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+
+    if (userId) {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          role: true,
+          plan: true,
+          paymentStatus: true,
+          createdAt: true,
+        },
+      });
+      return NextResponse.json(user);
+    }
+
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        plan: true,
+        paymentStatus: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return NextResponse.json(users);
+  } catch (error) {
+    console.error("Fetch users error:", error);
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+  }
+}
+
 // Handle Admin Account Creation (Exclusive Super Admin feature)
 export async function POST(req: Request) {
   try {
