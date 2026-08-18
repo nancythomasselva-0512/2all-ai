@@ -1,7 +1,8 @@
 /**
- * 2all.ai Official Accessibility Suite Core Engine
- * Version: 5.0.0
- * Pixel-Perfect 1:1 Replica of 2all.ai Website AccessibilityPanel.tsx
+ * 2all.ai Universal Accessibility Suite Engine
+ * Version: 6.0.0
+ * Pure Universal Vanilla JS - Works on ANY website (WordPress, Shopify, React, HTML, PHP, Angular, Webflow, etc.)
+ * 1:1 Exact Match with 2all.ai Website Accessibility Suite & Anna AI Virtual Assistant.
  */
 (function () {
   if (window.__2ALL_CORE_INITIALIZED__) return;
@@ -16,36 +17,36 @@
   var primaryColor = config.primaryColor || "#2563eb";
   var position = config.position || "bottom-right";
 
-  // Accessibility State (Matches AccessibilityContext 1:1)
+  // Universal Accessibility State
   var state = {
     open: false,
-    activeTab: "dashboard", // dashboard (Home), profiles (Modes), features, vision, ai
+    activeTab: "dashboard", // dashboard, profiles, features, vision, ai
     searchQuery: "",
     showAnalysis: false,
     
-    // Active Profile
-    activeProfile: "none", // dyslexia, adhd, lowVision, seizure, motor, blind
+    // Active Profile Mode
+    activeProfile: "none", // dyslexia, adhd, low-vision, blind, motor-impaired, cognitive, seizure
 
-    // Typography
-    fontSize: 100, // 90 to 200%
+    // Typography & Spacing
+    fontSize: 100, // 90% - 200%
     fontFamily: "default", // default, readable, dyslexic
-    letterSpacing: 0,
-    lineHeight: 1.5,
-    wordSpacing: 0,
-    textAlignment: "default",
+    letterSpacing: 0, // px
+    lineHeight: 1.5, // multiplier
+    wordSpacing: 0, // em
+    textAlignment: "default", // default, left, center, right, justify
     textMagnifier: false,
 
-    // Visual & Color
+    // Visual & Color Contrast
     isHighContrast: false,
     isDarkMode: false,
     isLightMode: false,
     isSmartContrast: false,
     monochrome: false,
     colorBlindMode: "none", // none, protanopia, deuteranopia, tritanopia
-    saturationMode: "normal",
-    textColor: "default",
+    saturationMode: "normal", // normal, high, low, monochrome
+    textColor: "default", // default, black, white, yellow, blue, green, red
 
-    // Reading & Focus
+    // Focus & Reading Overlays
     readingMask: false,
     readingRuler: false,
     highlightLinks: false,
@@ -54,14 +55,14 @@
     highlightFocus: false,
     reduceMotion: false,
     stopAnimations: false,
-    bigCursor: false,
+    cursorSize: "normal", // normal, large, huge
 
-    // Speech
+    // Speech & Voice Narration
     textToSpeech: false,
     voiceNavigation: false,
     autoReadSelection: false,
 
-    // AI Chat Messages
+    // Anna AI Virtual Assistant Chat History
     chatMessages: [
       {
         id: 1,
@@ -71,22 +72,23 @@
     ],
   };
 
+  // Restore State from LocalStorage
   try {
-    var saved = localStorage.getItem("2all_panel_state_v5");
+    var saved = localStorage.getItem("2all_universal_suite_v6");
     if (saved) {
       var parsed = JSON.parse(saved);
       state = Object.assign(state, parsed);
-      state.open = false;
+      state.open = false; // Always closed on initial page load
     }
   } catch (e) {}
 
   function saveState() {
     try {
-      localStorage.setItem("2all_panel_state_v5", JSON.stringify(state));
+      localStorage.setItem("2all_universal_suite_v6", JSON.stringify(state));
     } catch (e) {}
   }
 
-  // Host Container & Shadow DOM
+  // Host Container & Shadow DOM Setup (Prevents CSS Pollution)
   var host = document.createElement("div");
   host.id = "2all-ai-widget-host";
   host.style.position = "fixed";
@@ -104,7 +106,7 @@
   document.body.appendChild(host);
   var shadow = host.attachShadow({ mode: "open" });
 
-  // Colorblind SVG Filter Injection to main document
+  // Colorblind SVG Matrix Filters Injection to Document Body
   if (!document.getElementById("2all-cb-filters-svg")) {
     var svgDiv = document.createElement("div");
     svgDiv.id = "2all-cb-filters-svg";
@@ -127,7 +129,7 @@
     document.body.appendChild(svgDiv);
   }
 
-  // Shadow DOM Styles - Exact Replica of AccessibilityPanel.tsx
+  // Shadow DOM Internal Styles (Matches AccessibilityPanel.tsx 1:1)
   var style = document.createElement("style");
   style.textContent = `
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; }
@@ -158,7 +160,7 @@
     }
     .trigger-btn svg { width: 26px; height: 26px; stroke: white; fill: none; }
 
-    /* Modal Panel - White Clean Box matching AccessibilityPanel.tsx */
+    /* Modal Panel Container (1:1 Replica of AccessibilityPanel.tsx) */
     .panel-container {
       width: 375px;
       height: 520px;
@@ -182,7 +184,7 @@
       pointer-events: auto;
     }
 
-    /* Top White Header */
+    /* Header Bar */
     .panel-header {
       padding: 14px 16px 10px 16px;
       border-bottom: 1px solid #f1f5f9;
@@ -227,7 +229,7 @@
     }
     .btn-close:hover { background: #e2e8f0; color: #0f172a; }
 
-    /* Compact Search Field */
+    /* Search Row */
     .search-row { position: relative; width: 100%; }
     .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: #94a3b8; }
     .search-input {
@@ -244,7 +246,7 @@
     }
     .search-input:focus { border-color: #2563eb; background: #ffffff; }
 
-    /* Middle Scrollable Content */
+    /* Content Area */
     .panel-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: #ffffff; }
 
     /* Home Score Card */
@@ -292,7 +294,7 @@
     .analysis-accordion { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; flex-direction: column; gap: 6px; font-size: 11px; }
     .analysis-row { display: flex; justify-content: space-between; background: rgba(255,255,255,0.1); padding: 6px 10px; border-radius: 8px; }
 
-    /* Profiles & Feature Cards Grid */
+    /* Cards Grid */
     .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     
     .card-box {
@@ -318,7 +320,7 @@
     .card-box-pill { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px; align-self: flex-start; text-transform: uppercase; background: #e2e8f0; color: #475569; }
     .card-box.active .card-box-pill { background: #2563eb; color: #ffffff; }
 
-    /* Sliders & Option Groups */
+    /* Option Cards */
     .option-card {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -391,7 +393,7 @@
     }
     .btn-hide-main:hover { background: #e2e8f0; }
 
-    /* Bottom 5 Icon Navigation Tabs (Matches AccessibilityPanel.tsx) */
+    /* Bottom 5 Icon Navigation Tabs */
     .bottom-nav {
       background: #ffffff;
       border-top: 1px solid #e2e8f0;
@@ -478,7 +480,7 @@
   `;
   wrapper.appendChild(panel);
 
-  // Circular Blue Floating Trigger Button (Person Icon inside Blue Circle)
+  // Circular Blue Trigger Button
   var triggerBtn = document.createElement("button");
   triggerBtn.className = "trigger-btn";
   triggerBtn.setAttribute("aria-label", "Toggle Accessibility Panel");
@@ -531,7 +533,7 @@
 
   function calculateScore() {
     var hasProfile = state.activeProfile !== "none";
-    var hasTypo = state.fontFamily !== "default" || state.fontSize > 100;
+    var hasTypo = state.fontFamily !== "default" || state.fontSize > 100 || state.letterSpacing > 0;
     var hasContrast = state.isHighContrast || state.isDarkMode || state.isLightMode || state.colorBlindMode !== "none";
     var hasReading = state.readingMask || state.readingRuler || state.textMagnifier || state.textToSpeech || state.highlightLinks;
 
@@ -730,9 +732,9 @@
     var profiles = [
       { id: "dyslexia", name: "Dyslexia Profile", desc: "OpenDyslexic font + letter spacing" },
       { id: "adhd", name: "ADHD Profile", desc: "Reading Mask + Ruler spotlight" },
-      { id: "lowVision", name: "Low Vision Profile", desc: "High Contrast + Text Magnifier" },
+      { id: "low-vision", name: "Low Vision Profile", desc: "High Contrast + Text Magnifier" },
       { id: "seizure", name: "Seizure Safe Profile", desc: "Stop animations & mute sounds" },
-      { id: "motor", name: "Motor Skills Profile", desc: "Highlight keyboard focus + Big Cursor" },
+      { id: "motor-impaired", name: "Motor Skills Profile", desc: "Highlight keyboard focus + Big Cursor" },
       { id: "blind", name: "Blind / Screen Reader", desc: "Voice Text-to-Speech audio reader" },
     ];
 
@@ -753,9 +755,9 @@
           state.activeProfile = p.id;
           if (p.id === "dyslexia") { state.dyslexiaFont = true; state.fontFamily = "dyslexic"; state.letterSpacing = 2; }
           if (p.id === "adhd") { state.readingMask = true; state.readingRuler = true; }
-          if (p.id === "lowVision") { state.isDarkMode = true; state.textMagnifier = true; }
+          if (p.id === "low-vision") { state.isDarkMode = true; state.textMagnifier = true; }
           if (p.id === "seizure") { state.reduceMotion = true; state.stopAnimations = true; }
-          if (p.id === "motor") { state.highlightFocus = true; state.bigCursor = true; }
+          if (p.id === "motor-impaired") { state.highlightFocus = true; state.cursorSize = "large"; }
           if (p.id === "blind") { state.textToSpeech = true; }
         }
         saveState();
@@ -883,6 +885,8 @@
     state.fontFamily = "default";
     state.letterSpacing = 0;
     state.lineHeight = 1.5;
+    state.wordSpacing = 0;
+    state.textAlignment = "default";
     state.textMagnifier = false;
     state.isHighContrast = false;
     state.isDarkMode = false;
@@ -894,7 +898,10 @@
     state.highlightLinks = false;
     state.highlightHeadings = false;
     state.highlightButtons = false;
-    state.bigCursor = false;
+    state.highlightFocus = false;
+    state.reduceMotion = false;
+    state.stopAnimations = false;
+    state.cursorSize = "normal";
     state.textToSpeech = false;
     saveState();
     applyEffects();
@@ -902,7 +909,7 @@
     if (window.speechSynthesis) window.speechSynthesis.cancel();
   }
 
-  // DOM Overlays (Reading Mask, Ruler, Magnifier)
+  // Reading Mask, Ruler, Magnifier Overlays
   var maskTop = document.createElement("div");
   maskTop.style.cssText = "position:fixed;left:0;right:0;top:0;background:rgba(0,0,0,0.75);z-index:2147483645;pointer-events:none;display:none;";
   document.body.appendChild(maskTop);
@@ -967,6 +974,7 @@
     }
   });
 
+  // Apply Global CSS & DOM Classes to Target Website
   function applyEffects() {
     var existingStyle = document.getElementById("2all-global-effects");
     if (!existingStyle) {
@@ -977,17 +985,22 @@
 
     var css = "";
 
+    // Font Scaling
     if (state.fontSize !== 100) {
       css += `html { font-size: ${state.fontSize}% !important; } `;
     }
 
+    // Font Family
     if (state.fontFamily === "dyslexic" || state.dyslexiaFont) {
       css += `@import url('https://fonts.cdnfonts.com/css/opendyslexic'); * { font-family: 'OpenDyslexic', sans-serif !important; letter-spacing: 0.08em !important; } `;
     } else if (state.fontFamily === "readable" || state.readableFont) {
       css += `* { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; } `;
     }
 
-    if (state.isDarkMode) {
+    // High Contrast / Themes
+    if (state.isHighContrast) {
+      css += `html { filter: invert(100%) hue-rotate(180deg) !important; background-color: #000 !important; } img, video, iframe, #2all-ai-widget-host { filter: invert(100%) hue-rotate(180deg) !important; } `;
+    } else if (state.isDarkMode) {
       css += `html { background-color: #0f172a !important; color: #f8fafc !important; } `;
     } else if (state.isLightMode) {
       css += `html { background-color: #ffffff !important; color: #000000 !important; } `;
@@ -997,12 +1010,16 @@
       css += `html { filter: grayscale(100%) !important; } `;
     }
 
+    // Colorblind Filters
     if (state.colorBlindMode === "protanopia") {
       css += `html { filter: url(#cb-protanopia) !important; } `;
     } else if (state.colorBlindMode === "deuteranopia") {
       css += `html { filter: url(#cb-deuteranopia) !important; } `;
+    } else if (state.colorBlindMode === "tritanopia") {
+      css += `html { filter: url(#cb-tritanopia) !important; } `;
     }
 
+    // Highlights
     if (state.highlightLinks) {
       css += `a { background-color: #fef08a !important; color: #0f172a !important; outline: 2px solid #2563eb !important; text-decoration: underline !important; font-weight: bold !important; } `;
     }
@@ -1012,15 +1029,24 @@
     if (state.highlightButtons) {
       css += `button, [role="button"] { outline: 3px solid #10b981 !important; } `;
     }
+    if (state.highlightFocus) {
+      css += `*:focus { outline: 3px solid #38bdf8 !important; outline-offset: 3px !important; } `;
+    }
 
-    if (state.bigCursor) {
+    // Animations & Motion
+    if (state.stopAnimations || state.reduceMotion) {
+      css += `* { animation: none !important; transition: none !important; } `;
+    }
+
+    // Cursor
+    if (state.cursorSize === "large" || state.cursorSize === "huge") {
       css += `* { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%232563eb' stroke='white' stroke-width='2'%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), auto !important; } `;
     }
 
     existingStyle.textContent = css;
   }
 
-  // Initial Load
+  // Initial Load & Execution
   renderPanelBody();
   applyEffects();
 })();
