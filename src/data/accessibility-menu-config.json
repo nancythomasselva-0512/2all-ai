@@ -145,6 +145,15 @@
       "isCustom": false
     },
     {
+      "id": "lightMode",
+      "title": "Light Contrast Mode",
+      "description": "High contrast light background for daytime readability",
+      "category": "Visual & Color",
+      "icon": "Sun",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
       "id": "monochrome",
       "title": "Monochrome Mode",
       "description": "Remove colors to display grayscale view",
@@ -168,6 +177,33 @@
       "description": "Muted and soft color palette",
       "category": "Visual & Color",
       "icon": "Eye",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "colorBlindMode",
+      "title": "Colorblind Filters (Protanopia/Deuteranopia/Tritanopia)",
+      "description": "Apply targeted color filters for Red, Green, and Blue colorblindness",
+      "category": "Visual & Color",
+      "icon": "Eye",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "textColor",
+      "title": "Custom Text Contrast Color",
+      "description": "Change text color to high visibility yellow, green, blue, or white",
+      "category": "Visual & Color",
+      "icon": "Palette",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "smartContrast",
+      "title": "Smart AI Auto-Contrast",
+      "description": "Automatically adjust text and element contrast ratios dynamically",
+      "category": "Visual & Color",
+      "icon": "Sparkles",
       "enabled": true,
       "isCustom": false
     },
@@ -217,11 +253,29 @@
       "isCustom": false
     },
     {
+      "id": "highlightFocus",
+      "title": "Keyboard Focus Outline",
+      "description": "Highlight active focused elements for keyboard navigation",
+      "category": "Focus & Reading",
+      "icon": "Focus",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
       "id": "reduceMotion",
       "title": "Reduce Motion",
       "description": "Disable CSS animations and marquee effects",
       "category": "Focus & Reading",
       "icon": "Focus",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
+      "id": "muteSounds",
+      "title": "Mute Audio & Sound Effects",
+      "description": "Silence background audio, video sounds, and browser alerts",
+      "category": "Focus & Reading",
+      "icon": "VolumeX",
       "enabled": true,
       "isCustom": false
     },

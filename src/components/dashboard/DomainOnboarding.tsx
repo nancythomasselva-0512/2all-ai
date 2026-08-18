@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import PageHelpTooltip from "@/components/ui/PageHelpTooltip";
 import {
   Globe,
@@ -34,6 +35,8 @@ interface ApiKeyType {
   name: string;
   key: string;
   status: string;
+  domainId?: string;
+  domainName?: string;
   createdAt?: string;
 }
 
@@ -66,31 +69,30 @@ interface DomainType {
   apiKeysCount?: number;
 }
 
-export const getDomainApiKeysCount = (d: any): number => {
-  if (d?.apiKeysCount !== undefined) return d.apiKeysCount;
+export const getDomainApiKeysCount = (d: DomainType): number => {
+  const uniqueKeyIds = new Set<string>();
 
-  const keysList: any[] = [];
-  if (d?.apiKeys && Array.isArray(d.apiKeys)) keysList.push(...d.apiKeys);
-  if (d?.user?.apiKeys && Array.isArray(d.user.apiKeys)) keysList.push(...d.user.apiKeys);
+  if (d?.apiKeys && Array.isArray(d.apiKeys)) {
+    for (const k of d.apiKeys) {
+      if (k.id || k.key) uniqueKeyIds.add(k.id || k.key);
+    }
+  }
 
-  if (keysList.length > 0) {
-    const uniqueKeyIds = new Set<string>();
-    for (const k of keysList) {
-      if (!k) continue;
+  if (d?.user?.apiKeys && Array.isArray(d.user.apiKeys)) {
+    for (const k of d.user.apiKeys) {
       const isMatch =
         k.domainId === d.id ||
         (k.domainName && d.domain && k.domainName.toLowerCase() === d.domain.toLowerCase()) ||
         (k.domainName && d.canonicalDomain && k.domainName.toLowerCase() === d.canonicalDomain.toLowerCase());
 
-      if (isMatch) {
-        uniqueKeyIds.add(k.id || k.key || JSON.stringify(k));
+      if (isMatch && (k.id || k.key)) {
+        uniqueKeyIds.add(k.id || k.key);
       }
     }
-    if (uniqueKeyIds.size > 0) return uniqueKeyIds.size;
   }
 
-  if (d?._count?.apiKeys !== undefined && d._count.apiKeys > 0) return d._count.apiKeys;
-  if (d?.apiKeys && Array.isArray(d.apiKeys)) return d.apiKeys.length;
+  if (uniqueKeyIds.size > 0) return uniqueKeyIds.size;
+  if (d?.apiKeysCount !== undefined) return d.apiKeysCount;
   if (d?._count?.apiKeys !== undefined) return d._count.apiKeys;
   return 0;
 };
@@ -108,6 +110,7 @@ export default function DomainOnboarding({
   isAdmin = false,
   onDomainClick,
 }: DomainOnboardingProps) {
+  const router = useRouter();
   const [domains, setDomains] = useState<DomainType[]>(initialDomains);
   const [domainSearch, setDomainSearch] = useState("");
   const [domainStatusFilter, setDomainStatusFilter] = useState("all");
@@ -149,6 +152,29 @@ export default function DomainOnboarding({
   useEffect(() => {
     setDomains(initialDomains);
   }, [initialDomains]);
+
+  // Background Auto-Refresh / Real-time Sync helper
+  const fetchFreshDomains = useCallback(async () => {
+    try {
+      const endpoint = isAdmin ? "/api/admin/domains" : "/api/domains";
+      const res = await fetch(endpoint);
+      if (res.ok) {
+        const fresh = await res.json();
+        setDomains(fresh);
+      }
+      router.refresh();
+    } catch (e) {
+      console.warn("Auto-refresh fetch failed:", e);
+    }
+  }, [isAdmin, router]);
+
+  // Background polling every 6 seconds for real-time auto updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchFreshDomains();
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [fetchFreshDomains]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

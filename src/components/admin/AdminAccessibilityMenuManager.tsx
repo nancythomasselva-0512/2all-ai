@@ -19,7 +19,10 @@ import {
   Ruler,
   Type,
   Loader2,
-  Info
+  Info,
+  Sun,
+  Palette,
+  VolumeX
 } from "lucide-react";
 
 export interface AccessibilityFeatureItem {
@@ -178,9 +181,12 @@ export default function AdminAccessibilityMenuManager() {
       case "Volume2": return <Volume2 className="w-4 h-4 text-purple-600" />;
       case "Eye": return <Eye className="w-4 h-4 text-emerald-600" />;
       case "Moon": return <Moon className="w-4 h-4 text-amber-500" />;
+      case "Sun": return <Sun className="w-4 h-4 text-amber-500" />;
       case "Focus": return <Focus className="w-4 h-4 text-cyan-600" />;
       case "Ruler": return <Ruler className="w-4 h-4 text-indigo-600" />;
       case "Type": return <Type className="w-4 h-4 text-rose-600" />;
+      case "Palette": return <Palette className="w-4 h-4 text-pink-600" />;
+      case "VolumeX": return <VolumeX className="w-4 h-4 text-red-600" />;
       default: return <Sparkles className="w-4 h-4 text-blue-600" />;
     }
   };

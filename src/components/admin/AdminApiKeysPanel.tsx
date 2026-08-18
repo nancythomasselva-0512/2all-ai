@@ -57,6 +57,10 @@ export default function AdminApiKeysPanel() {
 
   useEffect(() => {
     fetchData();
+    const interval = setInterval(() => {
+      fetchData();
+    }, 6000);
+    return () => clearInterval(interval);
   }, []);
 
   // Close dropdown on outside click

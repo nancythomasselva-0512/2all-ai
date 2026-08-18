@@ -93,7 +93,8 @@ async function handleBootstrap(req: Request) {
         );
       }
 
-      if (domainRecord.status !== "VERIFIED") {
+      const isVerified = domainRecord.verified === true || domainRecord.status === "VERIFIED" || domainRecord.status === "ACTIVE";
+      if (!isVerified) {
         return NextResponse.json(
           {
             success: false,

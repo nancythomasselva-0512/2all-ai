@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import {
@@ -359,9 +360,34 @@ export default function AdminDashboard({
     }
   }, []);
 
+  const router = useRouter();
   const [users, setUsers] = useState<UserType[]>(initialUsers);
   const [projects, setProjects] = useState<ProjectType[]>(initialProjects);
   const [config, setConfig] = useState<ConfigType>(initialConfig);
+
+  // Auto-refresh background polling every 8 seconds
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const [usersRes, demoRes] = await Promise.all([
+          fetch("/api/admin/users"),
+          fetch("/api/admin/demo-requests")
+        ]);
+        if (usersRes.ok) {
+          const freshUsers = await usersRes.json();
+          setUsers(freshUsers);
+        }
+        if (demoRes.ok) {
+          const freshDemos = await demoRes.json();
+          setDemoRequests(freshDemos);
+        }
+        router.refresh();
+      } catch (e) {
+        console.warn("Admin auto-refresh error:", e);
+      }
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [router]);
 
   // Customizer local edits state
   const [editConfig, setEditConfig] = useState<ConfigType>(initialConfig);
