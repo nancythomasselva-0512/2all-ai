@@ -1,37 +1,40 @@
 /**
  * 2all.ai Official Accessibility Suite Core Engine
- * Version: 4.0.0
- * Pure Vanilla JS, Shadow-DOM isolated, matches 2all.ai website UI & AI Assistant.
+ * Version: 5.0.0
+ * Pixel-Perfect 1:1 Replica of 2all.ai Website AccessibilityPanel.tsx
  */
 (function () {
   if (window.__2ALL_CORE_INITIALIZED__) return;
   window.__2ALL_CORE_INITIALIZED__ = true;
 
   var config = window.__2ALL_CONFIG__ || {
-    primaryColor: "#004bff",
+    primaryColor: "#2563eb",
     position: "bottom-right",
     size: "medium",
   };
 
-  var primaryColor = config.primaryColor || "#004bff";
+  var primaryColor = config.primaryColor || "#2563eb";
   var position = config.position || "bottom-right";
 
-  // Full Suite State
+  // Accessibility State (Matches AccessibilityContext 1:1)
   var state = {
     open: false,
-    activeTab: "home",
+    activeTab: "dashboard", // dashboard (Home), profiles (Modes), features, vision, ai
     searchQuery: "",
     showAnalysis: false,
-    // Profiles
+    
+    // Active Profile
     activeProfile: "none", // dyslexia, adhd, lowVision, seizure, motor, blind
+
     // Typography
-    fontSize: 100, // 90% - 200%
+    fontSize: 100, // 90 to 200%
     fontFamily: "default", // default, readable, dyslexic
     letterSpacing: 0,
     lineHeight: 1.5,
     wordSpacing: 0,
     textAlignment: "default",
     textMagnifier: false,
+
     // Visual & Color
     isHighContrast: false,
     isDarkMode: false,
@@ -39,9 +42,10 @@
     isSmartContrast: false,
     monochrome: false,
     colorBlindMode: "none", // none, protanopia, deuteranopia, tritanopia
-    saturationMode: "normal", // normal, high, low
+    saturationMode: "normal",
     textColor: "default",
-    // Focus & Reading
+
+    // Reading & Focus
     readingMask: false,
     readingRuler: false,
     highlightLinks: false,
@@ -49,32 +53,36 @@
     highlightButtons: false,
     highlightFocus: false,
     reduceMotion: false,
+    stopAnimations: false,
     bigCursor: false,
+
     // Speech
     textToSpeech: false,
     voiceNavigation: false,
-    // Chat messages for AI Assistant (Anna)
+    autoReadSelection: false,
+
+    // AI Chat Messages
     chatMessages: [
       {
         id: 1,
         type: "bot",
-        text: "👋 Hi! I'm **Anna**, your **2all.ai AI Assistant**. Ask me anything about our accessibility tools, WCAG compliance, pricing, installation, or platform features!",
+        text: "👋 Hi! I'm your **2all.ai AI Assistant**. Ask me **anything** about our accessibility tools, WCAG compliance, pricing, installation, or platform features!",
       },
     ],
   };
 
   try {
-    var saved = localStorage.getItem("2all_accessibility_suite_v4");
+    var saved = localStorage.getItem("2all_panel_state_v5");
     if (saved) {
       var parsed = JSON.parse(saved);
       state = Object.assign(state, parsed);
-      state.open = false; // Always closed on start
+      state.open = false;
     }
   } catch (e) {}
 
   function saveState() {
     try {
-      localStorage.setItem("2all_accessibility_suite_v4", JSON.stringify(state));
+      localStorage.setItem("2all_panel_state_v5", JSON.stringify(state));
     } catch (e) {}
   }
 
@@ -119,142 +127,152 @@
     document.body.appendChild(svgDiv);
   }
 
-  // Shadow DOM Styles (Matches AccessibilityPanel.tsx 1:1)
+  // Shadow DOM Styles - Exact Replica of AccessibilityPanel.tsx
   var style = document.createElement("style");
   style.textContent = `
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; }
 
     .widget-wrapper { pointer-events: auto; display: flex; flex-direction: column; align-items: flex-end; }
     .widget-wrapper.left { align-items: flex-start; }
 
-    /* Circular Floating Trigger Button */
-    .trigger-button {
+    /* Floating Blue Circular Trigger Button */
+    .trigger-btn {
       width: 56px;
       height: 56px;
       border-radius: 50%;
       background: #004bff;
       color: #ffffff;
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 0 25px rgba(0, 75, 255, 0.45), 0 10px 20px rgba(0,0,0,0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 25px rgba(0, 75, 255, 0.45), 0 8px 16px rgba(0,0,0,0.15);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       outline: none;
     }
-    .trigger-button:hover {
+    .trigger-btn:hover {
       transform: scale(1.08);
       background: #003edd;
       box-shadow: 0 0 30px rgba(0, 75, 255, 0.6);
     }
-    .trigger-button svg { width: 26px; height: 26px; stroke: white; fill: none; }
+    .trigger-btn svg { width: 26px; height: 26px; stroke: white; fill: none; }
 
-    /* Modal Panel Box */
-    .panel-box {
-      width: 390px;
-      height: 600px;
-      max-height: 85vh;
-      background: #0a1329;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 24px;
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6);
-      margin-bottom: 16px;
+    /* Modal Panel - White Clean Box matching AccessibilityPanel.tsx */
+    .panel-container {
+      width: 375px;
+      height: 520px;
+      max-height: calc(100vh - 6rem);
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+      margin-bottom: 14px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       opacity: 0;
-      transform: translateY(20px) scale(0.95);
+      transform: translateY(20px) scale(0.96);
       pointer-events: none;
     }
-    .panel-box.open {
+    .panel-container.open {
       opacity: 1;
       transform: translateY(0) scale(1);
       pointer-events: auto;
     }
 
-    /* Top Brand Header */
-    .header-bar {
-      padding: 16px 20px;
-      background: linear-gradient(135deg, #0a1e3f 0%, #042868 50%, #004bff 100%);
-      color: white;
+    /* Top White Header */
+    .panel-header {
+      padding: 14px 16px 10px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .header-top { display: flex; align-items: center; justify-content: space-between; }
+    .header-title { font-size: 16px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px; line-height: 1; }
+    .header-sub { font-size: 11px; font-weight: 600; color: #64748b; margin-top: 2px; }
+    
+    .header-right { display: flex; align-items: center; gap: 8px; }
+    .score-pill {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 900;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      gap: 6px;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
     }
-    .brand-title { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 17px; letter-spacing: -0.5px; }
-    .badge-ai { background: linear-gradient(90deg, #00c6ff, #0072ff); color: white; font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 12px; text-transform: uppercase; }
-    .header-btns { display: flex; align-items: center; gap: 8px; }
-    .btn-reset { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-    .btn-reset:hover { background: rgba(255,255,255,0.3); }
-    .btn-close { background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 18px; line-height: 1; padding: 4px; display: flex; align-items: center; justify-content: center; }
-    .btn-close:hover { color: white; }
+    .dot-ping { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
 
-    /* Search Box */
-    .search-wrapper { padding: 12px 16px; background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-    .search-field {
-      width: 100%;
-      padding: 9px 14px;
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      color: white;
-      outline: none;
-    }
-    .search-field:focus { border-color: #004bff; background: rgba(255, 255, 255, 0.12); }
-
-    /* Navigation Tabs */
-    .nav-tabs { display: flex; background: rgba(15, 23, 42, 0.9); padding: 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-    .nav-tab {
-      flex: 1;
-      padding: 8px 4px;
-      background: transparent;
-      border: none;
-      font-size: 11px;
-      font-weight: 800;
-      color: #94a3b8;
-      border-radius: 10px;
+    .btn-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #475569;
       cursor: pointer;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      transition: all 0.15s;
+    }
+    .btn-close:hover { background: #e2e8f0; color: #0f172a; }
+
+    /* Compact Search Field */
+    .search-row { position: relative; width: 100%; }
+    .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: #94a3b8; }
+    .search-input {
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 7px 12px 7px 32px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #0f172a;
+      outline: none;
       transition: all 0.2s;
     }
-    .nav-tab.active { background: #004bff; color: white; box-shadow: 0 4px 12px rgba(0,75,255,0.4); }
+    .search-input:focus { border-color: #2563eb; background: #ffffff; }
 
-    /* Scrollable Content Body */
-    .body-content { padding: 16px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+    /* Middle Scrollable Content */
+    .panel-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: #ffffff; }
 
-    /* Score Card in Home Tab */
+    /* Home Score Card */
     .score-card {
       background: linear-gradient(135deg, #0a1e3f 0%, #042868 50%, #004bff 100%);
-      border-radius: 18px;
+      border-radius: 16px;
       padding: 16px;
-      color: white;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0, 75, 255, 0.25);
+      color: #ffffff;
+      box-shadow: 0 10px 25px rgba(0, 75, 255, 0.2);
     }
-    .score-row { display: flex; align-items: center; gap: 14px; }
+    .score-flex { display: flex; align-items: center; gap: 14px; }
     .score-circle {
       width: 58px;
       height: 58px;
       border-radius: 50%;
-      border: 3.5px solid rgba(255, 255, 255, 0.3);
+      border: 3.5px solid rgba(255, 255, 255, 0.25);
       border-top-color: #38bdf8;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 900;
       background: rgba(255, 255, 255, 0.1);
       shrink-0: 0;
     }
-    .score-title { font-size: 15px; font-weight: 800; }
-    .score-desc { font-size: 11px; color: #93c5fd; margin-top: 2px; }
-    .score-analysis-btn {
+    .score-h3 { font-size: 16px; font-weight: 800; }
+    .score-p { font-size: 11px; color: #93c5fd; margin-top: 2px; line-height: 1.3; }
+    .btn-analysis {
       margin-top: 12px;
       width: 100%;
       padding: 7px 12px;
@@ -263,25 +281,24 @@
       border-radius: 10px;
       font-size: 11px;
       font-weight: 700;
-      color: white;
+      color: #ffffff;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .score-analysis-btn:hover { background: rgba(255, 255, 255, 0.25); }
+    .btn-analysis:hover { background: rgba(255, 255, 255, 0.25); }
 
-    /* Analysis Breakdown list */
-    .analysis-list { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; flex-direction: column; gap: 6px; font-size: 11px; }
-    .analysis-item { display: flex; justify-content: space-between; background: rgba(255,255,255,0.1); padding: 6px 10px; border-radius: 8px; }
+    .analysis-accordion { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; flex-direction: column; gap: 6px; font-size: 11px; }
+    .analysis-row { display: flex; justify-content: space-between; background: rgba(255,255,255,0.1); padding: 6px 10px; border-radius: 8px; }
 
-    /* Cards Grid */
-    .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    /* Profiles & Feature Cards Grid */
+    .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     
-    .card-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
+    .card-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
       padding: 12px;
       cursor: pointer;
       display: flex;
@@ -290,60 +307,116 @@
       gap: 6px;
       transition: all 0.2s;
     }
-    .card-item:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
-    .card-item.active {
-      background: rgba(0, 75, 255, 0.25);
-      border-color: #004bff;
-      box-shadow: 0 4px 15px rgba(0, 75, 255, 0.3);
+    .card-box:hover { background: #f1f5f9; border-color: #cbd5e1; transform: translateY(-1px); }
+    .card-box.active {
+      background: #eff6ff;
+      border-color: #2563eb;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
     }
-    .card-title { font-size: 12px; font-weight: 800; color: #f8fafc; }
-    .card-desc { font-size: 10px; color: #94a3b8; line-height: 1.3; }
-    .card-pill { font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 6px; align-self: flex-start; text-transform: uppercase; background: rgba(255,255,255,0.1); color: #cbd5e1; }
-    .card-item.active .card-pill { background: #004bff; color: white; }
+    .card-box-title { font-size: 12px; font-weight: 800; color: #0f172a; }
+    .card-box-desc { font-size: 10px; color: #64748b; line-height: 1.3; font-weight: 500; }
+    .card-box-pill { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px; align-self: flex-start; text-transform: uppercase; background: #e2e8f0; color: #475569; }
+    .card-box.active .card-box-pill { background: #2563eb; color: #ffffff; }
 
-    /* Range Sliders */
-    .slider-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 14px;
+    /* Sliders & Option Groups */
+    .option-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
-    .slider-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; color: white; }
-    .slider-input { width: 100%; accent-color: #004bff; cursor: pointer; }
+    .option-title { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; color: #0f172a; }
+    .range-input { width: 100%; accent-color: #2563eb; cursor: pointer; }
 
     /* Anna AI Chat UI */
-    .chat-container { display: flex; flex-direction: column; height: 100%; gap: 10px; }
-    .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; }
-    .chat-msg { max-width: 85%; padding: 10px 14px; border-radius: 16px; font-size: 12px; line-height: 1.4; }
-    .chat-msg.bot { background: rgba(255, 255, 255, 0.08); color: #f1f5f9; border: 1px solid rgba(255,255,255,0.12); align-self: flex-start; border-bottom-left-radius: 4px; }
-    .chat-msg.user { background: #004bff; color: white; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 600; }
-    .chat-msg strong { color: #38bdf8; }
-    
-    .chat-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-    .chip-btn { background: rgba(0, 75, 255, 0.2); border: 1px solid rgba(0, 75, 255, 0.4); color: #93c5fd; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
-    .chip-btn:hover { background: #004bff; color: white; }
+    .ai-chat-box { display: flex; flex-direction: column; height: 100%; gap: 8px; }
+    .ai-messages-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 2px; }
+    .ai-msg { max-width: 88%; padding: 9px 12px; border-radius: 14px; font-size: 12px; line-height: 1.4; }
+    .ai-msg.bot { background: #f1f5f9; color: #0f172a; border: 1px solid #e2e8f0; align-self: flex-start; border-bottom-left-radius: 2px; }
+    .ai-msg.user { background: #2563eb; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 2px; font-weight: 600; }
+    .ai-msg strong { color: #2563eb; }
+    .ai-msg.user strong { color: #ffffff; }
 
-    .chat-input-bar { display: flex; gap: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-    .chat-input { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: white; font-size: 12px; outline: none; }
-    .chat-send-btn { background: #004bff; border: none; color: white; font-weight: 700; padding: 8px 14px; border-radius: 10px; cursor: pointer; }
-    .chat-send-btn:hover { background: #003edd; }
+    .ai-chip-group { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .ai-chip-btn { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+    .ai-chip-btn:hover { background: #2563eb; color: #ffffff; border-color: #2563eb; }
 
-    /* Footer Bar */
-    .footer-bar {
-      padding: 10px 16px;
-      background: rgba(15, 23, 42, 0.95);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 11px;
-      color: #94a3b8;
-      font-weight: 600;
+    .ai-input-row { display: flex; gap: 6px; padding-top: 6px; border-top: 1px solid #f1f5f9; }
+    .ai-input-text { flex: 1; padding: 7px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 12px; outline: none; color: #0f172a; }
+    .ai-input-text:focus { border-color: #2563eb; background: #ffffff; }
+    .ai-send-btn { background: #2563eb; border: none; color: #ffffff; font-weight: 700; font-size: 12px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+    .ai-send-btn:hover { background: #1d4ed8; }
+
+    /* Action Bar (Reset Settings & Hide Forever) */
+    .action-bar {
+      padding: 10px 12px;
+      background: #ffffff;
+      border-top: 1px solid #f1f5f9;
       display: flex;
-      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-reset-main {
+      flex: 1;
+      padding: 8px 12px;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .btn-reset-main:hover { background: #1d4ed8; }
+    .btn-hide-main {
+      flex: 1;
+      padding: 8px 12px;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .btn-hide-main:hover { background: #e2e8f0; }
+
+    /* Bottom 5 Icon Navigation Tabs (Matches AccessibilityPanel.tsx) */
+    .bottom-nav {
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+      padding: 4px 8px;
+      display: flex;
+      justify-content: space-around;
       align-items: center;
     }
-    .footer-bar a { color: #38bdf8; text-decoration: none; font-weight: 800; }
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 40px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-btn.active { color: #2563eb; background: #eff6ff; font-weight: 800; }
+    .nav-btn svg { width: 16px; height: 16px; margin-bottom: 2px; }
+    .nav-btn span { font-size: 9.5px; tracking-tight: -0.2px; }
   `;
   shadow.appendChild(style);
 
@@ -351,43 +424,64 @@
   var wrapper = document.createElement("div");
   wrapper.className = "widget-wrapper " + (position.indexOf("left") !== -1 ? "left" : "");
 
-  // Panel Box
-  var panelBox = document.createElement("div");
-  panelBox.className = "panel-box";
+  // Panel Container
+  var panel = document.createElement("div");
+  panel.className = "panel-container";
 
-  panelBox.innerHTML = `
-    <div class="header-bar">
-      <div class="brand-title">
-        <span>2all.ai</span>
-        <span class="badge-ai">AI POWERED</span>
+  panel.innerHTML = `
+    <div class="panel-header">
+      <div class="header-top">
+        <div>
+          <div class="header-title">Accessibility</div>
+          <div class="header-sub">Accessibility modes</div>
+        </div>
+        <div class="header-right">
+          <div class="score-pill" id="2all-score-pill">
+            <span class="dot-ping"></span>
+            <span id="2all-score-text">Score: 100/100</span>
+          </div>
+          <button class="btn-close" id="2all-close-btn">✕</button>
+        </div>
       </div>
-      <div class="header-btns">
-        <button class="btn-reset" id="2all-reset-btn">Reset All</button>
-        <button class="btn-close" id="2all-close-btn">✕</button>
+      <div class="search-row">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="2all-search-input" placeholder="Search accessibility features..." />
       </div>
     </div>
-    <div class="search-wrapper">
-      <input type="text" class="search-field" id="2all-search-field" placeholder="Search features (e.g. font, contrast, dyslexia)..." />
+    <div class="panel-body" id="2all-panel-body"></div>
+    <div class="action-bar">
+      <button class="btn-reset-main" id="2all-reset-main">↻ Reset Settings</button>
+      <button class="btn-hide-main" id="2all-hide-main">Hide Forever</button>
     </div>
-    <div class="nav-tabs">
-      <button class="nav-tab active" data-tab="home">Home</button>
-      <button class="nav-tab" data-tab="modes">Modes</button>
-      <button class="nav-tab" data-tab="features">Features</button>
-      <button class="nav-tab" data-tab="vision">Vision</button>
-      <button class="nav-tab" data-tab="ai">AI Assist</button>
-    </div>
-    <div class="body-content" id="2all-body-content"></div>
-    <div class="footer-bar">
-      <span>Powered by <a href="https://2all.ai" target="_blank">2all.ai Accessibility</a></span>
-      <span style="color:#38bdf8; font-weight:800;">WCAG 2.1 AA Ready</span>
+    <div class="bottom-nav">
+      <button class="nav-btn active" data-tab="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-btn" data-tab="profiles">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Modes</span>
+      </button>
+      <button class="nav-btn" data-tab="features">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Features</span>
+      </button>
+      <button class="nav-btn" data-tab="vision">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.92 0 1.7-.72 1.7-1.61 0-.43-.17-.83-.44-1.14-.27-.3-.42-.7-.42-1.12 0-.91.74-1.65 1.65-1.65H16c3.31 0 6-2.69 6-6 0-4.97-4.48-9-10-9z"/></svg>
+        <span>Vision</span>
+      </button>
+      <button class="nav-btn" data-tab="ai">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+        <span>AI Assist</span>
+      </button>
     </div>
   `;
-  wrapper.appendChild(panelBox);
+  wrapper.appendChild(panel);
 
-  // Circular Trigger Button
+  // Circular Blue Floating Trigger Button (Person Icon inside Blue Circle)
   var triggerBtn = document.createElement("button");
-  triggerBtn.className = "trigger-button";
-  triggerBtn.setAttribute("aria-label", "Toggle 2all.ai Accessibility Center");
+  triggerBtn.className = "trigger-btn";
+  triggerBtn.setAttribute("aria-label", "Toggle Accessibility Panel");
   triggerBtn.innerHTML = `
     <svg viewBox="0 0 24 24">
       <circle cx="12" cy="4" r="2"/>
@@ -400,48 +494,48 @@
   wrapper.appendChild(triggerBtn);
   shadow.appendChild(wrapper);
 
-  var bodyContent = shadow.getElementById("2all-body-content");
-  var searchField = shadow.getElementById("2all-search-field");
-  var navTabs = shadow.querySelectorAll(".nav-tab");
+  var panelBody = shadow.getElementById("2all-panel-body");
+  var searchInput = shadow.getElementById("2all-search-input");
+  var navBtns = shadow.querySelectorAll(".nav-btn");
 
-  // Event Listeners
-  navTabs.forEach(function (tab) {
-    tab.addEventListener("click", function () {
-      navTabs.forEach(function (t) { t.classList.remove("active"); });
-      tab.classList.add("active");
-      state.activeTab = tab.getAttribute("data-tab");
-      renderBody();
+  // Navigation Event Listeners
+  navBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      navBtns.forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      state.activeTab = btn.getAttribute("data-tab");
+      renderPanelBody();
     });
   });
 
-  searchField.addEventListener("input", function (e) {
+  searchInput.addEventListener("input", function (e) {
     state.searchQuery = e.target.value.toLowerCase().trim();
-    renderBody();
+    renderPanelBody();
   });
 
-  shadow.getElementById("2all-reset-btn").addEventListener("click", function () {
-    resetAll();
-  });
-
-  shadow.getElementById("2all-close-btn").addEventListener("click", function () {
+  shadow.getElementById("2all-reset-main").onclick = function () { resetSettings(); };
+  shadow.getElementById("2all-hide-main").onclick = function () {
     state.open = false;
-    panelBox.classList.remove("open");
-  });
+    panel.classList.remove("open");
+  };
+  shadow.getElementById("2all-close-btn").onclick = function () {
+    state.open = false;
+    panel.classList.remove("open");
+  };
 
-  triggerBtn.addEventListener("click", function () {
+  triggerBtn.onclick = function () {
     state.open = !state.open;
-    if (state.open) panelBox.classList.add("open");
-    else panelBox.classList.remove("open");
-  });
+    if (state.open) panel.classList.add("open");
+    else panel.classList.remove("open");
+  };
 
-  // Calculate Real-time Score
   function calculateScore() {
     var hasProfile = state.activeProfile !== "none";
-    var hasTypo = state.fontFamily !== "default" || state.fontSize > 100 || state.letterSpacing > 0;
+    var hasTypo = state.fontFamily !== "default" || state.fontSize > 100;
     var hasContrast = state.isHighContrast || state.isDarkMode || state.isLightMode || state.colorBlindMode !== "none";
     var hasReading = state.readingMask || state.readingRuler || state.textMagnifier || state.textToSpeech || state.highlightLinks;
 
-    var score = 70; // Base score
+    var score = 70;
     if (hasProfile) score += 15;
     if (hasTypo) score += 5;
     if (hasContrast) score += 5;
@@ -449,319 +543,313 @@
     return Math.min(100, score);
   }
 
-  function renderBody() {
-    bodyContent.innerHTML = "";
+  function renderPanelBody() {
+    panelBody.innerHTML = "";
 
-    // 1. HOME TAB (Dashboard with Score Card)
-    if (state.activeTab === "home" && !state.searchQuery) {
-      var score = calculateScore();
+    var score = calculateScore();
+    shadow.getElementById("2all-score-text").innerText = "Score: " + score + "/100";
 
+    // 1. DASHBOARD (HOME TAB)
+    if (state.activeTab === "dashboard" && !state.searchQuery) {
       var scoreCard = document.createElement("div");
       scoreCard.className = "score-card";
       scoreCard.innerHTML = `
-        <div class="score-row">
+        <div class="score-flex">
           <div class="score-circle">${score}</div>
           <div>
-            <div class="score-title">Accessibility Score</div>
-            <div class="score-desc">${score === 100 ? "100% WCAG 2.1 AA Compliant & fully optimized!" : "Personalized WCAG & UX compliance score."}</div>
+            <div class="score-h3">Accessibility Score</div>
+            <div class="score-p">${score === 100 ? "100% WCAG 2.1 AA Compliant & fully optimized!" : "Personalized WCAG & UX compliance score."}</div>
           </div>
         </div>
-        <button class="score-analysis-btn" id="2all-analysis-btn">
+        <button class="btn-analysis" id="2all-analysis-trigger">
           <span>ℹ️ How is this score analyzed?</span>
           <span>${state.showAnalysis ? "▲" : "▼"}</span>
         </button>
         ${state.showAnalysis ? `
-          <div class="analysis-list">
-            <div class="analysis-item"><span>WCAG 2.1 AA Baseline</span><span style="color:#4ade80;font-weight:bold;">70 / 70 Pts</span></div>
-            <div class="analysis-item"><span>Active Profile</span><span style="color:${state.activeProfile!=='none'?'#4ade80':'#93c5fd'};font-weight:bold;">${state.activeProfile!=='none'?15:0} / 15 Pts</span></div>
-            <div class="analysis-item"><span>Typography Optimizations</span><span style="color:#4ade80;font-weight:bold;">5 Pts</span></div>
-            <div class="analysis-item"><span>Visual Contrast Engine</span><span style="color:#4ade80;font-weight:bold;">5 Pts</span></div>
-            <div class="analysis-item"><span>Reading & Focus Tools</span><span style="color:#4ade80;font-weight:bold;">5 Pts</span></div>
+          <div class="analysis-accordion">
+            <div class="analysis-row"><span>WCAG 2.1 AA System Baseline</span><span style="color:#4ade80;font-weight:bold;">70 / 70 Pts</span></div>
+            <div class="analysis-row"><span>Active Profile</span><span style="color:${state.activeProfile!=='none'?'#4ade80':'#93c5fd'};font-weight:bold;">${state.activeProfile!=='none'?15:0} / 15 Pts</span></div>
+            <div class="analysis-row"><span>Typography Optimizations</span><span style="color:#4ade80;font-weight:bold;">5 Pts</span></div>
+            <div class="analysis-row"><span>Visual Contrast Engine</span><span style="color:#4ade80;font-weight:bold;">5 Pts</span></div>
+            <div class="analysis-row"><span>Reading & Focus Tools</span><span style="color:#4ade80;font-weight:bold;">5 Pts</span></div>
           </div>
         ` : ""}
       `;
-      bodyContent.appendChild(scoreCard);
+      panelBody.appendChild(scoreCard);
 
       setTimeout(function () {
-        var btn = shadow.getElementById("2all-analysis-btn");
-        if (btn) {
-          btn.onclick = function () {
+        var trigger = shadow.getElementById("2all-analysis-trigger");
+        if (trigger) {
+          trigger.onclick = function () {
             state.showAnalysis = !state.showAnalysis;
-            renderBody();
+            renderPanelBody();
           };
         }
       }, 50);
 
-      // Preset Quick Profiles Header
-      var qHeader = document.createElement("div");
-      qHeader.style.cssText = "font-size:12px; font-weight:800; color:#f8fafc; margin-top:4px;";
-      qHeader.innerText = "Quick Accessibility Profiles";
-      bodyContent.appendChild(qHeader);
+      var profilesHeader = document.createElement("div");
+      profilesHeader.style.cssText = "font-size:12px; font-weight:800; color:#0f172a; margin-top:2px;";
+      profilesHeader.innerText = "Quick Accessibility Profiles";
+      panelBody.appendChild(profilesHeader);
 
       renderProfilesGrid();
     }
 
-    // 2. MODES TAB
-    else if (state.activeTab === "modes" && !state.searchQuery) {
+    // 2. PROFILES (MODES TAB)
+    else if (state.activeTab === "profiles" && !state.searchQuery) {
       renderProfilesGrid();
     }
 
-    // 3. FEATURES / TYPOGRAPHY TAB
+    // 3. FEATURES (TYPOGRAPHY TAB)
     else if (state.activeTab === "features" && !state.searchQuery) {
-      // Font Scale Slider
-      var sliderCard = document.createElement("div");
-      sliderCard.className = "slider-card";
-      sliderCard.innerHTML = `
-        <div class="slider-top">
+      var fontCard = document.createElement("div");
+      fontCard.className = "option-card";
+      fontCard.innerHTML = `
+        <div class="option-title">
           <span>Content Scaling</span>
           <span>${state.fontSize}%</span>
         </div>
-        <input type="range" class="slider-input" min="90" max="180" step="10" value="${state.fontSize}" id="2all-font-slider" />
+        <input type="range" class="range-input" min="90" max="200" step="10" value="${state.fontSize}" id="2all-scale-range" />
       `;
-      bodyContent.appendChild(sliderCard);
+      panelBody.appendChild(fontCard);
 
       setTimeout(function () {
-        var s = shadow.getElementById("2all-font-slider");
-        if (s) {
-          s.oninput = function (e) {
+        var range = shadow.getElementById("2all-scale-range");
+        if (range) {
+          range.oninput = function (e) {
             state.fontSize = parseInt(e.target.value, 10);
             saveState();
             applyEffects();
-            renderBody();
+            renderPanelBody();
           };
         }
       }, 50);
 
       var grid = document.createElement("div");
-      grid.className = "grid-2col";
+      grid.className = "cards-grid";
 
-      var typoTools = [
+      var typoFeatures = [
         { key: "readableFont", name: "Readable Font", desc: "Clear sans-serif typography" },
-        { key: "dyslexiaFont", name: "Dyslexia Font", desc: "OpenDyslexic reading typography" },
-        { key: "textMagnifier", name: "Text Magnifier", desc: "Hover magnifier bubble" },
+        { key: "dyslexiaFont", name: "Dyslexia Font", desc: "OpenDyslexic typography" },
+        { key: "textMagnifier", name: "Text Magnifier", desc: "Enlarge text on hover" },
         { key: "readingMask", name: "Reading Mask", desc: "Focus line spotlight" },
         { key: "readingRuler", name: "Reading Ruler", desc: "Horizontal guide ruler" },
-        { key: "textToSpeech", name: "Text-to-Speech", desc: "Read text aloud on click/hover" },
+        { key: "textToSpeech", name: "Text-to-Speech", desc: "Read text out loud" },
       ];
 
-      typoTools.forEach(function (t) {
-        var item = document.createElement("div");
-        item.className = "card-item " + (state[t.key] ? "active" : "");
-        item.innerHTML = `
-          <div class="card-title">${t.name}</div>
-          <div class="card-desc">${t.desc}</div>
-          <div class="card-pill">${state[t.key] ? "ON" : "OFF"}</div>
+      typoFeatures.forEach(function (t) {
+        var box = document.createElement("div");
+        box.className = "card-box " + (state[t.key] ? "active" : "");
+        box.innerHTML = `
+          <div class="card-box-title">${t.name}</div>
+          <div class="card-box-desc">${t.desc}</div>
+          <div class="card-box-pill">${state[t.key] ? "ON" : "OFF"}</div>
         `;
-        item.onclick = function () {
+        box.onclick = function () {
           state[t.key] = !state[t.key];
           if (t.key === "dyslexiaFont" && state.dyslexiaFont) state.fontFamily = "dyslexic";
           if (t.key === "readableFont" && state.readableFont) state.fontFamily = "readable";
           saveState();
           applyEffects();
-          renderBody();
+          renderPanelBody();
         };
-        grid.appendChild(item);
+        grid.appendChild(box);
       });
 
-      bodyContent.appendChild(grid);
+      panelBody.appendChild(grid);
     }
 
     // 4. VISION TAB
     else if (state.activeTab === "vision" && !state.searchQuery) {
       var grid = document.createElement("div");
-      grid.className = "grid-2col";
+      grid.className = "cards-grid";
 
-      var visionTools = [
-        { key: "isDarkMode", name: "Dark Contrast", desc: "Sleek dark theme" },
-        { key: "isLightMode", name: "Light Contrast", desc: "High contrast white background" },
+      var visionFeatures = [
+        { key: "isDarkMode", name: "Dark Contrast", desc: "High contrast dark mode" },
+        { key: "isLightMode", name: "Light Contrast", desc: "High contrast light mode" },
         { key: "monochrome", name: "Monochrome Mode", desc: "Grayscale black & white" },
         { key: "highlightLinks", name: "Highlight Links", desc: "Underline & highlight links" },
         { key: "highlightHeadings", name: "Highlight Headings", desc: "Outline section titles H1-H6" },
-        { key: "highlightButtons", name: "Highlight Buttons", desc: "Highlight action buttons" },
+        { key: "highlightButtons", name: "Highlight Buttons", desc: "Border action buttons" },
       ];
 
-      visionTools.forEach(function (v) {
-        var item = document.createElement("div");
-        item.className = "card-item " + (state[v.key] ? "active" : "");
-        item.innerHTML = `
-          <div class="card-title">${v.name}</div>
-          <div class="card-desc">${v.desc}</div>
-          <div class="card-pill">${state[v.key] ? "ON" : "OFF"}</div>
+      visionFeatures.forEach(function (v) {
+        var box = document.createElement("div");
+        box.className = "card-box " + (state[v.key] ? "active" : "");
+        box.innerHTML = `
+          <div class="card-box-title">${v.name}</div>
+          <div class="card-box-desc">${v.desc}</div>
+          <div class="card-box-pill">${state[v.key] ? "ON" : "OFF"}</div>
         `;
-        item.onclick = function () {
+        box.onclick = function () {
           state[v.key] = !state[v.key];
           if (v.key === "isDarkMode" && state.isDarkMode) { state.isLightMode = false; state.monochrome = false; }
           if (v.key === "isLightMode" && state.isLightMode) { state.isDarkMode = false; state.monochrome = false; }
           saveState();
           applyEffects();
-          renderBody();
+          renderPanelBody();
         };
-        grid.appendChild(item);
+        grid.appendChild(box);
       });
 
-      bodyContent.appendChild(grid);
+      panelBody.appendChild(grid);
 
-      // Colorblind Filter Selector
-      var cbBox = document.createElement("div");
-      cbBox.className = "slider-card";
-      cbBox.innerHTML = `
-        <div class="slider-top"><span>Colorblind Filters</span></div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; margin-top:6px;">
-          <button class="btn-reset" id="cb-off" style="background:${state.colorBlindMode==='none'?'#004bff':'rgba(255,255,255,0.1)'}">Off</button>
-          <button class="btn-reset" id="cb-p" style="background:${state.colorBlindMode==='protanopia'?'#004bff':'rgba(255,255,255,0.1)'}">Red (Protan)</button>
-          <button class="btn-reset" id="cb-d" style="background:${state.colorBlindMode==='deuteranopia'?'#004bff':'rgba(255,255,255,0.1)'}">Green (Deuter)</button>
+      // Colorblind Filter Buttons
+      var cbCard = document.createElement("div");
+      cbCard.className = "option-card";
+      cbCard.innerHTML = `
+        <div class="option-title"><span>Colorblind Filters</span></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; margin-top:4px;">
+          <button class="btn-hide-main" id="cb-none" style="padding:6px; font-size:11px; background:${state.colorBlindMode==='none'?'#2563eb':'#f1f5f9'}; color:${state.colorBlindMode==='none'?'#fff':'#334155'}">Off</button>
+          <button class="btn-hide-main" id="cb-prot" style="padding:6px; font-size:11px; background:${state.colorBlindMode==='protanopia'?'#2563eb':'#f1f5f9'}; color:${state.colorBlindMode==='protanopia'?'#fff':'#334155'}">Red (Protan)</button>
+          <button class="btn-hide-main" id="cb-deut" style="padding:6px; font-size:11px; background:${state.colorBlindMode==='deuteranopia'?'#2563eb':'#f1f5f9'}; color:${state.colorBlindMode==='deuteranopia'?'#fff':'#334155'}">Green (Deuter)</button>
         </div>
       `;
-      bodyContent.appendChild(cbBox);
+      panelBody.appendChild(cbCard);
 
       setTimeout(function () {
-        var b1 = shadow.getElementById("cb-off");
-        var b2 = shadow.getElementById("cb-p");
-        var b3 = shadow.getElementById("cb-d");
-        if (b1) b1.onclick = function () { state.colorBlindMode = "none"; saveState(); applyEffects(); renderBody(); };
-        if (b2) b2.onclick = function () { state.colorBlindMode = "protanopia"; saveState(); applyEffects(); renderBody(); };
-        if (b3) b3.onclick = function () { state.colorBlindMode = "deuteranopia"; saveState(); applyEffects(); renderBody(); };
+        var b1 = shadow.getElementById("cb-none");
+        var b2 = shadow.getElementById("cb-prot");
+        var b3 = shadow.getElementById("cb-deut");
+        if (b1) b1.onclick = function () { state.colorBlindMode = "none"; saveState(); applyEffects(); renderPanelBody(); };
+        if (b2) b2.onclick = function () { state.colorBlindMode = "protanopia"; saveState(); applyEffects(); renderPanelBody(); };
+        if (b3) b3.onclick = function () { state.colorBlindMode = "deuteranopia"; saveState(); applyEffects(); renderPanelBody(); };
       }, 50);
     }
 
-    // 5. ANNA AI VIRTUAL ASSISTANT TAB
+    // 5. ANNA AI ASSIST TAB
     else if (state.activeTab === "ai" && !state.searchQuery) {
-      renderAIChat();
+      renderAIChatUI();
     }
   }
 
   function renderProfilesGrid() {
     var grid = document.createElement("div");
-    grid.className = "grid-2col";
+    grid.className = "cards-grid";
 
     var profiles = [
       { id: "dyslexia", name: "Dyslexia Profile", desc: "OpenDyslexic font + letter spacing" },
       { id: "adhd", name: "ADHD Profile", desc: "Reading Mask + Ruler spotlight" },
-      { id: "lowVision", name: "Low Vision", desc: "High Contrast + Text Magnifier" },
-      { id: "seizure", name: "Seizure Safe", desc: "Stop animations & mute sounds" },
-      { id: "motor", name: "Motor Skills", desc: "Highlight keyboard focus + Big Cursor" },
+      { id: "lowVision", name: "Low Vision Profile", desc: "High Contrast + Text Magnifier" },
+      { id: "seizure", name: "Seizure Safe Profile", desc: "Stop animations & mute sounds" },
+      { id: "motor", name: "Motor Skills Profile", desc: "Highlight keyboard focus + Big Cursor" },
       { id: "blind", name: "Blind / Screen Reader", desc: "Voice Text-to-Speech audio reader" },
     ];
 
     profiles.forEach(function (p) {
       var active = state.activeProfile === p.id;
-      var item = document.createElement("div");
-      item.className = "card-item " + (active ? "active" : "");
-      item.innerHTML = `
-        <div class="card-title">${p.name}</div>
-        <div class="card-desc">${p.desc}</div>
-        <div class="card-pill">${active ? "ACTIVE" : "OFF"}</div>
+      var box = document.createElement("div");
+      box.className = "card-box " + (active ? "active" : "");
+      box.innerHTML = `
+        <div class="card-box-title">${p.name}</div>
+        <div class="card-box-desc">${p.desc}</div>
+        <div class="card-box-pill">${active ? "ACTIVE" : "OFF"}</div>
       `;
-      item.onclick = function () {
+      box.onclick = function () {
         if (state.activeProfile === p.id) {
           state.activeProfile = "none";
-          resetAll();
+          resetSettings();
         } else {
           state.activeProfile = p.id;
           if (p.id === "dyslexia") { state.dyslexiaFont = true; state.fontFamily = "dyslexic"; state.letterSpacing = 2; }
           if (p.id === "adhd") { state.readingMask = true; state.readingRuler = true; }
           if (p.id === "lowVision") { state.isDarkMode = true; state.textMagnifier = true; }
-          if (p.id === "seizure") { state.reduceMotion = true; }
+          if (p.id === "seizure") { state.reduceMotion = true; state.stopAnimations = true; }
           if (p.id === "motor") { state.highlightFocus = true; state.bigCursor = true; }
           if (p.id === "blind") { state.textToSpeech = true; }
         }
         saveState();
         applyEffects();
-        renderBody();
+        renderPanelBody();
       };
-      grid.appendChild(item);
+      grid.appendChild(box);
     });
 
-    bodyContent.appendChild(grid);
+    panelBody.appendChild(grid);
   }
 
-  // Render Anna AI Chat Tab
-  function renderAIChat() {
-    var chatBox = document.createElement("div");
-    chatBox.className = "chat-container";
+  function renderAIChatUI() {
+    var container = document.createElement("div");
+    container.className = "ai-chat-box";
 
     var msgList = document.createElement("div");
-    msgList.className = "chat-messages";
-    msgList.id = "2all-chat-msgs";
+    msgList.className = "ai-messages-list";
+    msgList.id = "2all-ai-msg-list";
 
     state.chatMessages.forEach(function (m) {
-      var msgDiv = document.createElement("div");
-      msgDiv.className = "chat-msg " + m.type;
-      msgDiv.innerHTML = m.text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      var div = document.createElement("div");
+      div.className = "ai-msg " + m.type;
+      div.innerHTML = m.text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
       if (m.actionLabel) {
-        var actBtn = document.createElement("button");
-        actBtn.className = "chip-btn";
-        actBtn.style.marginTop = "6px";
-        actBtn.innerText = m.actionLabel;
-        actBtn.onclick = function () {
+        var btn = document.createElement("button");
+        btn.className = "ai-chip-btn";
+        btn.style.marginTop = "6px";
+        btn.innerText = m.actionLabel;
+        btn.onclick = function () {
           if (m.settingAction) {
             state[m.settingAction.key] = m.settingAction.value;
             saveState();
             applyEffects();
-            renderBody();
+            renderPanelBody();
           }
         };
-        msgDiv.appendChild(actBtn);
+        div.appendChild(btn);
       }
-      msgList.appendChild(msgDiv);
+      msgList.appendChild(div);
     });
 
-    chatBox.appendChild(msgList);
+    container.appendChild(msgList);
 
-    // Quick Suggestions Chips
     var chips = document.createElement("div");
-    chips.className = "chat-suggestions";
+    chips.className = "ai-chip-group";
     chips.innerHTML = `
-      <button class="chip-btn" data-q="What voice tools are available?">🔊 Voice Reader</button>
-      <button class="chip-btn" data-q="How do I install the widget?">⚡ Installation</button>
-      <button class="chip-btn" data-q="Explain WCAG & ADA legal compliance">⚖️ Legal Compliance</button>
-      <button class="chip-btn" data-q="Show pricing plans">💰 Pricing</button>
+      <button class="ai-chip-btn" data-query="What voice tools are available?">🔊 Voice Reader</button>
+      <button class="ai-chip-btn" data-query="How do I install the widget?">⚡ Installation</button>
+      <button class="ai-chip-btn" data-query="Explain WCAG & ADA legal compliance">⚖️ Legal Compliance</button>
+      <button class="ai-chip-btn" data-query="Show pricing plans">💰 Pricing</button>
     `;
-    chatBox.appendChild(chips);
+    container.appendChild(chips);
 
-    // Input Bar
-    var inputBar = document.createElement("div");
-    inputBar.className = "chat-input-bar";
-    inputBar.innerHTML = `
-      <input type="text" class="chat-input" id="2all-chat-in" placeholder="Ask Anna about tools, WCAG, setup..." />
-      <button class="chat-send-btn" id="2all-chat-send">Send</button>
+    var inputRow = document.createElement("div");
+    inputRow.className = "ai-input-row";
+    inputRow.innerHTML = `
+      <input type="text" class="ai-input-text" id="2all-ai-input" placeholder="Ask Anna about tools, setup, WCAG..." />
+      <button class="ai-send-btn" id="2all-ai-send">Send</button>
     `;
-    chatBox.appendChild(inputBar);
+    container.appendChild(inputRow);
 
-    bodyContent.appendChild(chatBox);
+    panelBody.appendChild(container);
 
     setTimeout(function () {
-      var sendBtn = shadow.getElementById("2all-chat-send");
-      var chatIn = shadow.getElementById("2all-chat-in");
-      var chipBtns = shadow.querySelectorAll(".chip-btn[data-q]");
+      var sendBtn = shadow.getElementById("2all-ai-send");
+      var textIn = shadow.getElementById("2all-ai-input");
+      var chipBtns = shadow.querySelectorAll(".ai-chip-btn[data-query]");
 
       chipBtns.forEach(function (c) {
         c.onclick = function () {
-          sendUserMessage(c.getAttribute("data-q"));
+          processAIChatMessage(c.getAttribute("data-query"));
         };
       });
 
-      if (sendBtn && chatIn) {
-        sendBtn.onclick = function () {
-          sendUserMessage(chatIn.value);
-        };
-        chatIn.onkeypress = function (e) {
-          if (e.key === "Enter") sendUserMessage(chatIn.value);
+      if (sendBtn && textIn) {
+        sendBtn.onclick = function () { processAIChatMessage(textIn.value); };
+        textIn.onkeypress = function (e) {
+          if (e.key === "Enter") processAIChatMessage(textIn.value);
         };
       }
-      var mContainer = shadow.getElementById("2all-chat-msgs");
-      if (mContainer) mContainer.scrollTop = mContainer.scrollHeight;
+      var listDiv = shadow.getElementById("2all-ai-msg-list");
+      if (listDiv) listDiv.scrollTop = listDiv.scrollHeight;
     }, 50);
   }
 
-  function sendUserMessage(text) {
-    if (!text || !text.trim()) return;
-    var userText = text.trim();
+  function processAIChatMessage(msg) {
+    if (!msg || !msg.trim()) return;
+    var userText = msg.trim();
 
     state.chatMessages.push({ id: Date.now(), type: "user", text: userText });
     saveState();
-    renderBody();
+    renderPanelBody();
 
     setTimeout(function () {
       var lower = userText.toLowerCase();
@@ -785,11 +873,11 @@
 
       state.chatMessages.push({ id: Date.now(), type: "bot", text: botReply, actionLabel: actionLabel, settingAction: settingAction });
       saveState();
-      renderBody();
+      renderPanelBody();
     }, 400);
   }
 
-  function resetAll() {
+  function resetSettings() {
     state.activeProfile = "none";
     state.fontSize = 100;
     state.fontFamily = "default";
@@ -810,11 +898,11 @@
     state.textToSpeech = false;
     saveState();
     applyEffects();
-    renderBody();
+    renderPanelBody();
     if (window.speechSynthesis) window.speechSynthesis.cancel();
   }
 
-  // DOM Overlays
+  // DOM Overlays (Reading Mask, Ruler, Magnifier)
   var maskTop = document.createElement("div");
   maskTop.style.cssText = "position:fixed;left:0;right:0;top:0;background:rgba(0,0,0,0.75);z-index:2147483645;pointer-events:none;display:none;";
   document.body.appendChild(maskTop);
@@ -824,11 +912,11 @@
   document.body.appendChild(maskBottom);
 
   var ruler = document.createElement("div");
-  ruler.style.cssText = "position:fixed;left:0;right:0;height:8px;background:#004bff;box-shadow:0 0 12px #004bff;z-index:2147483646;pointer-events:none;display:none;";
+  ruler.style.cssText = "position:fixed;left:0;right:0;height:8px;background:#2563eb;box-shadow:0 0 12px #2563eb;z-index:2147483646;pointer-events:none;display:none;";
   document.body.appendChild(ruler);
 
   var magnifier = document.createElement("div");
-  magnifier.style.cssText = "position:fixed;padding:12px 18px;background:#0a1329;color:#fff;border-radius:14px;border:2px solid #004bff;font-size:18px;font-weight:bold;z-index:2147483646;pointer-events:none;display:none;max-width:340px;box-shadow:0 10px 30px rgba(0,0,0,0.5);";
+  magnifier.style.cssText = "position:fixed;padding:10px 16px;background:#0f172a;color:#ffffff;border-radius:12px;border:2px solid #2563eb;font-size:16px;font-weight:bold;z-index:2147483646;pointer-events:none;display:none;max-width:320px;box-shadow:0 10px 30px rgba(0,0,0,0.4);";
   document.body.appendChild(magnifier);
 
   document.addEventListener("mousemove", function (e) {
@@ -864,7 +952,7 @@
     }
   });
 
-  // Speech Reader Hover Handler
+  // Speech Text-To-Speech Handler
   document.addEventListener("mouseover", function (e) {
     if (!state.textToSpeech || !window.speechSynthesis) return;
     var target = e.target;
@@ -900,7 +988,7 @@
     }
 
     if (state.isDarkMode) {
-      css += `html { background-color: #0a1329 !important; color: #f8fafc !important; } `;
+      css += `html { background-color: #0f172a !important; color: #f8fafc !important; } `;
     } else if (state.isLightMode) {
       css += `html { background-color: #ffffff !important; color: #000000 !important; } `;
     }
@@ -916,23 +1004,23 @@
     }
 
     if (state.highlightLinks) {
-      css += `a { background-color: #fef08a !important; color: #0f172a !important; outline: 2px solid #004bff !important; text-decoration: underline !important; font-weight: bold !important; } `;
+      css += `a { background-color: #fef08a !important; color: #0f172a !important; outline: 2px solid #2563eb !important; text-decoration: underline !important; font-weight: bold !important; } `;
     }
     if (state.highlightHeadings) {
-      css += `h1, h2, h3, h4, h5, h6 { outline: 2px dashed #004bff !important; background: rgba(0,75,255,0.08) !important; } `;
+      css += `h1, h2, h3, h4, h5, h6 { outline: 2px dashed #2563eb !important; background: rgba(37,99,235,0.08) !important; } `;
     }
     if (state.highlightButtons) {
       css += `button, [role="button"] { outline: 3px solid #10b981 !important; } `;
     }
 
     if (state.bigCursor) {
-      css += `* { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%23004bff' stroke='white' stroke-width='2'%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), auto !important; } `;
+      css += `* { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%232563eb' stroke='white' stroke-width='2'%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), auto !important; } `;
     }
 
     existingStyle.textContent = css;
   }
 
   // Initial Load
-  renderBody();
+  renderPanelBody();
   applyEffects();
 })();
