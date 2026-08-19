@@ -55,22 +55,28 @@ export default function InstallCodeBlock({
           fetch("/api/domains")
         ]);
 
+        let fetchedKeys: ApiKey[] = [];
+        let fetchedDomains: Domain[] = [];
+
         if (keysRes.ok) {
           const keysData = await keysRes.json();
-          const list = keysData.apiKeys || [];
-          setApiKeys(list);
-          if (list.length > 0) {
-            setSelectedKey(list[0].key);
-          }
+          fetchedKeys = Array.isArray(keysData) ? keysData : (keysData.apiKeys || []);
+          setApiKeys(fetchedKeys);
         }
 
         if (domainsRes.ok) {
           const domData = await domainsRes.json();
-          const list = domData.domains || [];
-          setDomains(list);
-          if (list.length > 0 && !domain) {
-            setSelectedDomain(list[0].domain);
-          }
+          fetchedDomains = Array.isArray(domData) ? domData : (domData.domains || []);
+          setDomains(fetchedDomains);
+        }
+
+        const targetDom = (selectedDomain || domain || fetchedDomains[0]?.domain || "").toLowerCase();
+        if (targetDom && fetchedKeys.length > 0) {
+          const match = fetchedKeys.find(k => 
+            (k.status === "ACTIVE" || !k.status) &&
+            k.domainName && k.domainName.toLowerCase() === targetDom
+          ) || fetchedKeys.find(k => k.status === "ACTIVE" || !k.status) || fetchedKeys[0];
+          if (match) setSelectedKey(match.key);
         }
       } catch (err) {
         console.error("Failed to load installation data:", err);
@@ -109,17 +115,28 @@ export default function InstallCodeBlock({
     fetchInitialData();
   }, []);
 
-  useEffect(() => {
-    if (domain) {
-      setSelectedDomain(domain);
-      const matchingKey = apiKeys.find((k) => k.domainName === domain);
-      if (matchingKey) {
-        setSelectedKey(matchingKey.key);
-      } else {
-        setSelectedKey("");
-      }
+  // Filter API keys strictly for the selected Target Domain
+  const curDomainClean = (selectedDomain || domain || "").toLowerCase().trim();
+  const domainFilteredKeys = apiKeys.filter((k) => {
+    if (!curDomainClean) return true;
+    if (k.domainName && k.domainName.toLowerCase().trim() === curDomainClean) return true;
+    if (k.domainId) {
+      const matchDom = domains.find((d) => d.id === k.domainId);
+      if (matchDom && matchDom.domain.toLowerCase().trim() === curDomainClean) return true;
     }
-  }, [domain, apiKeys]);
+    if (!k.domainName || k.domainName === "all" || k.domainName === "*") return true;
+    return false;
+  });
+
+  useEffect(() => {
+    if (domainFilteredKeys.length > 0) {
+      if (!domainFilteredKeys.some((k) => k.key === selectedKey)) {
+        setSelectedKey(domainFilteredKeys[0].key);
+      }
+    } else {
+      setSelectedKey("");
+    }
+  }, [selectedDomain, domain, apiKeys, domains]);
 
   const fetchInitialData = async () => {
     try {
@@ -129,7 +146,8 @@ export default function InstallCodeBlock({
       // Fetch Domains
       const domsRes = await fetch("/api/domains");
       if (!domsRes.ok) throw new Error("Failed to load domains");
-      const domsData: Domain[] = await domsRes.json();
+      const domsRaw = await domsRes.json();
+      const domsData: Domain[] = Array.isArray(domsRaw) ? domsRaw : (domsRaw.domains || []);
       setDomains(domsData);
       
       let targetDomain = domain || "example.com";
@@ -145,15 +163,18 @@ export default function InstallCodeBlock({
       // Fetch API Keys
       const keysRes = await fetch("/api/api-keys");
       if (!keysRes.ok) throw new Error("Failed to load API keys");
-      const keysData: ApiKey[] = await keysRes.json();
-      const activeKeys = keysData.filter((k) => k.status === "ACTIVE");
-      setApiKeys(activeKeys);
+      const keysRaw = await keysRes.json();
+      const keysData: ApiKey[] = Array.isArray(keysRaw) ? keysRaw : (keysRaw.apiKeys || []);
+      const activeKeys = keysData.filter((k) => k.status === "ACTIVE" || !k.status);
+      setApiKeys(activeKeys.length > 0 ? activeKeys : keysData);
 
-      const matchingKey = activeKeys.find((k) => k.domainName === targetDomain);
+      const targetDomClean = targetDomain.toLowerCase();
+      const matchingKey = (activeKeys.length > 0 ? activeKeys : keysData).find((k) => 
+        k.domainName && k.domainName.toLowerCase() === targetDomClean
+      ) || activeKeys[0] || keysData[0];
+      
       if (matchingKey) {
         setSelectedKey(matchingKey.key);
-      } else if (activeKeys.length > 0) {
-        setSelectedKey(activeKeys[0].key);
       } else {
         setSelectedKey("");
       }
@@ -399,13 +420,13 @@ export default function InstallCodeBlock({
                 </div>
                 <div>
                   <label className="block text-xs font-black text-slate-500 uppercase tracking-wider font-sans">Select API Key</label>
-                  {selectedKey ? (
+                  {domainFilteredKeys.length > 0 && selectedKey ? (
                     <select
                       value={selectedKey}
                       onChange={(e) => setSelectedKey(e.target.value)}
                       className="bg-transparent text-slate-800 text-sm font-bold focus:outline-none cursor-pointer mt-0.5 border-none font-sans"
                     >
-                      {apiKeys.map((k) => (
+                      {domainFilteredKeys.map((k) => (
                         <option key={k.id} value={k.key}>
                           {k.name} ({k.key.substring(0, 15)}...)
                         </option>
@@ -413,7 +434,7 @@ export default function InstallCodeBlock({
                     </select>
                   ) : (
                     <div className="flex items-center gap-2.5 mt-1">
-                      <span className="text-sm font-bold text-amber-600 font-sans">No active key.</span>
+                      <span className="text-sm font-bold text-amber-600 font-sans">No active key for this domain.</span>
                       <button
                         onClick={handleGenerateKey}
                         disabled={generatingKey}

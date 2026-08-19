@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2all.ai Local Widget Test Page</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background-color: #f8fafc;
+      color: #0f172a;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+    }
+    h1 {
+      color: #0052ff;
+      margin-top: 0;
+    }
+    .badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    p {
+      color: #475569;
+      font-size: 16px;
+    }
+    .card {
+      background: #f1f5f9;
+      border-left: 4px solid #0052ff;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <span class="badge">Local Environment Integration Test</span>
+    <h1>2all.ai Accessibility & AI Assistant Test Page</h1>
+    <p>This is a local demonstration page testing the embedded 2all.ai accessibility suite and AI chatbot assistant snippet.</p>
+    
+    <div class="card">
+      <strong>How it works:</strong>
+      <p style="margin: 4px 0 0 0;">The widget loader script executes asynchronously, validates the API key against localhost, and injects both the accessibility tools panel and Alex AI assistant into the page.</p>
+    </div>
+
+    <h2>Test Content Section</h2>
+    <p>Try using contrast tools, text resizing, dyslexia font, screen reader, or chat with Alex using the floating widget button on the bottom right of this screen.</p>
+  </div>
+
+  <!-- 2all.ai Accessibility Widget Loader Snippet -->
+  <script 
+    src="http://localhost:3000/loader.js" 
+    data-api-key="PUB_67B32A79924D2EA331A4" 
+    data-api-url="http://localhost:3000" 
+    async>
+  </script>
+</body>
+</html>

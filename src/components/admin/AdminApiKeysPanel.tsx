@@ -56,9 +56,9 @@ export default function AdminApiKeysPanel() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchData();
+    fetchData(false);
     const interval = setInterval(() => {
-      fetchData();
+      fetchData(true);
     }, 6000);
     return () => clearInterval(interval);
   }, []);
@@ -74,9 +74,9 @@ export default function AdminApiKeysPanel() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (isBackground = false) => {
     try {
-      setLoading(true);
+      if (!isBackground) setLoading(true);
       const [keysRes, domainsRes] = await Promise.all([
         fetch("/api/api-keys"),
         fetch("/api/domains")
@@ -92,7 +92,7 @@ export default function AdminApiKeysPanel() {
     } catch (e) {
       console.error("Failed to fetch API keys or domains:", e);
     } finally {
-      setLoading(false);
+      if (!isBackground) setLoading(false);
     }
   };
 
@@ -180,6 +180,31 @@ export default function AdminApiKeysPanel() {
       }
     } catch (e) {
       console.error("Failed to revoke key:", e);
+    }
+  };
+
+  const handleDeleteKey = async (id: string) => {
+    if (!confirm("Are you sure you want to permanently delete this API key? This action cannot be undone.")) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/api-keys/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setKeys(keys.filter((k) => k.id !== id));
+        setActiveDropdownId(null);
+      } else {
+        const resFallback = await fetch(`/api/api-keys?id=${id}`, { method: "DELETE" });
+        if (resFallback.ok) {
+          setKeys(keys.filter((k) => k.id !== id));
+          setActiveDropdownId(null);
+        } else {
+          const errData = await resFallback.json().catch(() => null);
+          alert(errData?.message || "Failed to delete API key");
+        }
+      }
+    } catch (e) {
+      console.error("Failed to delete key:", e);
+      alert("Failed to delete API key");
     }
   };
 
@@ -411,75 +436,86 @@ export default function AdminApiKeysPanel() {
                         {new Date(k.createdAt).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })}
                       </td>
 
-                      {/* Action Dropdown */}
+                      {/* Action Buttons & Dropdown */}
                       <td className="py-3.5 px-3 sm:px-4 text-right relative">
-                        <div className="inline-block relative" ref={activeDropdownId === k.id ? dropdownRef : null}>
-                          <button 
-                            type="button"
-                            onClick={() => setActiveDropdownId(activeDropdownId === k.id ? null : k.id)}
-                            className="px-3 py-1 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-bold text-slate-700 flex items-center gap-1 shadow-2xs hover:bg-slate-50 transition-all cursor-pointer ml-auto whitespace-nowrap"
-                          >
-                            Actions
-                            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                          </button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <div className="inline-block relative" ref={activeDropdownId === k.id ? dropdownRef : null}>
+                            <button 
+                              type="button"
+                              onClick={() => setActiveDropdownId(activeDropdownId === k.id ? null : k.id)}
+                              className="px-3 py-1 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-bold text-slate-700 flex items-center gap-1 shadow-2xs hover:bg-slate-50 transition-all cursor-pointer whitespace-nowrap"
+                            >
+                              Actions
+                              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                            </button>
 
-                          {/* Dropdown Menu - Smart positioning so bottom rows open UPWARDS */}
-                          {activeDropdownId === k.id && (
-                            <div className={`absolute right-0 ${isNearBottom ? "bottom-full mb-2" : "top-full mt-2"} w-52 bg-white border border-slate-200/90 rounded-2xl shadow-2xl py-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150`}>
-                              
-                              <button
-                                type="button"
-                                onClick={() => handleCopyKey(k.id, k.key)}
-                                className="w-full px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
-                              >
-                                {copiedId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
-                                Copy API Key
-                              </button>
+                            {/* Dropdown Menu - Smart positioning so bottom rows open UPWARDS */}
+                            {activeDropdownId === k.id && (
+                              <div className={`absolute right-0 ${isNearBottom ? "bottom-full mb-2" : "top-full mt-2"} w-52 bg-white border border-slate-200/90 rounded-2xl shadow-2xl py-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150`}>
+                                
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyKey(k.id, k.key)}
+                                  className="w-full px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
+                                >
+                                  {copiedId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+                                  Copy API Key
+                                </button>
 
-                              <button
-                                type="button"
-                                onClick={() => handleCopyScript(k.id, k.key)}
-                                className="w-full px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
-                              >
-                                {copiedScriptId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Code2 className="w-3.5 h-3.5 text-slate-400" />}
-                                Copy Install Script
-                              </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyScript(k.id, k.key)}
+                                  className="w-full px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
+                                >
+                                  {copiedScriptId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Code2 className="w-3.5 h-3.5 text-slate-400" />}
+                                  Copy Install Script
+                                </button>
 
-                              <button
-                                type="button"
-                                onClick={() => handleRotateKey(k.id)}
-                                disabled={k.status !== "ACTIVE" || rotatingId === k.id}
-                                className={`w-full px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
-                              >
-                                <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${rotatingId === k.id ? "animate-spin" : ""}`} />
-                                Rotate API Key
-                              </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRotateKey(k.id)}
+                                  disabled={k.status !== "ACTIVE" || rotatingId === k.id}
+                                  className={`w-full px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
+                                >
+                                  <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${rotatingId === k.id ? "animate-spin" : ""}`} />
+                                  Rotate API Key
+                                </button>
 
-                              <button
-                                type="button"
-                                onClick={() => handleRevokeKey(k.id)}
-                                disabled={k.status !== "ACTIVE"}
-                                className={`w-full px-4 py-2 text-xs sm:text-sm font-bold text-amber-600 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
-                              >
-                                <Trash2 className="w-3.5 h-3.5 text-amber-500" />
-                                Revoke API Key
-                              </button>
-                              
-                              <div className="h-px bg-slate-100 my-1" />
+                                <button
+                                  type="button"
+                                  onClick={() => handleRevokeKey(k.id)}
+                                  disabled={k.status !== "ACTIVE"}
+                                  className={`w-full px-4 py-2 text-xs sm:text-sm font-bold text-amber-600 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5 text-amber-500" />
+                                  Revoke API Key
+                                </button>
 
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActiveDropdownId(null);
-                                  window.location.href = `/dashboard/reports?domain=${encodeURIComponent(k.domainName || "")}`;
-                                }}
-                                className="w-full px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
-                              >
-                                <Activity className="w-3.5 h-3.5 text-blue-500" />
-                                View Usage
-                              </button>
-                            </div>
-                          )}
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteKey(k.id)}
+                                  className="w-full px-4 py-2 text-xs sm:text-sm font-bold text-red-600 hover:bg-red-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                                  Delete API Key
+                                </button>
+                                
+                                <div className="h-px bg-slate-100 my-1" />
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setActiveDropdownId(null);
+                                    window.location.href = `/dashboard/reports?domain=${encodeURIComponent(k.domainName || "")}`;
+                                  }}
+                                  className="w-full px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
+                                >
+                                  <Activity className="w-3.5 h-3.5 text-blue-500" />
+                                  View Usage
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </td>
 

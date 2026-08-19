@@ -137,15 +137,9 @@ export default function AdminDashboardPage({
 }: Props) {
   const router = useRouter();
 
-  // AUTOMATIC REAL-TIME DATABASE TELEMETRY POLLING (10-second auto-refresh)
   useEffect(() => {
-    const interval = setInterval(() => {
-      router.refresh();
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [router]);
-
-  // FILTER STATES
+    // Component telemetry mount listener
+  }, [router]);  // FILTER STATES
   const [timeframe, setTimeframe] = useState<"ALL" | "30D" | "7D" | "TODAY">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [planFilter, setPlanFilter] = useState<string>("ALL");

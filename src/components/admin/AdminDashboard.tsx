@@ -381,7 +381,6 @@ export default function AdminDashboard({
           const freshDemos = await demoRes.json();
           setDemoRequests(freshDemos);
         }
-        router.refresh();
       } catch (e) {
         console.warn("Admin auto-refresh error:", e);
       }
@@ -760,6 +759,63 @@ export default function AdminDashboard({
   const [newAdminRole, setNewAdminRole] = useState("ADMIN");
   const [creatingAdmin, setCreatingAdmin] = useState(false);
 
+  // Edit User Account State (Email, Password, Role, Name)
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [editUserName, setEditUserName] = useState("");
+  const [editUserEmail, setEditUserEmail] = useState("");
+  const [editUserPassword, setEditUserPassword] = useState("");
+  const [editUserRole, setEditUserRole] = useState("ADMIN");
+  const [savingEditUser, setSavingEditUser] = useState(false);
+
+  const handleOpenEditModal = (user: UserType) => {
+    setEditingUserId(user.id);
+    setEditUserName(user.name || "");
+    setEditUserEmail(user.email || "");
+    setEditUserPassword("");
+    setEditUserRole(user.role || "ADMIN");
+    setIsEditUserModalOpen(true);
+  };
+
+  const handleEditUserSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUserId) return;
+    if (!editUserEmail.trim()) {
+      showToast("Email address is required.", "error");
+      return;
+    }
+    setSavingEditUser(true);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: editingUserId,
+          name: editUserName,
+          email: editUserEmail,
+          password: editUserPassword.trim() !== "" ? editUserPassword : undefined,
+          role: editUserRole,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.user) {
+        setUsers(users.map(u => u.id === editingUserId ? { ...u, ...data.user } : u));
+        showToast(`Account for ${data.user.email} updated successfully!`);
+        setIsEditUserModalOpen(false);
+        setEditingUserId(null);
+        setEditUserName("");
+        setEditUserEmail("");
+        setEditUserPassword("");
+      } else {
+        showToast(data.message || "Failed to update user account", "error");
+      }
+    } catch (err) {
+      showToast("Network error updating user account", "error");
+    } finally {
+      setSavingEditUser(false);
+    }
+  };
+
   const handleCreateAdminSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAdminEmail.trim() || !newAdminPassword.trim()) {
@@ -1045,6 +1101,25 @@ export default function AdminDashboard({
           </div>
 
           <div className="flex items-center gap-2 md:gap-3 shrink-0">
+            {currentUser && (
+              <button
+                onClick={() => {
+                  const myUser = users.find(u => u.email === currentUser.email) || {
+                    id: currentUser.email || "my-account",
+                    name: currentUser.name || "Admin User",
+                    email: currentUser.email || "",
+                    role: isSuperAdminView ? "SUPER_ADMIN" : "ADMIN",
+                    createdAt: new Date().toISOString()
+                  };
+                  handleOpenEditModal(myUser as UserType);
+                }}
+                className="text-xs font-extrabold text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer"
+                title="Change My Email & Password"
+              >
+                <KeyRound className="w-3.5 h-3.5 text-blue-600" />
+                <span className="hidden sm:inline">My Profile & Password</span>
+              </button>
+            )}
             <span className="text-xs md:text-sm font-extrabold text-slate-500 whitespace-nowrap bg-blue-50 px-3 py-1 rounded-full border border-blue-200/80">● Admin Console Active</span>
           </div>
         </header>
@@ -2534,6 +2609,94 @@ export default function AdminDashboard({
                 </div>
               )}
 
+              {/* MODAL: EDIT USER ACCOUNT / CHANGE EMAIL & PASSWORD */}
+              {isEditUserModalOpen && (
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                  <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-6 text-left animate-in zoom-in-95 duration-200">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <Edit className="w-4.5 h-4.5 text-blue-600" /> Change Email / Password / User Details
+                      </h3>
+                      <button
+                        onClick={() => setIsEditUserModalOpen(false)}
+                        className="p-1 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer border-none bg-transparent"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleEditUserSubmit} className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Full Name</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Admin User"
+                          value={editUserName}
+                          onChange={(e) => setEditUserName(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Email Address</label>
+                        <input
+                          type="email"
+                          placeholder="admin@example.com"
+                          value={editUserEmail}
+                          onChange={(e) => setEditUserEmail(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between items-center">
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">New Password</label>
+                          <span className="text-[10px] text-slate-400 font-normal">(Leave blank to keep current)</span>
+                        </div>
+                        <input
+                          type="password"
+                          placeholder="•••••••• (Min 6 characters)"
+                          value={editUserPassword}
+                          onChange={(e) => setEditUserPassword(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Assigned Security Role</label>
+                        <select
+                          value={editUserRole}
+                          onChange={(e) => setEditUserRole(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                        >
+                          <option value="SUPER_ADMIN">SUPER_ADMIN (Master Platform Access)</option>
+                          <option value="ADMIN">ADMIN (Operations & Content)</option>
+                          <option value="CUSTOMER">CUSTOMER (Standard User)</option>
+                        </select>
+                      </div>
+
+                      <div className="pt-4 flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setIsEditUserModalOpen(false)}
+                          className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border-none transition-colors cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={savingEditUser}
+                          className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-extrabold text-xs rounded-xl border-none transition-colors cursor-pointer shadow-md shadow-blue-500/20 uppercase tracking-wider flex items-center justify-center gap-2"
+                        >
+                          {savingEditUser ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+
               {/* Users registry list */}
               <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
@@ -2568,12 +2731,22 @@ export default function AdminDashboard({
                             {new Date(user.createdAt).toLocaleDateString("en-US")}
                           </td>
                           <td className="px-4 md:px-6 py-4 text-center whitespace-nowrap">
-                            <button
-                              onClick={() => handleDeleteUser(user.id)}
-                              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition-all cursor-pointer border-none bg-transparent"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            <div className="flex items-center justify-center gap-1.5">
+                              <button
+                                onClick={() => handleOpenEditModal(user)}
+                                className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-all cursor-pointer border-none bg-transparent"
+                                title="Edit User Account / Change Email & Password"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteUser(user.id)}
+                                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition-all cursor-pointer border-none bg-transparent"
+                                title="Delete User"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}

@@ -68,29 +68,65 @@ export async function GET() {
     }
   }
 
-  const domains = await db.domain.findMany({
-    where: isAdmin ? {} : { userId },
-    orderBy: { createdAt: "desc" },
-    include: {
-      apiKeys: {
-        select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true }
-      },
-      _count: {
-        select: { apiKeys: true }
-      },
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          apiKeys: { select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true } },
-          widgetConfigs: { select: { id: true, publishedConfig: true, draftConfig: true } },
+  const [domains, allApiKeys] = await Promise.all([
+    db.domain.findMany({
+      where: isAdmin ? {} : { userId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        apiKeys: {
+          select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true }
+        },
+        _count: {
+          select: { apiKeys: true }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            apiKeys: { select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true } },
+            widgetConfigs: { select: { id: true, publishedConfig: true, draftConfig: true } },
+          },
         },
       },
-    },
-  });
+    }),
+    db.apiKey.findMany({
+      where: isAdmin ? {} : { userId },
+      select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true }
+    })
+  ]);
 
-  return NextResponse.json(domains);
+  const domainsWithKeys = await Promise.all(domains.map(async (d: any) => {
+    const dName = (d.domain || "").toLowerCase();
+    const dCanon = (d.canonicalDomain || "").toLowerCase();
+
+    const matchingKeys = allApiKeys.filter((k: any) => 
+      k.domainId === d.id ||
+      (k.domainName && k.domainName.toLowerCase() === dName) ||
+      (k.domainName && dCanon && k.domainName.toLowerCase() === dCanon)
+    );
+
+    const unlinkedKeys = matchingKeys.filter((k: any) => !k.domainId);
+    if (unlinkedKeys.length > 0) {
+      try {
+        await db.apiKey.updateMany({
+          where: { id: { in: unlinkedKeys.map((k: any) => k.id) } },
+          data: { domainId: d.id, domainName: d.domain }
+        });
+      } catch (linkErr) {
+        console.warn("Could not backfill domainId for API keys:", linkErr);
+      }
+    }
+
+    return {
+      ...d,
+      apiKeys: matchingKeys,
+      _count: { apiKeys: matchingKeys.length },
+      apiKeysCount: matchingKeys.length
+    };
+  }));
+
+  return NextResponse.json(domainsWithKeys);
 }
 
 export async function POST(req: Request) {
@@ -157,6 +193,44 @@ export async function POST(req: Request) {
         },
       },
     });
+
+    // Auto-generate or fetch default API key for the new domain
+    let activeKey = "";
+    try {
+      const existingKey = await db.apiKey.findFirst({
+        where: { OR: [{ domainId: newDomain.id }, { domainName: cleanDomain }] }
+      });
+      if (existingKey) {
+        activeKey = existingKey.key;
+      } else {
+        const hex1 = Math.floor(Math.random() * 0xffffffff).toString(16).toUpperCase().padStart(8, "0");
+        const hex2 = Math.floor(Math.random() * 0xffffffff).toString(16).toUpperCase().padStart(8, "0");
+        const hex3 = Math.floor(Math.random() * 0xffff).toString(16).toUpperCase().padStart(4, "0");
+        const generatedKey = `PUB_${hex1}${hex2}${hex3}`;
+
+        const createdKey = await db.apiKey.create({
+          data: {
+            userId,
+            name: `Widget Key for ${cleanDomain}`,
+            key: generatedKey,
+            status: "ACTIVE",
+            domainId: newDomain.id,
+            domainName: cleanDomain,
+          }
+        });
+        activeKey = createdKey.key;
+      }
+
+      // Dispatch installation script email to user
+      const userEmail = (session.user as any)?.email;
+      const userName = (session.user as any)?.name || "Subscriber";
+      if (userEmail) {
+        const { sendDomainCreatedScriptEmail } = await import("@/lib/mail");
+        await sendDomainCreatedScriptEmail(userEmail, userName, cleanDomain, activeKey);
+      }
+    } catch (keyErr) {
+      console.warn("Could not auto-generate/send email for new domain key:", keyErr);
+    }
 
     await logAudit({
       userId,

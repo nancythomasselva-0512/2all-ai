@@ -12,28 +12,65 @@ export async function GET() {
   }
 
   const db = getDb();
-  const domains = await db.domain.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      apiKeys: {
-        select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true }
-      },
-      _count: {
-        select: { apiKeys: true }
-      },
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          apiKeys: { select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true } },
-          widgetConfigs: { select: { id: true, publishedConfig: true, draftConfig: true } },
+  const [domains, allApiKeys] = await Promise.all([
+    db.domain.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        apiKeys: {
+          select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true }
+        },
+        _count: {
+          select: { apiKeys: true }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            apiKeys: { select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true } },
+            widgetConfigs: { select: { id: true, publishedConfig: true, draftConfig: true } },
+          },
         },
       },
-    },
-  });
+    }),
+    db.apiKey.findMany({
+      select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true }
+    })
+  ]);
 
-  return NextResponse.json(domains);
+  // Backfill domainId for unlinked API keys & match complete API keys list for each domain
+  const domainsWithKeys = await Promise.all(domains.map(async (d: any) => {
+    const dName = (d.domain || "").toLowerCase();
+    const dCanon = (d.canonicalDomain || "").toLowerCase();
+
+    const matchingKeys = allApiKeys.filter((k: any) => 
+      k.domainId === d.id ||
+      (k.domainName && k.domainName.toLowerCase() === dName) ||
+      (k.domainName && dCanon && k.domainName.toLowerCase() === dCanon)
+    );
+
+    // Auto-link domainId in background DB if unlinked
+    const unlinkedKeys = matchingKeys.filter((k: any) => !k.domainId);
+    if (unlinkedKeys.length > 0) {
+      try {
+        await db.apiKey.updateMany({
+          where: { id: { in: unlinkedKeys.map((k: any) => k.id) } },
+          data: { domainId: d.id, domainName: d.domain }
+        });
+      } catch (linkErr) {
+        console.warn("Could not backfill domainId for API keys:", linkErr);
+      }
+    }
+
+    return {
+      ...d,
+      apiKeys: matchingKeys,
+      _count: { apiKeys: matchingKeys.length },
+      apiKeysCount: matchingKeys.length
+    };
+  }));
+
+  return NextResponse.json(domainsWithKeys);
 }
 
 export async function POST(req: Request) {

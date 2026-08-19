@@ -105,10 +105,10 @@ export default function AlexChatWidget() {
         {/* Alex bubble popover (shown when chat is closed) */}
         {showBubble && !open && (
           <div
-            className="alex-chat-popover bg-white border border-slate-200/80 rounded-2xl p-2.5 md:p-3 shadow-xl w-[220px] md:w-[240px] flex items-center gap-2.5 mr-1 md:mr-2 relative cursor-pointer"
+            className="alex-chat-popover bg-white border border-slate-200/80 rounded-2xl p-2.5 md:p-3 shadow-xl w-[220px] md:w-[240px] flex items-center gap-2.5 translate-x-12 md:translate-x-16 relative cursor-pointer transition-transform"
             onClick={() => setOpen(true)}
           >
-            <div className="absolute right-4 md:right-6 -bottom-1.5 w-3 h-3 bg-white border-r border-b border-slate-200/80 rotate-45" />
+            <div className="absolute right-16 md:right-20 -bottom-1.5 w-3 h-3 bg-white border-r border-b border-slate-200/80 rotate-45" />
             <div className="relative w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#000033] flex items-center justify-center shrink-0 border border-slate-700 overflow-hidden shadow-sm">
               <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" className="w-full h-full object-cover relative z-10" onError={(e) => e.currentTarget.style.display = 'none'} />
               <svg viewBox="0 0 24 24" className="w-5 h-5 md:w-6 md:h-6 text-white absolute inset-0 m-auto z-0">

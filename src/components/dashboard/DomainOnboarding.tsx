@@ -162,11 +162,10 @@ export default function DomainOnboarding({
         const fresh = await res.json();
         setDomains(fresh);
       }
-      router.refresh();
     } catch (e) {
       console.warn("Auto-refresh fetch failed:", e);
     }
-  }, [isAdmin, router]);
+  }, [isAdmin]);
 
   // Background polling every 6 seconds for real-time auto updates
   useEffect(() => {

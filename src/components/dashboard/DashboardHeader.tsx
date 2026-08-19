@@ -17,7 +17,8 @@ import {
   Mail,
   Check,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  AlertTriangle
 } from "lucide-react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
@@ -25,7 +26,14 @@ import Logo from "@/components/ui/Logo";
 import DemoModal from "@/components/marketing/DemoModal";
 
 interface HeaderProps {
-  user: { name?: string | null; email?: string | null };
+  user: {
+    name?: string | null;
+    email?: string | null;
+    plan?: string | null;
+    paymentStatus?: string | null;
+    createdAt?: string | null;
+    role?: string | null;
+  };
 }
 
 export default function DashboardHeader({ user }: HeaderProps) {
@@ -38,6 +46,18 @@ export default function DashboardHeader({ user }: HeaderProps) {
   const pathname = usePathname();
   const firstName = user?.name?.split(" ")[0] ?? "Zubairya";
 
+  // Calculate Plan Expiration Status
+  const userPlan = (user?.plan || "").toUpperCase();
+  const paymentStatus = (user?.paymentStatus || "").toUpperCase();
+  const userRole = (user?.role || "").toUpperCase();
+  const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN";
+  const isPaid = paymentStatus === "PAID" || ["PRO", "BUSINESS", "ENTERPRISE", "AGENCY"].includes(userPlan) || isAdmin;
+
+  const userCreatedAt = user?.createdAt ? new Date(user.createdAt).getTime() : Date.now();
+  const trialDurationMs = 7 * 24 * 60 * 60 * 1000;
+  const isTrialExpired = !isPaid && (Date.now() - userCreatedAt > trialDurationMs);
+  const isPlanExpired = isTrialExpired || paymentStatus === "UNPAID" || paymentStatus === "EXPIRED";
+
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
     { href: "/dashboard/domains", label: "My Domains", icon: Globe },
@@ -47,6 +67,19 @@ export default function DashboardHeader({ user }: HeaderProps) {
 
   return (
     <div className="sticky top-0 z-30 w-full flex flex-col">
+      {/* Top Banner Alert for Expired / Unpaid Plans */}
+      {isPlanExpired && (
+        <div className="bg-gradient-to-r from-red-600 to-amber-600 text-white px-4 sm:px-12 py-2 flex items-center justify-between text-xs font-bold shadow-md select-none">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-200 animate-bounce shrink-0" />
+            <span>Plan Expired Alert: Your 7-day trial or subscription has ended. Upgrade your plan to reactivate live accessibility suite & compliance widgets.</span>
+          </div>
+          <Link href="/pricing" className="px-3.5 py-1 bg-white hover:bg-slate-100 text-red-700 font-black rounded-lg text-[10px] uppercase tracking-wider transition-all no-underline shadow-xs shrink-0 ml-4">
+            Renew / Upgrade Plan ↗
+          </Link>
+        </div>
+      )}
+
       <header className="w-full bg-white border-b border-slate-200/80 px-4 sm:px-12 py-3.5 flex items-center justify-between select-none">
 
       {/* LEFT: Logo & Main Nav */}
@@ -186,13 +219,27 @@ export default function DashboardHeader({ user }: HeaderProps) {
                   </button>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex items-start gap-3 p-2.5 rounded-xl bg-blue-50/60 border border-blue-100/60">
-                    <Sparkles className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-xs font-bold text-blue-950">Free Trial Active</p>
-                      <p className="text-[11px] text-blue-800 font-normal mt-0.5">Your 7-day full feature trial is currently active.</p>
+                  {isPlanExpired ? (
+                    <Link
+                      href="/pricing"
+                      onClick={() => setNotificationsOpen(false)}
+                      className="flex items-start gap-3 p-2.5 rounded-xl bg-red-50 border border-red-200/80 no-underline hover:bg-red-100/70 transition-colors"
+                    >
+                      <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-bold text-red-950">Subscription / Trial Expired</p>
+                        <p className="text-[11px] text-red-800 font-normal mt-0.5">Your accessibility plan needs renewal. Click to upgrade & reactivate live widgets.</p>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="flex items-start gap-3 p-2.5 rounded-xl bg-blue-50/60 border border-blue-100/60">
+                      <Sparkles className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-bold text-blue-950">Free Trial Active</p>
+                        <p className="text-[11px] text-blue-800 font-normal mt-0.5">Your 7-day full feature trial is currently active.</p>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
                     <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />

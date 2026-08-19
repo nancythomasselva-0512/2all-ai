@@ -92,21 +92,58 @@ export async function POST(req: Request) {
   }
 }
 
-// Handle User Details Update (Name, Email, Phone, Plan, Role)
+// Handle User Details Update (Name, Email, Password, Phone, Plan, Role)
 export async function PUT(req: Request) {
   try {
-    const { userId, name, email, phone, plan, role } = await req.json();
+    const { userId, name, email, password, phone, plan, role } = await req.json();
 
     if (!userId) {
       return NextResponse.json({ message: "User ID is required" }, { status: 400 });
     }
 
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!existingUser) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
     const updateData: any = {};
-    if (name !== undefined) updateData.name = name;
-    if (email !== undefined) updateData.email = email.trim().toLowerCase();
-    if (phone !== undefined) updateData.phone = phone;
-    if (plan !== undefined) updateData.plan = plan;
-    if (role !== undefined) updateData.role = role;
+
+    if (name !== undefined && name !== null) {
+      updateData.name = name.trim();
+    }
+
+    if (email !== undefined && email !== null && email.trim() !== "") {
+      const cleanEmail = email.trim().toLowerCase();
+      if (cleanEmail !== existingUser.email) {
+        const duplicateUser = await prisma.user.findUnique({
+          where: { email: cleanEmail },
+        });
+        if (duplicateUser && duplicateUser.id !== userId) {
+          return NextResponse.json(
+            { message: "This email address is already in use by another account." },
+            { status: 400 }
+          );
+        }
+        updateData.email = cleanEmail;
+      }
+    }
+
+    if (password !== undefined && password !== null && password.trim() !== "") {
+      if (password.length < 6) {
+        return NextResponse.json(
+          { message: "Password must be at least 6 characters long" },
+          { status: 400 }
+        );
+      }
+      updateData.password = await bcrypt.hash(password.trim(), 12);
+    }
+
+    if (phone !== undefined && phone !== null) updateData.phone = phone;
+    if (plan !== undefined && plan !== null) updateData.plan = plan;
+    if (role !== undefined && role !== null) updateData.role = role;
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
@@ -122,7 +159,7 @@ export async function PUT(req: Request) {
       },
     });
 
-    return NextResponse.json({ message: "User updated successfully", user: updatedUser });
+    return NextResponse.json({ message: "User account updated successfully", user: updatedUser });
   } catch (error) {
     console.error("User update error:", error);
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });

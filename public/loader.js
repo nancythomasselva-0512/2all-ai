@@ -23,10 +23,24 @@
   var domain = currentScript.getAttribute("data-domain") || window.location.hostname;
   var apiUrl = currentScript.getAttribute("data-api-url");
 
+  // Fallback: Extract API key from script src query parameters e.g. loader.js?key=PUB_xxx or loader.js?apiKey=PUB_xxx
+  if (!apiKey && currentScript.src) {
+    var keyMatch = currentScript.src.match(/[?&](key|apiKey)=([^&]+)/);
+    if (keyMatch && keyMatch[2]) {
+      apiKey = decodeURIComponent(keyMatch[2]);
+    }
+  }
+
+  // Fallback: Infer apiUrl from script src origin e.g. http://localhost:3000/loader.js
   if (!apiUrl) {
     if (currentScript.src && currentScript.src.indexOf("http") === 0) {
-      var urlParts = currentScript.src.split("/");
-      apiUrl = urlParts[0] + "//" + urlParts[2];
+      try {
+        var parsedUrl = new URL(currentScript.src);
+        apiUrl = parsedUrl.origin;
+      } catch (e) {
+        var urlParts = currentScript.src.split("/");
+        apiUrl = urlParts[0] + "//" + urlParts[2];
+      }
     } else {
       apiUrl = "";
     }

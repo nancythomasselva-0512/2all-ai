@@ -806,3 +806,76 @@ export async function sendApiKeyNotificationEmail(
     logEmailSent("API Key User", userEmail, userSubject, "FAILED", e.message);
   }
 }
+
+export async function sendDomainCreatedScriptEmail(
+  userEmail: string,
+  userName: string,
+  domainName: string,
+  apiKey: string
+) {
+  const transporter = getTransporter();
+  const from = getFromHeader();
+  const targetAdmin = getAdminEmail();
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+  const adminSubject = `[New Domain Registered] ${domainName} - ${userEmail}`;
+  const userSubject = `2all.ai - Installation Script & API Key for ${domainName}`;
+
+  const scriptCode = `<script\n  src="${baseUrl}/loader.js"\n  data-api-key="${apiKey}"\n  data-domain="${domainName}">\n</script>`;
+  const escSnippet = `&lt;script src="${baseUrl}/loader.js" data-api-key="${apiKey}" data-domain="${domainName}"&gt;&lt;/script&gt;`;
+
+  const adminHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b;">
+      <h3 style="color: #004bff; margin-top: 0;">New Domain Registered</h3>
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px; line-height: 1.8;">
+        <div><strong>User:</strong> ${userName || "User"} (${userEmail})</div>
+        <div><strong>Domain:</strong> ${domainName}</div>
+        <div><strong>Installation Key:</strong> <code>${apiKey}</code></div>
+        <div><strong>Registered At:</strong> ${new Date().toLocaleString()}</div>
+      </div>
+    </div>
+  `;
+
+  const userHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; color: #1e293b; background-color: #ffffff;">
+      <h2 style="color: #004bff; margin-top: 0;">2all.ai</h2>
+      <p style="font-size: 16px; font-weight: bold;">Hi ${userName || "Subscriber"},</p>
+      <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+        Your domain <strong>${domainName}</strong> has been registered successfully on 2all.ai! Copy and paste the installation script below into your website&apos;s <code>&lt;head&gt;</code> or before the closing <code>&lt;/body&gt;</code> tag:
+      </p>
+      <div style="background-color: #0f172a; color: #93c5fd; padding: 16px; border-radius: 12px; font-family: monospace; font-size: 13px; word-break: break-all; margin: 20px 0; line-height: 1.6;">
+        ${escSnippet}
+      </div>
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin: 20px 0; font-size: 13px; color: #334155;">
+        <div><strong>Domain Name:</strong> ${domainName}</div>
+        <div><strong>Public Installation Key:</strong> <code>${apiKey}</code></div>
+      </div>
+      <div style="margin: 28px 0; text-align: center;">
+        <a href="${baseUrl}/dashboard/install?domain=${domainName}" style="background-color: #004bff; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; display: inline-block;">GO TO INSTALLATION DASHBOARD</a>
+      </div>
+      <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 24px;">
+        &copy; 2026 2all.ai Accessibility Suite. All rights reserved.
+      </p>
+    </div>
+  `;
+
+  if (!transporter) {
+    logEmailSent("Domain Script Admin", targetAdmin, adminSubject, "SUCCESS", "Simulated");
+    logEmailSent("Domain Script User", userEmail, userSubject, "SUCCESS", "Simulated");
+    return;
+  }
+
+  try {
+    await transporter.sendMail({ from, to: targetAdmin, subject: adminSubject, html: adminHtml });
+    logEmailSent("Domain Script Admin", targetAdmin, adminSubject, "SUCCESS");
+  } catch (e: any) {
+    logEmailSent("Domain Script Admin", targetAdmin, adminSubject, "FAILED", e.message);
+  }
+
+  try {
+    await transporter.sendMail({ from, to: userEmail, subject: userSubject, html: userHtml });
+    logEmailSent("Domain Script User", userEmail, userSubject, "SUCCESS");
+  } catch (e: any) {
+    logEmailSent("Domain Script User", userEmail, userSubject, "FAILED", e.message);
+  }
+}
