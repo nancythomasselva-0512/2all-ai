@@ -1,31 +1,33 @@
 /**
- * 2all.ai Universal Accessibility Suite Engine
- * Version: 6.0.0
+ * 2all.ai Universal Accessibility Suite & Alex AI Assistant Engine
+ * Version: 8.0.0
  * Pure Universal Vanilla JS - Works on ANY website (WordPress, Shopify, React, HTML, PHP, Angular, Webflow, etc.)
- * 1:1 Exact Match with 2all.ai Website Accessibility Suite & Anna AI Virtual Assistant.
+ * 1:1 Complete Replication of 2all.ai Website Accessibility Suite
  */
 (function () {
   if (window.__2ALL_CORE_INITIALIZED__) return;
   window.__2ALL_CORE_INITIALIZED__ = true;
 
   var config = window.__2ALL_CONFIG__ || {
-    primaryColor: "#2563eb",
+    primaryColor: "#004bff",
     position: "bottom-right",
     size: "medium",
   };
 
-  var primaryColor = config.primaryColor || "#2563eb";
+  var primaryColor = config.primaryColor || "#004bff";
   var position = config.position || "bottom-right";
 
-  // Universal Accessibility State
+  // Universal Accessibility & Alex Chat State
   var state = {
-    open: false,
+    open: false, // Accessibility Suite open state
+    alexOpen: false, // Alex Chat open state
+    alexShowBubble: true, // Alex Popover prompt visibility
     activeTab: "dashboard", // dashboard, profiles, features, vision, ai
     searchQuery: "",
     showAnalysis: false,
     
     // Active Profile Mode
-    activeProfile: "none", // dyslexia, adhd, low-vision, blind, motor-impaired, cognitive, seizure
+    activeProfile: "none", // dyslexia, adhd, low-vision, blind, motor-impaired, cognitive, seizure, reading, night
 
     // Typography & Spacing
     fontSize: 100, // 90% - 200%
@@ -44,7 +46,7 @@
     monochrome: false,
     colorBlindMode: "none", // none, protanopia, deuteranopia, tritanopia
     saturationMode: "normal", // normal, high, low, monochrome
-    textColor: "default", // default, black, white, yellow, blue, green, red
+    textColor: "default",
 
     // Focus & Reading Overlays
     readingMask: false,
@@ -62,33 +64,33 @@
     voiceNavigation: false,
     autoReadSelection: false,
 
-    // Anna AI Virtual Assistant Chat History
-    chatMessages: [
+    // Alex AI Virtual Assistant Conversation Messages
+    alexMessages: [
       {
-        id: 1,
-        type: "bot",
-        text: "👋 Hi! I'm your **2all.ai AI Assistant**. Ask me **anything** about our accessibility tools, WCAG compliance, pricing, installation, or platform features!",
+        from: "alex",
+        text: "Hi! I'm Alex, your 2all.ai virtual assistant. How can I help make your website accessible today?",
       },
     ],
   };
 
   // Restore State from LocalStorage
   try {
-    var saved = localStorage.getItem("2all_universal_suite_v6");
+    var saved = localStorage.getItem("2all_universal_suite_v8");
     if (saved) {
       var parsed = JSON.parse(saved);
       state = Object.assign(state, parsed);
-      state.open = false; // Always closed on initial page load
+      state.open = false;
+      state.alexOpen = false;
     }
   } catch (e) {}
 
   function saveState() {
     try {
-      localStorage.setItem("2all_universal_suite_v6", JSON.stringify(state));
+      localStorage.setItem("2all_universal_suite_v8", JSON.stringify(state));
     } catch (e) {}
   }
 
-  // Host Container & Shadow DOM Setup (Prevents CSS Pollution)
+  // Host Container & Shadow DOM Setup
   var host = document.createElement("div");
   host.id = "2all-ai-widget-host";
   host.style.position = "fixed";
@@ -129,20 +131,34 @@
     document.body.appendChild(svgDiv);
   }
 
-  // Shadow DOM Internal Styles (Matches AccessibilityPanel.tsx 1:1)
+  // Shadow DOM Internal Styles
   var style = document.createElement("style");
   style.textContent = `
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; }
 
-    .widget-wrapper { pointer-events: auto; display: flex; flex-direction: column; align-items: flex-end; }
+    .widget-wrapper {
+      pointer-events: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      position: relative;
+    }
     .widget-wrapper.left { align-items: flex-start; }
 
-    /* Floating Blue Circular Trigger Button */
+    /* Trigger Buttons Row (Side-by-side: Alex Chat + Accessibility) */
+    .trigger-buttons-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    /* Floating Blue Accessibility Trigger Button */
     .trigger-btn {
       width: 56px;
       height: 56px;
       border-radius: 50%;
-      background: #004bff;
+      background: ${primaryColor};
       color: #ffffff;
       border: 2px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 0 25px rgba(0, 75, 255, 0.45), 0 8px 16px rgba(0,0,0,0.15);
@@ -160,25 +176,130 @@
     }
     .trigger-btn svg { width: 26px; height: 26px; stroke: white; fill: none; }
 
-    /* Modal Panel Container (1:1 Replica of AccessibilityPanel.tsx) */
+    /* Alex Chat Button (Dark Navy #000033) */
+    .alex-trigger-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #000033;
+      color: #ffffff;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 25px rgba(0, 0, 51, 0.45), 0 8px 16px rgba(0,0,0,0.15);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      outline: none;
+    }
+    .alex-trigger-btn:hover {
+      transform: scale(1.08);
+      background: #000055;
+      box-shadow: 0 0 30px rgba(0, 0, 51, 0.6);
+    }
+    .alex-trigger-btn svg { width: 24px; height: 24px; fill: none; stroke: white; stroke-width: 2.5; }
+
+    /* Alex Popover Bubble Prompt (1:1 with AlexChatWidget.tsx) */
+    .alex-popover-bubble {
+      position: absolute;
+      bottom: 70px;
+      right: 0px;
+      width: 235px;
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 18px;
+      padding: 10px 12px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 10;
+    }
+    .alex-popover-bubble:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22); }
+    .alex-popover-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #000033;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      shrink-0: 0;
+    }
+    .alex-popover-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .alex-popover-title { font-size: 10px; font-weight: 900; color: #000033; letter-spacing: 0.5px; text-transform: uppercase; }
+    .alex-popover-text { font-size: 11px; font-weight: 600; color: #334155; line-height: 1.3; margin-top: 2px; }
+    .alex-popover-close {
+      font-size: 14px;
+      font-weight: 700;
+      color: #94a3b8;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      line-height: 1;
+    }
+    .alex-popover-close:hover { color: #0f172a; }
+
+    /* Accessibility Suite Modal Panel Container (Absolute Floating) */
     .panel-container {
+      position: absolute;
+      bottom: 70px;
+      right: 0px;
       width: 375px;
-      height: 520px;
+      height: 530px;
       max-height: calc(100vh - 6rem);
       background: #ffffff;
       border: 1px solid rgba(226, 232, 240, 0.9);
       border-radius: 20px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
-      margin-bottom: 14px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
       overflow: hidden;
-      display: flex;
+      display: none;
       flex-direction: column;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       opacity: 0;
-      transform: translateY(20px) scale(0.96);
+      transform: translateY(15px) scale(0.96);
       pointer-events: none;
+      z-index: 100;
     }
+    .widget-wrapper.left .panel-container { right: auto; left: 0px; }
+
     .panel-container.open {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    /* Alex AI Chat Panel Container (Absolute Floating) */
+    .alex-panel-container {
+      position: absolute;
+      bottom: 70px;
+      right: 0px;
+      width: 375px;
+      height: 540px;
+      max-height: calc(100vh - 6rem);
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+      transform: translateY(15px) scale(0.96);
+      pointer-events: none;
+      z-index: 100;
+    }
+    .widget-wrapper.left .alex-panel-container { right: auto; left: 0px; }
+
+    .alex-panel-container.open {
+      display: flex;
       opacity: 1;
       transform: translateY(0) scale(1);
       pointer-events: auto;
@@ -194,8 +315,21 @@
       gap: 10px;
     }
     .header-top { display: flex; align-items: center; justify-content: space-between; }
-    .header-title { font-size: 16px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px; line-height: 1; }
-    .header-sub { font-size: 11px; font-weight: 600; color: #64748b; margin-top: 2px; }
+    .brand-logo-badge {
+      width: 26px;
+      height: 26px;
+      background: ${primaryColor};
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 13px;
+      box-shadow: 0 2px 8px rgba(0,75,255,0.35);
+    }
+    .header-title { font-size: 15px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px; line-height: 1; }
+    .header-sub { font-size: 10px; font-weight: 600; color: #64748b; margin-top: 2px; }
     
     .header-right { display: flex; align-items: center; gap: 8px; }
     .score-pill {
@@ -244,7 +378,7 @@
       outline: none;
       transition: all 0.2s;
     }
-    .search-input:focus { border-color: #2563eb; background: #ffffff; }
+    .search-input:focus { border-color: ${primaryColor}; background: #ffffff; }
 
     /* Content Area */
     .panel-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: #ffffff; }
@@ -294,6 +428,61 @@
     .analysis-accordion { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; flex-direction: column; gap: 6px; font-size: 11px; }
     .analysis-row { display: flex; justify-content: space-between; background: rgba(255,255,255,0.1); padding: 6px 10px; border-radius: 8px; }
 
+    /* Profile List Items (1:1 with ProfilesSection.tsx) */
+    .profile-list-container { display: flex; flex-direction: column; gap: 8px; }
+    .profile-list-item {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .profile-list-item:hover { border-color: #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .profile-list-item.active {
+      background: #eff6ff;
+      border: 2px solid ${primaryColor};
+      box-shadow: 0 4px 14px rgba(0, 75, 255, 0.15);
+    }
+    .profile-item-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .profile-item-title { font-size: 13px; font-weight: 800; color: #0f172a; }
+    .profile-item-desc { font-size: 11px; color: #64748b; font-weight: 500; margin-top: 2px; }
+
+    /* Toggle Switch (w-11 h-6) */
+    .toggle-switch {
+      width: 44px;
+      height: 24px;
+      border-radius: 12px;
+      background: #e2e8f0;
+      padding: 2px;
+      transition: background 0.2s;
+      shrink-0: 0;
+      display: flex;
+      align-items: center;
+    }
+    .toggle-switch.active { background: ${primaryColor}; }
+    .toggle-knob {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .toggle-switch.active .toggle-knob { transform: translateX(20px); }
+
+    .profile-detail-box {
+      font-size: 11px;
+      color: #334155;
+      line-height: 1.45;
+      padding-top: 8px;
+      border-top: 1px solid #bfdbfe;
+      margin-top: 4px;
+    }
+
     /* Cards Grid */
     .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     
@@ -312,13 +501,46 @@
     .card-box:hover { background: #f1f5f9; border-color: #cbd5e1; transform: translateY(-1px); }
     .card-box.active {
       background: #eff6ff;
-      border-color: #2563eb;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+      border-color: ${primaryColor};
+      box-shadow: 0 4px 12px rgba(0, 75, 255, 0.15);
     }
     .card-box-title { font-size: 12px; font-weight: 800; color: #0f172a; }
     .card-box-desc { font-size: 10px; color: #64748b; line-height: 1.3; font-weight: 500; }
     .card-box-pill { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px; align-self: flex-start; text-transform: uppercase; background: #e2e8f0; color: #475569; }
-    .card-box.active .card-box-pill { background: #2563eb; color: #ffffff; }
+    .card-box.active .card-box-pill { background: ${primaryColor}; color: #ffffff; }
+
+    /* Content Scaling Bar */
+    .scale-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .scale-title { font-size: 12px; font-weight: 800; color: #0f172a; }
+    .scale-controls { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 220px; }
+    .scale-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: ${primaryColor};
+      color: #ffffff;
+      border: none;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,75,255,0.3);
+      transition: transform 0.15s;
+    }
+    .scale-btn:active { transform: scale(0.92); }
+    .scale-val { font-size: 12px; font-weight: 800; color: #0f172a; background: #f1f5f9; padding: 4px 12px; border-radius: 20px; }
 
     /* Option Cards */
     .option-card {
@@ -331,30 +553,116 @@
       gap: 8px;
     }
     .option-title { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; color: #0f172a; }
-    .range-input { width: 100%; accent-color: #2563eb; cursor: pointer; }
+    .range-input { width: 100%; accent-color: ${primaryColor}; cursor: pointer; }
 
-    /* Anna AI Chat UI */
-    .ai-chat-box { display: flex; flex-direction: column; height: 100%; gap: 8px; }
-    .ai-messages-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 2px; }
-    .ai-msg { max-width: 88%; padding: 9px 12px; border-radius: 14px; font-size: 12px; line-height: 1.4; }
-    .ai-msg.bot { background: #f1f5f9; color: #0f172a; border: 1px solid #e2e8f0; align-self: flex-start; border-bottom-left-radius: 2px; }
-    .ai-msg.user { background: #2563eb; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 2px; font-weight: 600; }
-    .ai-msg strong { color: #2563eb; }
-    .ai-msg.user strong { color: #ffffff; }
+    /* Alex AI Chat Panel Styling (1:1 with AlexChatWidget.tsx) */
+    .alex-header {
+      background: #000033;
+      padding: 14px 16px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .alex-header-user { display: flex; align-items: center; gap: 10px; }
+    .alex-header-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #004bff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px solid #3b82f6;
+      shrink-0: 0;
+    }
+    .alex-header-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .alex-header-title { font-size: 13px; font-weight: 900; color: #ffffff; }
+    .alex-header-sub { font-size: 10px; color: #34d399; font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 1px; }
 
-    .ai-chip-group { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-    .ai-chip-btn { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
-    .ai-chip-btn:hover { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+    .alex-privacy-banner {
+      background: #f8fafc;
+      padding: 6px 12px;
+      font-size: 10px;
+      color: #64748b;
+      text-align: center;
+      border-bottom: 1px solid #e2e8f0;
+    }
 
-    .ai-input-row { display: flex; gap: 6px; padding-top: 6px; border-top: 1px solid #f1f5f9; }
-    .ai-input-text { flex: 1; padding: 7px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 12px; outline: none; color: #0f172a; }
-    .ai-input-text:focus { border-color: #2563eb; background: #ffffff; }
-    .ai-send-btn { background: #2563eb; border: none; color: #ffffff; font-weight: 700; font-size: 12px; padding: 7px 12px; border-radius: 8px; cursor: pointer; }
-    .ai-send-btn:hover { background: #1d4ed8; }
+    .alex-body { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: #f8fafc; }
+    .alex-msg-item { display: flex; flex-direction: column; max-width: 88%; gap: 3px; }
+    .alex-msg-item.alex { align-self: flex-start; }
+    .alex-msg-item.user { align-self: flex-end; }
+    
+    .alex-msg-bubble {
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 500;
+      white-space: pre-wrap;
+    }
+    .alex-msg-item.alex .alex-msg-bubble {
+      background: #ffffff;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      border-top-left-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .alex-msg-item.user .alex-msg-bubble {
+      background: #004bff;
+      color: #ffffff;
+      border-top-right-radius: 4px;
+    }
 
-    /* Action Bar (Reset Settings & Hide Forever) */
+    .alex-chips-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+    .alex-chip-item {
+      background: #ffffff;
+      border: 1px solid #bfdbfe;
+      color: #004bff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      box-shadow: 0 2px 5px rgba(0,75,255,0.06);
+    }
+    .alex-chip-item:hover { background: #004bff; color: #ffffff; border-color: #004bff; }
+
+    .alex-input-footer { padding: 10px 12px; background: #ffffff; border-top: 1px solid #f1f5f9; display: flex; gap: 8px; align-items: center; }
+    .alex-input-field {
+      flex: 1;
+      padding: 9px 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      font-size: 12px;
+      outline: none;
+      color: #0f172a;
+    }
+    .alex-input-field:focus { border-color: #004bff; background: #ffffff; }
+    .alex-send-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #004bff;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      shrink-0: 0;
+      transition: background 0.15s;
+    }
+    .alex-send-button:hover { background: #003edd; }
+
+    /* Action Bar & Brand Footer */
     .action-bar {
-      padding: 10px 12px;
+      padding: 10px 12px 6px 12px;
       background: #ffffff;
       border-top: 1px solid #f1f5f9;
       display: flex;
@@ -364,7 +672,7 @@
     .btn-reset-main {
       flex: 1;
       padding: 8px 12px;
-      background: #2563eb;
+      background: ${primaryColor};
       color: #ffffff;
       font-size: 12px;
       font-weight: 700;
@@ -393,6 +701,20 @@
     }
     .btn-hide-main:hover { background: #e2e8f0; }
 
+    .brand-footer {
+      background: #f8fafc;
+      padding: 5px 12px;
+      text-align: center;
+      border-top: 1px solid #f1f5f9;
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
     /* Bottom 5 Icon Navigation Tabs */
     .bottom-nav {
       background: #ffffff;
@@ -416,7 +738,7 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .nav-btn.active { color: #2563eb; background: #eff6ff; font-weight: 800; }
+    .nav-btn.active { color: ${primaryColor}; background: #eff6ff; font-weight: 800; }
     .nav-btn svg { width: 16px; height: 16px; margin-bottom: 2px; }
     .nav-btn span { font-size: 9.5px; tracking-tight: -0.2px; }
   `;
@@ -426,16 +748,18 @@
   var wrapper = document.createElement("div");
   wrapper.className = "widget-wrapper " + (position.indexOf("left") !== -1 ? "left" : "");
 
-  // Panel Container
+  // 1. Accessibility Suite Modal Panel Container
   var panel = document.createElement("div");
   panel.className = "panel-container";
-
   panel.innerHTML = `
     <div class="panel-header">
       <div class="header-top">
-        <div>
-          <div class="header-title">Accessibility</div>
-          <div class="header-sub">Accessibility modes</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="brand-logo-badge">2</div>
+          <div>
+            <div class="header-title">2all.ai Accessibility</div>
+            <div class="header-sub">AI Web Compliance Suite</div>
+          </div>
         </div>
         <div class="header-right">
           <div class="score-pill" id="2all-score-pill">
@@ -454,6 +778,10 @@
     <div class="action-bar">
       <button class="btn-reset-main" id="2all-reset-main">↻ Reset Settings</button>
       <button class="btn-hide-main" id="2all-hide-main">Hide Forever</button>
+    </div>
+    <div class="brand-footer">
+      <span>Powered by</span>
+      <span style="color:${primaryColor};font-weight:900;">2all.ai</span>
     </div>
     <div class="bottom-nav">
       <button class="nav-btn active" data-tab="dashboard">
@@ -480,10 +808,73 @@
   `;
   wrapper.appendChild(panel);
 
-  // Circular Blue Trigger Button
+  // 2. Alex AI Assistant Panel Container
+  var alexPanel = document.createElement("div");
+  alexPanel.className = "alex-panel-container";
+  alexPanel.innerHTML = `
+    <div class="alex-header">
+      <div class="alex-header-user">
+        <div class="alex-header-avatar">
+          <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" />
+        </div>
+        <div>
+          <div class="alex-header-title">Alex (2all.ai AI Assistant)</div>
+          <div class="alex-header-sub">
+            <span style="width:6px;height:6px;border-radius:50%;background:#34d399;"></span>
+            Online 24/7
+          </div>
+        </div>
+      </div>
+      <button class="btn-close" id="alex-close-btn" style="background:rgba(255,255,255,0.1);color:#fff;border:none;">✕</button>
+    </div>
+    <div class="alex-privacy-banner">
+      Conversations are monitored for quality. 2all.ai Accessibility Suite.
+    </div>
+    <div class="alex-body" id="alex-chat-body"></div>
+    <div class="alex-input-footer">
+      <input type="text" class="alex-input-field" id="alex-chat-input" placeholder="Ask Alex a question..." />
+      <button class="alex-send-button" id="alex-chat-send">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:white;stroke-width:2.5;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  `;
+  wrapper.appendChild(alexPanel);
+
+  // 3. Side-by-side Trigger Buttons Row (Alex Chat + Accessibility Button + Popover Prompt)
+  var triggerRow = document.createElement("div");
+  triggerRow.className = "trigger-buttons-row";
+
+  // Alex Popover Bubble Prompt
+  var alexPopover = document.createElement("div");
+  alexPopover.className = "alex-popover-bubble";
+  alexPopover.id = "alex-popover-bubble";
+  alexPopover.innerHTML = `
+    <div class="alex-popover-avatar">
+      <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" />
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div class="alex-popover-title">Alex</div>
+      <div class="alex-popover-text">Hi, I'm Alex! Need help with web accessibility?</div>
+    </div>
+    <button class="alex-popover-close" id="alex-popover-close">✕</button>
+  `;
+  triggerRow.appendChild(alexPopover);
+
+  // Alex Chat Trigger Button (Dark Navy #000033)
+  var alexBtn = document.createElement("button");
+  alexBtn.className = "alex-trigger-btn";
+  alexBtn.setAttribute("aria-label", "Toggle Alex AI Chat Assistant");
+  alexBtn.innerHTML = `
+    <svg viewBox="0 0 24 24">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+  `;
+  triggerRow.appendChild(alexBtn);
+
+  // Blue Accessibility Trigger Button (#004bff)
   var triggerBtn = document.createElement("button");
   triggerBtn.className = "trigger-btn";
-  triggerBtn.setAttribute("aria-label", "Toggle Accessibility Panel");
+  triggerBtn.setAttribute("aria-label", "Toggle Accessibility Suite Panel");
   triggerBtn.innerHTML = `
     <svg viewBox="0 0 24 24">
       <circle cx="12" cy="4" r="2"/>
@@ -493,7 +884,9 @@
       <path d="M12 12l3 9"/>
     </svg>
   `;
-  wrapper.appendChild(triggerBtn);
+  triggerRow.appendChild(triggerBtn);
+
+  wrapper.appendChild(triggerRow);
   shadow.appendChild(wrapper);
 
   var panelBody = shadow.getElementById("2all-panel-body");
@@ -525,10 +918,45 @@
     panel.classList.remove("open");
   };
 
+  // Toggle Accessibility Panel
   triggerBtn.onclick = function () {
     state.open = !state.open;
-    if (state.open) panel.classList.add("open");
-    else panel.classList.remove("open");
+    if (state.open) {
+      panel.classList.add("open");
+      state.alexOpen = false;
+      alexPanel.classList.remove("open");
+    } else {
+      panel.classList.remove("open");
+    }
+  };
+
+  // Toggle Alex Chat Panel
+  function toggleAlexChat() {
+    state.alexOpen = !state.alexOpen;
+    alexPopover.style.display = "none";
+    if (state.alexOpen) {
+      alexPanel.classList.add("open");
+      state.open = false;
+      panel.classList.remove("open");
+      renderAlexChatMessages();
+    } else {
+      alexPanel.classList.remove("open");
+    }
+  }
+
+  alexBtn.onclick = toggleAlexChat;
+  alexPopover.onclick = function (e) {
+    if (e.target && e.target.id === "alex-popover-close") return;
+    toggleAlexChat();
+  };
+
+  shadow.getElementById("alex-popover-close").onclick = function (e) {
+    e.stopPropagation();
+    alexPopover.style.display = "none";
+  };
+  shadow.getElementById("alex-close-btn").onclick = function () {
+    state.alexOpen = false;
+    alexPanel.classList.remove("open");
   };
 
   function calculateScore() {
@@ -543,6 +971,37 @@
     if (hasContrast) score += 5;
     if (hasReading) score += 5;
     return Math.min(100, score);
+  }
+
+  function resetSettings() {
+    state.activeProfile = "none";
+    state.fontSize = 100;
+    state.fontFamily = "default";
+    state.letterSpacing = 0;
+    state.lineHeight = 1.5;
+    state.wordSpacing = 0;
+    state.textAlignment = "default";
+    state.textMagnifier = false;
+    state.isHighContrast = false;
+    state.isDarkMode = false;
+    state.isLightMode = false;
+    state.isSmartContrast = false;
+    state.monochrome = false;
+    state.colorBlindMode = "none";
+    state.saturationMode = "normal";
+    state.readingMask = false;
+    state.readingRuler = false;
+    state.highlightLinks = false;
+    state.highlightHeadings = false;
+    state.highlightButtons = false;
+    state.highlightFocus = false;
+    state.reduceMotion = false;
+    state.stopAnimations = false;
+    state.cursorSize = "normal";
+    state.textToSpeech = false;
+    saveState();
+    applyEffects();
+    renderPanelBody();
   }
 
   function renderPanelBody() {
@@ -604,27 +1063,29 @@
 
     // 3. FEATURES (TYPOGRAPHY TAB)
     else if (state.activeTab === "features" && !state.searchQuery) {
-      var fontCard = document.createElement("div");
-      fontCard.className = "option-card";
-      fontCard.innerHTML = `
-        <div class="option-title">
-          <span>Content Scaling</span>
-          <span>${state.fontSize}%</span>
+      var scaleCard = document.createElement("div");
+      scaleCard.className = "scale-card";
+      scaleCard.innerHTML = `
+        <div class="scale-title">Content Scaling</div>
+        <div class="scale-controls">
+          <button class="scale-btn" id="scale-minus">-</button>
+          <div class="scale-val">${state.fontSize === 100 ? "Default" : state.fontSize + "%"}</div>
+          <button class="scale-btn" id="scale-plus">+</button>
         </div>
-        <input type="range" class="range-input" min="90" max="200" step="10" value="${state.fontSize}" id="2all-scale-range" />
       `;
-      panelBody.appendChild(fontCard);
+      panelBody.appendChild(scaleCard);
 
       setTimeout(function () {
-        var range = shadow.getElementById("2all-scale-range");
-        if (range) {
-          range.oninput = function (e) {
-            state.fontSize = parseInt(e.target.value, 10);
-            saveState();
-            applyEffects();
-            renderPanelBody();
-          };
-        }
+        var btnMinus = shadow.getElementById("scale-minus");
+        var btnPlus = shadow.getElementById("scale-plus");
+        if (btnMinus) btnMinus.onclick = function () {
+          state.fontSize = Math.max(90, state.fontSize - 10);
+          saveState(); applyEffects(); renderPanelBody();
+        };
+        if (btnPlus) btnPlus.onclick = function () {
+          state.fontSize = Math.min(200, state.fontSize + 10);
+          saveState(); applyEffects(); renderPanelBody();
+        };
       }, 50);
 
       var grid = document.createElement("div");
@@ -673,6 +1134,8 @@
         { key: "highlightLinks", name: "Highlight Links", desc: "Underline & highlight links" },
         { key: "highlightHeadings", name: "Highlight Headings", desc: "Outline section titles H1-H6" },
         { key: "highlightButtons", name: "Highlight Buttons", desc: "Border action buttons" },
+        { key: "highlightFocus", name: "Highlight Focus", desc: "Bright cyan outline on focus" },
+        { key: "stopAnimations", name: "Stop Animations", desc: "Disable all site motion" },
       ];
 
       visionFeatures.forEach(function (v) {
@@ -702,9 +1165,9 @@
       cbCard.innerHTML = `
         <div class="option-title"><span>Colorblind Filters</span></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; margin-top:4px;">
-          <button class="btn-hide-main" id="cb-none" style="padding:6px; font-size:11px; background:${state.colorBlindMode==='none'?'#2563eb':'#f1f5f9'}; color:${state.colorBlindMode==='none'?'#fff':'#334155'}">Off</button>
-          <button class="btn-hide-main" id="cb-prot" style="padding:6px; font-size:11px; background:${state.colorBlindMode==='protanopia'?'#2563eb':'#f1f5f9'}; color:${state.colorBlindMode==='protanopia'?'#fff':'#334155'}">Red (Protan)</button>
-          <button class="btn-hide-main" id="cb-deut" style="padding:6px; font-size:11px; background:${state.colorBlindMode==='deuteranopia'?'#2563eb':'#f1f5f9'}; color:${state.colorBlindMode==='deuteranopia'?'#fff':'#334155'}">Green (Deuter)</button>
+          <button class="btn-hide-main" id="cb-none" style="padding:6px; font-size:11px; background:${state.colorBlindMode==='none'?'#004bff':'#f1f5f9'}; color:${state.colorBlindMode==='none'?'#fff':'#334155'}">Off</button>
+          <button class="btn-hide-main" id="cb-prot" style="padding:6px; font-size:11px; background:${state.colorBlindMode==='protanopia'?'#004bff':'#f1f5f9'}; color:${state.colorBlindMode==='protanopia'?'#fff':'#334155'}">Red (Protan)</button>
+          <button class="btn-hide-main" id="cb-deut" style="padding:6px; font-size:11px; background:${state.colorBlindMode==='deuteranopia'?'#004bff':'#f1f5f9'}; color:${state.colorBlindMode==='deuteranopia'?'#fff':'#334155'}">Green (Deuter)</button>
         </div>
       `;
       panelBody.appendChild(cbCard);
@@ -726,28 +1189,38 @@
   }
 
   function renderProfilesGrid() {
-    var grid = document.createElement("div");
-    grid.className = "cards-grid";
+    var container = document.createElement("div");
+    container.className = "profile-list-container";
 
     var profiles = [
-      { id: "dyslexia", name: "Dyslexia Profile", desc: "OpenDyslexic font + letter spacing" },
-      { id: "adhd", name: "ADHD Profile", desc: "Reading Mask + Ruler spotlight" },
-      { id: "low-vision", name: "Low Vision Profile", desc: "High Contrast + Text Magnifier" },
-      { id: "seizure", name: "Seizure Safe Profile", desc: "Stop animations & mute sounds" },
-      { id: "motor-impaired", name: "Motor Skills Profile", desc: "Highlight keyboard focus + Big Cursor" },
-      { id: "blind", name: "Blind / Screen Reader", desc: "Voice Text-to-Speech audio reader" },
+      { id: "seizure", label: "Epilepsy Safe Mode", desc: "Dampens color and removes blinks", detail: "Enables users with epilepsy to browse safely by eliminating flashing or blinking animations and risky color combinations." },
+      { id: "low-vision", label: "Visually Impaired Mode", desc: "Improves website's visuals", detail: "Adjusts the website for users with visual impairments such as Degrading Eyesight, Tunnel Vision, Cataract, Glaucoma, and others." },
+      { id: "cognitive", label: "Cognitive Disability Mode", desc: "Helps to focus on specific content", detail: "Assists users with cognitive disabilities such as Autism, Dyslexia, CVA, and others to focus on essential website elements." },
+      { id: "adhd", label: "ADHD Friendly Mode", desc: "Reduces distractions and improve focus", detail: "Significantly reduces distractions and noise, helping people with ADHD and Neurodevelopmental disorders to browse and focus." },
+      { id: "blind", label: "Blindness / Screen Reader", desc: "Allows to use the site with screen reader", detail: "Optimizes the site for compatibility with screen-readers such as JAWS, NVDA, VoiceOver, and TalkBack." },
+      { id: "dyslexia", label: "Dyslexia Friendly", desc: "Enhances readability for dyslexia", detail: "Applies specialized typography and letter/word spacing to increase reading speed and reduce reading errors for users with dyslexia." },
+      { id: "reading", label: "Reading Mode", desc: "Improves reading comprehension", detail: "Highlights paragraph structure and simplifies reading alignment for clearer text focus." },
+      { id: "night", label: "Night Mode", desc: "Reduces eye strain in low light", detail: "Switches interface to dark themes to reduce blue light exposure and prevent eye fatigue." },
+      { id: "motor-impaired", label: "Keyboard Nav / Motor Impaired", desc: "Optimizes focus & keyboard controls", detail: "Enlarges interactive target areas and boosts keyboard focus indicators for easier navigation." }
     ];
 
     profiles.forEach(function (p) {
-      var active = state.activeProfile === p.id;
-      var box = document.createElement("div");
-      box.className = "card-box " + (active ? "active" : "");
-      box.innerHTML = `
-        <div class="card-box-title">${p.name}</div>
-        <div class="card-box-desc">${p.desc}</div>
-        <div class="card-box-pill">${active ? "ACTIVE" : "OFF"}</div>
+      var isActive = state.activeProfile === p.id;
+      var item = document.createElement("div");
+      item.className = "profile-list-item " + (isActive ? "active" : "");
+      item.innerHTML = `
+        <div class="profile-item-row">
+          <div>
+            <div class="profile-item-title">${p.label}</div>
+            <div class="profile-item-desc">${p.desc}</div>
+          </div>
+          <div class="toggle-switch ${isActive ? 'active' : ''}">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        ${isActive ? `<div class="profile-detail-box">${p.detail}</div>` : ""}
       `;
-      box.onclick = function () {
+      item.onclick = function () {
         if (state.activeProfile === p.id) {
           state.activeProfile = "none";
           resetSettings();
@@ -759,294 +1232,383 @@
           if (p.id === "seizure") { state.reduceMotion = true; state.stopAnimations = true; }
           if (p.id === "motor-impaired") { state.highlightFocus = true; state.cursorSize = "large"; }
           if (p.id === "blind") { state.textToSpeech = true; }
+          if (p.id === "cognitive") { state.readableFont = true; state.highlightHeadings = true; }
+          if (p.id === "reading") { state.lineHeight = 1.8; state.wordSpacing = 0.5; }
+          if (p.id === "night") { state.isDarkMode = true; }
         }
         saveState();
         applyEffects();
         renderPanelBody();
       };
-      grid.appendChild(box);
+      container.appendChild(item);
     });
-
-    panelBody.appendChild(grid);
-  }
-
-  function renderAIChatUI() {
-    var container = document.createElement("div");
-    container.className = "ai-chat-box";
-
-    var msgList = document.createElement("div");
-    msgList.className = "ai-messages-list";
-    msgList.id = "2all-ai-msg-list";
-
-    state.chatMessages.forEach(function (m) {
-      var div = document.createElement("div");
-      div.className = "ai-msg " + m.type;
-      div.innerHTML = m.text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-
-      if (m.actionLabel) {
-        var btn = document.createElement("button");
-        btn.className = "ai-chip-btn";
-        btn.style.marginTop = "6px";
-        btn.innerText = m.actionLabel;
-        btn.onclick = function () {
-          if (m.settingAction) {
-            state[m.settingAction.key] = m.settingAction.value;
-            saveState();
-            applyEffects();
-            renderPanelBody();
-          }
-        };
-        div.appendChild(btn);
-      }
-      msgList.appendChild(div);
-    });
-
-    container.appendChild(msgList);
-
-    var chips = document.createElement("div");
-    chips.className = "ai-chip-group";
-    chips.innerHTML = `
-      <button class="ai-chip-btn" data-query="What voice tools are available?">🔊 Voice Reader</button>
-      <button class="ai-chip-btn" data-query="How do I install the widget?">⚡ Installation</button>
-      <button class="ai-chip-btn" data-query="Explain WCAG & ADA legal compliance">⚖️ Legal Compliance</button>
-      <button class="ai-chip-btn" data-query="Show pricing plans">💰 Pricing</button>
-    `;
-    container.appendChild(chips);
-
-    var inputRow = document.createElement("div");
-    inputRow.className = "ai-input-row";
-    inputRow.innerHTML = `
-      <input type="text" class="ai-input-text" id="2all-ai-input" placeholder="Ask Anna about tools, setup, WCAG..." />
-      <button class="ai-send-btn" id="2all-ai-send">Send</button>
-    `;
-    container.appendChild(inputRow);
 
     panelBody.appendChild(container);
-
-    setTimeout(function () {
-      var sendBtn = shadow.getElementById("2all-ai-send");
-      var textIn = shadow.getElementById("2all-ai-input");
-      var chipBtns = shadow.querySelectorAll(".ai-chip-btn[data-query]");
-
-      chipBtns.forEach(function (c) {
-        c.onclick = function () {
-          processAIChatMessage(c.getAttribute("data-query"));
-        };
-      });
-
-      if (sendBtn && textIn) {
-        sendBtn.onclick = function () { processAIChatMessage(textIn.value); };
-        textIn.onkeypress = function (e) {
-          if (e.key === "Enter") processAIChatMessage(textIn.value);
-        };
-      }
-      var listDiv = shadow.getElementById("2all-ai-msg-list");
-      if (listDiv) listDiv.scrollTop = listDiv.scrollHeight;
-    }, 50);
   }
 
-  function processAIChatMessage(msg) {
-    if (!msg || !msg.trim()) return;
-    var userText = msg.trim();
+  // Alex AI Assistant Chat Logic
+  function getAlexReply(text) {
+    var q = text.toLowerCase().trim();
+    if (q.indexOf("more accessible") !== -1 || q.indexOf("make my website accessible") !== -1 || q.indexOf("get accessible") !== -1) {
+      return "Awesome! 🚀 2all.ai makes web accessibility effortless:\n\n1️⃣ **Instant 2-Minute Installation**: Add our single-line JS script to your site.\n2️⃣ **Automated AI Remediation**: Automatically fixes missing alt-tags, ARIA attributes & contrast ratios in real time.\n3️⃣ **ADA & WCAG 2.1 AA Compliance**: Protects your business from legal risk while welcoming 20%+ more web visitors.\n\nWould you like to **Start a 7-day free trial** or **Book a live demo**?";
+    }
+    if (q.indexOf("account") !== -1 || q.indexOf("login") !== -1 || q.indexOf("sign in") !== -1) {
+      return "Welcome back! 👋 You can sign in to your dashboard anytime at **2all.ai/login** to manage your domains and view real-time compliance reports!";
+    }
+    if (q.indexOf("hi") === 0 || q.indexOf("hello") === 0 || q.indexOf("hey") === 0) {
+      return "Hi there! 👋 I'm Alex, your 2all.ai AI Assistant. I can help you with WCAG compliance, widget installation, pricing, or booking a live demo. What would you like to explore?";
+    }
+    if (q.indexOf("how") !== -1 && (q.indexOf("work") !== -1 || q.indexOf("it work") !== -1)) {
+      return "2all.ai operates seamlessly in 3 simple steps:\n1️⃣ **Embed Snippet**: Copy our lightweight JavaScript snippet into your website footer.\n2️⃣ **Automated AI Scan**: Our AI engine scans your DOM for WCAG 2.1 AA violations.\n3️⃣ **Real-time Remediation**: The widget automatically adjusts screen reader tags, contrast, and fonts!";
+    }
+    if (q.indexOf("price") !== -1 || q.indexOf("cost") !== -1 || q.indexOf("plan") !== -1 || q.indexOf("trial") !== -1) {
+      return "We offer simple, transparent pricing starting from **$49/month** with a 7-Day Risk-Free Trial! 💳 Visit **2all.ai/pricing** to pick a plan!";
+    }
+    if (q.indexOf("install") !== -1 || q.indexOf("script") !== -1 || q.indexOf("code") !== -1) {
+      return "Installing 2all.ai takes under 2 minutes! ⚡ Sign up for a free trial at **2all.ai/register**, add your domain, and copy the script tag into your website's `</body>` tag.";
+    }
+    if (q.indexOf("ada") !== -1 || q.indexOf("wcag") !== -1 || q.indexOf("compliance") !== -1 || q.indexOf("legal") !== -1) {
+      return "2all.ai provides comprehensive compliance coverage for **WCAG 2.1 & 2.2 Level AA**, **ADA Title III**, and **Section 508** guidelines! 🛡️";
+    }
+    if (q.indexOf("demo") !== -1 || q.indexOf("book") !== -1 || q.indexOf("call") !== -1) {
+      return "I'd love to schedule a live demo for you! 📅 Visit **2all.ai/demo** to pick a time slot with our accessibility experts.";
+    }
+    if (q.indexOf("thank") !== -1 || q.indexOf("great") !== -1 || q.indexOf("ok") !== -1) {
+      return "You're very welcome! 😊 Is there anything else I can help you with regarding web accessibility?";
+    }
+    return "Thank you for reaching out! 2all.ai helps businesses make their websites fully WCAG 2.1 AA & ADA compliant. Visit 2all.ai/register to start a free trial or email support@2all.ai!";
+  }
 
-    state.chatMessages.push({ id: Date.now(), type: "user", text: userText });
+  function renderAlexChatMessages() {
+    var chatBody = shadow.getElementById("alex-chat-body");
+    if (!chatBody) return;
+    chatBody.innerHTML = "";
+
+    state.alexMessages.forEach(function (m) {
+      var item = document.createElement("div");
+      item.className = "alex-msg-item " + m.from;
+      
+      var bubble = document.createElement("div");
+      bubble.className = "alex-msg-bubble";
+      bubble.innerHTML = m.text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      item.appendChild(bubble);
+
+      chatBody.appendChild(item);
+    });
+
+    var chipsContainer = document.createElement("div");
+    chipsContainer.className = "alex-chips-list";
+    var options = [
+      "I want my website more accessible",
+      "I have a 2all.ai account",
+      "How to install widget code",
+      "Is 2all.ai ADA & WCAG compliant?",
+      "Book a live demo",
+    ];
+
+    options.forEach(function (opt) {
+      var chip = document.createElement("div");
+      chip.className = "alex-chip-item";
+      chip.innerText = opt;
+      chip.onclick = function () {
+        sendAlexUserMessage(opt);
+      };
+      chipsContainer.appendChild(chip);
+    });
+    chatBody.appendChild(chipsContainer);
+
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function sendAlexUserMessage(text) {
+    state.alexMessages.push({ from: "user", text: text });
     saveState();
-    renderPanelBody();
+    renderAlexChatMessages();
 
     setTimeout(function () {
-      var lower = userText.toLowerCase();
-      var botReply = "";
-      var actionLabel = null;
-      var settingAction = null;
-
-      if (lower.includes("voice") || lower.includes("speech") || lower.includes("read") || lower.includes("sound") || lower.includes("audio")) {
-        botReply = "🔊 **Voice & Speech Tools**:\n\n1️⃣ **Text-to-Speech (Read Aloud)**: Reads selected text or paragraph out loud with natural voice synthesis.\n2️⃣ **Screen Reader Mode**: Audio narration for NVDA, JAWS & VoiceOver.";
-        actionLabel = "Enable Text-to-Speech Now";
-        settingAction = { key: "textToSpeech", value: true };
-      } else if (lower.includes("install") || lower.includes("code") || lower.includes("script")) {
-        botReply = "⚡ **2-Minute Installation**:\n\nCopy and paste our script tag before the `</body>` tag on your website:\n```html\n<script src=\"https://2all-ai.mccmrfip.in/loader.js\" data-api-key=\"YOUR_KEY\" async></script>\n```";
-      } else if (lower.includes("price") || lower.includes("cost") || lower.includes("plan")) {
-        botReply = "💰 **2all.ai Pricing Plans**:\n\n• **Standard Plan**: $49/mo\n• **Business Plan**: $99/mo (includes automated AI remediation & monthly audit reports)\n• **Enterprise Plan**: Custom dedicated SLAs & litigation protection support.";
-      } else if (lower.includes("wcag") || lower.includes("ada") || lower.includes("legal") || lower.includes("law")) {
-        botReply = "⚖️ **ADA & WCAG 2.1 AA Compliance**:\n\n2all.ai automatically remediates your site's DOM structure, ARIA landmarks, image alt texts, and color contrast ratios to protect your business against ADA Title III lawsuits.";
-      } else {
-        botReply = "🤖 **I'm Anna, your 2all.ai AI Assistant!** I can help you enable accessibility tools (Voice Reader, Dyslexia Font, High Contrast), answer WCAG compliance questions, or guide you through setup!";
-      }
-
-      state.chatMessages.push({ id: Date.now(), type: "bot", text: botReply, actionLabel: actionLabel, settingAction: settingAction });
+      var reply = getAlexReply(text);
+      state.alexMessages.push({ from: "alex", text: reply });
       saveState();
-      renderPanelBody();
-    }, 400);
+      renderAlexChatMessages();
+    }, 350);
   }
 
-  function resetSettings() {
-    state.activeProfile = "none";
-    state.fontSize = 100;
-    state.fontFamily = "default";
-    state.letterSpacing = 0;
-    state.lineHeight = 1.5;
-    state.wordSpacing = 0;
-    state.textAlignment = "default";
-    state.textMagnifier = false;
-    state.isHighContrast = false;
-    state.isDarkMode = false;
-    state.isLightMode = false;
-    state.monochrome = false;
-    state.colorBlindMode = "none";
-    state.readingMask = false;
-    state.readingRuler = false;
-    state.highlightLinks = false;
-    state.highlightHeadings = false;
-    state.highlightButtons = false;
-    state.highlightFocus = false;
-    state.reduceMotion = false;
-    state.stopAnimations = false;
-    state.cursorSize = "normal";
-    state.textToSpeech = false;
-    saveState();
-    applyEffects();
-    renderPanelBody();
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
+  setTimeout(function () {
+    var alexInput = shadow.getElementById("alex-chat-input");
+    var alexSend = shadow.getElementById("alex-chat-send");
+    if (alexSend && alexInput) {
+      alexSend.onclick = function () {
+        if (alexInput.value.trim()) {
+          sendAlexUserMessage(alexInput.value.trim());
+          alexInput.value = "";
+        }
+      };
+      alexInput.onkeypress = function (e) {
+        if (e.key === "Enter" && alexInput.value.trim()) {
+          sendAlexUserMessage(alexInput.value.trim());
+          alexInput.value = "";
+        }
+      };
+    }
+  }, 100);
+
+  function renderAIChatUI() {
+    renderAlexChatMessages();
   }
 
-  // Reading Mask, Ruler, Magnifier Overlays
-  var maskTop = document.createElement("div");
-  maskTop.style.cssText = "position:fixed;left:0;right:0;top:0;background:rgba(0,0,0,0.75);z-index:2147483645;pointer-events:none;display:none;";
-  document.body.appendChild(maskTop);
-
-  var maskBottom = document.createElement("div");
-  maskBottom.style.cssText = "position:fixed;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:2147483645;pointer-events:none;display:none;";
-  document.body.appendChild(maskBottom);
-
-  var ruler = document.createElement("div");
-  ruler.style.cssText = "position:fixed;left:0;right:0;height:8px;background:#2563eb;box-shadow:0 0 12px #2563eb;z-index:2147483646;pointer-events:none;display:none;";
-  document.body.appendChild(ruler);
-
-  var magnifier = document.createElement("div");
-  magnifier.style.cssText = "position:fixed;padding:10px 16px;background:#0f172a;color:#ffffff;border-radius:12px;border:2px solid #2563eb;font-size:16px;font-weight:bold;z-index:2147483646;pointer-events:none;display:none;max-width:320px;box-shadow:0 10px 30px rgba(0,0,0,0.4);";
-  document.body.appendChild(magnifier);
-
-  document.addEventListener("mousemove", function (e) {
-    if (state.readingMask) {
-      maskTop.style.display = "block";
-      maskBottom.style.display = "block";
-      maskTop.style.height = Math.max(0, e.clientY - 45) + "px";
-      maskBottom.style.top = (e.clientY + 45) + "px";
-    } else {
-      maskTop.style.display = "none";
-      maskBottom.style.display = "none";
-    }
-
-    if (state.readingRuler) {
-      ruler.style.display = "block";
-      ruler.style.top = e.clientY + "px";
-    } else {
-      ruler.style.display = "none";
-    }
-
-    if (state.textMagnifier) {
-      var target = e.target;
-      if (target && target.innerText && target.innerText.trim().length > 0 && target.innerText.trim().length < 200) {
-        magnifier.style.display = "block";
-        magnifier.innerText = target.innerText.trim();
-        magnifier.style.top = (e.clientY + 20) + "px";
-        magnifier.style.left = (e.clientX + 20) + "px";
-      } else {
-        magnifier.style.display = "none";
-      }
-    } else {
-      magnifier.style.display = "none";
-    }
-  });
-
-  // Speech Text-To-Speech Handler
-  document.addEventListener("mouseover", function (e) {
-    if (!state.textToSpeech || !window.speechSynthesis) return;
-    var target = e.target;
-    if (target && (target.tagName === "A" || target.tagName === "BUTTON" || target.tagName === "H1" || target.tagName === "H2" || target.tagName === "H3" || target.tagName === "P" || target.tagName === "SPAN")) {
-      var text = target.innerText || target.textContent;
-      if (text && text.trim().length > 0 && text.trim().length < 200) {
-        window.speechSynthesis.cancel();
-        var u = new SpeechSynthesisUtterance(text.trim());
-        u.rate = 1.0;
-        window.speechSynthesis.speak(u);
-      }
-    }
-  });
-
-  // Apply Global CSS & DOM Classes to Target Website
-  function applyEffects() {
-    var existingStyle = document.getElementById("2all-global-effects");
-    if (!existingStyle) {
-      existingStyle = document.createElement("style");
-      existingStyle.id = "2all-global-effects";
-      document.head.appendChild(existingStyle);
+  // Complete Live Effects & Overlays Engine
+  function updateGlobalStyle() {
+    var styleEl = document.getElementById("2all-global-effects-style");
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = "2all-global-effects-style";
+      document.head.appendChild(styleEl);
     }
 
     var css = "";
 
-    // Font Scaling
-    if (state.fontSize !== 100) {
-      css += `html { font-size: ${state.fontSize}% !important; } `;
+    if (state.isDarkMode || state.isHighContrast) {
+      css += `
+        html, body {
+          background-color: #0f172a !important;
+          color: #f8fafc !important;
+        }
+        p, span, h1, h2, h3, h4, h5, h6, li, a, label {
+          color: #f8fafc !important;
+        }
+      `;
     }
 
-    // Font Family
-    if (state.fontFamily === "dyslexic" || state.dyslexiaFont) {
-      css += `@import url('https://fonts.cdnfonts.com/css/opendyslexic'); * { font-family: 'OpenDyslexic', sans-serif !important; letter-spacing: 0.08em !important; } `;
-    } else if (state.fontFamily === "readable" || state.readableFont) {
-      css += `* { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; } `;
-    }
-
-    // High Contrast / Themes
-    if (state.isHighContrast) {
-      css += `html { filter: invert(100%) hue-rotate(180deg) !important; background-color: #000 !important; } img, video, iframe, #2all-ai-widget-host { filter: invert(100%) hue-rotate(180deg) !important; } `;
-    } else if (state.isDarkMode) {
-      css += `html { background-color: #0f172a !important; color: #f8fafc !important; } `;
-    } else if (state.isLightMode) {
-      css += `html { background-color: #ffffff !important; color: #000000 !important; } `;
+    if (state.isLightMode) {
+      css += `
+        html, body {
+          background-color: #ffffff !important;
+          color: #000000 !important;
+        }
+        p, span, h1, h2, h3, h4, h5, h6, li, a, label {
+          color: #000000 !important;
+          font-weight: 700 !important;
+        }
+      `;
     }
 
     if (state.monochrome) {
-      css += `html { filter: grayscale(100%) !important; } `;
+      css += `
+        html {
+          filter: grayscale(100%) !important;
+        }
+      `;
     }
 
-    // Colorblind Filters
-    if (state.colorBlindMode === "protanopia") {
-      css += `html { filter: url(#cb-protanopia) !important; } `;
-    } else if (state.colorBlindMode === "deuteranopia") {
-      css += `html { filter: url(#cb-deuteranopia) !important; } `;
-    } else if (state.colorBlindMode === "tritanopia") {
-      css += `html { filter: url(#cb-tritanopia) !important; } `;
-    }
-
-    // Highlights
     if (state.highlightLinks) {
-      css += `a { background-color: #fef08a !important; color: #0f172a !important; outline: 2px solid #2563eb !important; text-decoration: underline !important; font-weight: bold !important; } `;
+      css += `
+        a, a * {
+          background-color: #fef08a !important;
+          color: #854d0e !important;
+          text-decoration: underline !important;
+          font-weight: 800 !important;
+        }
+      `;
     }
+
     if (state.highlightHeadings) {
-      css += `h1, h2, h3, h4, h5, h6 { outline: 2px dashed #2563eb !important; background: rgba(37,99,235,0.08) !important; } `;
+      css += `
+        h1, h2, h3, h4, h5, h6 {
+          outline: 3px solid #004bff !important;
+          outline-offset: 3px !important;
+          background-color: rgba(0, 75, 255, 0.05) !important;
+        }
+      `;
     }
+
     if (state.highlightButtons) {
-      css += `button, [role="button"] { outline: 3px solid #10b981 !important; } `;
+      css += `
+        button, [role="button"], input[type="submit"], input[type="button"] {
+          outline: 3px solid #16a34a !important;
+          outline-offset: 3px !important;
+        }
+      `;
     }
+
     if (state.highlightFocus) {
-      css += `*:focus { outline: 3px solid #38bdf8 !important; outline-offset: 3px !important; } `;
+      css += `
+        *:focus, *:focus-visible {
+          outline: 4px solid #004bff !important;
+          outline-offset: 4px !important;
+          box-shadow: 0 0 12px rgba(0, 75, 255, 0.8) !important;
+        }
+      `;
     }
 
-    // Animations & Motion
-    if (state.stopAnimations || state.reduceMotion) {
-      css += `* { animation: none !important; transition: none !important; } `;
-    }
-
-    // Cursor
     if (state.cursorSize === "large" || state.cursorSize === "huge") {
-      css += `* { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%232563eb' stroke='white' stroke-width='2'%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), auto !important; } `;
+      css += `
+        body, body * {
+          cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 24 24' fill='%23004bff' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), auto !important;
+        }
+      `;
     }
 
-    existingStyle.textContent = css;
+    if (state.stopAnimations || state.reduceMotion) {
+      css += `
+        *, *::before, *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      `;
+    }
+
+    styleEl.textContent = css;
   }
 
-  // Initial Load & Execution
+  function updateReadingMask() {
+    var mask = document.getElementById("2all-reading-mask-overlay");
+    if (state.readingMask) {
+      if (!mask) {
+        mask = document.createElement("div");
+        mask.id = "2all-reading-mask-overlay";
+        mask.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483645;background:rgba(0,0,0,0.65);clip-path:polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);";
+        document.body.appendChild(mask);
+      }
+      mask.style.display = "block";
+      
+      if (!window.__2ALL_MASK_LISTENER__) {
+        window.__2ALL_MASK_LISTENER__ = function (e) {
+          var m = document.getElementById("2all-reading-mask-overlay");
+          if (m && m.style.display !== "none") {
+            var y = e.clientY;
+            var h = 60;
+            m.style.clipPath = `polygon(0% 0%, 100% 0%, 100% ${y - h/2}px, 0% ${y - h/2}px, 0% ${y + h/2}px, 100% ${y + h/2}px, 100% 100%, 0% 100%)`;
+          }
+        };
+        window.addEventListener("mousemove", window.__2ALL_MASK_LISTENER__);
+      }
+    } else {
+      if (mask) mask.style.display = "none";
+    }
+  }
+
+  function updateReadingRuler() {
+    var ruler = document.getElementById("2all-reading-ruler-line");
+    if (state.readingRuler) {
+      if (!ruler) {
+        ruler = document.createElement("div");
+        ruler.id = "2all-reading-ruler-line";
+        ruler.style.cssText = "position:fixed;left:0;width:100vw;height:6px;background:#004bff;box-shadow:0 0 10px rgba(0,75,255,0.8);pointer-events:none;z-index:2147483646;display:none;top:0px;";
+        document.body.appendChild(ruler);
+      }
+      ruler.style.display = "block";
+
+      if (!window.__2ALL_RULER_LISTENER__) {
+        window.__2ALL_RULER_LISTENER__ = function (e) {
+          var r = document.getElementById("2all-reading-ruler-line");
+          if (r && r.style.display !== "none") {
+            r.style.top = (e.clientY - 3) + "px";
+          }
+        };
+        window.addEventListener("mousemove", window.__2ALL_RULER_LISTENER__);
+      }
+    } else {
+      if (ruler) ruler.style.display = "none";
+    }
+  }
+
+  function updateTextMagnifier() {
+    var popup = document.getElementById("2all-text-magnifier-popup");
+    if (state.textMagnifier) {
+      if (!popup) {
+        popup = document.createElement("div");
+        popup.id = "2all-text-magnifier-popup";
+        popup.style.cssText = "position:fixed;pointer-events:none;z-index:2147483646;background:#0f172a;color:#ffffff;padding:8px 16px;border-radius:12px;font-size:20px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:2px solid #004bff;display:none;max-width:400px;word-break:break-word;";
+        document.body.appendChild(popup);
+      }
+
+      if (!window.__2ALL_MAGNIFIER_LISTENER__) {
+        window.__2ALL_MAGNIFIER_LISTENER__ = function (e) {
+          var p = document.getElementById("2all-text-magnifier-popup");
+          if (!p) return;
+          var target = e.target;
+          if (target && target.innerText && target.innerText.trim() && target.id !== "2all-text-magnifier-popup") {
+            var text = target.innerText.trim();
+            if (text.length < 120) {
+              p.innerText = text;
+              p.style.display = "block";
+              p.style.left = Math.min(window.innerWidth - 300, e.clientX + 15) + "px";
+              p.style.top = (e.clientY + 20) + "px";
+              return;
+            }
+          }
+          p.style.display = "none";
+        };
+        window.addEventListener("mousemove", window.__2ALL_MAGNIFIER_LISTENER__);
+      }
+    } else {
+      if (popup) popup.style.display = "none";
+    }
+  }
+
+  function updateTextToSpeech() {
+    if (state.textToSpeech) {
+      if (!window.__2ALL_TTS_LISTENER__) {
+        window.__2ALL_TTS_LISTENER__ = function (e) {
+          if (!state.textToSpeech) return;
+          var target = e.target;
+          if (target && target.innerText && target.innerText.trim()) {
+            var text = target.innerText.trim();
+            if ("speechSynthesis" in window && text.length < 200) {
+              window.speechSynthesis.cancel();
+              var utterance = new SpeechSynthesisUtterance(text);
+              utterance.rate = 1.0;
+              window.speechSynthesis.speak(utterance);
+            }
+          }
+        };
+        document.addEventListener("click", window.__2ALL_TTS_LISTENER__);
+      }
+    } else {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    }
+  }
+
+  // Universal Effect Applicator
+  function applyEffects() {
+    var doc = document.documentElement;
+
+    // Typography & Font Scale
+    doc.style.fontSize = state.fontSize !== 100 ? state.fontSize + "%" : "";
+    
+    // Font Family
+    if (state.fontFamily === "dyslexic") {
+      doc.style.fontFamily = "'OpenDyslexic', sans-serif";
+    } else if (state.fontFamily === "readable") {
+      doc.style.fontFamily = "Verdana, Arial, sans-serif";
+    } else {
+      doc.style.fontFamily = "";
+    }
+
+    // Letter / Word / Line Spacing
+    doc.style.letterSpacing = state.letterSpacing > 0 ? state.letterSpacing + "px" : "";
+    doc.style.lineHeight = state.lineHeight !== 1.5 ? state.lineHeight : "";
+    doc.style.wordSpacing = state.wordSpacing > 0 ? state.wordSpacing + "em" : "";
+
+    // Text Align
+    doc.style.textAlign = state.textAlignment !== "default" ? state.textAlignment : "";
+
+    // Colorblind Filter
+    if (state.colorBlindMode !== "none") {
+      doc.style.filter = "url('#cb-" + state.colorBlindMode + "')";
+    } else {
+      doc.style.filter = "";
+    }
+
+    // Live Overlays & Global Effects
+    updateGlobalStyle();
+    updateReadingMask();
+    updateReadingRuler();
+    updateTextMagnifier();
+    updateTextToSpeech();
+  }
+
+  // Initial Panel Render
   renderPanelBody();
   applyEffects();
 })();

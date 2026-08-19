@@ -49,6 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           role: user.role,
           plan: user.plan,
           paymentStatus: user.paymentStatus,
+          createdAt: user.createdAt ? user.createdAt.toISOString() : null,
         };
       },
     }),
@@ -126,6 +127,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         (user as any).role = dbUser.role;
         (user as any).plan = dbUser.plan;
         (user as any).paymentStatus = dbUser.paymentStatus;
+        (user as any).createdAt = dbUser.createdAt ? dbUser.createdAt.toISOString() : null;
       }
       return true;
     },
@@ -135,15 +137,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = (user as any).role || "CUSTOMER";
         token.plan = (user as any).plan || "NONE";
         token.paymentStatus = (user as any).paymentStatus || "UNPAID";
+        token.createdAt = (user as any).createdAt || null;
       }
       // Bulletproof fallback: fetch from database if role/id is missing in token
-      if ((!token.role || !token.id) && token.email) {
+      if ((!token.role || !token.id || !token.createdAt) && token.email) {
         const dbUser = await prisma.user.findUnique({ where: { email: token.email } });
         if (dbUser) {
           token.id = dbUser.id;
           token.role = dbUser.role;
           token.plan = dbUser.plan;
           token.paymentStatus = dbUser.paymentStatus;
+          token.createdAt = dbUser.createdAt ? dbUser.createdAt.toISOString() : null;
         }
       }
       if (trigger === "update" && session) {
@@ -158,6 +162,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         (session.user as any).role = token.role;
         (session.user as any).plan = token.plan;
         (session.user as any).paymentStatus = token.paymentStatus;
+        (session.user as any).createdAt = token.createdAt;
       }
       return session;
     },

@@ -46,7 +46,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
   const pathname = usePathname();
   const firstName = user?.name?.split(" ")[0] ?? "Zubairya";
 
-  // Calculate Plan Expiration Status
+  // Calculate Plan Expiration Status (7-day trial enforced from user creation)
   const userPlan = (user?.plan || "").toUpperCase();
   const paymentStatus = (user?.paymentStatus || "").toUpperCase();
   const userRole = (user?.role || "").toUpperCase();
@@ -56,7 +56,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
   const userCreatedAt = user?.createdAt ? new Date(user.createdAt).getTime() : Date.now();
   const trialDurationMs = 7 * 24 * 60 * 60 * 1000;
   const isTrialExpired = !isPaid && (Date.now() - userCreatedAt > trialDurationMs);
-  const isPlanExpired = isTrialExpired || paymentStatus === "UNPAID" || paymentStatus === "EXPIRED";
+  const isPlanExpired = !isPaid && (isTrialExpired || paymentStatus === "EXPIRED");
 
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },

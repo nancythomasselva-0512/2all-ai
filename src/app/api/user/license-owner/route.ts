@@ -17,7 +17,7 @@ export async function GET() {
 
     // Use $queryRaw to avoid Prisma client cache issues with newly added fields
     const rows = await db.$queryRaw`
-      SELECT name, email, phone FROM "User" WHERE id = ${userId} LIMIT 1
+      SELECT name, email, phone, createdAt FROM "User" WHERE id = ${userId} LIMIT 1
     `;
 
     const user = Array.isArray(rows) ? rows[0] : null;
@@ -30,6 +30,7 @@ export async function GET() {
       name: user.name ?? "",
       email: user.email ?? "",
       phone: user.phone ?? "",
+      createdAt: user.createdAt ?? null,
     });
   } catch (err: any) {
     console.error("[license-owner GET]", err);

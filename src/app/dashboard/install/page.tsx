@@ -677,6 +677,7 @@ function InstallPageInner() {
   const [domains, setDomains] = useState<any[]>([]);
   const [selectedDomain, setSelectedDomain] = useState("yourwebsite.com");
   const [loading, setLoading] = useState(true);
+  const [userCreatedAt, setUserCreatedAt] = useState<Date | null>(null);
 
   // Sync if URL changes (e.g. when navigated from billing link)
   useEffect(() => {
@@ -685,28 +686,37 @@ function InstallPageInner() {
   }, [searchParams]);
 
   useEffect(() => {
-    async function fetchDomains() {
+    async function fetchData() {
       try {
         setLoading(true);
-        const res = await fetch("/api/domains");
-        if (res.ok) {
-          const data = await res.json();
+        const [domRes, ownerRes] = await Promise.all([
+          fetch("/api/domains"),
+          fetch("/api/user/license-owner"),
+        ]);
+        if (domRes.ok) {
+          const data = await domRes.json();
           setDomains(data);
           if (data.length > 0) {
             setSelectedDomain(data[0].domain);
           }
         }
+        if (ownerRes.ok) {
+          const ownerData = await ownerRes.json();
+          if (ownerData.createdAt) {
+            setUserCreatedAt(new Date(ownerData.createdAt));
+          }
+        }
       } catch (err) {
-        console.error("Failed to fetch domains:", err);
+        console.error("Failed to fetch initial data:", err);
       } finally {
         setLoading(false);
       }
     }
-    fetchDomains();
+    fetchData();
   }, []);
 
-  const expDate = new Date();
-  expDate.setDate(expDate.getDate() + 7);
+  const baseDate = userCreatedAt ? new Date(userCreatedAt) : new Date();
+  const expDate = new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000);
   const formattedExpDate = expDate.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",

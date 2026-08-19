@@ -23,6 +23,11 @@ export async function GET() {
           cleanDomain = cleanDomain.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "");
           
           if (cleanDomain) {
+            const existingDom = await db.domain.findFirst({
+              where: { domain: cleanDomain }
+            });
+            if (existingDom) continue;
+
             const verificationToken = `2all-verify-${Math.random().toString(36).substring(2, 15)}-${Math.random().toString(36).substring(2, 15)}`;
             const newDom = await db.domain.create({
               data: {
