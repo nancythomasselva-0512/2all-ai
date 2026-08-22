@@ -45,6 +45,7 @@
       apiUrl = "";
     }
   }
+  apiUrl = (apiUrl || "").replace(/\/+$/, "");
 
   if (!apiKey) {
     console.warn("[2all.ai] Missing data-api-key attribute on loader script.");

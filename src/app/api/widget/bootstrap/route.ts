@@ -79,7 +79,15 @@ async function handleBootstrap(req: Request) {
 
     if (cleanDomain && !isLocalOrDemo) {
       const domainRecord = await prisma.domain.findFirst({
-        where: { userId, domain: cleanDomain },
+        where: {
+          userId,
+          OR: [
+            { domain: cleanDomain },
+            { canonicalDomain: cleanDomain },
+            { domain: `www.${cleanDomain}` },
+            ...(keyRecord.domainId ? [{ id: keyRecord.domainId }] : []),
+          ],
+        },
       });
 
       if (!domainRecord) {

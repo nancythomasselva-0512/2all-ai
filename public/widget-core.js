@@ -1,8 +1,8 @@
 /**
  * 2all.ai Universal Accessibility Suite & Alex AI Assistant Engine
- * Version: 8.0.0
+ * Version: 10.0.0
  * Pure Universal Vanilla JS - Works on ANY website (WordPress, Shopify, React, HTML, PHP, Angular, Webflow, etc.)
- * 1:1 Complete Replication of 2all.ai Website Accessibility Suite
+ * 1:1 Pixel-Perfect Replica of 2all.ai Website Accessibility Toolbar (DashboardSection & AccessibilityPanel).
  */
 (function () {
   if (window.__2ALL_CORE_INITIALIZED__) return;
@@ -75,7 +75,7 @@
 
   // Restore State from LocalStorage
   try {
-    var saved = localStorage.getItem("2all_universal_suite_v8");
+    var saved = localStorage.getItem("2all_universal_suite_v10");
     if (saved) {
       var parsed = JSON.parse(saved);
       state = Object.assign(state, parsed);
@@ -86,7 +86,7 @@
 
   function saveState() {
     try {
-      localStorage.setItem("2all_universal_suite_v8", JSON.stringify(state));
+      localStorage.setItem("2all_universal_suite_v10", JSON.stringify(state));
     } catch (e) {}
   }
 
@@ -131,7 +131,22 @@
     document.body.appendChild(svgDiv);
   }
 
-  // Shadow DOM Internal Styles
+  // Inject OpenDyslexic Font to Document Head
+  if (!document.getElementById("2all-opendyslexic-font")) {
+    var fontStyle = document.createElement("style");
+    fontStyle.id = "2all-opendyslexic-font";
+    fontStyle.textContent = `
+      @font-face {
+        font-family: 'OpenDyslexic';
+        src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/fonts/OpenDyslexic-Regular.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+      }
+    `;
+    document.head.appendChild(fontStyle);
+  }
+
+  // Shadow DOM Internal Styles (Matches AccessibilityPanel.tsx 1:1)
   var style = document.createElement("style");
   style.textContent = `
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; }
@@ -245,7 +260,7 @@
     }
     .alex-popover-close:hover { color: #0f172a; }
 
-    /* Accessibility Suite Modal Panel Container (Absolute Floating) */
+    /* Accessibility Suite Modal Panel Container (Absolute Floating 1:1) */
     .panel-container {
       position: absolute;
       bottom: 70px;
@@ -255,8 +270,8 @@
       max-height: calc(100vh - 6rem);
       background: #ffffff;
       border: 1px solid rgba(226, 232, 240, 0.9);
-      border-radius: 20px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
       overflow: hidden;
       display: none;
       flex-direction: column;
@@ -305,7 +320,7 @@
       pointer-events: auto;
     }
 
-    /* Header Bar */
+    /* Header Bar (1:1 with AccessibilityPanel.tsx) */
     .panel-header {
       padding: 14px 16px 10px 16px;
       border-bottom: 1px solid #f1f5f9;
@@ -315,21 +330,8 @@
       gap: 10px;
     }
     .header-top { display: flex; align-items: center; justify-content: space-between; }
-    .brand-logo-badge {
-      width: 26px;
-      height: 26px;
-      background: ${primaryColor};
-      border-radius: 7px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
-      font-weight: 900;
-      font-size: 13px;
-      box-shadow: 0 2px 8px rgba(0,75,255,0.35);
-    }
-    .header-title { font-size: 15px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px; line-height: 1; }
-    .header-sub { font-size: 10px; font-weight: 600; color: #64748b; margin-top: 2px; }
+    .header-title { font-size: 16px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px; line-height: 1; }
+    .header-sub { font-size: 11px; font-weight: 600; color: #64748b; margin-top: 2px; }
     
     .header-right { display: flex; align-items: center; gap: 8px; }
     .score-pill {
@@ -340,11 +342,11 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      background: #ecfdf5;
-      color: #047857;
-      border: 1px solid #a7f3d0;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
     }
-    .dot-ping { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+    .dot-ping { width: 7px; height: 7px; border-radius: 50%; background: #2563eb; }
 
     .btn-close {
       width: 28px;
@@ -381,52 +383,93 @@
     .search-input:focus { border-color: ${primaryColor}; background: #ffffff; }
 
     /* Content Area */
-    .panel-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: #ffffff; }
+    .panel-body { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 14px; background: #ffffff; }
 
-    /* Home Score Card */
-    .score-card {
-      background: linear-gradient(135deg, #0a1e3f 0%, #042868 50%, #004bff 100%);
+    /* Light Blue AI Suggestion Card (1:1 with DashboardSection.tsx) */
+    .ai-suggestion-card {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
       border-radius: 16px;
-      padding: 16px;
-      color: #ffffff;
-      box-shadow: 0 10px 25px rgba(0, 75, 255, 0.2);
+      padding: 14px;
+      display: flex;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
     }
-    .score-flex { display: flex; align-items: center; gap: 14px; }
-    .score-circle {
-      width: 58px;
-      height: 58px;
+    .ai-avatar-icon {
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      border: 3.5px solid rgba(255, 255, 255, 0.25);
-      border-top-color: #38bdf8;
+      background: #004bff;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      font-weight: 900;
-      background: rgba(255, 255, 255, 0.1);
       shrink-0: 0;
+      box-shadow: 0 2px 6px rgba(0,75,255,0.3);
     }
-    .score-h3 { font-size: 16px; font-weight: 800; }
-    .score-p { font-size: 11px; color: #93c5fd; margin-top: 2px; line-height: 1.3; }
-    .btn-analysis {
-      margin-top: 12px;
-      width: 100%;
-      padding: 7px 12px;
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: 700;
-      color: #ffffff;
+    .ai-suggestion-title { font-size: 13px; font-weight: 800; color: #0a1e3f; display: flex; align-items: center; gap: 4px; }
+    .ai-suggestion-desc { font-size: 11px; color: #475569; margin-top: 3px; margin-bottom: 10px; line-height: 1.4; }
+    .btn-apply-profile {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: #ffffff;
+      border: 1px solid #93c5fd;
+      color: #004bff;
+      padding: 6px 12px;
+      border-radius: 8px;
       cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .btn-apply-profile:hover { background: #004bff; color: #ffffff; border-color: #004bff; }
+
+    /* Quick Actions Grid Header */
+    .section-label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Quick Action 2x2 Cards Grid (1:1 with DashboardSection.tsx) */
+    .quick-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    
+    .action-card {
+      background: #ffffff;
+      border: 2px solid #cbe2ff;
+      border-radius: 16px;
+      padding: 14px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .action-card:hover { border-color: #0091ff; box-shadow: 0 4px 12px rgba(0,145,255,0.1); }
+    .action-card.active {
+      background: #f0f9ff;
+      border-color: #0091ff;
+      box-shadow: 0 4px 14px rgba(0, 145, 255, 0.18);
+    }
+    .action-card-icon { font-size: 22px; font-weight: 900; color: #0091ff; height: 26px; display: flex; align-items: center; justify-content: center; }
+    .action-card-label { font-size: 11px; font-weight: 800; color: #262626; text-align: center; }
+
+    /* Explore Profiles Banner (1:1 with DashboardSection.tsx) */
+    .explore-banner {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.15s;
     }
-    .btn-analysis:hover { background: rgba(255, 255, 255, 0.25); }
-
-    .analysis-accordion { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; flex-direction: column; gap: 6px; font-size: 11px; }
-    .analysis-row { display: flex; justify-content: space-between; background: rgba(255,255,255,0.1); padding: 6px 10px; border-radius: 8px; }
+    .explore-banner:hover { background: #f1f5f9; }
+    .explore-title { font-size: 13px; font-weight: 800; color: #0a1e3f; }
+    .explore-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .explore-arrow { width: 28px; height: 28px; border-radius: 50%; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; color: #004bff; font-weight: 900; font-size: 14px; }
 
     /* Profile List Items (1:1 with ProfilesSection.tsx) */
     .profile-list-container { display: flex; flex-direction: column; gap: 8px; }
@@ -660,7 +703,7 @@
     }
     .alex-send-button:hover { background: #003edd; }
 
-    /* Action Bar & Brand Footer */
+    /* Action Bar & Brand Footer (1:1 with Screenshot 1) */
     .action-bar {
       padding: 10px 12px 6px 12px;
       background: #ffffff;
@@ -671,12 +714,12 @@
     }
     .btn-reset-main {
       flex: 1;
-      padding: 8px 12px;
+      padding: 9px 12px;
       background: ${primaryColor};
       color: #ffffff;
       font-size: 12px;
       font-weight: 700;
-      border-radius: 10px;
+      border-radius: 12px;
       border: none;
       cursor: pointer;
       display: flex;
@@ -688,12 +731,12 @@
     .btn-reset-main:hover { background: #1d4ed8; }
     .btn-hide-main {
       flex: 1;
-      padding: 8px 12px;
+      padding: 9px 12px;
       background: #f1f5f9;
       color: #334155;
       font-size: 12px;
       font-weight: 700;
-      border-radius: 10px;
+      border-radius: 12px;
       border: 1px solid #e2e8f0;
       cursor: pointer;
       text-align: center;
@@ -702,10 +745,9 @@
     .btn-hide-main:hover { background: #e2e8f0; }
 
     .brand-footer {
-      background: #f8fafc;
-      padding: 5px 12px;
+      background: #ffffff;
+      padding: 4px 12px 8px 12px;
       text-align: center;
-      border-top: 1px solid #f1f5f9;
       font-size: 10px;
       font-weight: 700;
       color: #64748b;
@@ -715,7 +757,7 @@
       gap: 4px;
     }
 
-    /* Bottom 5 Icon Navigation Tabs */
+    /* Bottom 5 Icon Navigation Tabs (1:1 with Screenshot 1) */
     .bottom-nav {
       background: #ffffff;
       border-top: 1px solid #e2e8f0;
@@ -754,17 +796,14 @@
   panel.innerHTML = `
     <div class="panel-header">
       <div class="header-top">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div class="brand-logo-badge">2</div>
-          <div>
-            <div class="header-title">2all.ai Accessibility</div>
-            <div class="header-sub">AI Web Compliance Suite</div>
-          </div>
+        <div>
+          <div class="header-title">Accessibility</div>
+          <div class="header-sub">Accessibility modes</div>
         </div>
         <div class="header-right">
           <div class="score-pill" id="2all-score-pill">
             <span class="dot-ping"></span>
-            <span id="2all-score-text">Score: 100/100</span>
+            <span id="2all-score-text">Score: 70/100</span>
           </div>
           <button class="btn-close" id="2all-close-btn">✕</button>
         </div>
@@ -977,6 +1016,8 @@
     state.activeProfile = "none";
     state.fontSize = 100;
     state.fontFamily = "default";
+    state.dyslexiaFont = false;
+    state.readableFont = false;
     state.letterSpacing = 0;
     state.lineHeight = 1.5;
     state.wordSpacing = 0;
@@ -1010,50 +1051,140 @@
     var score = calculateScore();
     shadow.getElementById("2all-score-text").innerText = "Score: " + score + "/100";
 
-    // 1. DASHBOARD (HOME TAB)
+    // 1. DASHBOARD (HOME TAB) - EXACT 1:1 REPLICA OF DASHBOARDSECTION.TSX (SCREENSHOT 1)
     if (state.activeTab === "dashboard" && !state.searchQuery) {
-      var scoreCard = document.createElement("div");
-      scoreCard.className = "score-card";
-      scoreCard.innerHTML = `
-        <div class="score-flex">
-          <div class="score-circle">${score}</div>
-          <div>
-            <div class="score-h3">Accessibility Score</div>
-            <div class="score-p">${score === 100 ? "100% WCAG 2.1 AA Compliant & fully optimized!" : "Personalized WCAG & UX compliance score."}</div>
-          </div>
+      // Light Blue AI Suggestion Card
+      var suggestionCard = document.createElement("div");
+      suggestionCard.className = "ai-suggestion-card";
+      suggestionCard.innerHTML = `
+        <div class="ai-avatar-icon">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:white;stroke-width:2;"><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M12 8V4H8"/><path d="M2 14h2"/><path d="M20 14h2"/></svg>
         </div>
-        <button class="btn-analysis" id="2all-analysis-trigger">
-          <span>ℹ️ How is this score analyzed?</span>
-          <span>${state.showAnalysis ? "▲" : "▼"}</span>
-        </button>
-        ${state.showAnalysis ? `
-          <div class="analysis-accordion">
-            <div class="analysis-row"><span>WCAG 2.1 AA System Baseline</span><span style="color:#4ade80;font-weight:bold;">70 / 70 Pts</span></div>
-            <div class="analysis-row"><span>Active Profile</span><span style="color:${state.activeProfile!=='none'?'#4ade80':'#93c5fd'};font-weight:bold;">${state.activeProfile!=='none'?15:0} / 15 Pts</span></div>
-            <div class="analysis-row"><span>Typography Optimizations</span><span style="color:#4ade80;font-weight:bold;">5 Pts</span></div>
-            <div class="analysis-row"><span>Visual Contrast Engine</span><span style="color:#4ade80;font-weight:bold;">5 Pts</span></div>
-            <div class="analysis-row"><span>Reading & Focus Tools</span><span style="color:#4ade80;font-weight:bold;">5 Pts</span></div>
+        <div>
+          <div class="ai-suggestion-title">
+            <span>AI Suggestion</span>
+            <span style="color:#f59e0b;">✨</span>
           </div>
-        ` : ""}
+          <div class="ai-suggestion-desc">Based on your activity, we recommend enabling the "Dyslexia Profile" for a smoother reading experience.</div>
+          <button class="btn-apply-profile" id="2all-apply-dyslexia-btn">Apply Profile</button>
+        </div>
       `;
-      panelBody.appendChild(scoreCard);
+      panelBody.appendChild(suggestionCard);
 
       setTimeout(function () {
-        var trigger = shadow.getElementById("2all-analysis-trigger");
-        if (trigger) {
-          trigger.onclick = function () {
-            state.showAnalysis = !state.showAnalysis;
+        var btn = shadow.getElementById("2all-apply-dyslexia-btn");
+        if (btn) {
+          btn.onclick = function () {
+            state.activeProfile = "dyslexia";
+            state.dyslexiaFont = true;
+            state.fontFamily = "dyslexic";
+            state.letterSpacing = 2;
+            state.wordSpacing = 0.4;
+            saveState();
+            applyEffects();
             renderPanelBody();
           };
         }
       }, 50);
 
-      var profilesHeader = document.createElement("div");
-      profilesHeader.style.cssText = "font-size:12px; font-weight:800; color:#0f172a; margin-top:2px;";
-      profilesHeader.innerText = "Quick Accessibility Profiles";
-      panelBody.appendChild(profilesHeader);
+      // Section Label
+      var sectionLabel = document.createElement("div");
+      sectionLabel.className = "section-label";
+      sectionLabel.innerText = "Quick Actions";
+      panelBody.appendChild(sectionLabel);
 
-      renderProfilesGrid();
+      // Quick Actions 2x2 Grid (1:1 with Screenshot 1)
+      var quickGrid = document.createElement("div");
+      quickGrid.className = "quick-actions-grid";
+
+      // 1. Readable Font Card
+      var isReadable = state.fontFamily === "readable" || state.readableFont;
+      var card1 = document.createElement("div");
+      card1.className = "action-card " + (isReadable ? "active" : "");
+      card1.innerHTML = `
+        <div class="action-card-icon">Aa</div>
+        <div class="action-card-label">Readable Font</div>
+      `;
+      card1.onclick = function () {
+        state.readableFont = !state.readableFont;
+        state.fontFamily = state.readableFont ? "readable" : "default";
+        saveState(); applyEffects(); renderPanelBody();
+      };
+      quickGrid.appendChild(card1);
+
+      // 2. Center Aligned Card
+      var isCenter = state.textAlignment === "center";
+      var card2 = document.createElement("div");
+      card2.className = "action-card " + (isCenter ? "active" : "");
+      card2.innerHTML = `
+        <div class="action-card-icon">
+          <svg width="24" height="20" viewBox="0 0 34 28" fill="none">
+            <rect x="10" y="1" width="14" height="4.5" rx="2.25" fill="#0091ff" />
+            <rect x="3" y="8.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
+            <rect x="7" y="16" width="20" height="4.5" rx="2.25" fill="#0091ff" />
+            <rect x="3" y="23.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
+          </svg>
+        </div>
+        <div class="action-card-label">Center Aligned</div>
+      `;
+      card2.onclick = function () {
+        state.textAlignment = isCenter ? "default" : "center";
+        saveState(); applyEffects(); renderPanelBody();
+      };
+      quickGrid.appendChild(card2);
+
+      // 3. High Contrast Card
+      var isHigh = state.isHighContrast;
+      var card3 = document.createElement("div");
+      card3.className = "action-card " + (isHigh ? "active" : "");
+      card3.innerHTML = `
+        <div class="action-card-icon">
+          <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#0091ff;stroke-width:2;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="action-card-label">High Contrast</div>
+      `;
+      card3.onclick = function () {
+        state.isHighContrast = !state.isHighContrast;
+        saveState(); applyEffects(); renderPanelBody();
+      };
+      quickGrid.appendChild(card3);
+
+      // 4. Reading Mask Card
+      var isMask = state.readingMask;
+      var card4 = document.createElement("div");
+      card4.className = "action-card " + (isMask ? "active" : "");
+      card4.innerHTML = `
+        <div class="action-card-icon">
+          <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#0091ff;stroke-width:2;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="action-card-label">Reading Mask</div>
+      `;
+      card4.onclick = function () {
+        state.readingMask = !state.readingMask;
+        saveState(); applyEffects(); renderPanelBody();
+      };
+      quickGrid.appendChild(card4);
+
+      panelBody.appendChild(quickGrid);
+
+      // Explore Smart Profiles Banner
+      var exploreCard = document.createElement("div");
+      exploreCard.className = "explore-banner";
+      exploreCard.innerHTML = `
+        <div>
+          <div class="explore-title">Explore Smart Profiles</div>
+          <div class="explore-sub">1-click accessibility configurations</div>
+        </div>
+        <div class="explore-arrow">→</div>
+      `;
+      exploreCard.onclick = function () {
+        navBtns.forEach(function (b) { b.classList.remove("active"); });
+        var pBtn = shadow.querySelector('[data-tab="profiles"]');
+        if (pBtn) pBtn.classList.add("active");
+        state.activeTab = "profiles";
+        renderPanelBody();
+      };
+      panelBody.appendChild(exploreCard);
     }
 
     // 2. PROFILES (MODES TAB)
@@ -1101,17 +1232,24 @@
       ];
 
       typoFeatures.forEach(function (t) {
+        var isAct = !!state[t.key];
         var box = document.createElement("div");
-        box.className = "card-box " + (state[t.key] ? "active" : "");
+        box.className = "card-box " + (isAct ? "active" : "");
         box.innerHTML = `
           <div class="card-box-title">${t.name}</div>
           <div class="card-box-desc">${t.desc}</div>
-          <div class="card-box-pill">${state[t.key] ? "ON" : "OFF"}</div>
+          <div class="card-box-pill">${isAct ? "ON" : "OFF"}</div>
         `;
         box.onclick = function () {
           state[t.key] = !state[t.key];
-          if (t.key === "dyslexiaFont" && state.dyslexiaFont) state.fontFamily = "dyslexic";
-          if (t.key === "readableFont" && state.readableFont) state.fontFamily = "readable";
+          if (t.key === "dyslexiaFont") {
+            state.fontFamily = state.dyslexiaFont ? "dyslexic" : "default";
+            state.letterSpacing = state.dyslexiaFont ? 2 : 0;
+            state.wordSpacing = state.dyslexiaFont ? 0.4 : 0;
+          }
+          if (t.key === "readableFont") {
+            state.fontFamily = state.readableFont ? "readable" : "default";
+          }
           saveState();
           applyEffects();
           renderPanelBody();
@@ -1139,12 +1277,13 @@
       ];
 
       visionFeatures.forEach(function (v) {
+        var isAct = !!state[v.key];
         var box = document.createElement("div");
-        box.className = "card-box " + (state[v.key] ? "active" : "");
+        box.className = "card-box " + (isAct ? "active" : "");
         box.innerHTML = `
           <div class="card-box-title">${v.name}</div>
           <div class="card-box-desc">${v.desc}</div>
-          <div class="card-box-pill">${state[v.key] ? "ON" : "OFF"}</div>
+          <div class="card-box-pill">${isAct ? "ON" : "OFF"}</div>
         `;
         box.onclick = function () {
           state[v.key] = !state[v.key];
@@ -1226,13 +1365,13 @@
           resetSettings();
         } else {
           state.activeProfile = p.id;
-          if (p.id === "dyslexia") { state.dyslexiaFont = true; state.fontFamily = "dyslexic"; state.letterSpacing = 2; }
+          if (p.id === "dyslexia") { state.dyslexiaFont = true; state.fontFamily = "dyslexic"; state.letterSpacing = 2; state.wordSpacing = 0.4; }
           if (p.id === "adhd") { state.readingMask = true; state.readingRuler = true; }
           if (p.id === "low-vision") { state.isDarkMode = true; state.textMagnifier = true; }
           if (p.id === "seizure") { state.reduceMotion = true; state.stopAnimations = true; }
           if (p.id === "motor-impaired") { state.highlightFocus = true; state.cursorSize = "large"; }
           if (p.id === "blind") { state.textToSpeech = true; }
-          if (p.id === "cognitive") { state.readableFont = true; state.highlightHeadings = true; }
+          if (p.id === "cognitive") { state.readableFont = true; state.fontFamily = "readable"; state.highlightHeadings = true; }
           if (p.id === "reading") { state.lineHeight = 1.8; state.wordSpacing = 0.5; }
           if (p.id === "night") { state.isDarkMode = true; }
         }
@@ -1356,7 +1495,7 @@
     renderAlexChatMessages();
   }
 
-  // Complete Live Effects & Overlays Engine
+  // Complete Live Effects & High-Priority !Important Overlays Engine
   function updateGlobalStyle() {
     var styleEl = document.getElementById("2all-global-effects-style");
     if (!styleEl) {
@@ -1367,31 +1506,92 @@
 
     var css = "";
 
+    // OpenDyslexic / Readable Font Override (Excludes Widget Host)
+    if (state.fontFamily === "dyslexic" || state.dyslexiaFont) {
+      css += `
+        body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
+          font-family: 'OpenDyslexic', 'OpenDyslexic3', 'Comic Sans MS', sans-serif !important;
+          letter-spacing: ${state.letterSpacing || 2}px !important;
+          word-spacing: ${state.wordSpacing || 0.4}em !important;
+        }
+      `;
+    } else if (state.fontFamily === "readable" || state.readableFont) {
+      css += `
+        body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
+          font-family: Verdana, Arial, Helvetica, sans-serif !important;
+        }
+      `;
+    } else {
+      if (state.letterSpacing > 0) {
+        css += `
+          body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
+            letter-spacing: ${state.letterSpacing}px !important;
+          }
+        `;
+      }
+      if (state.wordSpacing > 0) {
+        css += `
+          body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
+            word-spacing: ${state.wordSpacing}em !important;
+          }
+        `;
+      }
+    }
+
+    // Text Alignment
+    if (state.textAlignment === "center") {
+      css += `
+        body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
+          text-align: center !important;
+        }
+      `;
+    }
+
+    // Line Height
+    if (state.lineHeight !== 1.5) {
+      css += `
+        body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
+          line-height: ${state.lineHeight} !important;
+        }
+      `;
+    }
+
+    // Dark Mode Contrast
     if (state.isDarkMode || state.isHighContrast) {
       css += `
         html, body {
           background-color: #0f172a !important;
           color: #f8fafc !important;
         }
-        p, span, h1, h2, h3, h4, h5, h6, li, a, label {
+        body *:not(#2all-ai-widget-host *):not(script):not(style) {
+          background-color: transparent !important;
+          color: #f8fafc !important;
+        }
+        div, section, article, header, footer, main, nav, card {
+          background-color: rgba(15, 23, 42, 0.95) !important;
+          border-color: #334155 !important;
+        }
+        p, span, h1, h2, h3, h4, h5, h6, li, a, label, strong {
           color: #f8fafc !important;
         }
       `;
     }
 
+    // Light Mode High Contrast
     if (state.isLightMode) {
       css += `
         html, body {
           background-color: #ffffff !important;
           color: #000000 !important;
         }
-        p, span, h1, h2, h3, h4, h5, h6, li, a, label {
+        p, span, h1, h2, h3, h4, h5, h6, li, a, label, strong {
           color: #000000 !important;
           font-weight: 700 !important;
         }
       `;
     }
 
+    // Monochrome
     if (state.monochrome) {
       css += `
         html {
@@ -1400,6 +1600,7 @@
       `;
     }
 
+    // Highlight Links
     if (state.highlightLinks) {
       css += `
         a, a * {
@@ -1411,43 +1612,48 @@
       `;
     }
 
+    // Highlight Headings
     if (state.highlightHeadings) {
       css += `
         h1, h2, h3, h4, h5, h6 {
           outline: 3px solid #004bff !important;
           outline-offset: 3px !important;
-          background-color: rgba(0, 75, 255, 0.05) !important;
+          background-color: rgba(0, 75, 255, 0.08) !important;
         }
       `;
     }
 
+    // Highlight Buttons
     if (state.highlightButtons) {
       css += `
-        button, [role="button"], input[type="submit"], input[type="button"] {
+        button, [role="button"], input[type="submit"], input[type="button"], a.btn {
           outline: 3px solid #16a34a !important;
           outline-offset: 3px !important;
         }
       `;
     }
 
+    // Highlight Focus
     if (state.highlightFocus) {
       css += `
         *:focus, *:focus-visible {
           outline: 4px solid #004bff !important;
           outline-offset: 4px !important;
-          box-shadow: 0 0 12px rgba(0, 75, 255, 0.8) !important;
+          box-shadow: 0 0 15px rgba(0, 75, 255, 0.9) !important;
         }
       `;
     }
 
+    // Large Custom Cursor
     if (state.cursorSize === "large" || state.cursorSize === "huge") {
       css += `
-        body, body * {
+        body, body *:not(#2all-ai-widget-host *) {
           cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 24 24' fill='%23004bff' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), auto !important;
         }
       `;
     }
 
+    // Stop Animations / Reduce Motion
     if (state.stopAnimations || state.reduceMotion) {
       css += `
         *, *::before, *::after {
@@ -1574,24 +1780,11 @@
     var doc = document.documentElement;
 
     // Typography & Font Scale
-    doc.style.fontSize = state.fontSize !== 100 ? state.fontSize + "%" : "";
-    
-    // Font Family
-    if (state.fontFamily === "dyslexic") {
-      doc.style.fontFamily = "'OpenDyslexic', sans-serif";
-    } else if (state.fontFamily === "readable") {
-      doc.style.fontFamily = "Verdana, Arial, sans-serif";
+    if (state.fontSize !== 100) {
+      doc.style.fontSize = state.fontSize + "%";
     } else {
-      doc.style.fontFamily = "";
+      doc.style.fontSize = "";
     }
-
-    // Letter / Word / Line Spacing
-    doc.style.letterSpacing = state.letterSpacing > 0 ? state.letterSpacing + "px" : "";
-    doc.style.lineHeight = state.lineHeight !== 1.5 ? state.lineHeight : "";
-    doc.style.wordSpacing = state.wordSpacing > 0 ? state.wordSpacing + "em" : "";
-
-    // Text Align
-    doc.style.textAlign = state.textAlignment !== "default" ? state.textAlignment : "";
 
     // Colorblind Filter
     if (state.colorBlindMode !== "none") {
@@ -1600,7 +1793,7 @@
       doc.style.filter = "";
     }
 
-    // Live Overlays & Global Effects
+    // Live Overlays & High-Priority !Important Global Effects Engine
     updateGlobalStyle();
     updateReadingMask();
     updateReadingRuler();
