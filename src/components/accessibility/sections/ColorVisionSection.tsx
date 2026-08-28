@@ -23,7 +23,7 @@ export default function ColorVisionSection({ searchQuery }: { searchQuery: strin
     {
       id: "darkContrast",
       label: "Dark Contrast",
-      desc: "High contrast mode for maximum text clarity",
+      desc: "High contrast dark mode for text clarity",
       icon: <Moon className="w-5 h-5 stroke-[1.8]" />,
       isActive: state.isDarkMode || state.isHighContrast,
       toggle: () => {
@@ -31,6 +31,19 @@ export default function ColorVisionSection({ searchQuery }: { searchQuery: strin
         updateSetting("isDarkMode", next);
         updateSetting("isHighContrast", next);
         updateSetting("isLightMode", false);
+      }
+    },
+    {
+      id: "lightContrast",
+      label: "Light Contrast",
+      desc: "Soft light mode with crisp dark elements",
+      icon: <Sun className="w-5 h-5 stroke-[1.8]" />,
+      isActive: state.isLightMode,
+      toggle: () => {
+        const next = !state.isLightMode;
+        updateSetting("isLightMode", next);
+        updateSetting("isDarkMode", false);
+        updateSetting("isHighContrast", false);
       }
     },
     {
@@ -159,40 +172,128 @@ export default function ColorVisionSection({ searchQuery }: { searchQuery: strin
         </div>
       </motion.div>
 
-      {/* Text Color Adaptations */}
-      <motion.div variants={fadeUp} className="space-y-3 pt-2">
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Text Color Adaptations</h3>
+      {/* Text, Title & Background Color Swatches (Matching Screenshot 4) */}
+      <motion.div variants={fadeUp} className="space-y-4 pt-2">
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Custom Color Adaptations</h3>
         
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-3 shadow-xs">
-          <p className="text-xs text-slate-600 font-medium leading-relaxed">
-            Customize the text color across all page elements to improve contrast & reading comfort:
-          </p>
-          
-          <div className="flex flex-wrap gap-2.5 pt-1">
+        {/* Card 1: Text Colors */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-2.5 shadow-xs">
+          <div className="text-xs font-extrabold text-slate-900 text-center">Adjust Text Colors</div>
+          <div className="flex items-center justify-center gap-2 flex-wrap">
             {[
-              { id: "default", label: "Default", bg: "bg-slate-200 text-slate-800 border-slate-300" },
-              { id: "black", label: "Black", bg: "bg-black text-white border-black" },
-              { id: "white", label: "White", bg: "bg-slate-900 text-white border-slate-700" },
-              { id: "yellow", label: "Yellow", bg: "bg-yellow-400 text-slate-950 border-yellow-500" },
-              { id: "blue", label: "Blue", bg: "bg-blue-600 text-white border-blue-700" },
-              { id: "green", label: "Green", bg: "bg-emerald-600 text-white border-emerald-700" },
-              { id: "red", label: "Red", bg: "bg-red-600 text-white border-red-700" },
+              { id: "blue", hex: "#0070f3" },
+              { id: "purple", hex: "#7928ca" },
+              { id: "red", hex: "#e00000" },
+              { id: "orange", hex: "#f5a623" },
+              { id: "teal", hex: "#00b4d8" },
+              { id: "green", hex: "#10b981" },
+              { id: "white", hex: "#ffffff" },
+              { id: "black", hex: "#000000" },
             ].map(col => {
-              const isActive = (state.textColor || "default") === col.id;
+              const isActive = state.textColor === col.id;
               return (
                 <button
                   key={col.id}
                   onClick={() => updateSetting("textColor", col.id as any)}
-                  className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${col.bg} ${
-                    isActive ? 'ring-2 ring-blue-600 ring-offset-1 scale-105 shadow-sm' : 'opacity-85 hover:opacity-100'
+                  className={`w-7 h-7 rounded-full border border-slate-300 transition-all cursor-pointer shadow-xs ${
+                    isActive ? 'ring-2 ring-blue-600 ring-offset-2 scale-110' : 'hover:scale-105'
                   }`}
-                >
-                  <span className="w-2.5 h-2.5 rounded-full bg-current border border-black/20" />
-                  {col.label}
-                </button>
+                  style={{ backgroundColor: col.hex }}
+                  title={`Set text color: ${col.id}`}
+                />
               );
             })}
           </div>
+          {state.textColor !== "default" && (
+            <div className="text-center pt-1">
+              <button
+                onClick={() => updateSetting("textColor", "default")}
+                className="text-[11px] font-bold text-slate-500 hover:text-slate-800 underline cursor-pointer"
+              >
+                Cancel / Reset
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Card 2: Title Colors */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-2.5 shadow-xs">
+          <div className="text-xs font-extrabold text-slate-900 text-center">Adjust Title Colors</div>
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            {[
+              { id: "blue", hex: "#0070f3" },
+              { id: "purple", hex: "#7928ca" },
+              { id: "red", hex: "#e00000" },
+              { id: "orange", hex: "#f5a623" },
+              { id: "teal", hex: "#00b4d8" },
+              { id: "green", hex: "#10b981" },
+              { id: "white", hex: "#ffffff" },
+              { id: "black", hex: "#000000" },
+            ].map(col => {
+              const isActive = state.titleColor === col.id;
+              return (
+                <button
+                  key={col.id}
+                  onClick={() => updateSetting("titleColor", col.id as any)}
+                  className={`w-7 h-7 rounded-full border border-slate-300 transition-all cursor-pointer shadow-xs ${
+                    isActive ? 'ring-2 ring-blue-600 ring-offset-2 scale-110' : 'hover:scale-105'
+                  }`}
+                  style={{ backgroundColor: col.hex }}
+                  title={`Set title color: ${col.id}`}
+                />
+              );
+            })}
+          </div>
+          {state.titleColor !== "default" && (
+            <div className="text-center pt-1">
+              <button
+                onClick={() => updateSetting("titleColor", "default")}
+                className="text-[11px] font-bold text-slate-500 hover:text-slate-800 underline cursor-pointer"
+              >
+                Cancel / Reset
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Card 3: Background Colors */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-2.5 shadow-xs">
+          <div className="text-xs font-extrabold text-slate-900 text-center">Adjust Background Colors</div>
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            {[
+              { id: "blue", hex: "#eff6ff" },
+              { id: "purple", hex: "#faf5ff" },
+              { id: "red", hex: "#fef2f2" },
+              { id: "orange", hex: "#fff7ed" },
+              { id: "teal", hex: "#f0fdfa" },
+              { id: "green", hex: "#f0fdf4" },
+              { id: "white", hex: "#ffffff" },
+              { id: "black", hex: "#0f172a" },
+            ].map(col => {
+              const isActive = state.bgColor === col.id;
+              return (
+                <button
+                  key={col.id}
+                  onClick={() => updateSetting("bgColor", col.id as any)}
+                  className={`w-7 h-7 rounded-full border border-slate-300 transition-all cursor-pointer shadow-xs ${
+                    isActive ? 'ring-2 ring-blue-600 ring-offset-2 scale-110' : 'hover:scale-105'
+                  }`}
+                  style={{ backgroundColor: col.hex }}
+                  title={`Set background color: ${col.id}`}
+                />
+              );
+            })}
+          </div>
+          {state.bgColor !== "default" && (
+            <div className="text-center pt-1">
+              <button
+                onClick={() => updateSetting("bgColor", "default")}
+                className="text-[11px] font-bold text-slate-500 hover:text-slate-800 underline cursor-pointer"
+              >
+                Cancel / Reset
+              </button>
+            </div>
+          )}
         </div>
       </motion.div>
 

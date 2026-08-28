@@ -1,19 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function AlexChatWidget() {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [showBubble, setShowBubble] = useState(true);
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [startedLabel, setStartedLabel] = useState("");
   const [messages, setMessages] = useState<{ from: "alex" | "user"; text: string }[]>([
     { from: "alex", text: "Hi! I'm Alex, your 2all.ai virtual assistant. How can I help make your website accessible today?" },
   ]);
 
-  const now = new Date();
-  const startedAt = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-  const startedLabel = `Started ${now.toLocaleString("en-US", { month: "short" })} ${now.getDate()} at ${startedAt}`;
+  useEffect(() => {
+    setMounted(true);
+    const now = new Date();
+    const startedAt = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+    setStartedLabel(`Started ${now.toLocaleString("en-US", { month: "short" })} ${now.getDate()} at ${startedAt}`);
+  }, []);
 
   const getAlexReply = (text: string): string => {
     const q = text.toLowerCase().trim();
@@ -97,6 +102,8 @@ export default function AlexChatWidget() {
   const handleQuickReply = (text: string) => {
     handleSend(text);
   };
+
+  if (!mounted) return null;
 
   return (
     <>

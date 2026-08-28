@@ -82,18 +82,7 @@ export default function Home() {
             }}
             className="w-full flex flex-col justify-center items-center text-center max-w-4xl mx-auto z-20 space-y-6"
           >
-            <motion.div
-              animate={{ y: [-3, 3, -3] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <motion.span 
-                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-                className="px-4 py-1.5 bg-blue-50/90 backdrop-blur-md border border-blue-200/60 rounded-full text-[11px] font-extrabold text-[#004bff] uppercase tracking-widest block shadow-sm shadow-blue-500/10"
-              >
-                AI-POWERED • EXPERT-VALIDATED • UNIVERSAL ACCESS
-              </motion.span>
-            </motion.div>
-            
+
             <h1 className="text-4xl sm:text-5xl md:text-[56px] font-black text-slate-950 leading-[1.12] tracking-tight max-w-4xl pt-2">
               <span className="overflow-hidden block">
                 <motion.span variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } }} className="block">

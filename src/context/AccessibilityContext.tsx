@@ -7,7 +7,7 @@ export type ColorBlindMode = "none" | "protanopia" | "deuteranopia" | "tritanopi
 export type CursorSize = "normal" | "large" | "huge";
 export type SaturationMode = "normal" | "high" | "low" | "monochrome";
 export type TextAlignment = "default" | "left" | "right" | "center" | "justify";
-export type ProfileType = "none" | "dyslexia" | "adhd" | "low-vision" | "blind" | "motor-impaired" | "cognitive" | "reading" | "night" | "seizure";
+export type ProfileType = "none" | "dyslexia" | "adhd" | "low-vision" | "blind" | "motor-impaired" | "cognitive" | "reading" | "night" | "seizure" | "older-adults";
 
 export function calculateAccessibilityScore(s: AccessibilityState): number {
   let score = 70; // Baseline WCAG 2.1 AA System score
@@ -39,7 +39,8 @@ export function calculateAccessibilityScore(s: AccessibilityState): number {
     s.isDarkMode || 
     s.isLightMode || 
     s.isSmartContrast ||
-    s.saturationMode !== "normal"
+    s.saturationMode !== "normal" ||
+    s.bgColor !== "default"
   ) {
     score += 5;
   }
@@ -47,7 +48,8 @@ export function calculateAccessibilityScore(s: AccessibilityState): number {
   // 5. Colorblind Filter / Text Color (+5 Pts)
   if (
     (s.colorBlindMode && s.colorBlindMode !== "none") ||
-    (Boolean(s.textColor) && s.textColor !== "default")
+    (Boolean(s.textColor) && s.textColor !== "default") ||
+    (Boolean(s.titleColor) && s.titleColor !== "default")
   ) {
     score += 5;
   }
@@ -57,6 +59,9 @@ export function calculateAccessibilityScore(s: AccessibilityState): number {
     s.readingMask || 
     s.readingRuler || 
     s.highlightFocus || 
+    s.highlightHover ||
+    s.hideImages ||
+    s.readMode ||
     s.textMagnifier || 
     s.textToSpeech || 
     s.autoReadSelection ||
@@ -88,21 +93,29 @@ interface AccessibilityState {
   highlightLinks: boolean;
   highlightHeadings: boolean;
   highlightButtons: boolean;
+  highlightHover: boolean;
   readingMask: boolean;
   readingRuler: boolean;
   reduceMotion: boolean;
   stopAnimations: boolean;
   muteSounds: boolean;
+  hideImages: boolean;
+  readMode: boolean;
   cursorSize: CursorSize;
+  cursorColor: "default" | "black" | "white";
   colorBlindMode: ColorBlindMode;
   activeProfile: ProfileType;
   // Advanced features
   saturationMode: SaturationMode;
-  textColor: "default" | "black" | "white" | "yellow" | "blue" | "green" | "red";
+  textColor: "default" | "black" | "white" | "yellow" | "blue" | "green" | "red" | "purple" | "orange" | "teal";
+  titleColor: "default" | "black" | "white" | "yellow" | "blue" | "green" | "red" | "purple" | "orange" | "teal";
+  bgColor: "default" | "black" | "white" | "yellow" | "blue" | "green" | "red" | "purple" | "orange" | "teal";
   highlightFocus: boolean;
   textToSpeech: boolean;
   textMagnifier: boolean;
   textAlignment: TextAlignment;
+  statementModalOpen: boolean;
+  language: string;
   // Speech, Reading & Voice Navigation
   speechStatus: "stopped" | "playing" | "paused";
   selectedText: string;
@@ -146,20 +159,28 @@ const defaultState: AccessibilityState = {
   highlightLinks: false,
   highlightHeadings: false,
   highlightButtons: false,
+  highlightHover: false,
   readingMask: false,
   readingRuler: false,
   reduceMotion: false,
   stopAnimations: false,
   muteSounds: false,
+  hideImages: false,
+  readMode: false,
   cursorSize: "normal",
+  cursorColor: "default",
   colorBlindMode: "none",
   activeProfile: "none",
   saturationMode: "normal",
   textColor: "default",
+  titleColor: "default",
+  bgColor: "default",
   highlightFocus: false,
   textToSpeech: false,
   textMagnifier: false,
   textAlignment: "default",
+  statementModalOpen: false,
+  language: "en-US",
   // Speech & Reading Defaults
   speechStatus: "stopped",
   selectedText: "",
@@ -227,17 +248,39 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     toggleClass("a11y-highlight-headings", s.highlightHeadings);
     toggleClass("a11y-highlight-buttons", s.highlightButtons);
     toggleClass("a11y-highlight-focus", s.highlightFocus);
+    toggleClass("a11y-highlight-hover", s.highlightHover);
+    toggleClass("a11y-hide-images", s.hideImages);
+    toggleClass("a11y-read-mode", s.readMode);
     
     // Motion
     toggleClass("a11y-reduce-motion", s.reduceMotion);
     toggleClass("a11y-stop-animations", s.stopAnimations);
 
     // Cursor
-    body.classList.remove("a11y-cursor-large", "a11y-cursor-huge");
-    html.classList.remove("a11y-cursor-large", "a11y-cursor-huge");
+    body.classList.remove("a11y-cursor-large", "a11y-cursor-huge", "a11y-cursor-black", "a11y-cursor-white");
+    html.classList.remove("a11y-cursor-large", "a11y-cursor-huge", "a11y-cursor-black", "a11y-cursor-white");
     if (s.cursorSize !== "normal") {
       body.classList.add(`a11y-cursor-${s.cursorSize}`);
       html.classList.add(`a11y-cursor-${s.cursorSize}`);
+    }
+    if (s.cursorColor && s.cursorColor !== "default") {
+      body.classList.add(`a11y-cursor-${s.cursorColor}`);
+      html.classList.add(`a11y-cursor-${s.cursorColor}`);
+    }
+
+    // Title & Background Colors
+    const colorClasses = ["black", "white", "yellow", "blue", "green", "red", "purple", "orange", "teal"];
+    colorClasses.forEach(c => {
+      body.classList.remove(`a11y-titlecolor-${c}`, `a11y-bgcolor-${c}`);
+      html.classList.remove(`a11y-titlecolor-${c}`, `a11y-bgcolor-${c}`);
+    });
+    if (s.titleColor && s.titleColor !== "default") {
+      body.classList.add(`a11y-titlecolor-${s.titleColor}`);
+      html.classList.add(`a11y-titlecolor-${s.titleColor}`);
+    }
+    if (s.bgColor && s.bgColor !== "default") {
+      body.classList.add(`a11y-bgcolor-${s.bgColor}`);
+      html.classList.add(`a11y-bgcolor-${s.bgColor}`);
     }
 
     // Color Blind
@@ -452,6 +495,9 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         break;
       case "motor-impaired":
         newSettings = { cursorSize: "large", highlightFocus: true, highlightButtons: true, highlightLinks: true };
+        break;
+      case "older-adults":
+        newSettings = { fontSize: 115, isHighContrast: false, cursorSize: "large", fontFamily: "readable", lineHeight: 1.8, letterSpacing: 0.5 };
         break;
     }
     

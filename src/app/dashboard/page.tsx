@@ -14,7 +14,8 @@ import PageHelpTooltip from "@/components/ui/PageHelpTooltip";
 
 export default async function DashboardPage() {
   const session = await auth();
-  const userName = session?.user?.name?.split(" ")[0] ?? "Zubairya";
+  const rawName = session?.user?.name?.split(" ")[0] ?? "Zubairya";
+  const userName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
   const userPlan = (session?.user as any)?.plan || "NONE";
   const paymentStatus = (session?.user as any)?.paymentStatus || "UNPAID";
 
@@ -26,7 +27,7 @@ export default async function DashboardPage() {
         
         {/* Welcome greeting */}
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center">
+          <h1 className="text-2xl font-black text-slate-800 tracking-tight flex items-center capitalize">
             {userName}, Welcome to 2all.ai
             <PageHelpTooltip
               title="Dashboard Overview"

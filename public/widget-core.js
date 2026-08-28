@@ -138,9 +138,11 @@
     fontStyle.textContent = `
       @font-face {
         font-family: 'OpenDyslexic';
-        src: url('https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/fonts/OpenDyslexic-Regular.otf') format('opentype');
+        src: url('https://fonts.cdnfonts.com/s/29616/open-dyslexic.woff') format('woff'),
+             url('https://cdn.jsdelivr.net/gh/antijingoist/open-dyslexic@master/font/compiled/OpenDyslexic-Regular.otf') format('opentype');
         font-weight: normal;
         font-style: normal;
+        font-display: swap;
       }
     `;
     document.head.appendChild(fontStyle);
@@ -149,7 +151,17 @@
   // Shadow DOM Internal Styles (Matches AccessibilityPanel.tsx 1:1)
   var style = document.createElement("style");
   style.textContent = `
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; }
+    :host, :host *, *, *::before, *::after {
+      box-sizing: border-box !important;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      text-transform: none !important;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
 
     .widget-wrapper {
       pointer-events: auto;
@@ -265,9 +277,9 @@
       position: absolute;
       bottom: 70px;
       right: 0px;
-      width: 375px;
-      height: 530px;
-      max-height: calc(100vh - 6rem);
+      width: 450px;
+      height: 620px;
+      max-height: calc(100vh - 4rem);
       background: #ffffff;
       border: 1px solid rgba(226, 232, 240, 0.9);
       border-radius: 24px;
@@ -879,36 +891,9 @@
   `;
   wrapper.appendChild(alexPanel);
 
-  // 3. Side-by-side Trigger Buttons Row (Alex Chat + Accessibility Button + Popover Prompt)
+  // 3. Trigger Button Row (Single Primary Accessibility Button)
   var triggerRow = document.createElement("div");
   triggerRow.className = "trigger-buttons-row";
-
-  // Alex Popover Bubble Prompt
-  var alexPopover = document.createElement("div");
-  alexPopover.className = "alex-popover-bubble";
-  alexPopover.id = "alex-popover-bubble";
-  alexPopover.innerHTML = `
-    <div class="alex-popover-avatar">
-      <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Alex" alt="Alex" />
-    </div>
-    <div style="flex:1;min-width:0;">
-      <div class="alex-popover-title">Alex</div>
-      <div class="alex-popover-text">Hi, I'm Alex! Need help with web accessibility?</div>
-    </div>
-    <button class="alex-popover-close" id="alex-popover-close">✕</button>
-  `;
-  triggerRow.appendChild(alexPopover);
-
-  // Alex Chat Trigger Button (Dark Navy #000033)
-  var alexBtn = document.createElement("button");
-  alexBtn.className = "alex-trigger-btn";
-  alexBtn.setAttribute("aria-label", "Toggle Alex AI Chat Assistant");
-  alexBtn.innerHTML = `
-    <svg viewBox="0 0 24 24">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-    </svg>
-  `;
-  triggerRow.appendChild(alexBtn);
 
   // Blue Accessibility Trigger Button (#004bff)
   var triggerBtn = document.createElement("button");
@@ -972,7 +957,8 @@
   // Toggle Alex Chat Panel
   function toggleAlexChat() {
     state.alexOpen = !state.alexOpen;
-    alexPopover.style.display = "none";
+    var pop = shadow.getElementById("alex-popover-bubble");
+    if (pop) pop.style.display = "none";
     if (state.alexOpen) {
       alexPanel.classList.add("open");
       state.open = false;
@@ -983,20 +969,21 @@
     }
   }
 
-  alexBtn.onclick = toggleAlexChat;
-  alexPopover.onclick = function (e) {
-    if (e.target && e.target.id === "alex-popover-close") return;
-    toggleAlexChat();
-  };
-
-  shadow.getElementById("alex-popover-close").onclick = function (e) {
-    e.stopPropagation();
-    alexPopover.style.display = "none";
-  };
-  shadow.getElementById("alex-close-btn").onclick = function () {
-    state.alexOpen = false;
-    alexPanel.classList.remove("open");
-  };
+  var popoverCloseBtn = shadow.getElementById("alex-popover-close");
+  if (popoverCloseBtn) {
+    popoverCloseBtn.onclick = function (e) {
+      e.stopPropagation();
+      var pop = shadow.getElementById("alex-popover-bubble");
+      if (pop) pop.style.display = "none";
+    };
+  }
+  var alexCloseBtn = shadow.getElementById("alex-close-btn");
+  if (alexCloseBtn) {
+    alexCloseBtn.onclick = function () {
+      state.alexOpen = false;
+      alexPanel.classList.remove("open");
+    };
+  }
 
   function calculateScore() {
     var hasProfile = state.activeProfile !== "none";
@@ -1506,51 +1493,69 @@
 
     var css = "";
 
-    // OpenDyslexic / Readable Font Override (Excludes Widget Host)
-    if (state.fontFamily === "dyslexic" || state.dyslexiaFont) {
+    // OpenDyslexic / Readable / Lexend Font Override (Excludes Widget Host)
+    if (state.fontFamily === "dyslexic" || state.dyslexiaFont || state.activeProfile === "dyslexia") {
       css += `
-        body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
-          font-family: 'OpenDyslexic', 'OpenDyslexic3', 'Comic Sans MS', sans-serif !important;
-          letter-spacing: ${state.letterSpacing || 2}px !important;
-          word-spacing: ${state.wordSpacing || 0.4}em !important;
+        html, body, p, span, h1, h2, h3, h4, h5, h6, a, div, li, td, th, input, button, select, label, article, section, main, header, footer,
+        body *:not(#2all-ai-widget-host *):not(script):not(style) {
+          font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+          letter-spacing: ${state.letterSpacing || 1}px !important;
+          word-spacing: ${state.wordSpacing || 0.2}em !important;
         }
       `;
     } else if (state.fontFamily === "readable" || state.readableFont) {
       css += `
-        body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
+        html, body, p, span, h1, h2, h3, h4, h5, h6, a, div, li, td, th, input, button, select, label, article, section, main, header, footer,
+        body *:not(#2all-ai-widget-host *):not(script):not(style) {
           font-family: Verdana, Arial, Helvetica, sans-serif !important;
+        }
+      `;
+    } else if (state.fontFamily === "lexend") {
+      css += `
+        html, body, p, span, h1, h2, h3, h4, h5, h6, a, div, li, td, th, input, button, select, label, article, section, main, header, footer,
+        body *:not(#2all-ai-widget-host *):not(script):not(style) {
+          font-family: 'Lexend', sans-serif !important;
         }
       `;
     } else {
       if (state.letterSpacing > 0) {
         css += `
-          body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
+          body *:not(#2all-ai-widget-host *):not(script):not(style) {
             letter-spacing: ${state.letterSpacing}px !important;
           }
         `;
       }
       if (state.wordSpacing > 0) {
         css += `
-          body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
+          body *:not(#2all-ai-widget-host *):not(script):not(style) {
             word-spacing: ${state.wordSpacing}em !important;
           }
         `;
       }
     }
 
-    // Text Alignment
-    if (state.textAlignment === "center") {
+    // Font Sizing Scaling
+    if (state.fontSize && state.fontSize !== 100) {
       css += `
-        body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
-          text-align: center !important;
+        html {
+          font-size: ${state.fontSize}% !important;
+        }
+      `;
+    }
+
+    // Text Alignment
+    if (state.textAlignment && state.textAlignment !== "default") {
+      css += `
+        body *:not(#2all-ai-widget-host *):not(script):not(style) {
+          text-align: ${state.textAlignment} !important;
         }
       `;
     }
 
     // Line Height
-    if (state.lineHeight !== 1.5) {
+    if (state.lineHeight && state.lineHeight !== 1.5) {
       css += `
-        body, body *:not(#2all-ai-widget-host *):not(script):not(style) {
+        body *:not(#2all-ai-widget-host *):not(script):not(style) {
           line-height: ${state.lineHeight} !important;
         }
       `;
@@ -1567,7 +1572,7 @@
           background-color: transparent !important;
           color: #f8fafc !important;
         }
-        div, section, article, header, footer, main, nav, card {
+        div, section, article, header, footer, main, nav {
           background-color: rgba(15, 23, 42, 0.95) !important;
           border-color: #334155 !important;
         }
@@ -1575,10 +1580,7 @@
           color: #f8fafc !important;
         }
       `;
-    }
-
-    // Light Mode High Contrast
-    if (state.isLightMode) {
+    } else if (state.isLightMode) {
       css += `
         html, body {
           background-color: #ffffff !important;
@@ -1591,13 +1593,42 @@
       `;
     }
 
-    // Monochrome
-    if (state.monochrome) {
-      css += `
-        html {
-          filter: grayscale(100%) !important;
-        }
-      `;
+    // Saturation Modes
+    if (state.monochrome || state.saturationMode === "monochrome") {
+      css += `html { filter: grayscale(100%) !important; }`;
+    } else if (state.saturationMode === "high") {
+      css += `html { filter: saturate(200%) !important; }`;
+    } else if (state.saturationMode === "low") {
+      css += `html { filter: saturate(50%) !important; }`;
+    }
+
+    // Custom Text Colors
+    if (state.textColor && state.textColor !== "default") {
+      var tcMap = { black: "#000000", white: "#ffffff", yellow: "#facc15", blue: "#2563eb", green: "#16a34a", red: "#dc2626", purple: "#9333ea", orange: "#ea580c", teal: "#0d9488" };
+      if (tcMap[state.textColor]) {
+        css += `body *:not(#2all-ai-widget-host *):not(script):not(style) { color: ${tcMap[state.textColor]} !important; }`;
+      }
+    }
+
+    // Custom Title Colors
+    if (state.titleColor && state.titleColor !== "default") {
+      var titleMap = { black: "#000000", white: "#ffffff", yellow: "#facc15", blue: "#2563eb", green: "#16a34a", red: "#dc2626", purple: "#9333ea", orange: "#ea580c", teal: "#0d9488" };
+      if (titleMap[state.titleColor]) {
+        css += `h1, h2, h3, h4, h5, h6 { color: ${titleMap[state.titleColor]} !important; }`;
+      }
+    }
+
+    // Custom Background Colors
+    if (state.bgColor && state.bgColor !== "default") {
+      var bgMap = { black: "#0f172a", white: "#ffffff", yellow: "#fef9c3", blue: "#eff6ff", green: "#f0fdf4", red: "#fef2f2", purple: "#faf5ff", orange: "#fff7ed", teal: "#f0fdfa" };
+      if (bgMap[state.bgColor]) {
+        css += `html, body, main, section, article, div:not(#2all-ai-widget-host *) { background-color: ${bgMap[state.bgColor]} !important; }`;
+      }
+    }
+
+    // Hide Images
+    if (state.hideImages) {
+      css += `img, picture, figure, video, [style*="background-image"] { opacity: 0 !important; visibility: hidden !important; }`;
     }
 
     // Highlight Links
@@ -1644,11 +1675,28 @@
       `;
     }
 
+    // Highlight Hover
+    if (state.highlightHover) {
+      css += `
+        a:hover, button:hover, [role="button"]:hover, input:hover, select:hover {
+          outline: 3px solid #004bff !important;
+          outline-offset: 2px !important;
+          box-shadow: 0 0 12px rgba(0, 75, 255, 0.4) !important;
+        }
+      `;
+    }
+
     // Large Custom Cursor
-    if (state.cursorSize === "large" || state.cursorSize === "huge") {
+    if (state.cursorColor === "black" || state.cursorSize === "large" || state.cursorSize === "huge") {
       css += `
         body, body *:not(#2all-ai-widget-host *) {
-          cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 24 24' fill='%23004bff' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), auto !important;
+          cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJibGFjayIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNCA0bDE2IDE2LTYgMS04IDYtNi0yM3oiLz48L3N2Zz4="), auto !important;
+        }
+      `;
+    } else if (state.cursorColor === "white") {
+      css += `
+        body, body *:not(#2all-ai-widget-host *) {
+          cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNCA0bDE2IDE2LTYgMS04IDYtNi0yM3oiLz48L3N2Zz4="), auto !important;
         }
       `;
     }

@@ -55,6 +55,8 @@ interface DomainType {
   installed?: boolean;
   notes?: string;
   createdAt: string;
+  expiresAt?: string;
+  plan?: string;
   apiKeys?: ApiKeyType[];
   _count?: {
     apiKeys?: number;
@@ -118,7 +120,7 @@ export default function DomainOnboarding({
 
   // Modal states
   const [activeModal, setActiveModal] = useState<{
-    type: "add" | "verify" | "details" | "install" | "customize" | "analytics" | "audit" | null;
+    type: "add" | "verify" | "details" | "install" | "customize" | "analytics" | "audit" | "activate" | null;
     domain?: DomainType;
   }>({ type: null });
 
@@ -189,7 +191,18 @@ export default function DomainOnboarding({
       (d.canonicalDomain && d.canonicalDomain.toLowerCase().includes(domainSearch.toLowerCase())) ||
       (d.websiteName && d.websiteName.toLowerCase().includes(domainSearch.toLowerCase()));
 
+    const createdAtDate = d.createdAt ? new Date(d.createdAt) : new Date();
+    const endDate = d.expiresAt
+      ? new Date(d.expiresAt)
+      : new Date(createdAtDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const now = new Date();
+    const isExpired = now > endDate;
     const isVerified = d.verified || d.status === "ACTIVE" || d.status === "VERIFIED";
+
+    if (domainStatusFilter === "EXPIRED" && (!isExpired || isVerified)) return false;
+    if (domainStatusFilter === "TRIAL" && (isExpired || isVerified)) return false;
+    if (domainStatusFilter === "ACTIVE" && !isVerified) return false;
+    if (domainStatusFilter === "PENDING" && isVerified) return false;
     if (domainStatusFilter === "VERIFIED" && !isVerified) return false;
     if (domainStatusFilter === "UNVERIFIED" && isVerified) return false;
 
@@ -465,142 +478,142 @@ export default function DomainOnboarding({
         </div>
       )}
 
-      {/* TOP HEADER CARD - APPROVED VISUAL DESIGN */}
-      <div className="bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/10 border border-blue-100/80 rounded-3xl p-8 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div>
-            <span className="text-[11px] font-black tracking-widest text-[#0052ff] uppercase block">
-              {isAdmin ? "Admin Console / Workspace" : "Customer Workspace"}
-            </span>
-
-            <div className="no-scale font-sans text-2xl font-black text-slate-900 mt-1 tracking-tight flex items-center gap-2">
-              Domains
-              <PageHelpTooltip
-                title="My Domains"
-                purpose="Manage and configure all websites registered under your 2all.ai accessibility subscription."
-                features={[
-                  "Add new domain names to install the accessibility widget",
-                  "Customize widget appearance, colors, and positioning",
-                  "Copy installation embed codes for your web developers"
-                ]}
-              />
-            </div>
-            <p className="no-scale font-sans text-sm font-medium text-slate-600 max-w-3xl mt-1.5 leading-relaxed">
-              Track approved domains, verify ownership, generate API authorization keys, and deploy WCAG accessibility widget CDN scripts from one clean inventory view.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <span className="px-4 py-2 rounded-full bg-slate-100/80 border border-slate-200/60 text-xs font-extrabold text-slate-600 whitespace-nowrap font-sans">
-              Total domains: {domains.length}
-            </span>
-            {/* STEP 1: Add Domain button triggers SaaS modal */}
-            <button
-              onClick={() => {
-                setWebsiteName("");
-                setDomainName("");
-                setEnvironment("Production");
-                setVerificationMethod("META");
-                setNotes("");
-                setFormError(null);
-                setActiveModal({ type: "add" });
-              }}
-              className="px-6 py-2.5 rounded-xl bg-[#0052ff] hover:bg-blue-700 text-white font-extrabold text-sm shadow-lg shadow-blue-500/25 transition-all cursor-pointer border-none flex items-center gap-2 whitespace-nowrap shrink-0 font-sans"
-            >
-              <Plus className="w-4 h-4 stroke-[3]" />
-              Add Domain
-            </button>
-          </div>
+      {/* HEADER SECTION - ACCESSIBE STYLE */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2 px-1">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2 font-sans">
+            <span className="font-extrabold text-slate-900">accessWidget</span>
+            <span className="font-semibold text-slate-800">licenses</span>
+            <span className="text-slate-400 font-medium text-base sm:text-lg ml-1">| {domains.length} total</span>
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1 font-sans">
+            Manage your registered websites, verify ownership, and track WCAG widget license statuses.
+          </p>
         </div>
 
-        {/* SEARCH & FILTER ROW */}
-        <div className="mt-8 pt-6 border-t border-slate-100/80 flex flex-wrap items-end gap-4">
-          <div className="flex-1 min-w-[240px] max-w-md">
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5 font-sans">
-              Search domain
-            </label>
-            <div className="relative">
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => {
+              setWebsiteName("");
+              setDomainName("");
+              setEnvironment("Production");
+              setVerificationMethod("META");
+              setNotes("");
+              setFormError(null);
+              setActiveModal({ type: "add" });
+            }}
+            className="px-5 py-2.5 rounded-xl bg-[#0066ff] hover:bg-blue-700 text-white font-extrabold text-sm shadow-md shadow-blue-500/20 transition-all cursor-pointer border-none flex items-center gap-2 font-sans shrink-0"
+          >
+            <Plus className="w-4 h-4 stroke-[3]" />
+            Add new website
+          </button>
+        </div>
+      </div>
+
+      {/* MAIN CONTAINER CARD - CLEAN WHITE ACCESSIBE DASHBOARD DESIGN */}
+      <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm min-h-[500px]">
+        {/* SEARCH & STATUS FILTER ROW */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+          <div className="flex flex-wrap items-center gap-3 flex-1">
+            {/* Search Input */}
+            <div className="relative flex-1 min-w-[220px] max-w-sm">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="yourwebsite.com"
+                placeholder="Search domain"
                 value={domainSearch}
                 onChange={(e) => setDomainSearch(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#0052ff] shadow-sm transition-all font-sans"
+                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#0066ff] focus:ring-2 focus:ring-blue-100 transition-all font-sans"
               />
+            </div>
+
+            {/* Status Dropdown */}
+            <div className="relative min-w-[140px]">
+              <select
+                value={domainStatusFilter}
+                onChange={(e) => setDomainStatusFilter(e.target.value)}
+                className="w-full appearance-none px-4 py-2.5 pr-8 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-[#0066ff] focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer font-sans"
+              >
+                <option value="all">Status ⌄</option>
+                <option value="all">All statuses</option>
+                <option value="EXPIRED">Expired</option>
+                <option value="TRIAL">7-day trial</option>
+                <option value="ACTIVE">Active / Verified</option>
+                <option value="PENDING">Pending</option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5 font-sans">
-              Status
-            </label>
-            <select
-              value={domainStatusFilter}
-              onChange={(e) => setDomainStatusFilter(e.target.value)}
-              className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:border-[#0052ff] shadow-sm transition-all cursor-pointer font-sans"
-            >
-              <option value="all">All statuses</option>
-              <option value="VERIFIED">Active / Verified</option>
-              <option value="UNVERIFIED">Pending / Unverified</option>
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2.5">
+          {(domainSearch || domainStatusFilter !== "all") && (
             <button
-              type="button"
-              className="px-6 py-2.5 rounded-xl bg-[#0052ff] hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer border-none"
-            >
-              Apply
-            </button>
-            <button
-              type="button"
               onClick={() => {
                 setDomainSearch("");
                 setDomainStatusFilter("all");
               }}
-              className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs border border-slate-200 shadow-sm transition-all cursor-pointer"
+              className="text-xs font-bold text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl transition-colors cursor-pointer border-none"
             >
-              Reset
+              Clear filters
             </button>
-          </div>
-        </div>
-      </div>
-
-      {/* BOTTOM TABLE CARD - APPROVED VISUAL DESIGN */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-sm min-h-[500px]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-100">
-          <div className="space-y-1">
-            <span className="text-xs font-black tracking-wider text-[#0052ff] uppercase block font-sans">
-              Installation Inventory
-            </span>
-            <p className="no-scale text-xl font-extrabold text-slate-900 font-sans tracking-tight">
-              Domain Inventory
-            </p>
-          </div>
+          )}
         </div>
 
-        <div className="mt-3 w-full overflow-visible">
-          <table className="w-full text-left border-collapse min-w-[800px]">
+        {/* DOMAIN LICENSES TABLE */}
+        <div className="mt-4 w-full overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[750px]">
             <thead>
-              <tr className="border-b border-slate-200 text-[11px] font-black tracking-wider text-slate-400 uppercase">
-                <th className="pb-3 pr-4">Domain</th>
-                <th className="pb-3 px-4">Status</th>
-                <th className="pb-3 px-4">Verified</th>
-                <th className="pb-3 px-4">API Keys</th>
-                <th className="pb-3 px-4">Widget Status</th>
-                <th className="pb-3 px-4">Created At</th>
-                <th className="pb-3 pl-4 text-right">Actions</th>
+              <tr className="border-b border-slate-200 text-xs font-bold text-slate-700 font-sans">
+                <th className="pb-4 pr-2 w-12 text-center">#</th>
+                <th className="pb-4 px-4 font-bold">
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-[#0066ff]">
+                    Domain <span className="text-[10px] text-slate-400">⇣</span>
+                  </div>
+                </th>
+                <th className="pb-4 px-4 font-bold">
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-[#0066ff]">
+                    End date <span className="text-[10px] text-slate-400">⇣</span>
+                  </div>
+                </th>
+                <th className="pb-4 px-4 font-bold">
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-[#0066ff]">
+                    Status <span className="text-[10px] text-slate-400">⇣</span>
+                  </div>
+                </th>
+                <th className="pb-4 px-4 font-bold">
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-[#0066ff]">
+                    Plan <span className="text-[10px] text-slate-400">⇣</span>
+                  </div>
+                </th>
+                <th className="pb-4 pl-4 font-bold text-left">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filteredDomains.map((d) => {
+              {filteredDomains.map((d, idx) => {
                 const isVerified = d.verified || d.status === "ACTIVE" || d.status === "VERIFIED";
                 const apiKeysCount = getDomainApiKeysCount(d);
-                const isPublished = d.widgetStatus === "PUBLISHED" || (d.user?.widgetConfigs && d.user.widgetConfigs.some((c: any) => c.publishedConfig));
+                const createdAtDate = d.createdAt ? new Date(d.createdAt) : new Date();
+                const endDate = d.expiresAt
+                  ? new Date(d.expiresAt)
+                  : new Date(createdAtDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+                const now = new Date();
+                const isExpired = now > endDate && !isVerified;
+                const formattedEndDate = endDate.toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                });
 
                 return (
                   <tr key={d.id} className="hover:bg-slate-50/60 transition-colors group">
-                    <td className="py-4 pr-4">
+                    {/* Index Serial Number */}
+                    <td className="py-4 pr-2 text-center">
+                      <span className="inline-flex w-7 h-7 rounded-full bg-slate-50 border border-slate-200 items-center justify-center text-xs font-bold text-slate-700 font-sans">
+                        {idx + 1}
+                      </span>
+                    </td>
+
+                    {/* Domain Name */}
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         <span
                           onClick={() => {
@@ -610,269 +623,270 @@ export default function DomainOnboarding({
                               setActiveModal({ type: "details", domain: d });
                             }
                           }}
-                          className="font-black text-sm text-slate-900 hover:text-[#0052ff] transition-colors cursor-pointer"
+                          className="font-extrabold text-sm text-slate-900 hover:text-[#0066ff] transition-colors cursor-pointer font-sans"
                         >
                           {d.domain}
                         </span>
-                        {d.environment && (
-                          <span className={`text-[9px] px-2 py-0.5 rounded-md font-black uppercase tracking-wider ${
-                            d.environment === "Production" ? "bg-blue-50 text-blue-700 border border-blue-200/60"
-                            : d.environment === "Staging" ? "bg-purple-50 text-purple-700 border border-purple-200/60"
-                            : "bg-slate-100 text-slate-600"
-                          }`}>
+                        {d.environment && d.environment !== "PRODUCTION" && (
+                          <span className="text-[9px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200/60">
                             {d.environment}
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] text-slate-400 font-medium font-sans mt-0.5">
-                        Canonical: {d.canonicalDomain || d.domain}
-                      </p>
                       {d.websiteName && d.websiteName !== d.domain && (
-                        <p className="text-[10px] text-slate-500 font-bold mt-0.5">
+                        <p className="text-[11px] text-slate-400 font-medium font-sans mt-0.5">
                           {d.websiteName}
                         </p>
                       )}
                     </td>
 
+                    {/* End Date */}
+                    <td className="py-4 px-4 text-xs font-medium text-slate-600 font-sans">
+                      {formattedEndDate}
+                    </td>
+
+                    {/* Status Badge */}
                     <td className="py-4 px-4">
-                      {isVerified ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100/80 text-[11px] font-bold">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      {isExpired ? (
+                        <span className="inline-flex items-center px-3 py-1 rounded-md bg-[#fee2e2] text-[#991b1b] text-xs font-bold font-sans">
+                          Expired
+                        </span>
+                      ) : isVerified ? (
+                        <span className="inline-flex items-center px-3 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-bold font-sans">
                           Active
                         </span>
                       ) : (
-                        <span
-                          onClick={() => {
-                            setVerifyMethod(d.verificationMethod || "META");
-                            setActiveModal({ type: "verify", domain: d });
-                          }}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-[11px] font-bold cursor-pointer transition-colors"
-                          title="Click to complete domain ownership verification"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                          Pending
+                        <span className="inline-flex items-center px-3 py-1 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold font-sans">
+                          7-day trial
                         </span>
                       )}
                     </td>
 
-                    <td className="py-4 px-4">
-                      <span className={`text-xs font-medium ${isVerified ? "text-slate-800 font-bold" : "text-slate-500"}`}>
-                        {isVerified ? "Yes" : "No"}
-                      </span>
+                    {/* Plan */}
+                    <td className="py-4 px-4 text-xs font-medium text-slate-600 font-sans">
+                      {isExpired ? "-" : isVerified ? (d.plan || "Standard") : "7-day trial"}
                     </td>
 
-                    <td className="py-4 px-4">
-                      <span className="text-xs font-bold text-slate-700">{apiKeysCount}</span>
-                    </td>
-
-                    <td className="py-4 px-4">
-                      {isPublished ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100/80 text-[11px] font-bold">
-                          Published
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-100/80 text-[11px] font-bold">
-                          Draft
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="py-4 px-4 text-xs font-medium text-slate-500">
-                      {d.createdAt ? new Date(d.createdAt).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "Jul 05, 2026"}
-                    </td>
-
-                    {/* STEP 5: Actions Menu Dropdown Trigger */}
-                    <td className="py-4 pl-4 text-right relative">
-                      <div className="inline-block text-right" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => setOpenDropdownId(openDropdownId === d.id ? null : d.id)}
-                          className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-sm transition-all cursor-pointer inline-flex items-center gap-1.5"
-                        >
-                          Actions
-                          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openDropdownId === d.id ? "rotate-180" : ""}`} />
-                        </button>
-
-                        {/* DROPDOWN MENU ITEMS */}
-                        {openDropdownId === d.id && (
-                          <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200/90 shadow-2xl py-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150 divide-y divide-slate-100">
-                            {/* View Details */}
-                            <div className="py-1">
-                              <button
-                                onClick={() => {
-                                  if (onDomainClick) {
-                                    onDomainClick(d);
-                                  } else {
-                                    setActiveModal({ type: "details", domain: d });
-                                  }
-                                  setOpenDropdownId(null);
-                                }}
-                                className="w-full px-4 py-2 text-left text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
-                              >
-                                <Eye className="w-4 h-4 text-slate-400 shrink-0" />
-                                View Details
-                              </button>
-
-                              {/* Verify Domain */}
-                              <button
-                                onClick={() => {
-                                  setVerifyMethod(d.verificationMethod || "META");
-                                  setActiveModal({ type: "verify", domain: d });
-                                  setOpenDropdownId(null);
-                                }}
-                                className="w-full px-4 py-2 text-left text-xs font-bold text-[#0052ff] hover:bg-blue-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
-                              >
-                                <ShieldCheck className="w-4 h-4 text-[#0052ff] shrink-0" />
-                                Verify Domain
-                              </button>
-                            </div>
-
-                            {/* API Key Controls (Step 5 rule: disable if !isVerified) */}
-                            <div className="py-1">
-                              <button
-                                disabled={!isVerified}
-                                title={!isVerified ? "Verify your domain first." : "Generate a new production API key"}
-                                onClick={() => {
-                                  handleGenerateApiKey(d);
-                                  setOpenDropdownId(null);
-                                }}
-                                className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center justify-between border-none bg-transparent ${
-                                  !isVerified ? "text-slate-300 cursor-not-allowed" : "text-slate-700 hover:bg-slate-50 cursor-pointer"
-                                }`}
-                              >
-                                <span className="flex items-center gap-2.5">
-                                  <Key className="w-4 h-4 text-slate-400 shrink-0" />
-                                  Generate API Key
-                                </span>
-                                {!isVerified && <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 font-extrabold">🔒</span>}
-                              </button>
-
-                              <button
-                                disabled={!isVerified || apiKeysCount === 0}
-                                title={!isVerified ? "Verify your domain first." : apiKeysCount === 0 ? "No active keys to rotate." : "Rotate active API keys"}
-                                onClick={() => {
-                                  handleRotateApiKey(d);
-                                  setOpenDropdownId(null);
-                                }}
-                                className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center justify-between border-none bg-transparent ${
-                                  !isVerified || apiKeysCount === 0 ? "text-slate-300 cursor-not-allowed" : "text-slate-700 hover:bg-slate-50 cursor-pointer"
-                                }`}
-                              >
-                                <span className="flex items-center gap-2.5">
-                                  <RefreshCw className="w-4 h-4 text-slate-400 shrink-0" />
-                                  Rotate API Key
-                                </span>
-                              </button>
-
-                              <button
-                                disabled={!isVerified || apiKeysCount === 0}
-                                title={!isVerified ? "Verify your domain first." : apiKeysCount === 0 ? "No active keys to revoke." : "Revoke active API keys"}
-                                onClick={() => {
-                                  handleRevokeApiKey(d);
-                                  setOpenDropdownId(null);
-                                }}
-                                className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center justify-between border-none bg-transparent ${
-                                  !isVerified || apiKeysCount === 0 ? "text-slate-300 cursor-not-allowed" : "text-red-600 hover:bg-red-50 cursor-pointer"
-                                }`}
-                              >
-                                <span className="flex items-center gap-2.5">
-                                  <Trash2 className="w-4 h-4 text-slate-400 shrink-0" />
-                                  Revoke API Key
-                                </span>
-                              </button>
-                            </div>
-
-                            {/* Widget Controls (Step 5 rule: disable Publish & Install if !isVerified) */}
-                            <div className="py-1">
-                              <button
-                                onClick={() => {
-                                  setActiveModal({ type: "customize", domain: d });
-                                  setOpenDropdownId(null);
-                                }}
-                                className="w-full px-4 py-2 text-left text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
-                              >
-                                <Sliders className="w-4 h-4 text-slate-400 shrink-0" />
-                                Widget Customization
-                              </button>
-
-                              <button
-                                disabled={!isVerified}
-                                title={!isVerified ? "Verify your domain first." : "Publish draft configuration to CDN edge"}
-                                onClick={() => {
-                                  handlePublishWidget(d);
-                                  setOpenDropdownId(null);
-                                }}
-                                className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center justify-between border-none bg-transparent ${
-                                  !isVerified ? "text-slate-300 cursor-not-allowed" : "text-emerald-700 hover:bg-emerald-50 cursor-pointer"
-                                }`}
-                              >
-                                <span className="flex items-center gap-2.5">
-                                  <UploadCloud className="w-4 h-4 text-emerald-500 shrink-0" />
-                                  Publish Widget
-                                </span>
-                                {!isVerified && <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 font-extrabold">🔒</span>}
-                              </button>
-
-                              <button
-                                disabled={!isVerified}
-                                title={!isVerified ? "Verify your domain first." : "View script embed tag for loader.js"}
-                                onClick={() => {
-                                  if (isVerified) {
-                                    setActiveModal({ type: "install", domain: d });
-                                    setOpenDropdownId(null);
-                                  }
-                                }}
-                                className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center justify-between border-none bg-transparent ${
-                                  !isVerified ? "text-slate-300 cursor-not-allowed" : "text-slate-700 hover:bg-slate-50 cursor-pointer"
-                                }`}
-                              >
-                                <span className="flex items-center gap-2.5">
-                                  <Code className="w-4 h-4 text-slate-400 shrink-0" />
-                                  Installation Guide
-                                </span>
-                                {!isVerified && <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 font-extrabold">🔒</span>}
-                              </button>
-                            </div>
-
-                            {/* Telemetry & Audit Logs */}
-                            <div className="py-1">
-                              <button
-                                onClick={() => {
-                                  setActiveModal({ type: "analytics", domain: d });
-                                  setOpenDropdownId(null);
-                                }}
-                                className="w-full px-4 py-2 text-left text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
-                              >
-                                <BarChart3 className="w-4 h-4 text-slate-400 shrink-0" />
-                                Usage Analytics
-                              </button>
-
-                              <button
-                                onClick={() => {
-                                  setActiveModal({ type: "audit", domain: d });
-                                  setOpenDropdownId(null);
-                                }}
-                                className="w-full px-4 py-2 text-left text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
-                              >
-                                <FileText className="w-4 h-4 text-slate-400 shrink-0" />
-                                Audit Logs
-                              </button>
-                            </div>
-
-                            {/* Delete Domain */}
-                            <div className="pt-1 mt-1 border-t border-slate-100">
-                              <button
-                                onClick={() => {
-                                  handleDeleteDomain(d);
-                                  setOpenDropdownId(null);
-                                }}
-                                className="w-full px-4 py-2 text-left text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
-                              >
-                                <Trash2 className="w-4 h-4 text-red-500 shrink-0" />
-                                Delete Domain
-                              </button>
-                            </div>
-                          </div>
+                    {/* Action Column */}
+                    <td className="py-4 pl-4 text-left relative">
+                      <div className="flex items-center gap-3">
+                        {isExpired ? (
+                          <button
+                            onClick={() => setActiveModal({ type: "activate", domain: d })}
+                            className="text-[#0066ff] hover:text-blue-800 font-bold text-xs sm:text-sm cursor-pointer border-none bg-transparent flex items-center gap-1 font-sans"
+                          >
+                            Activate license &gt;
+                          </button>
+                        ) : !isVerified ? (
+                          <button
+                            onClick={() => {
+                              setVerifyMethod(d.verificationMethod || "META");
+                              setActiveModal({ type: "verify", domain: d });
+                            }}
+                            className="text-[#0066ff] hover:text-blue-800 font-bold text-xs sm:text-sm cursor-pointer border-none bg-transparent flex items-center gap-1 font-sans"
+                          >
+                            Verify domain &gt;
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setActiveModal({ type: "activate", domain: d })}
+                            className="text-[#0066ff] hover:text-blue-800 font-bold text-xs sm:text-sm cursor-pointer border-none bg-transparent flex items-center gap-1 font-sans"
+                          >
+                            Activate license &gt;
+                          </button>
                         )}
+
+                        <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            onClick={() => setOpenDropdownId(openDropdownId === d.id ? null : d.id)}
+                            className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors border-none bg-transparent cursor-pointer"
+                            title="More actions"
+                          >
+                            <ChevronDown className={`w-4 h-4 transition-transform ${openDropdownId === d.id ? "rotate-180" : ""}`} />
+                          </button>
+
+                          {/* DROPDOWN MENU ITEMS */}
+                          {openDropdownId === d.id && (
+                            <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200/90 shadow-2xl py-2 z-50 text-left animate-in fade-in zoom-in-95 duration-150 divide-y divide-slate-100">
+                              {/* View Details */}
+                              <div className="py-1">
+                                <button
+                                  onClick={() => {
+                                    if (onDomainClick) {
+                                      onDomainClick(d);
+                                    } else {
+                                      setActiveModal({ type: "details", domain: d });
+                                    }
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
+                                >
+                                  <Eye className="w-4 h-4 text-slate-400 shrink-0" />
+                                  View Details
+                                </button>
+
+                                {/* Verify Domain */}
+                                <button
+                                  onClick={() => {
+                                    setVerifyMethod(d.verificationMethod || "META");
+                                    setActiveModal({ type: "verify", domain: d });
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-xs font-bold text-[#0066ff] hover:bg-blue-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
+                                >
+                                  <ShieldCheck className="w-4 h-4 text-[#0066ff] shrink-0" />
+                                  Verify Domain
+                                </button>
+                              </div>
+
+                              {/* API Key Controls */}
+                              <div className="py-1">
+                                <button
+                                  disabled={!isVerified}
+                                  title={!isVerified ? "Verify your domain first." : "Generate a new production API key"}
+                                  onClick={() => {
+                                    handleGenerateApiKey(d);
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center justify-between border-none bg-transparent ${
+                                    !isVerified ? "text-slate-300 cursor-not-allowed" : "text-slate-700 hover:bg-slate-50 cursor-pointer"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2.5">
+                                    <Key className="w-4 h-4 text-slate-400 shrink-0" />
+                                    Generate API Key
+                                  </span>
+                                  {!isVerified && <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 font-extrabold">🔒</span>}
+                                </button>
+
+                                <button
+                                  disabled={!isVerified || apiKeysCount === 0}
+                                  title={!isVerified ? "Verify your domain first." : apiKeysCount === 0 ? "No active keys to rotate." : "Rotate active API keys"}
+                                  onClick={() => {
+                                    handleRotateApiKey(d);
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center justify-between border-none bg-transparent ${
+                                    !isVerified || apiKeysCount === 0 ? "text-slate-300 cursor-not-allowed" : "text-slate-700 hover:bg-slate-50 cursor-pointer"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2.5">
+                                    <RefreshCw className="w-4 h-4 text-slate-400 shrink-0" />
+                                    Rotate API Key
+                                  </span>
+                                </button>
+
+                                <button
+                                  disabled={!isVerified || apiKeysCount === 0}
+                                  title={!isVerified ? "Verify your domain first." : apiKeysCount === 0 ? "No active keys to revoke." : "Revoke active API keys"}
+                                  onClick={() => {
+                                    handleRevokeApiKey(d);
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center justify-between border-none bg-transparent ${
+                                    !isVerified || apiKeysCount === 0 ? "text-slate-300 cursor-not-allowed" : "text-red-600 hover:bg-red-50 cursor-pointer"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2.5">
+                                    <Trash2 className="w-4 h-4 text-slate-400 shrink-0" />
+                                    Revoke API Key
+                                  </span>
+                                </button>
+                              </div>
+
+                              {/* Widget Controls */}
+                              <div className="py-1">
+                                <button
+                                  onClick={() => {
+                                    setActiveModal({ type: "customize", domain: d });
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
+                                >
+                                  <Sliders className="w-4 h-4 text-slate-400 shrink-0" />
+                                  Widget Customization
+                                </button>
+
+                                <button
+                                  disabled={!isVerified}
+                                  title={!isVerified ? "Verify your domain first." : "Publish draft configuration to CDN edge"}
+                                  onClick={() => {
+                                    handlePublishWidget(d);
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center justify-between border-none bg-transparent ${
+                                    !isVerified ? "text-slate-300 cursor-not-allowed" : "text-emerald-700 hover:bg-emerald-50 cursor-pointer"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2.5">
+                                    <UploadCloud className="w-4 h-4 text-emerald-500 shrink-0" />
+                                    Publish Widget
+                                  </span>
+                                  {!isVerified && <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 font-extrabold">🔒</span>}
+                                </button>
+
+                                <button
+                                  disabled={!isVerified}
+                                  title={!isVerified ? "Verify your domain first." : "View script embed tag for loader.js"}
+                                  onClick={() => {
+                                    if (isVerified) {
+                                      setActiveModal({ type: "install", domain: d });
+                                      setOpenDropdownId(null);
+                                    }
+                                  }}
+                                  className={`w-full px-4 py-2 text-left text-xs font-bold flex items-center justify-between border-none bg-transparent ${
+                                    !isVerified ? "text-slate-300 cursor-not-allowed" : "text-slate-700 hover:bg-slate-50 cursor-pointer"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2.5">
+                                    <Code className="w-4 h-4 text-slate-400 shrink-0" />
+                                    Installation Guide
+                                  </span>
+                                  {!isVerified && <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 font-extrabold">🔒</span>}
+                                </button>
+                              </div>
+
+                              {/* Telemetry & Audit Logs */}
+                              <div className="py-1">
+                                <button
+                                  onClick={() => {
+                                    setActiveModal({ type: "analytics", domain: d });
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
+                                >
+                                  <BarChart3 className="w-4 h-4 text-slate-400 shrink-0" />
+                                  Usage Analytics
+                                </button>
+
+                                <button
+                                  onClick={() => {
+                                    setActiveModal({ type: "audit", domain: d });
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
+                                >
+                                  <FileText className="w-4 h-4 text-slate-400 shrink-0" />
+                                  Audit Logs
+                                </button>
+                              </div>
+
+                              {/* Delete Domain */}
+                              <div className="pt-1 mt-1 border-t border-slate-100">
+                                <button
+                                  onClick={() => {
+                                    handleDeleteDomain(d);
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent"
+                                >
+                                  <Trash2 className="w-4 h-4 text-red-500 shrink-0" />
+                                  Delete Domain
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -881,8 +895,8 @@ export default function DomainOnboarding({
 
               {filteredDomains.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-16 text-center text-slate-500 text-sm font-semibold font-sans no-scale">
-                    No domains tracked in inventory matching your filters. Click &quot;Add Domain&quot; above to register a property.
+                  <td colSpan={6} className="py-16 text-center text-slate-500 text-sm font-semibold font-sans no-scale">
+                    No website licenses matching your search or filters. Click &quot;Add new website&quot; above to register a domain.
                   </td>
                 </tr>
               )}
@@ -1627,6 +1641,82 @@ export default function DomainOnboarding({
                 >
                   <UploadCloud className="w-4 h-4" />
                   Publish Widget
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ====================================================== */}
+      {/* ACTIVATE LICENSE MODAL                                 */}
+      {/* ====================================================== */}
+      {activeModal.type === "activate" && activeModal.domain && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 text-left">
+            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#0066ff] block">License Management</span>
+                <h3 className="text-lg font-black text-slate-800 mt-0.5">Activate License</h3>
+                <p className="text-xs text-slate-500 font-bold mt-0.5">{activeModal.domain.domain}</p>
+              </div>
+              <button
+                onClick={() => setActiveModal({ type: null })}
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl bg-transparent hover:bg-slate-100 border-none cursor-pointer transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-8 space-y-6">
+              <div className="bg-blue-50/60 border border-blue-100 rounded-2xl p-4 flex items-start gap-3">
+                <ShieldCheck className="w-5 h-5 text-[#0066ff] shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-xs font-black text-slate-900">WCAG & ADA Compliance License</h4>
+                  <p className="text-xs text-slate-600 font-medium mt-1 leading-relaxed">
+                    Activate a full production license for <strong className="text-slate-900">{activeModal.domain.domain}</strong> to ensure continuous automated WCAG 2.1 AA accessibility and AI remediation.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="border-2 border-[#0066ff] bg-blue-50/20 rounded-2xl p-5 relative">
+                  <span className="bg-[#0066ff] text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full absolute -top-2.5 left-4">Popular</span>
+                  <h5 className="font-extrabold text-sm text-slate-900">Standard Plan</h5>
+                  <div className="text-2xl font-black text-slate-900 mt-2">$49<span className="text-xs font-semibold text-slate-500"> / month</span></div>
+                  <ul className="text-xs text-slate-600 space-y-1.5 mt-3 font-medium">
+                    <li className="flex items-center gap-1.5">✓ Up to 100K page views/mo</li>
+                    <li className="flex items-center gap-1.5">✓ Full WCAG 2.1 AA Widget</li>
+                    <li className="flex items-center gap-1.5">✓ Automated Screen Reader</li>
+                  </ul>
+                </div>
+
+                <div className="border border-slate-200 hover:border-slate-300 rounded-2xl p-5 bg-white">
+                  <h5 className="font-extrabold text-sm text-slate-900">Pro Plan</h5>
+                  <div className="text-2xl font-black text-slate-900 mt-2">$149<span className="text-xs font-semibold text-slate-500"> / month</span></div>
+                  <ul className="text-xs text-slate-600 space-y-1.5 mt-3 font-medium">
+                    <li className="flex items-center gap-1.5">✓ Up to 1M page views/mo</li>
+                    <li className="flex items-center gap-1.5">✓ Priority Support & Audits</li>
+                    <li className="flex items-center gap-1.5">✓ Custom Widget Branding</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                <button
+                  onClick={() => setActiveModal({ type: null })}
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border-none cursor-pointer transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    showToast(`License activation initiated for ${activeModal.domain?.domain}!`, "success");
+                    setActiveModal({ type: null });
+                  }}
+                  className="px-6 py-2.5 bg-[#0066ff] hover:bg-blue-700 text-white font-extrabold text-xs rounded-xl border-none cursor-pointer transition-colors shadow-md shadow-blue-500/20"
+                >
+                  Confirm & Activate License
                 </button>
               </div>
             </div>

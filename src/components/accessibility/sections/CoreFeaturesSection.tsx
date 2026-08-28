@@ -200,6 +200,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
       items: [
         { id: "readingMask", label: "Reading Mask", type: "toggle", value: state.readingMask, icon: <Maximize className="w-5 h-5" /> },
         { id: "readingRuler", label: "Reading Ruler", type: "toggle", value: state.readingRuler, icon: <Target className="w-5 h-5" /> },
+        { id: "readMode", label: "Read Mode", type: "toggle", value: state.readMode, icon: <BookOpen className="w-5 h-5" /> },
         { id: "textToSpeech", label: "Read Aloud (TTS)", type: "toggle", value: state.textToSpeech, icon: <MonitorSpeaker className="w-5 h-5" /> },
       ]
     },
@@ -210,11 +211,14 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
         { id: "highlightHeadings", label: "Highlight Headings", type: "toggle", value: state.highlightHeadings, icon: <Hash className="w-5 h-5" /> },
         { id: "highlightButtons", label: "Highlight Buttons", type: "toggle", value: state.highlightButtons, icon: <MousePointer2 className="w-5 h-5" /> },
         { id: "highlightFocus", label: "Focus Highlight", type: "toggle", value: state.highlightFocus, icon: <ShieldAlert className="w-5 h-5" /> },
+        { id: "highlightHover", label: "Highlight Hover", type: "toggle", value: state.highlightHover, icon: <Target className="w-5 h-5" /> },
       ]
     },
     {
-      title: "Navigation & Saturation",
+      title: "Orientation & Visual Adjustments",
       items: [
+        { id: "hideImages", label: "Hide Images", type: "toggle", value: state.hideImages, icon: <Video className="w-5 h-5" /> },
+        { id: "muteSounds", label: "Mute Sounds", type: "toggle", value: state.muteSounds, icon: <ShieldAlert className="w-5 h-5" /> },
         { id: "reduceMotion", label: "Reduce Motion", type: "toggle", value: state.reduceMotion, icon: <Video className="w-5 h-5" /> },
         { 
           id: "cursorSize", label: "Cursor Size", type: "select", value: state.cursorSize, icon: <MousePointer2 className="w-5 h-5" />,
@@ -222,6 +226,14 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
             { value: "normal", label: "Normal" },
             { value: "large", label: "Large" },
             { value: "huge", label: "Huge" },
+          ]
+        },
+        { 
+          id: "cursorColor", label: "Cursor Pointer Style", type: "select", value: state.cursorColor, icon: <MousePointer2 className="w-5 h-5" />,
+          options: [
+            { value: "default", label: "Default" },
+            { value: "black", label: "Big Black" },
+            { value: "white", label: "Big White" },
           ]
         },
         { 

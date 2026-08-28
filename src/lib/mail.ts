@@ -36,7 +36,7 @@ const getTransporter = () => {
   const host = process.env.SMTP_HOST || "smtp.gmail.com";
   const port = process.env.SMTP_PORT || "587";
   const user = process.env.SMTP_USER || "aachinancy@gmail.com";
-  const pass = process.env.SMTP_PASS || "uzlcibhsmlkcdhuj";
+  const pass = process.env.SMTP_PASS || "wnijkkwouiqscvei";
 
   if (!user || !pass) {
     console.warn("[SMTP] Warning: SMTP credentials are not configured.");
@@ -877,5 +877,74 @@ export async function sendDomainCreatedScriptEmail(
     logEmailSent("Domain Script User", userEmail, userSubject, "SUCCESS");
   } catch (e: any) {
     logEmailSent("Domain Script User", userEmail, userSubject, "FAILED", e.message);
+  }
+}
+
+export async function sendPlanExpiredEmail(
+  userEmail: string,
+  userName: string,
+  domainName?: string
+) {
+  const transporter = getTransporter();
+  const from = getFromHeader();
+  const targetAdmin = getAdminEmail();
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+  const domainText = domainName ? ` for ${domainName}` : "";
+  const adminSubject = `[Plan Expired Alert] ${userName || userEmail}${domainText}`;
+  const userSubject = `Action Required: Your 2all.ai 7-day trial / license has expired${domainText}`;
+
+  const adminHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #fee2e2; border-radius: 16px; color: #1e293b; background-color: #ffffff;">
+      <h3 style="color: #ef4444; margin-top: 0;">2all.ai License Expired Alert</h3>
+      <p style="font-size: 14px; color: #475569;">The 7-day trial or license period has expired for user account:</p>
+      <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px; line-height: 1.8;">
+        <div><strong>User:</strong> ${userName || "Subscriber"} (${userEmail})</div>
+        <div><strong>Domain:</strong> ${domainName || "All registered domains"}</div>
+        <div><strong>Expired At:</strong> ${new Date().toLocaleString()}</div>
+      </div>
+    </div>
+  `;
+
+  const userHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #fee2e2; border-radius: 16px; color: #1e293b; background-color: #ffffff;">
+      <h2 style="color: #004bff; margin-top: 0;">2all.ai</h2>
+      <p style="font-size: 16px; font-weight: bold; color: #0f172a;">Hi ${userName || "Subscriber"},</p>
+      <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+        Your 7-day trial period or subscription license${domainText} has expired. Live accessibility adjustments and WCAG compliance features are currently paused.
+      </p>
+
+      <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; margin: 20px 0; font-size: 13px; color: #991b1b; line-height: 1.6;">
+        <strong>Renew Your License:</strong> Upgrade to a Standard or Pro plan to reactivate continuous automated WCAG 2.1 AA accessibility and AI remediation.
+      </div>
+
+      <div style="margin: 28px 0; text-align: center;">
+        <a href="${baseUrl}/pricing" style="background-color: #004bff; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; display: inline-block;">RENEW / UPGRADE PLAN</a>
+      </div>
+
+      <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 24px;">
+        &copy; 2026 2all.ai Inc. All rights reserved.
+      </p>
+    </div>
+  `;
+
+  if (!transporter) {
+    logEmailSent("Plan Expired Admin", targetAdmin, adminSubject, "SUCCESS", "Simulated");
+    logEmailSent("Plan Expired User", userEmail, userSubject, "SUCCESS", "Simulated");
+    return;
+  }
+
+  try {
+    await transporter.sendMail({ from, to: targetAdmin, subject: adminSubject, html: adminHtml });
+    logEmailSent("Plan Expired Admin", targetAdmin, adminSubject, "SUCCESS");
+  } catch (e: any) {
+    logEmailSent("Plan Expired Admin", targetAdmin, adminSubject, "FAILED", e.message);
+  }
+
+  try {
+    await transporter.sendMail({ from, to: userEmail, subject: userSubject, html: userHtml });
+    logEmailSent("Plan Expired User", userEmail, userSubject, "SUCCESS");
+  } catch (e: any) {
+    logEmailSent("Plan Expired User", userEmail, userSubject, "FAILED", e.message);
   }
 }

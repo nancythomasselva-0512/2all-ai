@@ -68,8 +68,20 @@ async function handleBootstrap(req: Request) {
     const user = keyRecord.user;
 
     // 2. Domain matching and verification check
-    let cleanDomain = domain.trim().toLowerCase();
-    cleanDomain = cleanDomain.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "");
+    // Extract actual request hostname from browser Origin or Referer headers
+    const originHeader = req.headers.get("origin") || req.headers.get("referer") || "";
+    let requestHost = "";
+    if (originHeader) {
+      try {
+        requestHost = new URL(originHeader).hostname.toLowerCase();
+      } catch (e) {
+        requestHost = originHeader.replace(/^https?:\/\//, "").split("/")[0].split(":")[0].toLowerCase();
+      }
+    }
+
+    // Determine target clean domain (prioritize actual browser requestHost if available)
+    let rawDomain = (requestHost || domain || "").trim().toLowerCase();
+    let cleanDomain = rawDomain.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").split(":")[0];
 
     const isLocalOrDemo =
       cleanDomain.includes("localhost") ||
@@ -78,6 +90,7 @@ async function handleBootstrap(req: Request) {
       process.env.NODE_ENV === "development";
 
     if (cleanDomain && !isLocalOrDemo) {
+      // Find matching domain record registered under this account
       const domainRecord = await prisma.domain.findFirst({
         where: {
           userId,
@@ -85,7 +98,6 @@ async function handleBootstrap(req: Request) {
             { domain: cleanDomain },
             { canonicalDomain: cleanDomain },
             { domain: `www.${cleanDomain}` },
-            ...(keyRecord.domainId ? [{ id: keyRecord.domainId }] : []),
           ],
         },
       });
@@ -96,6 +108,18 @@ async function handleBootstrap(req: Request) {
             success: false,
             error: "UNAUTHORIZED_DOMAIN",
             message: `Domain '${cleanDomain}' is not registered to this API key account.`,
+          },
+          { status: 403, headers: CORS_HEADERS }
+        );
+      }
+
+      // Enforce strict binding: If API Key is assigned to a specific domainId, it MUST match the request domain
+      if (keyRecord.domainId && keyRecord.domainId !== domainRecord.id) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "API_KEY_DOMAIN_MISMATCH",
+            message: `This API key is strictly assigned to a different domain (${keyRecord.domainName || "another domain"}).`,
           },
           { status: 403, headers: CORS_HEADERS }
         );

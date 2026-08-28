@@ -44,7 +44,8 @@ export default function DashboardHeader({ user }: HeaderProps) {
   const [unreadCount, setUnreadCount] = useState(2);
 
   const pathname = usePathname();
-  const firstName = user?.name?.split(" ")[0] ?? "Zubairya";
+  const rawFirstName = user?.name?.split(" ")[0] ?? "Zubairya";
+  const firstName = rawFirstName.charAt(0).toUpperCase() + rawFirstName.slice(1);
 
   // Calculate Plan Expiration Status (7-day trial enforced from user creation)
   const userPlan = (user?.plan || "").toUpperCase();

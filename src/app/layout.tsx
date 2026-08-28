@@ -140,7 +140,7 @@ export default async function RootLayout({
         <AccessibilityProvider>
           <DynamicThemeInjector initialColor={primaryColorHex} />
           <DynamicSeoHead />
-          <div id="app-content">
+          <div id="app-content" suppressHydrationWarning>
             {children}
           </div>
           <AccessibilityWidget />

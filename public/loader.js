@@ -77,9 +77,11 @@
               console.warn("[2all.ai Quota Warning]", res.overageMessage);
             }
 
-            // Inject Core Engine
+            // Inject Core Engine with Cache Busting
+            var scriptPath = res.scriptUrl || "/widget-core.js";
+            var cacheBustUrl = apiUrl + scriptPath + (scriptPath.indexOf("?") >= 0 ? "&" : "?") + "_v=" + (new Date().getTime());
             var coreScript = document.createElement("script");
-            coreScript.src = apiUrl + (res.scriptUrl || "/widget-core.js");
+            coreScript.src = cacheBustUrl;
             coreScript.async = true;
             coreScript.onerror = function () {
               console.error("[2all.ai] Failed to load widget core bundle.");

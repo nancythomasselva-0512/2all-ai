@@ -89,10 +89,10 @@ export default function InstallCodeBlock({
   }, [domain]);
 
   const getSnippet = () => {
-    const key = selectedKey || "pk_live_2all_ai_prod_key_778899";
+    const key = selectedKey || "";
     let targetDomain = domain || "yourwebsite.com";
     return `<!-- AI Widget -->
-<script src="https://cdn.example.com/widget.js" 
+<script src="/loader.js" 
         data-api-key="${key}"
         data-domain="${targetDomain}"></script>`;
   };
@@ -333,16 +333,21 @@ export default function InstallCodeBlock({
     }
   };
 
-  const currentKey = selectedKey || (apiKeys.length > 0 ? apiKeys[0].key : "");
+  const currentKey = selectedKey || (domainFilteredKeys.length > 0 ? domainFilteredKeys[0].key : "");
   const originUrl = typeof window !== "undefined" ? window.location.origin : "https://YOUR_PLATFORM_DOMAIN";
 
-  const codeSnippet = `<script
+  const hasValidKey = Boolean(currentKey);
+
+  const codeSnippet = hasValidKey
+    ? `<script
     src="${originUrl}/loader.js"
-    data-api-key="${currentKey || "2all_live_YOUR_API_KEY"}"
+    data-api-key="${currentKey}"
     data-domain="${selectedDomain}">
-</script>`;
+</script>`
+    : `<!-- Please generate an API Key for ${selectedDomain} to view your embed snippet -->`;
 
   const handleCopy = async () => {
+    if (!hasValidKey) return;
     try {
       await navigator.clipboard.writeText(codeSnippet);
       setCopied(true);
@@ -518,7 +523,12 @@ export default function InstallCodeBlock({
                   </span>
                   <button
                     onClick={handleCopy}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-blue-500/25 transition-all cursor-pointer border-none uppercase tracking-wider"
+                    disabled={!hasValidKey}
+                    className={`inline-flex items-center gap-2 px-5 py-2.5 font-extrabold text-xs rounded-xl shadow-lg transition-all border-none uppercase tracking-wider ${
+                      hasValidKey
+                        ? "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-500/25 cursor-pointer"
+                        : "bg-slate-800 text-slate-500 cursor-not-allowed"
+                    }`}
                   >
                     {copied ? (
                       <>

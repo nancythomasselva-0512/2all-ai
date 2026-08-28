@@ -82,6 +82,13 @@ const profiles = [
     icon: Accessibility, 
     desc: "Optimizes focus & keyboard controls",
     detail: "Enlarges interactive target areas and boosts keyboard focus indicators for easier navigation."
+  },
+  { 
+    id: "older-adults", 
+    label: "Older Adults", 
+    icon: Glasses, 
+    desc: "Enhance visibility and reading comfort",
+    detail: "Adjusts text sizing (+15%), line height, contrast, and cursor visibility to provide senior adults with a comfortable reading and browsing experience."
   }
 ];
 

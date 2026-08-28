@@ -45,7 +45,7 @@ html {
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Times New Roman', Times, Georgia, serif !important;
+  font-family: 'Times New Roman', Times, Georgia, serif;
   font-size: 1rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -55,7 +55,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6, .font-heading {
-  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif !important;
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
   line-height: 1.25;
   font-weight: 700;
 }
@@ -334,21 +334,34 @@ html.a11y-light-mode, body.a11y-light-mode {
 }
 
 /* Dyslexia & Readable Font Classes */
+html.a11y-font-dyslexic,
+body.a11y-font-dyslexic,
 .a11y-font-dyslexic,
 .a11y-font-dyslexic #app-content, 
-.a11y-font-dyslexic #app-content *:not(svg):not(path):not(i):not(.lucide) {
+.a11y-font-dyslexic #app-content *:not(svg):not(path):not(i):not(.lucide),
+.a11y-font-dyslexic h1, .a11y-font-dyslexic h2, .a11y-font-dyslexic h3, .a11y-font-dyslexic h4, .a11y-font-dyslexic h5, .a11y-font-dyslexic h6,
+.a11y-font-dyslexic p, .a11y-font-dyslexic span, .a11y-font-dyslexic a, .a11y-font-dyslexic button, .a11y-font-dyslexic input, .a11y-font-dyslexic label {
   font-family: 'OpenDyslexic', 'Lexend', sans-serif !important;
+  letter-spacing: 0.5px !important;
 }
 
+html.a11y-font-lexend,
+body.a11y-font-lexend,
 .a11y-font-lexend,
 .a11y-font-lexend #app-content, 
-.a11y-font-lexend #app-content *:not(svg):not(path):not(i):not(.lucide) {
+.a11y-font-lexend #app-content *:not(svg):not(path):not(i):not(.lucide),
+.a11y-font-lexend h1, .a11y-font-lexend h2, .a11y-font-lexend h3, .a11y-font-lexend h4, .a11y-font-lexend h5, .a11y-font-lexend h6,
+.a11y-font-lexend p, .a11y-font-lexend span, .a11y-font-lexend a, .a11y-font-lexend button, .a11y-font-lexend input, .a11y-font-lexend label {
   font-family: 'Lexend', sans-serif !important;
 }
 
+html.a11y-font-readable,
+body.a11y-font-readable,
 .a11y-font-readable,
 .a11y-font-readable #app-content, 
-.a11y-font-readable #app-content *:not(svg):not(path):not(i):not(.lucide) {
+.a11y-font-readable #app-content *:not(svg):not(path):not(i):not(.lucide),
+.a11y-font-readable h1, .a11y-font-readable h2, .a11y-font-readable h3, .a11y-font-readable h4, .a11y-font-readable h5, .a11y-font-readable h6,
+.a11y-font-readable p, .a11y-font-readable span, .a11y-font-readable a, .a11y-font-readable button, .a11y-font-readable input, .a11y-font-readable label {
   font-family: 'Atkinson Hyperlegible', Tahoma, Verdana, sans-serif !important;
 }
 
@@ -523,3 +536,54 @@ html.a11y-light-mode, body.a11y-light-mode {
 .a11y-textcolor-red #app-content *:not(#accessibility-panel *):not(.alex-chat-popover *) {
   color: #dc2626 !important;
 }
+
+/* Hide Images Mode */
+.a11y-hide-images #app-content img,
+.a11y-hide-images #app-content picture,
+.a11y-hide-images #app-content figure,
+.a11y-hide-images #app-content video,
+.a11y-hide-images #app-content [style*="background-image"] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Highlight Hover Elements */
+.a11y-highlight-hover #app-content a:hover,
+.a11y-highlight-hover #app-content button:hover,
+.a11y-highlight-hover #app-content [role="button"]:hover,
+.a11y-highlight-hover #app-content input:hover,
+.a11y-highlight-hover #app-content select:hover {
+  outline: 3px solid #004bff !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 12px rgba(0, 75, 255, 0.4) !important;
+}
+
+/* Cursor Black & White */
+.a11y-cursor-black, .a11y-cursor-black * {
+  cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJibGFjayIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNCA0bDE2IDE2LTYgMS04IDYtNi0yM3oiLz48L3N2Zz4='), auto !important;
+}
+.a11y-cursor-white, .a11y-cursor-white * {
+  cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNCA0bDE2IDE2LTYgMS04IDYtNi0yM3oiLz48L3N2Zz4='), auto !important;
+}
+
+/* Custom Title Colors */
+.a11y-titlecolor-black #app-content h1, .a11y-titlecolor-black #app-content h2, .a11y-titlecolor-black #app-content h3, .a11y-titlecolor-black #app-content h4 { color: #000000 !important; }
+.a11y-titlecolor-white #app-content h1, .a11y-titlecolor-white #app-content h2, .a11y-titlecolor-white #app-content h3, .a11y-titlecolor-white #app-content h4 { color: #ffffff !important; }
+.a11y-titlecolor-yellow #app-content h1, .a11y-titlecolor-yellow #app-content h2, .a11y-titlecolor-yellow #app-content h3, .a11y-titlecolor-yellow #app-content h4 { color: #eab308 !important; }
+.a11y-titlecolor-blue #app-content h1, .a11y-titlecolor-blue #app-content h2, .a11y-titlecolor-blue #app-content h3, .a11y-titlecolor-blue #app-content h4 { color: #2563eb !important; }
+.a11y-titlecolor-green #app-content h1, .a11y-titlecolor-green #app-content h2, .a11y-titlecolor-green #app-content h3, .a11y-titlecolor-green #app-content h4 { color: #16a34a !important; }
+.a11y-titlecolor-red #app-content h1, .a11y-titlecolor-red #app-content h2, .a11y-titlecolor-red #app-content h3, .a11y-titlecolor-red #app-content h4 { color: #dc2626 !important; }
+.a11y-titlecolor-purple #app-content h1, .a11y-titlecolor-purple #app-content h2, .a11y-titlecolor-purple #app-content h3, .a11y-titlecolor-purple #app-content h4 { color: #9333ea !important; }
+.a11y-titlecolor-orange #app-content h1, .a11y-titlecolor-orange #app-content h2, .a11y-titlecolor-orange #app-content h3, .a11y-titlecolor-orange #app-content h4 { color: #ea580c !important; }
+.a11y-titlecolor-teal #app-content h1, .a11y-titlecolor-teal #app-content h2, .a11y-titlecolor-teal #app-content h3, .a11y-titlecolor-teal #app-content h4 { color: #0d9488 !important; }
+
+/* Custom Background Colors */
+.a11y-bgcolor-black #app-content { background-color: #0f172a !important; }
+.a11y-bgcolor-white #app-content { background-color: #ffffff !important; }
+.a11y-bgcolor-yellow #app-content { background-color: #fef9c3 !important; }
+.a11y-bgcolor-blue #app-content { background-color: #eff6ff !important; }
+.a11y-bgcolor-green #app-content { background-color: #f0fdf4 !important; }
+.a11y-bgcolor-red #app-content { background-color: #fef2f2 !important; }
+.a11y-bgcolor-purple #app-content { background-color: #faf5ff !important; }
+.a11y-bgcolor-orange #app-content { background-color: #fff7ed !important; }
+.a11y-bgcolor-teal #app-content { background-color: #f0fdfa !important; }
