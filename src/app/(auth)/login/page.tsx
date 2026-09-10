@@ -37,7 +37,15 @@ function LoginForm() {
       if (res?.error) {
         setError("Invalid email or password.");
       } else {
-        if (plan) {
+        const sessionRes = await fetch("/api/auth/session");
+        const sessionData = await sessionRes.json();
+        const role = (sessionData?.user?.role || "").toUpperCase();
+
+        if (role === "SUPER_ADMIN") {
+          window.location.href = "/super-admin/dashboard";
+        } else if (role === "ADMIN") {
+          window.location.href = "/admin/dashboard";
+        } else if (plan) {
           router.push(`/checkout?plan=${plan}&billing=${billing || "yearly"}`);
         } else if (trial === "1" && site) {
           router.push(`/dashboard?trial=1&site=${site}`);

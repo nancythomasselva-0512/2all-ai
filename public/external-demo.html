@@ -1,54 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>External Website Integration Test</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>External 3rd-Party Website Demo - 2all.ai Accessibility Suite</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 40px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: #f8fafc;
       color: #0f172a;
       line-height: 1.6;
+      padding-bottom: 80px;
+    }
+    header {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #2563eb;
+    }
+    header .logo {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: #60a5fa;
+    }
+    nav a {
+      color: #cbd5e1;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: color 0.15s;
+    }
+    nav a:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+    .hero {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #ffffff;
+      padding: 60px 32px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 38px;
+      font-weight: 900;
+      margin-bottom: 14px;
+      color: #ffffff;
+    }
+    .hero p {
+      font-size: 18px;
+      color: #94a3b8;
+      max-width: 700px;
+      margin: 0 auto 24px auto;
+    }
+    .hero .badge {
+      display: inline-block;
+      background: #2563eb;
+      color: #ffffff;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
     }
     .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      border: 1px solid #e2e8f0;
+      max-width: 1000px;
+      margin: -30px auto 0 auto;
+      padding: 0 20px;
     }
-    h1 { color: #2563eb; margin-top: 0; }
-    .pill {
-      display: inline-block;
-      background: #e0e7ff;
-      color: #3730a3;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 999px;
-      font-size: 13px;
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+    }
+    .card h3 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+    .card p {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+    .demo-form {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+      margin-top: 20px;
+    }
+    .demo-form h2 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      color: #475569;
+    }
+    input[type="text"], input[type="email"], textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus, textarea:focus {
+      border-color: #2563eb;
+    }
+    .btn-submit {
+      background: #2563eb;
+      color: #ffffff;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: background 0.15s;
+    }
+    .btn-submit:hover {
+      background: #1d4ed8;
+    }
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 16px 20px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: #1e40af;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <span class="pill">3rd-Party Website Demonstration</span>
-    <h1>External Website (WordPress / Shopify / Webflow)</h1>
-    <p>This independent website embeds the 2all.ai script tag to enable instant accessibility tools & Alex AI Assistant.</p>
-    <div style="background: #f1f5f9; padding: 16px; border-radius: 12px; border-left: 4px solid #2563eb; margin-top: 20px;">
-      <strong>Status Check:</strong> Look for the floating accessibility icon at the bottom right corner of this screen.
-    </div>
-  </div>
 
-  <!-- 2all.ai Script Tag Snippet -->
+  <!-- Header -->
+  <header>
+    <div class="logo">ACME eCommerce Store</div>
+    <nav>
+      <a href="#products">Products</a>
+      <a href="#about">About Us</a>
+      <a href="#services">Services</a>
+      <a href="#contact">Contact Support</a>
+    </nav>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero">
+    <span class="badge">Independent 3rd-Party Website</span>
+    <h1>Welcome to ACME Global Store</h1>
+    <p>
+      This independent website is integrated with 2all.ai. Click the floating blue accessibility icon in the bottom right corner to test Dyslexia Mode, Contrast, Scaling, Text-to-Speech, and AI Assistant in real-time!
+    </p>
+  </section>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="info-box">
+      <strong>✨ Live Accessibility Demonstration:</strong> When you activate <strong>Dyslexia Friendly Mode</strong>, <strong>Readable Font</strong>, <strong>High Contrast</strong>, or <strong>Reading Mask</strong> from the widget, all elements below will instantly adapt to assist users with disabilities.
+    </div>
+
+    <!-- Cards Section -->
+    <div class="card-grid" id="products">
+      <div class="card">
+        <h3>Product 1: NextGen Smart Display</h3>
+        <p>Ultra-high definition display with intelligent voice control, customizable color temperatures, and ambient light adjustments for visual comfort.</p>
+        <div style="margin-top:14px;">
+          <a href="#" style="color:#2563eb;font-weight:800;font-size:13px;text-decoration:none;">View Details &rarr;</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Product 2: Ergonomic Workspace</h3>
+        <p>Adaptive motorized desk setup engineered for ergonomic comfort, posture alignment, and accessible keyboard height adjustments.</p>
+        <div style="margin-top:14px;">
+          <a href="#" style="color:#2563eb;font-weight:800;font-size:13px;text-decoration:none;">View Details &rarr;</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Product 3: SoundShield Pro Headphones</h3>
+        <p>Active noise-canceling headphones with tactile volume controls, ambient awareness passthrough, and hearing aid compatibility.</p>
+        <div style="margin-top:14px;">
+          <a href="#" style="color:#2563eb;font-weight:800;font-size:13px;text-decoration:none;">View Details &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact & Feedback Form -->
+    <section class="demo-form" id="contact">
+      <h2>Send Us a Message</h2>
+      <p style="color:#64748b;font-size:14px;margin-bottom:20px;">Test form inputs, keyboard focus highlights, and label associations with the accessibility suite.</p>
+
+      <form onsubmit="event.preventDefault(); alert('Message submitted successfully!');">
+        <div class="form-group">
+          <label for="name">Your Full Name</label>
+          <input type="text" id="name" placeholder="John Doe" required />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="john@example.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="message">Your Message</label>
+          <textarea id="message" rows="4" placeholder="How can we assist you today?"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">Submit Message</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- 
+    ========================================================
+    2ALL.AI ASYNCHRONOUS UNIVERSAL EMBED SNIPPET
+    Works across any 3rd party domain
+    ========================================================
+  -->
   <script
-    src="http://localhost:3000/loader.js"
+    src="/loader.js"
     data-api-key="PUB_0E60538FDABBE7D497AA"
-    data-domain="tekquora.com"
+    data-domain="acme-store.com"
     async>
   </script>
+
 </body>
 </html>

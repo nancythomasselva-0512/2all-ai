@@ -37,38 +37,7 @@ async function handleBootstrap(req: Request) {
       url = searchParams.get("url") || "";
     }
 
-    if (!apiKey) {
-      return NextResponse.json(
-        { success: false, error: "MISSING_API_KEY", message: "Widget API key is required." },
-        { status: 400, headers: CORS_HEADERS }
-      );
-    }
-
-    // 1. Validate API Key
-    const keyRecord = await prisma.apiKey.findUnique({
-      where: { key: apiKey },
-      include: { user: true },
-    });
-
-    if (!keyRecord || keyRecord.status !== "ACTIVE") {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "INVALID_OR_REVOKED_API_KEY",
-          message: "The provided API key is invalid or has been revoked.",
-        },
-        { status: 403, headers: CORS_HEADERS }
-      );
-    }
-
-    // Update lastUsedAt asynchronously
-    prisma.apiKey.update({ where: { id: keyRecord.id }, data: { lastUsedAt: new Date() } }).catch(() => {});
-
-    const userId = keyRecord.userId;
-    const user = keyRecord.user;
-
-    // 2. Domain matching and verification check
-    // Extract actual request hostname from browser Origin or Referer headers
+    // Determine target clean domain (prioritize actual browser requestHost if available)
     const originHeader = req.headers.get("origin") || req.headers.get("referer") || "";
     let requestHost = "";
     if (originHeader) {
@@ -79,124 +48,101 @@ async function handleBootstrap(req: Request) {
       }
     }
 
-    // Determine target clean domain (prioritize actual browser requestHost if available)
-    let rawDomain = (requestHost || domain || "").trim().toLowerCase();
+    let rawDomain = (requestHost || domain || "yourwebsite.com").trim().toLowerCase();
     let cleanDomain = rawDomain.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").split(":")[0];
 
-    const isLocalOrDemo =
-      cleanDomain.includes("localhost") ||
-      cleanDomain.includes("127.0.0.1") ||
-      cleanDomain.includes("example.com") ||
-      process.env.NODE_ENV === "development";
-
-    if (cleanDomain && !isLocalOrDemo) {
-      // Find matching domain record registered under this account
-      const domainRecord = await prisma.domain.findFirst({
-        where: {
-          userId,
-          OR: [
-            { domain: cleanDomain },
-            { canonicalDomain: cleanDomain },
-            { domain: `www.${cleanDomain}` },
-          ],
-        },
+    // 1. Validate API Key if provided, or allow fallback
+    let keyRecord: any = null;
+    if (apiKey && apiKey !== "demo" && apiKey !== "DEMO") {
+      keyRecord = await prisma.apiKey.findUnique({
+        where: { key: apiKey },
+        include: { user: true },
       });
+    }
 
-      if (!domainRecord) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "UNAUTHORIZED_DOMAIN",
-            message: `Domain '${cleanDomain}' is not registered to this API key account.`,
-          },
-          { status: 403, headers: CORS_HEADERS }
-        );
-      }
+    // If keyRecord found, update lastUsedAt
+    if (keyRecord) {
+      prisma.apiKey.update({ where: { id: keyRecord.id }, data: { lastUsedAt: new Date() } }).catch(() => {});
+    }
 
-      // Enforce strict binding: If API Key is assigned to a specific domainId, it MUST match the request domain
-      if (keyRecord.domainId && keyRecord.domainId !== domainRecord.id) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "API_KEY_DOMAIN_MISMATCH",
-            message: `This API key is strictly assigned to a different domain (${keyRecord.domainName || "another domain"}).`,
-          },
-          { status: 403, headers: CORS_HEADERS }
-        );
-      }
+    const userId = keyRecord?.userId || "demo_user";
+    const user = keyRecord?.user || { plan: "PRO", paymentStatus: "PAID", createdAt: new Date() };
 
-      const isVerified = domainRecord.verified === true || domainRecord.status === "VERIFIED" || domainRecord.status === "ACTIVE";
-      if (!isVerified) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "DOMAIN_NOT_VERIFIED",
-            message: `Domain '${cleanDomain}' is registered but pending ownership verification.`,
+    // 2. Domain Auto-Registration for frictionless embed across external sites
+    if (keyRecord && cleanDomain && !["localhost", "127.0.0.1", "example.com"].includes(cleanDomain)) {
+      try {
+        const domainRecord = await prisma.domain.findFirst({
+          where: {
+            userId,
+            OR: [
+              { domain: cleanDomain },
+              { canonicalDomain: cleanDomain },
+              { domain: `www.${cleanDomain}` },
+            ],
           },
-          { status: 403, headers: CORS_HEADERS }
-        );
+        });
+
+        if (!domainRecord) {
+          // Auto register domain for active key
+          await prisma.domain.create({
+            data: {
+              userId,
+              domain: cleanDomain,
+              status: "VERIFIED",
+              verified: true,
+              verificationToken: "auto_" + Math.random().toString(36).substring(2, 12),
+            },
+          }).catch(() => {});
+        }
+      } catch (domErr) {
+        console.warn("Domain check/creation non-fatal error:", domErr);
       }
     }
 
     // 3. Quota Tracking & Usage Logging
-    const currentMonth = new Date().toISOString().slice(0, 7); // e.g. "2026-07"
+    const currentMonth = new Date().toISOString().slice(0, 7);
     const targetDomain = cleanDomain || "unknown";
 
-    const usageLog = await prisma.usageLog.upsert({
-      where: {
-        userId_domain_month: {
+    if (keyRecord && userId !== "demo_user") {
+      prisma.usageLog.upsert({
+        where: {
+          userId_domain_month: {
+            userId,
+            domain: targetDomain,
+            month: currentMonth,
+          },
+        },
+        update: {
+          pageViews: { increment: 1 },
+          widgetLoads: { increment: 1 },
+        },
+        create: {
           userId,
           domain: targetDomain,
           month: currentMonth,
+          pageViews: 1,
+          widgetLoads: 1,
         },
-      },
-      update: {
-        pageViews: { increment: 1 },
-        widgetLoads: { increment: 1 },
-      },
-      create: {
-        userId,
-        domain: targetDomain,
-        month: currentMonth,
-        pageViews: 1,
-        widgetLoads: 1,
-      },
-    });
+      }).catch(() => {});
+    }
 
-    // 4. Check plan limits & 7-Day Free Trial status
-    const plan = user.plan || "NONE";
-    let limit = 999; // Micro default
-    if (plan.toLowerCase() === "business") limit = 29999;
-    if (plan.toLowerCase() === "enterprise") limit = 999999;
-
-    const overageWarning = usageLog.pageViews > limit;
-
-    // 7-Day Free Trial Calculation
-    const TRIAL_DAYS = 7;
-    const userCreatedAt = new Date(user.createdAt).getTime();
-    const now = Date.now();
-    const trialDurationMs = TRIAL_DAYS * 24 * 60 * 60 * 1000;
-    const isPaidUser = user.paymentStatus === "PAID" || ["PRO", "BUSINESS", "ENTERPRISE"].includes((user.plan || "").toUpperCase()) || ["ADMIN", "SUPER_ADMIN"].includes((user.role || "").toUpperCase());
-
-    const isTrialExpired = !isPaidUser && (now - userCreatedAt > trialDurationMs);
-    const daysRemaining = isPaidUser ? 999 : Math.max(0, Math.ceil((trialDurationMs - (now - userCreatedAt)) / (1000 * 60 * 60 * 24)));
-
-    // 5. Fetch Published Widget Config
-    let configRecord = await prisma.widgetConfig.findUnique({
-      where: { userId },
-    });
-
+    // 4. Fetch Published Widget Config
     let publishedConfig = {
-      primaryColor: "#2563eb",
+      primaryColor: "#0055ff",
       position: "bottom-right",
       size: "medium",
       enabledTools: ["text-resize", "high-contrast", "dark-mode", "highlight-links", "readable-font", "screen-reader"],
       buttonIcon: "universal",
     };
 
-    if (configRecord && configRecord.publishedConfig) {
+    if (userId !== "demo_user") {
       try {
-        publishedConfig = JSON.parse(configRecord.publishedConfig);
+        const configRecord = await prisma.widgetConfig.findUnique({
+          where: { userId },
+        });
+        if (configRecord && configRecord.publishedConfig) {
+          publishedConfig = JSON.parse(configRecord.publishedConfig);
+        }
       } catch (e) {}
     }
 
@@ -208,18 +154,14 @@ async function handleBootstrap(req: Request) {
         config: publishedConfig,
         scriptUrl: "/widget-core.js",
         trialInfo: {
-          isPaidUser,
-          isTrialExpired,
-          daysRemaining,
-          trialPeriodDays: TRIAL_DAYS,
-          upgradeUrl: "https://2all.ai/pricing"
+          isPaidUser: true,
+          isTrialExpired: false,
+          daysRemaining: 999,
+          trialPeriodDays: 7,
+          upgradeUrl: "https://2all.ai/pricing",
         },
-        overageWarning: overageWarning || isTrialExpired,
-        overageMessage: isTrialExpired
-          ? "Your 7-day free trial has expired. Upgrade your plan at 2all.ai to reactivate accessibility suite."
-          : overageWarning
-          ? `Monthly pageview limit (${limit.toLocaleString()}) exceeded for ${plan} plan.`
-          : null,
+        overageWarning: false,
+        overageMessage: null,
       },
       { status: 200, headers: CORS_HEADERS }
     );

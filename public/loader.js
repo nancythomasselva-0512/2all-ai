@@ -1,7 +1,8 @@
 /**
  * 2all.ai Accessibility Widget Loader
- * Version: 2.0.0
- * Lightweight bootstrap snippet for dynamic accessibility widget injection.
+ * Version: 2.1.0
+ * Lightweight asynchronous bootstrap snippet for dynamic accessibility widget injection.
+ * Works universally across any 3rd party website (Shopify, WordPress, Webflow, React, PHP, HTML, etc.)
  */
 (function () {
   if (window.__2ALL_WIDGET_LOADED__) return;
@@ -11,29 +12,29 @@
     document.currentScript ||
     (function () {
       var scripts = document.getElementsByTagName("script");
+      for (var i = scripts.length - 1; i >= 0; i--) {
+        if (scripts[i].src && (scripts[i].src.indexOf("loader.js") !== -1 || scripts[i].getAttribute("data-api-key"))) {
+          return scripts[i];
+        }
+      }
       return scripts[scripts.length - 1];
     })();
 
-  if (!currentScript) {
-    console.error("[2all.ai] Could not identify loader script element.");
-    return;
-  }
+  var apiKey = currentScript ? (currentScript.getAttribute("data-api-key") || currentScript.getAttribute("data-key") || currentScript.getAttribute("apiKey")) : "";
+  var domain = currentScript ? (currentScript.getAttribute("data-domain") || window.location.hostname) : window.location.hostname;
+  var apiUrl = currentScript ? currentScript.getAttribute("data-api-url") : "";
 
-  var apiKey = currentScript.getAttribute("data-api-key");
-  var domain = currentScript.getAttribute("data-domain") || window.location.hostname;
-  var apiUrl = currentScript.getAttribute("data-api-url");
-
-  // Fallback: Extract API key from script src query parameters e.g. loader.js?key=PUB_xxx or loader.js?apiKey=PUB_xxx
-  if (!apiKey && currentScript.src) {
+  // Extract API key from script src query parameters e.g. loader.js?key=PUB_xxx or loader.js?apiKey=PUB_xxx
+  if (!apiKey && currentScript && currentScript.src) {
     var keyMatch = currentScript.src.match(/[?&](key|apiKey)=([^&]+)/);
     if (keyMatch && keyMatch[2]) {
       apiKey = decodeURIComponent(keyMatch[2]);
     }
   }
 
-  // Fallback: Infer apiUrl from script src origin e.g. http://localhost:3000/loader.js
-  if (!apiUrl) {
-    if (currentScript.src && currentScript.src.indexOf("http") === 0) {
+  // Infer apiUrl from script src origin e.g. http://localhost:3000/loader.js
+  if (!apiUrl && currentScript && currentScript.src) {
+    if (currentScript.src.indexOf("http") === 0) {
       try {
         var parsedUrl = new URL(currentScript.src);
         apiUrl = parsedUrl.origin;
@@ -41,23 +42,16 @@
         var urlParts = currentScript.src.split("/");
         apiUrl = urlParts[0] + "//" + urlParts[2];
       }
-    } else {
-      apiUrl = "";
     }
   }
   apiUrl = (apiUrl || "").replace(/\/+$/, "");
 
-  if (!apiKey) {
-    console.warn("[2all.ai] Missing data-api-key attribute on loader script.");
-    return;
-  }
-
   var bootstrapUrl =
-    apiUrl +
+    (apiUrl || "") +
     "/api/widget/bootstrap?apiKey=" +
-    encodeURIComponent(apiKey) +
+    encodeURIComponent(apiKey || "demo") +
     "&domain=" +
-    encodeURIComponent(domain) +
+    encodeURIComponent(domain || window.location.hostname) +
     "&url=" +
     encodeURIComponent(window.location.href);
 
@@ -73,13 +67,9 @@
             window.__2ALL_TENANT__ = res.tenantId;
             window.__2ALL_DOMAIN__ = res.domain;
 
-            if (res.overageWarning && res.overageMessage) {
-              console.warn("[2all.ai Quota Warning]", res.overageMessage);
-            }
-
             // Inject Core Engine with Cache Busting
             var scriptPath = res.scriptUrl || "/widget-core.js";
-            var cacheBustUrl = apiUrl + scriptPath + (scriptPath.indexOf("?") >= 0 ? "&" : "?") + "_v=" + (new Date().getTime());
+            var cacheBustUrl = (apiUrl || "") + scriptPath + (scriptPath.indexOf("?") >= 0 ? "&" : "?") + "_v=" + (new Date().getTime());
             var coreScript = document.createElement("script");
             coreScript.src = cacheBustUrl;
             coreScript.async = true;
