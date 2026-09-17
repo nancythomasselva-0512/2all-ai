@@ -1101,6 +1101,26 @@ export default function AdminDashboard({
           </div>
 
           <div className="flex items-center gap-2 md:gap-3 shrink-0">
+            {(a11yState.activeProfile !== "none" ||
+              a11yState.isHighContrast ||
+              a11yState.isDarkMode ||
+              a11yState.highlightLinks ||
+              a11yState.highlightHeadings ||
+              a11yState.highlightButtons ||
+              a11yState.readingMask ||
+              a11yState.readingRuler ||
+              a11yState.colorBlindMode !== "none" ||
+              a11yState.fontSize !== 100) && (
+              <button
+                type="button"
+                onClick={resetA11ySettings}
+                className="text-xs font-black text-white bg-red-600 hover:bg-red-700 px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-red-500/30 border-none animate-pulse"
+                title="Click to reset and turn off Blindness Mode / High Contrast / Accessibility Features"
+              >
+                <X className="w-3.5 h-3.5 stroke-[3]" />
+                <span>Turn Off Accessibility Mode</span>
+              </button>
+            )}
             {currentUser && (
               <button
                 onClick={() => {

@@ -227,7 +227,7 @@ export default function TrustSection() {
                 <span className="text-3xl md:text-4xl font-extrabold text-white block drop-shadow-[0_0_10px_rgba(0,75,255,0.4)]">
                   <Counter value={stat.val} suffix={stat.suffix} />
                 </span>
-                <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider block">
+                <span className="text-slate-300 text-xs font-semibold uppercase tracking-wider block">
                   {stat.label}
                 </span>
               </motion.div>
@@ -244,7 +244,7 @@ export default function TrustSection() {
               </div>
               <div className="text-[10px] leading-tight">
                 <span className="font-extrabold text-white block">4.6 RATING</span>
-                <span className="text-slate-400 block flex items-center gap-0.5">
+                <span className="text-slate-300 block flex items-center gap-0.5">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-2 h-2 fill-amber-400 text-amber-400" />
                   ))}
@@ -255,8 +255,8 @@ export default function TrustSection() {
             {/* Inc. 5000 Badge */}
             <div className="flex items-center bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-[10px] leading-tight">
               <div>
-                <span className="font-serif italic font-black text-slate-200 block text-xs">Inc. 5000</span>
-                <span className="text-slate-500 text-[8px] uppercase tracking-wider block">Honoree</span>
+                <span className="font-serif italic font-black text-slate-100 block text-xs">Inc. 5000</span>
+                <span className="text-slate-400 text-[8px] uppercase tracking-wider block">Honoree</span>
               </div>
             </div>
 

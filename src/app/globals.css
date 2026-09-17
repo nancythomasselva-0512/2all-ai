@@ -215,8 +215,181 @@ html.a11y-light-mode, body.a11y-light-mode {
   filter: invert(1) hue-rotate(180deg) !important;
 }
 
+/* ==================================================
+   LIGHT CONTRAST MODE (WCAG High Light Contrast)
+   Crisp pure white background with high-contrast dark text & sharp borders
+   ================================================== */
+html.a11y-light-mode, 
+body.a11y-light-mode,
 .a11y-light-mode #app-content {
-  filter: invert(0) !important;
+  background-color: #ffffff !important;
+  color: #090d16 !important;
+}
+
+/* Force all dark sections, wrappers, cards, banners, headers, footers to pure crisp light surfaces */
+.a11y-light-mode #app-content section,
+.a11y-light-mode #app-content header,
+.a11y-light-mode #app-content footer,
+.a11y-light-mode #app-content article,
+.a11y-light-mode #app-content nav,
+.a11y-light-mode #app-content [class*="bg-slate-9"],
+.a11y-light-mode #app-content [class*="bg-slate-8"],
+.a11y-light-mode #app-content [class*="bg-gray-9"],
+.a11y-light-mode #app-content [class*="bg-gray-8"],
+.a11y-light-mode #app-content [class*="bg-zinc-9"],
+.a11y-light-mode #app-content [class*="bg-black"],
+.a11y-light-mode #app-content [class*="bg-[#0"] {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #090d16 !important;
+}
+
+/* Crisp Dark Typography: All body text, paragraphs, spans, labels become deep crisp dark black */
+.a11y-light-mode #app-content p,
+.a11y-light-mode #app-content span:not([class*="bg-blue"]):not([class*="bg-emerald"]):not([class*="bg-red"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-emerald"]),
+.a11y-light-mode #app-content li,
+.a11y-light-mode #app-content label,
+.a11y-light-mode #app-content td,
+.a11y-light-mode #app-content th,
+.a11y-light-mode #app-content blockquote,
+.a11y-light-mode #app-content [class*="text-slate-"],
+.a11y-light-mode #app-content [class*="text-gray-"],
+.a11y-light-mode #app-content [class*="text-zinc-"] {
+  color: #090d16 !important;
+  font-weight: 550 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Headings in solid pitch black with maximum contrast */
+.a11y-light-mode #app-content h1,
+.a11y-light-mode #app-content h2,
+.a11y-light-mode #app-content h3,
+.a11y-light-mode #app-content h4,
+.a11y-light-mode #app-content h5,
+.a11y-light-mode #app-content h6,
+.a11y-light-mode #app-content [class*="text-white"],
+.a11y-light-mode #app-content [class*="text-slate-100"],
+.a11y-light-mode #app-content [class*="text-slate-200"],
+.a11y-light-mode #app-content [class*="text-slate-300"],
+.a11y-light-mode #app-content [class*="text-slate-700"],
+.a11y-light-mode #app-content [class*="text-slate-800"],
+.a11y-light-mode #app-content [class*="text-slate-900"],
+.a11y-light-mode #app-content [class*="text-slate-950"] {
+  color: #000000 !important;
+  font-weight: 850 !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Stat numbers and counters */
+.a11y-light-mode #app-content [class*="font-extrabold"] {
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+/* Subtitle and muted text boosted to high-contrast dark charcoal */
+.a11y-light-mode #app-content [class*="text-slate-400"],
+.a11y-light-mode #app-content [class*="text-slate-500"],
+.a11y-light-mode #app-content [class*="text-slate-600"],
+.a11y-light-mode #app-content [class*="text-gray-400"],
+.a11y-light-mode #app-content [class*="text-gray-500"],
+.a11y-light-mode #app-content [class*="text-gray-600"] {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+}
+
+/* Crisp High-Contrast Cards & Containers with sharp dark borders */
+.a11y-light-mode #app-content .card-premium,
+.a11y-light-mode #app-content [class*="border-slate-8"],
+.a11y-light-mode #app-content [class*="border-slate-7"],
+.a11y-light-mode #app-content [class*="border-slate-200"],
+.a11y-light-mode #app-content [class*="border-slate-100"],
+.a11y-light-mode #app-content [class*="border-white/"] {
+  border-color: #0f172a !important;
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.a11y-light-mode #app-content [class*="rounded-2xl"],
+.a11y-light-mode #app-content [class*="rounded-3xl"],
+.a11y-light-mode #app-content [class*="rounded-xl"] {
+  border-color: #0f172a !important;
+}
+
+/* Circular tracks in TrustSection */
+.a11y-light-mode #app-content [class*="border-dashed"] {
+  border-color: #94a3b8 !important;
+}
+
+/* Crisp High-Contrast Links */
+.a11y-light-mode #app-content a:not(.btn):not([class*="btn"]) {
+  color: #0037b3 !important;
+  font-weight: 700 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+}
+
+/* Form inputs & textareas */
+.a11y-light-mode #app-content input,
+.a11y-light-mode #app-content select,
+.a11y-light-mode #app-content textarea {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #0f172a !important;
+  font-weight: 600 !important;
+}
+
+/* Buttons in Light Contrast - Fully opaque text & crisp borders */
+.a11y-light-mode #app-content button,
+.a11y-light-mode #app-content button *,
+.a11y-light-mode #app-content .btn,
+.a11y-light-mode #app-content [class*="btn"],
+.a11y-light-mode #app-content .btn-premium,
+.a11y-light-mode #app-content .btn-premium * {
+  color: #000000 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.a11y-light-mode #app-content button.btn-premium,
+.a11y-light-mode #app-content a.btn-premium,
+.a11y-light-mode #app-content button[class*="border-slate"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #0f172a !important;
+  font-weight: 800 !important;
+}
+
+/* Badges and pills in Light Contrast */
+.a11y-light-mode #app-content [class*="bg-slate-900"],
+.a11y-light-mode #app-content [class*="bg-slate-800"] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #0f172a !important;
+}
+
+/* Modals & Portals in Light Contrast */
+.a11y-light-mode .a11y-modal-card {
+  background-color: #ffffff !important;
+  color: #090d16 !important;
+  border: 2px solid #0f172a !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+.a11y-light-mode .a11y-modal-card input,
+.a11y-light-mode .a11y-modal-card select,
+.a11y-light-mode .a11y-modal-card textarea {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #0f172a !important;
+}
+
+/* Clean up blur without degrading element opacity */
+.a11y-light-mode #app-content [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 /* Ensure Modals, Fixed Overlays, and Accessibility Panel are NEVER trapped by CSS filters or double-inverted */
@@ -334,34 +507,19 @@ html.a11y-light-mode, body.a11y-light-mode {
 }
 
 /* Dyslexia & Readable Font Classes */
-html.a11y-font-dyslexic,
-body.a11y-font-dyslexic,
-.a11y-font-dyslexic,
 .a11y-font-dyslexic #app-content, 
-.a11y-font-dyslexic #app-content *:not(svg):not(path):not(i):not(.lucide),
-.a11y-font-dyslexic h1, .a11y-font-dyslexic h2, .a11y-font-dyslexic h3, .a11y-font-dyslexic h4, .a11y-font-dyslexic h5, .a11y-font-dyslexic h6,
-.a11y-font-dyslexic p, .a11y-font-dyslexic span, .a11y-font-dyslexic a, .a11y-font-dyslexic button, .a11y-font-dyslexic input, .a11y-font-dyslexic label {
+.a11y-font-dyslexic #app-content *:not(svg):not(path):not(i):not(.lucide) {
   font-family: 'OpenDyslexic', 'Lexend', sans-serif !important;
   letter-spacing: 0.5px !important;
 }
 
-html.a11y-font-lexend,
-body.a11y-font-lexend,
-.a11y-font-lexend,
 .a11y-font-lexend #app-content, 
-.a11y-font-lexend #app-content *:not(svg):not(path):not(i):not(.lucide),
-.a11y-font-lexend h1, .a11y-font-lexend h2, .a11y-font-lexend h3, .a11y-font-lexend h4, .a11y-font-lexend h5, .a11y-font-lexend h6,
-.a11y-font-lexend p, .a11y-font-lexend span, .a11y-font-lexend a, .a11y-font-lexend button, .a11y-font-lexend input, .a11y-font-lexend label {
+.a11y-font-lexend #app-content *:not(svg):not(path):not(i):not(.lucide) {
   font-family: 'Lexend', sans-serif !important;
 }
 
-html.a11y-font-readable,
-body.a11y-font-readable,
-.a11y-font-readable,
 .a11y-font-readable #app-content, 
-.a11y-font-readable #app-content *:not(svg):not(path):not(i):not(.lucide),
-.a11y-font-readable h1, .a11y-font-readable h2, .a11y-font-readable h3, .a11y-font-readable h4, .a11y-font-readable h5, .a11y-font-readable h6,
-.a11y-font-readable p, .a11y-font-readable span, .a11y-font-readable a, .a11y-font-readable button, .a11y-font-readable input, .a11y-font-readable label {
+.a11y-font-readable #app-content *:not(svg):not(path):not(i):not(.lucide) {
   font-family: 'Atkinson Hyperlegible', Tahoma, Verdana, sans-serif !important;
 }
 
@@ -409,13 +567,13 @@ body.a11y-font-readable,
 
 /* Color Blindness Filters */
 .a11y-cb-protanopia {
-  filter: url('#cb-protanopia') !important;
+  filter: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='p' color-interpolation-filters='sRGB'><feColorMatrix type='matrix' values='0.567, 0.433, 0, 0, 0, 0.558, 0.442, 0, 0, 0, 0, 0.242, 0.758, 0, 0, 0, 0, 0, 1, 0'/></filter></svg>#p") !important;
 }
 .a11y-cb-deuteranopia {
-  filter: url('#cb-deuteranopia') !important;
+  filter: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='d' color-interpolation-filters='sRGB'><feColorMatrix type='matrix' values='0.625, 0.375, 0, 0, 0, 0.7, 0.3, 0, 0, 0, 0, 0.3, 0.7, 0, 0, 0, 0, 0, 1, 0'/></filter></svg>#d") !important;
 }
 .a11y-cb-tritanopia {
-  filter: url('#cb-tritanopia') !important;
+  filter: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='t' color-interpolation-filters='sRGB'><feColorMatrix type='matrix' values='0.95, 0.05, 0, 0, 0, 0, 0.433, 0.567, 0, 0, 0, 0.475, 0.525, 0, 0, 0, 0, 0, 1, 0'/></filter></svg>#t") !important;
 }
 .a11y-cb-achromatopsia {
   filter: grayscale(100%) !important;
@@ -464,11 +622,25 @@ body.a11y-font-readable,
   text-align: justify !important;
 }
 
-/* Focus Highlights */
-.a11y-highlight-focus *:focus {
-  outline: 5px solid #004bff !important;
+/* Focus Highlights - Keyboard & Click Target Ring */
+.a11y-highlight-focus *:focus,
+.a11y-highlight-focus *:focus-visible,
+.a11y-highlight-focus .a11y-focused-target {
+  outline: 4px solid #004bff !important;
   outline-offset: 4px !important;
-  box-shadow: 0 0 0 10px rgba(0, 75, 255, 0.3) !important;
+  box-shadow: 0 0 0 6px rgba(0, 75, 255, 0.35), 0 0 18px rgba(0, 75, 255, 0.45) !important;
+  border-radius: 8px !important;
+  transition: outline 0.15s ease, box-shadow 0.15s ease !important;
+  animation: a11yFocusPulse 2s infinite alternate ease-in-out !important;
+}
+
+@keyframes a11yFocusPulse {
+  0% {
+    box-shadow: 0 0 0 4px rgba(0, 75, 255, 0.3), 0 0 10px rgba(0, 75, 255, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(0, 75, 255, 0.45), 0 0 22px rgba(0, 75, 255, 0.55);
+  }
 }
 
 /* Reading Ruler & Mask Overlays */
@@ -587,3 +759,16 @@ body.a11y-font-readable,
 .a11y-bgcolor-purple #app-content { background-color: #faf5ff !important; }
 .a11y-bgcolor-orange #app-content { background-color: #fff7ed !important; }
 .a11y-bgcolor-teal #app-content { background-color: #f0fdfa !important; }
+
+/* Global Accessibility Protection: Never distort the accessibility panel or chat widget */
+#accessibility-panel,
+#accessibility-panel *,
+.alex-chat-popover,
+.alex-chat-popover *,
+[id="2all-ai-widget-host"],
+[id="2all-ai-widget-host"] * {
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  text-transform: none;
+}

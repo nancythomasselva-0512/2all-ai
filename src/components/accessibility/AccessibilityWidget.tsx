@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useAccessibility } from "@/context/AccessibilityContext";
 import AccessibilityPanel from "./AccessibilityPanel";
 
 export default function AccessibilityWidget() {
+  const pathname = usePathname();
   const { state, togglePanel } = useAccessibility();
   const [mounted, setMounted] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -112,10 +114,76 @@ export default function AccessibilityWidget() {
     };
   }, [state.textToSpeech]);
 
+  // Focus Highlight (Click & Keyboard Focus Ring) Effect
+  useEffect(() => {
+    if (!state.highlightFocus) {
+      document.querySelectorAll(".a11y-focused-target").forEach((el) => {
+        el.classList.remove("a11y-focused-target");
+      });
+      return;
+    }
+
+    const handleFocus = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (!target || target.closest("#accessibility-widget") || target.closest("#accessibility-panel") || target.closest("[id='2all-ai-widget-host']") || target.closest(".alex-chat-popover")) return;
+
+      document.querySelectorAll(".a11y-focused-target").forEach((el) => {
+        if (el !== target) el.classList.remove("a11y-focused-target");
+      });
+      target.classList.add("a11y-focused-target");
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target || target.closest("#accessibility-widget") || target.closest("#accessibility-panel") || target.closest("[id='2all-ai-widget-host']") || target.closest(".alex-chat-popover")) return;
+
+      const focusable = target.closest("button, a, input, select, textarea, [tabindex], h1, h2, h3, h4, p, li, [role='button']") as HTMLElement || target;
+      if (focusable) {
+        document.querySelectorAll(".a11y-focused-target").forEach((el) => {
+          if (el !== focusable) el.classList.remove("a11y-focused-target");
+        });
+        focusable.classList.add("a11y-focused-target");
+      }
+    };
+
+    window.addEventListener("focusin", handleFocus, true);
+    window.addEventListener("click", handleClick, true);
+
+    // Immediately highlight the first key CTA button or hero element so user sees it right away!
+    const timer = setTimeout(() => {
+      const heroBtn = (
+        document.querySelector(".btn-premium, button:not(#accessibility-widget *):not(#accessibility-panel *), h1, a.btn, a[href*='demo'], [role='button']") ||
+        document.querySelector("h1, h2, main button, main a")
+      ) as HTMLElement;
+      if (heroBtn && !heroBtn.closest("#accessibility-widget") && !heroBtn.closest("#accessibility-panel") && !heroBtn.closest("[id='2all-ai-widget-host']")) {
+        heroBtn.classList.add("a11y-focused-target");
+      }
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("focusin", handleFocus, true);
+      window.removeEventListener("click", handleClick, true);
+      document.querySelectorAll(".a11y-focused-target").forEach((el) => {
+        el.classList.remove("a11y-focused-target");
+      });
+    };
+  }, [state.highlightFocus]);
+
   if (!mounted) return null;
 
   return (
     <>
+      {/* Focus Highlight Active Toast */}
+      {state.highlightFocus && (
+        <div 
+          className="fixed top-24 left-1/2 -translate-x-1/2 z-[2147483640] px-5 py-2.5 rounded-full bg-blue-600 text-white shadow-2xl shadow-blue-500/40 text-xs font-black flex items-center gap-2.5 pointer-events-none tracking-wide backdrop-blur-md border border-blue-400/40 transition-all"
+        >
+          <span className="w-2.5 h-2.5 rounded-full bg-white animate-ping" />
+          Focus Highlight Active — Click any element or press Tab
+        </div>
+      )}
+
       {/* Reading Overlays */}
       {state.readingRuler && (
         <div 

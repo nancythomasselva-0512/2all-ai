@@ -349,11 +349,11 @@ export default function MidLargeBusinessPage() {
                    <svg viewBox="0 0 100 120" className="absolute inset-0 w-full h-full drop-shadow-md" xmlns="http://www.w3.org/2000/svg">
                      <polygon points="50,3 97,28 97,92 50,117 3,92 3,28" fill="#0f172a" stroke="#f59e0b" strokeWidth="2.5" />
                    </svg>
-                   <div className="relative z-10 flex flex-col items-center justify-between h-full py-3 px-1 text-center">
-                     <span className="text-[6px] font-black text-amber-400 tracking-wider uppercase">{b.season}</span>
-                     <div className="w-5 h-5 bg-[#FF492C] rounded flex items-center justify-center text-white font-black text-[9px]">G2</div>
-                     <span className="text-[7.5px] font-bold text-white leading-tight">{b.label}</span>
-                   </div>
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full px-1 gap-0.5 text-center select-none">
+                      <span className="text-[6px] font-black text-amber-400 tracking-wider uppercase leading-none">{b.season}</span>
+                      <div className="w-4.5 h-4.5 bg-[#FF492C] rounded flex items-center justify-center text-white font-black text-[8px] my-0.5 shrink-0">G2</div>
+                      <span className="text-[7.5px] font-bold text-white leading-tight">{b.label}</span>
+                    </div>
                  </div>
                ))}
             </div>

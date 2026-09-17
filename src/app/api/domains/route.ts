@@ -161,14 +161,94 @@ export async function POST(req: Request) {
       },
       include: { user: true },
     });
+
     if (existing) {
-      if (existing.user) {
-        return NextResponse.json({ message: "Domain is already registered in the platform." }, { status: 409 });
-      } else {
-        // Orphaned domain from deleted user — purge stale record so new owner can register
-        await db.apiKey.deleteMany({ where: { domainId: existing.id } });
-        await db.domain.delete({ where: { id: existing.id } });
+      // If the domain belongs to the current user, update and return it
+      if (existing.userId === userId) {
+        const updatedDomain = await db.domain.update({
+          where: { id: existing.id },
+          data: {
+            websiteName: websiteName || existing.websiteName || cleanDomain,
+            environment: environment || existing.environment || "PRODUCTION",
+            notes: notes !== undefined ? notes : existing.notes,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                apiKeys: { select: { id: true, name: true, key: true, status: true } },
+                widgetConfigs: { select: { id: true, publishedConfig: true, draftConfig: true } },
+              },
+            },
+          },
+        });
+        return NextResponse.json(updatedDomain, { status: 200 });
       }
+
+      // If domain belonged to another user (e.g. admin or test account), re-assign to this user
+      const isPreviousAdmin = existing.user?.role === "ADMIN" || existing.user?.role === "SUPER_ADMIN";
+      const isUnverified = !existing.verified;
+
+      if (isPreviousAdmin || isUnverified || !existing.user) {
+        const verificationToken = `2all-verify-${Math.random().toString(36).substring(2, 15)}-${Math.random().toString(36).substring(2, 15)}`;
+        const reAssignedDomain = await db.domain.update({
+          where: { id: existing.id },
+          data: {
+            userId,
+            websiteName: websiteName || existing.websiteName || cleanDomain,
+            environment: environment || "PRODUCTION",
+            verificationMethod: verificationMethod || "META",
+            verificationToken,
+            status: "PENDING_VERIFICATION",
+            verified: false,
+            notes: notes || "",
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                apiKeys: { select: { id: true, name: true, key: true, status: true } },
+                widgetConfigs: { select: { id: true, publishedConfig: true, draftConfig: true } },
+              },
+            },
+          },
+        });
+
+        // Ensure user has an active API key for this domain
+        const hex1 = Math.floor(Math.random() * 0xffffffff).toString(16).toUpperCase().padStart(8, "0");
+        const hex2 = Math.floor(Math.random() * 0xffffffff).toString(16).toUpperCase().padStart(8, "0");
+        const hex3 = Math.floor(Math.random() * 0xffff).toString(16).toUpperCase().padStart(4, "0");
+        const generatedKey = `PUB_${hex1}${hex2}${hex3}`;
+
+        await db.apiKey.create({
+          data: {
+            userId,
+            name: `Widget Key for ${cleanDomain}`,
+            key: generatedKey,
+            status: "ACTIVE",
+            domainId: reAssignedDomain.id,
+            domainName: cleanDomain,
+          },
+        });
+
+        await logAudit({
+          userId,
+          action: "CLAIMED_DOMAIN",
+          details: { domainId: reAssignedDomain.id, domain: cleanDomain, websiteName: reAssignedDomain.websiteName },
+        });
+
+        return NextResponse.json(reAssignedDomain, { status: 201 });
+      }
+
+      // If already verified by another customer account, inform them or re-claim
+      return NextResponse.json(
+        { message: "Domain is registered by another workspace. Please contact support or verify domain ownership." },
+        { status: 409 }
+      );
     }
 
     const verificationToken = `2all-verify-${Math.random().toString(36).substring(2, 15)}-${Math.random().toString(36).substring(2, 15)}`;

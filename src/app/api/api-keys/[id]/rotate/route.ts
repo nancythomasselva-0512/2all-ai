@@ -48,6 +48,14 @@ export async function POST(
           domainId: oldKey.domainId,
           domainName: oldKey.domainName,
         },
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
       });
     } catch (createErr: any) {
       console.warn("Retrying rotate apiKey create without domainId/domainName due to schema sync:", createErr.message);
@@ -57,6 +65,14 @@ export async function POST(
           name: `${oldKey.name} (Rotated)`,
           key: generatedKey,
           status: "ACTIVE",
+        },
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
         },
       });
     }

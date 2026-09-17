@@ -82,13 +82,6 @@ const profiles = [
     icon: Accessibility, 
     desc: "Optimizes focus & keyboard controls",
     detail: "Enlarges interactive target areas and boosts keyboard focus indicators for easier navigation."
-  },
-  { 
-    id: "older-adults", 
-    label: "Older Adults", 
-    icon: Glasses, 
-    desc: "Enhance visibility and reading comfort",
-    detail: "Adjusts text sizing (+15%), line height, contrast, and cursor visibility to provide senior adults with a comfortable reading and browsing experience."
   }
 ];
 
@@ -123,17 +116,17 @@ export default function ProfilesSection({ searchQuery }: { searchQuery: string }
               }`}
             >
               <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3.5 min-w-0">
+                <div className="flex items-center gap-3.5 min-w-0 flex-1">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
                     isActive ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700'
                   }`}>
                     <Icon className="w-5.5 h-5.5 stroke-[1.8]" />
                   </div>
-                  <div className="truncate">
-                    <h4 className={`text-sm md:text-base font-extrabold leading-tight truncate ${isActive ? 'text-blue-950' : 'text-slate-900'}`}>
+                  <div className="min-w-0 flex-1">
+                    <h4 className={`text-sm md:text-base font-extrabold leading-snug ${isActive ? 'text-blue-950' : 'text-slate-900'}`}>
                       {profile.label}
                     </h4>
-                    <p className="text-xs text-slate-500 font-semibold truncate mt-0.5">{profile.desc}</p>
+                    <p className="text-xs text-slate-500 font-semibold mt-0.5 leading-snug">{profile.desc}</p>
                   </div>
                 </div>
                 

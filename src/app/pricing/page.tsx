@@ -790,7 +790,7 @@ export default function PricingPage() {
             <h3 className="text-3xl md:text-4xl font-black tracking-tight">
               The <span className="text-blue-400">#1 rated</span> web accessibility solution
             </h3>
-            <p className="text-slate-400 text-base max-w-xl mx-auto">Recognized by leading software review platforms for usability, ROI, and impact for businesses of all sizes.</p>
+            <p className="text-slate-200 text-base max-w-xl mx-auto font-normal">Recognized by leading software review platforms for usability, ROI, and impact for businesses of all sizes.</p>
           </motion.div>
 
           {/* G2 Badges Row */}
@@ -820,17 +820,19 @@ export default function PricingPage() {
                   </svg>
 
                   {/* Badge content */}
-                  <div className="relative z-10 flex flex-col items-center justify-between h-full pt-6 pb-6 px-3 text-center">
-                    <span className="text-[9px] font-black uppercase tracking-[0.12em] text-amber-400">{badge.season}</span>
-                    <div className="w-7 h-7 bg-[#FF492C] rounded-md flex items-center justify-center shadow-md my-0.5">
-                      <span className="text-white font-black text-[13px] leading-none">G2</span>
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full px-2 gap-1 text-center select-none">
+                    <span className="text-[9.5px] font-black uppercase tracking-[0.14em] text-amber-300 leading-none">
+                      {badge.season}
+                    </span>
+                    <div className="w-6 h-6 bg-[#FF492C] rounded-md flex items-center justify-center shadow-md my-0.5 shrink-0">
+                      <span className="text-white font-black text-[12px] leading-none">G2</span>
                     </div>
-                    <p className="text-white font-bold text-[11px] leading-tight whitespace-pre-line">{badge.label}</p>
-                    {badge.sub ? (
-                      <p className="text-amber-400 font-extrabold text-[8px] uppercase tracking-wider">{badge.sub}</p>
-                    ) : (
-                      <div className="h-2" />
-                    )}
+                    <p className="text-white font-black text-[11px] leading-tight whitespace-pre-line min-h-[26px] flex items-center justify-center">
+                      {badge.label}
+                    </p>
+                    <p className="text-amber-300 font-black text-[8px] uppercase tracking-wider min-h-[12px] flex items-center justify-center leading-none">
+                      {badge.sub || ""}
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -846,9 +848,9 @@ export default function PricingPage() {
             className="flex flex-wrap justify-center gap-8 md:gap-12 pt-4 border-t border-white/10"
           >
             {["Capterra Best Value", "GetApp Category Leader", "SoftwareAdvice Highly Rated"].map((label) => (
-              <div key={label} className="flex items-center gap-2 text-slate-400">
-                <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                <span className="text-xs font-black uppercase tracking-widest">{label}</span>
+              <div key={label} className="flex items-center gap-2 text-slate-200">
+                <Star className="w-4 h-4 text-amber-400 fill-amber-400 shrink-0" />
+                <span className="text-xs font-black uppercase tracking-widest text-slate-200">{label}</span>
               </div>
             ))}
           </motion.div>

@@ -44,6 +44,9 @@
       }
     }
   }
+  if (!apiUrl) {
+    apiUrl = (typeof window !== "undefined" && window.location.port === "3000") ? window.location.origin : "http://localhost:3000";
+  }
   apiUrl = (apiUrl || "").replace(/\/+$/, "");
 
   var bootstrapUrl =
@@ -55,8 +58,27 @@
     "&url=" +
     encodeURIComponent(window.location.href);
 
+  function loadCore(scriptPath) {
+    if (window.__2ALL_CORE_INJECTED__) return;
+    window.__2ALL_CORE_INJECTED__ = true;
+    var fullScriptUrl = scriptPath.indexOf("http") === 0 ? scriptPath : ((apiUrl || "") + scriptPath);
+    var cacheBustUrl = fullScriptUrl + (fullScriptUrl.indexOf("?") >= 0 ? "&" : "?") + "_v=" + (new Date().getTime());
+    var coreScript = document.createElement("script");
+    coreScript.src = cacheBustUrl;
+    coreScript.async = true;
+    coreScript.onerror = function () {
+      console.error("[2all.ai] Failed to load widget core bundle from: " + cacheBustUrl);
+    };
+    (document.head || document.body).appendChild(coreScript);
+  }
+
   var xhr = new XMLHttpRequest();
   xhr.open("GET", bootstrapUrl, true);
+  xhr.timeout = 5000;
+  xhr.ontimeout = function () {
+    console.warn("[2all.ai] Bootstrap timed out, loading standalone widget.");
+    loadCore("/widget-core.js");
+  };
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
@@ -66,27 +88,23 @@
             window.__2ALL_CONFIG__ = res.config || {};
             window.__2ALL_TENANT__ = res.tenantId;
             window.__2ALL_DOMAIN__ = res.domain;
-
-            // Inject Core Engine with Cache Busting
-            var scriptPath = res.scriptUrl || "/widget-core.js";
-            var cacheBustUrl = (apiUrl || "") + scriptPath + (scriptPath.indexOf("?") >= 0 ? "&" : "?") + "_v=" + (new Date().getTime());
-            var coreScript = document.createElement("script");
-            coreScript.src = cacheBustUrl;
-            coreScript.async = true;
-            coreScript.onerror = function () {
-              console.error("[2all.ai] Failed to load widget core bundle.");
-            };
-            (document.head || document.body).appendChild(coreScript);
+            loadCore(res.scriptUrl || "/widget-core.js");
           } else {
-            console.error("[2all.ai Widget Error]", res.message || res.error);
+            console.warn("[2all.ai]", res.message || res.error);
+            loadCore("/widget-core.js");
           }
         } catch (e) {
-          console.error("[2all.ai] Failed to parse bootstrap response.", e);
+          loadCore("/widget-core.js");
         }
       } else {
-        console.error("[2all.ai] Bootstrap request failed with status: " + xhr.status);
+        console.warn("[2all.ai] Bootstrap returned " + xhr.status + ", loading standalone widget.");
+        loadCore("/widget-core.js");
       }
     }
   };
-  xhr.send();
+  try {
+    xhr.send();
+  } catch (err) {
+    loadCore("/widget-core.js");
+  }
 })();

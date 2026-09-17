@@ -48,7 +48,7 @@ async function handleBootstrap(req: Request) {
       }
     }
 
-    let rawDomain = (requestHost || domain || "yourwebsite.com").trim().toLowerCase();
+    let rawDomain = (domain || requestHost || "yourwebsite.com").trim().toLowerCase();
     let cleanDomain = rawDomain.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").split(":")[0];
 
     // 1. Validate API Key if provided, or allow fallback

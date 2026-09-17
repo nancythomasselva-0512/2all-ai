@@ -242,12 +242,13 @@ export default function DomainOnboarding({
           widgetStatus: "DRAFT",
           apiKeysCount: 0,
         };
-        setDomains([formattedDom, ...domains]);
+        setDomains([formattedDom, ...domains.filter((x: any) => x.id !== formattedDom.id)]);
         setWebsiteName("");
         setDomainName("");
         setNotes("");
         setActiveModal({ type: null });
         showToast(`Domain ${formattedDom.domain} added! Verification token generated.`, "success");
+        fetchFreshDomains();
       } else {
         const err = await res.json();
         setFormError(err.message || "Failed to add domain");

@@ -7,7 +7,7 @@ export type ColorBlindMode = "none" | "protanopia" | "deuteranopia" | "tritanopi
 export type CursorSize = "normal" | "large" | "huge";
 export type SaturationMode = "normal" | "high" | "low" | "monochrome";
 export type TextAlignment = "default" | "left" | "right" | "center" | "justify";
-export type ProfileType = "none" | "dyslexia" | "adhd" | "low-vision" | "blind" | "motor-impaired" | "cognitive" | "reading" | "night" | "seizure" | "older-adults";
+export type ProfileType = "none" | "dyslexia" | "adhd" | "low-vision" | "blind" | "motor-impaired" | "cognitive" | "reading" | "night" | "seizure";
 
 export function calculateAccessibilityScore(s: AccessibilityState): number {
   let score = 70; // Baseline WCAG 2.1 AA System score
@@ -188,9 +188,9 @@ const defaultState: AccessibilityState = {
   speed: 1,
   pitch: "normal",
   volume: 100,
-  highlightWord: true,
-  highlightSentence: true,
-  autoScroll: true,
+  highlightWord: false,
+  highlightSentence: false,
+  autoScroll: false,
   autoReadSelection: false,
   readingMode: "none",
   isVoiceSettingsOpen: false,
@@ -228,6 +228,25 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     toggleClass("a11y-high-contrast", s.isHighContrast);
     toggleClass("a11y-dark-mode", s.isDarkMode);
     toggleClass("a11y-light-mode", s.isLightMode);
+
+    // Synchronize root theme classes for Tailwind
+    if (s.isLightMode) {
+      html.classList.remove("dark");
+      html.classList.add("light");
+      body.classList.remove("dark");
+      body.classList.add("light");
+    } else if (s.isDarkMode) {
+      html.classList.add("dark");
+      html.classList.remove("light");
+      body.classList.add("dark");
+      body.classList.remove("light");
+    } else {
+      // Default initial layout state
+      html.classList.add("dark");
+      html.classList.remove("light");
+      body.classList.add("dark");
+      body.classList.remove("light");
+    }
     
     // Fonts
     body.classList.remove("a11y-font-dyslexic", "a11y-font-lexend", "a11y-font-readable");
@@ -311,9 +330,17 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   const [state, setState] = useState<AccessibilityState>(() => {
     if (typeof window !== "undefined") {
       try {
+        const v2Migrated = localStorage.getItem("2all_a11y_v2_migrated");
         const saved = localStorage.getItem("2all_accessibility");
         if (saved) {
-          return { ...defaultState, ...JSON.parse(saved), isPanelOpen: false, lastVoiceCommand: "" };
+          const parsed = JSON.parse(saved);
+          if (!v2Migrated) {
+            delete parsed.highlightWord;
+            delete parsed.highlightSentence;
+            delete parsed.autoScroll;
+            localStorage.setItem("2all_a11y_v2_migrated", "true");
+          }
+          return { ...defaultState, ...parsed, isPanelOpen: false, lastVoiceCommand: "" };
         }
       } catch {
         console.error("Failed to load accessibility settings");
@@ -495,9 +522,6 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         break;
       case "motor-impaired":
         newSettings = { cursorSize: "large", highlightFocus: true, highlightButtons: true, highlightLinks: true };
-        break;
-      case "older-adults":
-        newSettings = { fontSize: 115, isHighContrast: false, cursorSize: "large", fontFamily: "readable", lineHeight: 1.8, letterSpacing: 0.5 };
         break;
     }
     

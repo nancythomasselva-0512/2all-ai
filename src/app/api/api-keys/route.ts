@@ -13,6 +13,14 @@ export async function GET() {
   const db = getDb();
   const apiKeys = await db.apiKey.findMany({
     where: isAdmin ? {} : { userId },
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -80,6 +88,14 @@ export async function POST(req: Request) {
           domainId: resolvedDomainId,
           domainName: resolvedDomainName,
         },
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
       });
     } catch (createErr: any) {
       console.warn("Retrying apiKey create without domainId/domainName due to schema sync:", createErr.message);
@@ -89,6 +105,14 @@ export async function POST(req: Request) {
           name: name.trim(),
           key: generatedKey,
           status: "ACTIVE",
+        },
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
         },
       });
     }
