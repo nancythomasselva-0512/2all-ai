@@ -38,3 +38,4 @@ yarn-error.log*
 *.sqlite
 *.zip
 sent_emails.json
+scratch/

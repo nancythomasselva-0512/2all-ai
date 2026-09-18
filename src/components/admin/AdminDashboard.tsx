@@ -1565,11 +1565,77 @@ export default function AdminDashboard({
                     </div>
 
                     <button 
-                      onClick={() => updateA11ySetting("isVoiceSettingsOpen", true)}
+                      onClick={() => updateA11ySetting("isVoiceSettingsOpen", !a11yState.isVoiceSettingsOpen)}
                       className="w-full py-3 px-4 bg-slate-900 text-white text-sm font-bold rounded-2xl hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
                     >
-                      <Volume2 className="w-4 h-4" /> Open Voice Parameter Settings
+                      <Volume2 className="w-4 h-4" /> {a11yState.isVoiceSettingsOpen ? "Close Voice Parameter Settings" : "Open Voice Parameter Settings"}
                     </button>
+
+                    {a11yState.isVoiceSettingsOpen && (
+                      <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
+                        {/* Speed */}
+                        <div>
+                          <div className="flex justify-between items-center mb-1.5">
+                            <label className="text-xs font-bold text-slate-700">Reading Speed</label>
+                            <span className="text-xs font-bold text-blue-600">{a11yState.speed || 1.0}x</span>
+                          </div>
+                          <div className="grid grid-cols-6 gap-1 bg-white p-1 rounded-xl border border-slate-200">
+                            {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((rate) => (
+                              <button
+                                key={rate}
+                                onClick={() => updateA11ySetting("speed", rate)}
+                                className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
+                                  (a11yState.speed || 1.0) === rate
+                                    ? "bg-blue-600 text-white shadow-xs"
+                                    : "text-slate-600 hover:text-slate-900"
+                                }`}
+                              >
+                                {rate}x
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Pitch */}
+                        <div>
+                          <div className="flex justify-between items-center mb-1.5">
+                            <label className="text-xs font-bold text-slate-700">Pitch</label>
+                            <span className="text-xs font-bold text-blue-600 uppercase">{a11yState.pitch || "normal"}</span>
+                          </div>
+                          <div className="grid grid-cols-3 gap-1 bg-white p-1 rounded-xl border border-slate-200">
+                            {(["low", "normal", "high"] as const).map((pVal) => (
+                              <button
+                                key={pVal}
+                                onClick={() => updateA11ySetting("pitch", pVal)}
+                                className={`py-1.5 text-xs font-bold rounded-lg transition-all uppercase ${
+                                  (a11yState.pitch || "normal") === pVal
+                                    ? "bg-blue-600 text-white shadow-xs"
+                                    : "text-slate-600 hover:text-slate-900"
+                                }`}
+                              >
+                                {pVal}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Volume */}
+                        <div>
+                          <div className="flex justify-between items-center mb-1">
+                            <label className="text-xs font-bold text-slate-700">Volume</label>
+                            <span className="text-xs font-bold text-blue-600">{a11yState.volume !== undefined ? a11yState.volume : 100}%</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={a11yState.volume !== undefined ? a11yState.volume : 100}
+                            onChange={(e) => updateA11ySetting("volume", parseInt(e.target.value))}
+                            className="w-full accent-blue-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg appearance-none"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

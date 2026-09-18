@@ -1,10 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import { 
-  ShieldCheck, Zap, Sparkles, ArrowRight, 
-  Info, ChevronDown, ChevronUp, CheckCircle2 
-} from "lucide-react";
-import { useAccessibility, calculateAccessibilityScore } from "@/context/AccessibilityContext";
+import { Sparkles, ArrowRight } from "lucide-react";
+import { useAccessibility } from "@/context/AccessibilityContext";
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -17,52 +14,9 @@ const fadeUp = {
 };
 
 export default function DashboardSection({ setActiveTab, searchQuery }: { setActiveTab: (t: any) => void, searchQuery: string }) {
-  const { state, updateSetting, applyProfile } = useAccessibility();
-  const [showAnalysis, setShowAnalysis] = useState(false);
+  const { applyProfile } = useAccessibility();
   
   if (searchQuery) return null; // Hide dashboard if searching
-
-  // Calculate real-time accessibility score based on active optimizations
-  const hasProfile = Boolean(state.activeProfile) && state.activeProfile !== "none";
-
-  const hasTypography = 
-    state.fontFamily !== "default" || 
-    state.fontSize > 100 || 
-    state.letterSpacing > 0 || 
-    state.lineHeight !== 1.5 ||
-    state.wordSpacing > 0 ||
-    state.textAlignment !== "default";
-
-  const hasContrast = 
-    state.isHighContrast || 
-    state.isDarkMode || 
-    state.isLightMode || 
-    state.isSmartContrast ||
-    state.colorBlindMode !== "none" || 
-    state.saturationMode !== "normal" ||
-    (Boolean(state.textColor) && state.textColor !== "default");
-
-  const hasReadingTools = 
-    state.readingMask || 
-    state.readingRuler || 
-    state.highlightFocus || 
-    state.textMagnifier || 
-    state.textToSpeech || 
-    state.autoReadSelection ||
-    state.readingMode !== "none" ||
-    state.highlightLinks ||
-    state.highlightHeadings ||
-    state.highlightButtons ||
-    state.voiceNavigation ||
-    state.reduceMotion ||
-    state.stopAnimations;
-
-  const profileScore = hasProfile ? 15 : 0;
-  const typographyScore = hasTypography ? 5 : 0;
-  const contrastScore = hasContrast ? 5 : 0;
-  const readingToolsScore = hasReadingTools ? 5 : 0;
-
-  const totalScore = calculateAccessibilityScore(state);
 
   return (
     <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-6">
@@ -85,67 +39,49 @@ export default function DashboardSection({ setActiveTab, searchQuery }: { setAct
         </div>
       </motion.div>
 
-      {/* Quick Actions */}
-      <motion.div variants={fadeUp} className="space-y-3">
-        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Quick Actions</h4>
-        <div className="grid grid-cols-2 gap-3">
-          <button 
-            onClick={() => updateSetting("fontFamily", state.fontFamily === "readable" ? "default" : "readable")}
-            className={`rounded-2xl py-3.5 px-3 flex flex-col items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer border-2 ${
-              state.fontFamily === "readable" ? 'border-[#0091ff] bg-sky-50/80 text-blue-950 shadow-sm scale-[1.01]' : 'bg-white border-[#cbe2ff] text-slate-800 hover:border-[#0091ff] hover:shadow-sm'
-            }`}
-          >
-            <span className="text-2xl font-black text-[#0091ff] leading-none">Aa</span>
-            <span className="text-xs font-bold text-[#262626] text-center">Readable Font</span>
-          </button>
-          
-          <button 
-            onClick={() => updateSetting("textAlignment", state.textAlignment === "center" ? "default" : "center")}
-            className={`rounded-2xl py-3.5 px-3 flex flex-col items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer border-2 ${
-              state.textAlignment === "center" ? 'border-[#0091ff] bg-sky-50/80 text-blue-950 shadow-sm scale-[1.01]' : 'bg-white border-[#cbe2ff] text-slate-800 hover:border-[#0091ff] hover:shadow-sm'
-            }`}
-          >
-            <div className="flex items-center justify-center h-6">
-              <svg width="26" height="21" viewBox="0 0 34 28" fill="none">
-                <rect x="10" y="1" width="14" height="4.5" rx="2.25" fill="#0091ff" />
-                <rect x="3" y="8.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
-                <rect x="7" y="16" width="20" height="4.5" rx="2.25" fill="#0091ff" />
-                <rect x="3" y="23.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
-              </svg>
-            </div>
-            <span className="text-xs font-bold text-[#262626] text-center leading-tight">Center Aligned</span>
-          </button>
+      {/* Explore Respective Menus */}
+      <motion.div variants={fadeUp} className="space-y-2.5">
+        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Dedicated Menus</h4>
 
-          <button 
-            onClick={() => updateSetting("isHighContrast", !state.isHighContrast)}
-            className={`flex flex-col items-center justify-center gap-2 p-3.5 rounded-[20px] border transition-all ${state.isHighContrast ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300'}`}
-          >
-            <ShieldCheck className="w-5 h-5" />
-            <span className="text-xs font-bold">High Contrast</span>
-          </button>
-          
-          <button 
-            onClick={() => updateSetting("readingMask", !state.readingMask)}
-            className={`flex flex-col items-center justify-center gap-2 p-3.5 rounded-[20px] border transition-all ${state.readingMask ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300'}`}
-          >
-            <Zap className="w-5 h-5" />
-            <span className="text-xs font-bold">Reading Mask</span>
-          </button>
-        </div>
-      </motion.div>
-
-      {/* Explore More */}
-      <motion.div variants={fadeUp}>
+        {/* 1. Modes */}
         <button 
           onClick={() => setActiveTab("profiles")}
-          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between group hover:bg-slate-100 transition-colors"
+          className="w-full bg-white border border-slate-200 rounded-2xl p-3.5 flex items-center justify-between group hover:border-blue-400 hover:shadow-xs transition-all cursor-pointer select-none"
         >
           <div className="text-left">
-            <h4 className="text-sm font-bold text-[#0a1e3f]">Explore Smart Profiles</h4>
-            <p className="text-xs text-slate-500 mt-0.5">1-click accessibility configurations</p>
+            <h4 className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Smart Profiles (Modes)</h4>
+            <p className="text-[11px] text-slate-500 mt-0.5">1-click accessibility configurations (Epilepsy, ADHD, Blindness, etc.)</p>
           </div>
-          <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-            <ArrowRight className="w-4 h-4 text-blue-600" />
+          <div className="w-7 h-7 rounded-full bg-blue-50 group-hover:bg-blue-600 group-hover:text-white text-blue-600 flex items-center justify-center transition-all shrink-0 ml-2">
+            <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+          </div>
+        </button>
+
+        {/* 2. Features */}
+        <button 
+          onClick={() => setActiveTab("features")}
+          className="w-full bg-white border border-slate-200 rounded-2xl p-3.5 flex items-center justify-between group hover:border-blue-400 hover:shadow-xs transition-all cursor-pointer select-none"
+        >
+          <div className="text-left">
+            <h4 className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Features (Typography & Reading)</h4>
+            <p className="text-[11px] text-slate-500 mt-0.5">Font scaling, text-to-speech read aloud, reading mask, focus outlines</p>
+          </div>
+          <div className="w-7 h-7 rounded-full bg-blue-50 group-hover:bg-blue-600 group-hover:text-white text-blue-600 flex items-center justify-center transition-all shrink-0 ml-2">
+            <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+          </div>
+        </button>
+
+        {/* 3. Vision */}
+        <button 
+          onClick={() => setActiveTab("vision")}
+          className="w-full bg-white border border-slate-200 rounded-2xl p-3.5 flex items-center justify-between group hover:border-blue-400 hover:shadow-xs transition-all cursor-pointer select-none"
+        >
+          <div className="text-left">
+            <h4 className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Vision (Color & Contrast)</h4>
+            <p className="text-[11px] text-slate-500 mt-0.5">Dark contrast, monochrome, saturation, color blindness filters</p>
+          </div>
+          <div className="w-7 h-7 rounded-full bg-blue-50 group-hover:bg-blue-600 group-hover:text-white text-blue-600 flex items-center justify-center transition-all shrink-0 ml-2">
+            <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
           </div>
         </button>
       </motion.div>

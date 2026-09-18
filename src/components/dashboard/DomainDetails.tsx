@@ -229,7 +229,7 @@ export default function DomainDetails({ domain: initialDomain, userName }: Domai
   };
 
   const handleCopyScript = (id: string, key: string) => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://cdn.2all.ai";
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://2all-ai.mccmrfip.in";
     const script = `<script src="${origin}/loader.js?key=${key}" async></script>`;
     navigator.clipboard.writeText(script);
     setCopiedScriptId(id);
@@ -323,7 +323,7 @@ export default function DomainDetails({ domain: initialDomain, userName }: Domai
   const activeKeys = keys.filter((k) => k.status === "ACTIVE");
   const firstActiveKey = activeKeys[0];
 
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://cdn.2all.ai";
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://2all-ai.mccmrfip.in";
   const installScript = `<script src="${origin}/loader.js" data-api-key="${firstActiveKey?.key || "YOUR_API_KEY"}" data-domain="${domain.domain}" async></script>`;
 
   const tabs: { id: Tab; label: string; icon: any }[] = [

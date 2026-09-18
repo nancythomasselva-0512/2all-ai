@@ -1,13 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAccessibility } from "@/context/AccessibilityContext";
 import { 
   Type, AlignLeft, AlignCenter, Search, Link, MousePointer2,
   Video, Maximize, Target, Hash, Expand, BetweenHorizonalEnd,
   MonitorSpeaker, ShieldAlert, Play, Pause, Square, Settings, BookOpen,
-  MessageSquarePlus, Minus, Plus, Mic
+  MessageSquarePlus, Minus, Plus, Mic, Volume2, X
 } from "lucide-react";
 
 const stagger = {
@@ -22,6 +22,17 @@ const fadeUp = {
 
 export default function CoreFeaturesSection({ searchQuery }: { searchQuery: string }) {
   const { state, updateSetting, isFeatureEnabled } = useAccessibility();
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      const loadVoices = () => {
+        setVoices(window.speechSynthesis.getVoices() || []);
+      };
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
 
   const groups = [
     {
@@ -64,32 +75,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
         }
       ]
     },
-    {
-      title: "Color & Contrast Adjustments",
-      items: [
-        {
-          id: "monochrome",
-          label: "Monochrome Mode",
-          type: "toggle",
-          value: state.saturationMode === "monochrome",
-          onClick: () => updateSetting("saturationMode", state.saturationMode === "monochrome" ? "normal" : "monochrome"),
-          icon: <Video className="w-5 h-5" />
-        },
-        {
-          id: "darkMode",
-          label: "Dark Contrast Mode",
-          type: "toggle",
-          value: state.isDarkMode || state.isHighContrast,
-          onClick: () => {
-            const next = !(state.isDarkMode || state.isHighContrast);
-            updateSetting("isDarkMode", next);
-            updateSetting("isHighContrast", next);
-            updateSetting("isLightMode", false);
-          },
-          icon: <Target className="w-5 h-5" />
-        }
-      ]
-    },
+
     {
       title: "🔊 Speech & Reading",
       items: [
@@ -103,13 +89,6 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
             }
           },
           icon: <Play className="w-5 h-5 text-blue-600" />
-        },
-        {
-          id: "autoReadSelection",
-          label: "Auto Read Selection",
-          type: "toggle",
-          value: state.autoReadSelection,
-          icon: <MousePointer2 className="w-5 h-5" />
         },
         {
           id: "readEntirePage",
@@ -182,9 +161,10 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
         {
           id: "voiceSettings",
           label: "Voice Settings",
-          type: "action",
-          onClick: () => updateSetting("isVoiceSettingsOpen", true),
-          icon: <Settings className="w-5 h-5 text-slate-600" />
+          type: "toggle",
+          value: state.isVoiceSettingsOpen,
+          onClick: () => updateSetting("isVoiceSettingsOpen", !state.isVoiceSettingsOpen),
+          icon: <Settings className="w-5 h-5" />
         },
         {
           id: "voiceNavigation",
@@ -200,8 +180,6 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
       items: [
         { id: "readingMask", label: "Reading Mask", type: "toggle", value: state.readingMask, icon: <Maximize className="w-5 h-5" /> },
         { id: "readingRuler", label: "Reading Ruler", type: "toggle", value: state.readingRuler, icon: <Target className="w-5 h-5" /> },
-        { id: "readMode", label: "Read Mode", type: "toggle", value: state.readMode, icon: <BookOpen className="w-5 h-5" /> },
-        { id: "textToSpeech", label: "Read Aloud (TTS)", type: "toggle", value: state.textToSpeech, icon: <MonitorSpeaker className="w-5 h-5" /> },
       ]
     },
     {
@@ -234,15 +212,6 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
             { value: "default", label: "Default" },
             { value: "black", label: "Big Black" },
             { value: "white", label: "Big White" },
-          ]
-        },
-        { 
-          id: "saturationMode", label: "Saturation Control", type: "select", value: state.saturationMode, icon: <Target className="w-5 h-5" />,
-          options: [
-            { value: "normal", label: "Normal" },
-            { value: "high", label: "High" },
-            { value: "low", label: "Low" },
-            { value: "monochrome", label: "Monochrome" },
           ]
         }
       ]
@@ -387,15 +356,136 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
 
               if (item.type === "toggle") {
                 const isActive = item.value as boolean;
+                const isVoiceSettings = item.id === "voiceSettings";
+
                 return (
-                  <button
-                    key={item.id}
-                    onClick={() => (item.onClick ? item.onClick() : updateSetting(item.id as any, !isActive))}
-                    className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all duration-300 ${isActive ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-blue-300'}`}
-                  >
-                    {item.icon}
-                    <span className="text-[11px] font-bold text-center leading-tight">{item.label}</span>
-                  </button>
+                  <React.Fragment key={item.id}>
+                    <button
+                      onClick={() => (item.onClick ? item.onClick() : updateSetting(item.id as any, !isActive))}
+                      className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all duration-300 cursor-pointer ${isActive ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-blue-300'}`}
+                    >
+                      {item.icon}
+                      <span className="text-[11px] font-bold text-center leading-tight">{item.label}</span>
+                    </button>
+
+                    {/* Inline Voice Settings Parameters Box directly below the setting */}
+                    {isVoiceSettings && state.isVoiceSettingsOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.2 }}
+                        className="col-span-2 bg-white border border-blue-200/80 rounded-2xl p-4 shadow-md shadow-blue-500/5 space-y-4 text-left font-sans select-none"
+                      >
+                        {/* Header with Title and Close Button */}
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100 shadow-2xs">
+                              <Volume2 className="w-3.5 h-3.5 stroke-[2.2]" />
+                            </div>
+                            <div>
+                              <h4 className="text-xs font-black text-slate-900 leading-tight">Voice Settings</h4>
+                              <p className="text-[10px] text-slate-400 font-bold tracking-wide mt-0.5">Customize Speech Engine Parameters</p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => updateSetting("isVoiceSettingsOpen", false)}
+                            className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors border-none bg-transparent cursor-pointer"
+                            aria-label="Close Voice Settings"
+                          >
+                            <X className="w-4 h-4 stroke-[2.5]" />
+                          </button>
+                        </div>
+
+                        {/* Voice Selection */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Voice</label>
+                          <select
+                            value={state.voice}
+                            onChange={(e) => updateSetting("voice", e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-2.5 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 transition-all cursor-pointer shadow-inner"
+                          >
+                            <option value="">Auto Detect Voice</option>
+                            {voices.map((v) => (
+                              <option key={v.name} value={v.name}>
+                                {v.name} ({v.lang})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Speed Controls */}
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between items-center">
+                            <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Reading Speed</label>
+                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">{state.speed || 1.0}x</span>
+                          </div>
+                          <div className="grid grid-cols-6 gap-1 bg-slate-50 p-1 rounded-xl border border-slate-200">
+                            {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((rate) => (
+                              <button
+                                key={rate}
+                                onClick={() => updateSetting("speed", rate)}
+                                className={`py-1.5 text-[10px] font-black rounded-lg border-none transition-all cursor-pointer ${
+                                  (state.speed || 1.0) === rate
+                                    ? "bg-blue-600 text-white shadow-xs font-black"
+                                    : "bg-transparent text-slate-500 hover:text-slate-700"
+                                }`}
+                              >
+                                {rate}x
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Pitch Selection */}
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between items-center">
+                            <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Pitch</label>
+                            <span className="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">{state.pitch || "normal"}</span>
+                          </div>
+                          <div className="grid grid-cols-3 gap-1 bg-slate-50 p-1 rounded-xl border border-slate-200">
+                            {(["low", "normal", "high"] as const).map((pVal) => (
+                              <button
+                                key={pVal}
+                                onClick={() => updateSetting("pitch", pVal)}
+                                className={`py-1.5 text-[10px] font-black rounded-lg border-none transition-all cursor-pointer uppercase ${
+                                  (state.pitch || "normal") === pVal
+                                    ? "bg-blue-600 text-white shadow-xs"
+                                    : "bg-transparent text-slate-500 hover:text-slate-700"
+                                }`}
+                              >
+                                {pVal}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Volume Slider */}
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between items-center">
+                            <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider">Volume</label>
+                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">{state.volume !== undefined ? state.volume : 100}%</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={state.volume !== undefined ? state.volume : 100}
+                            onChange={(e) => updateSetting("volume", parseInt(e.target.value))}
+                            className="w-full accent-blue-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg appearance-none"
+                          />
+                        </div>
+
+                        {/* Done Button */}
+                        <button
+                          onClick={() => updateSetting("isVoiceSettingsOpen", false)}
+                          className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl transition-all cursor-pointer border-none uppercase tracking-wider shadow-sm shadow-blue-500/20 active:scale-[0.99]"
+                        >
+                          Done
+                        </button>
+                      </motion.div>
+                    )}
+                  </React.Fragment>
                 );
               }
 

@@ -91,10 +91,12 @@ export default function InstallCodeBlock({
   const getSnippet = () => {
     const key = selectedKey || "";
     let targetDomain = domain || "yourwebsite.com";
-    return `<!-- AI Widget -->
-<script src="/loader.js" 
+    const host = typeof window !== "undefined" ? window.location.origin : "https://2all-ai.mccmrfip.in";
+    return `<!-- 2all.ai Universal Accessibility Widget -->
+<script src="${host}/loader.js" 
         data-api-key="${key}"
-        data-domain="${targetDomain}"></script>`;
+        data-domain="${targetDomain}"
+        async></script>`;
   };
 
   const [installDetails, setInstallDetails] = useState<any>(null);

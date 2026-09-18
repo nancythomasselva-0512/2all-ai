@@ -1397,24 +1397,26 @@ export default function DomainOnboarding({
                 Copy the snippet below and paste it right before the closing <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-blue-600 font-bold">&lt;/body&gt;</code> tag on all pages where you want the accessibility widget to appear.
               </p>
 
-              <div className="relative bg-slate-900 rounded-2xl p-6 border border-slate-800 text-slate-200 font-mono text-xs overflow-x-auto shadow-inner">
-                <pre className="whitespace-pre-wrap leading-relaxed">
-{`<!-- 2all.ai Accessibility Widget Loader -->
-<script
-  src="https://cdn.2all.ai/loader.js"
-  data-api-key="${activeModal.domain.user?.apiKeys?.[0]?.key || "2all_live_018a93e82f1b40c29a8f"}"
-  data-domain="${activeModal.domain.canonicalDomain || activeModal.domain.domain}"
-  async
-></script>`}
-                </pre>
-                <button
-                  onClick={() => copyToClipboard(`<!-- 2all.ai Accessibility Widget Loader -->\n<script src="https://cdn.2all.ai/loader.js" data-api-key="${activeModal.domain?.user?.apiKeys?.[0]?.key || "2all_live_018a93e82f1b40c29a8f"}" data-domain="${activeModal.domain?.canonicalDomain || activeModal.domain?.domain}" async></script>`)}
-                  className="absolute right-4 top-4 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] flex items-center gap-1.5 transition-all border-none cursor-pointer"
-                >
-                  {copiedToken ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  {copiedToken ? "Copied" : "Copy Snippet"}
-                </button>
-              </div>
+              {(() => {
+                const snippetOrigin = typeof window !== "undefined" ? window.location.origin : "https://2all-ai.mccmrfip.in";
+                const modalApiKey = activeModal.domain?.user?.apiKeys?.[0]?.key || "2all_live_018a93e82f1b40c29a8f";
+                const modalDomain = activeModal.domain?.canonicalDomain || activeModal.domain?.domain || "yourwebsite.com";
+                const snippetStr = `<!-- 2all.ai Accessibility Widget Loader -->\n<script\n  src="${snippetOrigin}/loader.js"\n  data-api-key="${modalApiKey}"\n  data-domain="${modalDomain}"\n  async\n></script>`;
+                return (
+                  <div className="relative bg-slate-900 rounded-2xl p-6 border border-slate-800 text-slate-200 font-mono text-xs overflow-x-auto shadow-inner">
+                    <pre className="whitespace-pre-wrap leading-relaxed">
+{snippetStr}
+                    </pre>
+                    <button
+                      onClick={() => copyToClipboard(snippetStr)}
+                      className="absolute right-4 top-4 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] flex items-center gap-1.5 transition-all border-none cursor-pointer"
+                    >
+                      {copiedToken ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copiedToken ? "Copied" : "Copy Snippet"}
+                    </button>
+                  </div>
+                );
+              })()}
 
               <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-100 flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-[#0052ff] shrink-0 mt-0.5" />

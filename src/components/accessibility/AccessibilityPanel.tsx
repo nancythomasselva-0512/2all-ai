@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useAccessibility, calculateAccessibilityScore } from "@/context/AccessibilityContext";
+import { useAccessibility } from "@/context/AccessibilityContext";
 import { 
   LayoutDashboard, UserCircle, Settings2, 
   Palette, Bot, Search, RefreshCcw, X, EyeOff, ShieldCheck, Zap
@@ -58,7 +58,6 @@ export default function AccessibilityPanel() {
   const [searchQuery, setSearchQuery] = useState("");
   const [manualTab, setManualTab] = useState(false);
 
-  const currentScore = calculateAccessibilityScore(state);
 
   const tabs = [
     { id: "dashboard", icon: LayoutDashboard, label: "Home" },
@@ -107,52 +106,36 @@ export default function AccessibilityPanel() {
     >
       {/* Top Header with Blue Gradient (Matching Screenshot 1) */}
       <div className="bg-gradient-to-r from-[#0055ff] to-[#0041c2] text-white p-4 pb-3.5 shrink-0 relative z-10">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2">
           <button 
             onClick={togglePanel}
-            className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer transition-all"
+            className="w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center cursor-pointer transition-all"
             aria-label="Close panel"
           >
             <X className="w-4 h-4" />
           </button>
 
-          {/* Language Selector Dropdown */}
-          <div className="flex items-center gap-1 text-xs font-bold bg-white/15 hover:bg-white/25 px-2.5 py-1 rounded-full cursor-pointer transition-all border border-white/20">
-            <span>🇺🇸 ENGLISH (US)</span>
-            <span className="text-[10px]">▼</span>
+          <div className="flex items-center gap-2">
+            {/* Accessibility Statement modal button */}
+            <button
+              onClick={() => setShowStatementModal(true)}
+              className="flex items-center gap-1.5 text-[11px] font-bold bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full cursor-pointer transition-all border border-white/25 shadow-xs"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Statement
+            </button>
+
+            {/* Language Selector Dropdown */}
+            <div className="flex items-center gap-1 text-xs font-bold bg-white/15 hover:bg-white/25 px-2.5 py-1 rounded-full cursor-pointer transition-all border border-white/20">
+              <span>🇺🇸 ENGLISH (US)</span>
+              <span className="text-[10px]">▼</span>
+            </div>
           </div>
         </div>
 
-        <h2 className="text-xl font-black text-center tracking-tight text-white mb-3">
+        <h2 className="text-xl font-black text-center tracking-tight text-white pb-1">
           Accessibility Adjustments
         </h2>
-
-        {/* 3 Top Action Buttons Matching Screenshot 1 */}
-        <div className="grid grid-cols-3 gap-2 pt-1">
-          <button
-            onClick={resetSettings}
-            className="bg-white text-[#004bff] hover:bg-blue-50 py-1.5 px-2 rounded-full text-[11px] font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-1 border border-blue-100"
-          >
-            <RefreshCcw className="w-3 h-3 stroke-[2.5]" />
-            Reset Settings
-          </button>
-          
-          <button
-            onClick={() => setShowStatementModal(true)}
-            className="bg-white text-[#004bff] hover:bg-blue-50 py-1.5 px-2 rounded-full text-[11px] font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-1 border border-blue-100"
-          >
-            <ShieldCheck className="w-3 h-3 stroke-[2.5]" />
-            Statement
-          </button>
-          
-          <button
-            onClick={togglePanel}
-            className="bg-white text-[#004bff] hover:bg-blue-50 py-1.5 px-2 rounded-full text-[11px] font-bold shadow-xs cursor-pointer transition-all flex items-center justify-center gap-1 border border-blue-100"
-          >
-            <EyeOff className="w-3 h-3 stroke-[2.5]" />
-            Hide Interface
-          </button>
-        </div>
       </div>
 
       {/* Search Input Bar */}

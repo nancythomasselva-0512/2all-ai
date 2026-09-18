@@ -1071,6 +1071,18 @@
       border-color: #0055ff;
       box-shadow: 0 2px 6px rgba(0, 85, 255, 0.25);
     }
+    .feat-voice-panel {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 14px rgba(0, 85, 255, 0.08);
+    }
 
     .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .feat-group-title {
@@ -1154,15 +1166,18 @@
     }
     .feat-voice-panel {
       background: #ffffff;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #cbe2ff;
       border-radius: 16px;
       padding: 14px;
       margin-top: 4px;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 14px rgba(0, 85, 255, 0.08);
+      grid-column: 1 / -1;
+      width: 100%;
+      box-sizing: border-box;
     }
     .feat-card-item {
       background: #ffffff;
@@ -1372,31 +1387,22 @@
         <button class="btn-close-circle" id="2all-btn-close-header" title="Close">
           <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:white;stroke-width:2.5;"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
-        <div class="lang-pill">
-          <span style="display:flex;align-items:center;gap:6px;">
-            <svg width="15" height="11" viewBox="0 0 640 480" style="border-radius:2px;display:inline-block;box-shadow:0 0 1px rgba(0,0,0,0.5);"><g fill-rule="evenodd"><path fill="#bd3d44" d="M0 0h640v480H0z"/><path stroke="#fff" stroke-width="37" d="M0 55.4h640M0 129.2h640M0 203h640M0 277h640M0 350.8h640M0 424.6h640"/><path fill="#192f5d" d="M0 0h256v258.5H0z"/></g></svg>
-            ENGLISH (US)
-          </span>
-          <span style="font-size:9px;">&#9660;</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="header-action-pill" id="2all-hdr-statement" style="padding:4px 10px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.25);border-radius:9999px;cursor:pointer;display:flex;align-items:center;gap:4px;">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            Statement
+          </button>
+          <div class="lang-pill">
+            <span style="display:flex;align-items:center;gap:6px;">
+              <svg width="15" height="11" viewBox="0 0 640 480" style="border-radius:2px;display:inline-block;box-shadow:0 0 1px rgba(0,0,0,0.5);"><g fill-rule="evenodd"><path fill="#bd3d44" d="M0 0h640v480H0z"/><path stroke="#fff" stroke-width="37" d="M0 55.4h640M0 129.2h640M0 203h640M0 277h640M0 350.8h640M0 424.6h640"/><path fill="#192f5d" d="M0 0h256v258.5H0z"/></g></svg>
+              ENGLISH (US)
+            </span>
+            <span style="font-size:9px;">&#9660;</span>
+          </div>
         </div>
       </div>
 
-      <div class="header-main-title">Accessibility Adjustments</div>
-
-      <div class="header-actions-row">
-        <button class="header-action-pill" id="2all-hdr-reset">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
-          Reset Settings
-        </button>
-        <button class="header-action-pill" id="2all-hdr-statement">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-          Statement
-        </button>
-        <button class="header-action-pill" id="2all-hdr-hide">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
-          Hide Interface
-        </button>
-      </div>
+      <div class="header-main-title" style="padding-bottom:4px;">Accessibility Adjustments</div>
     </div>
 
     <!-- Search Input Bar -->
@@ -1523,17 +1529,25 @@
     updateTriggerIcon();
   }
 
-  shadow.getElementById("2all-btn-close-header").onclick = closePanel;
-  shadow.getElementById("2all-hdr-hide").onclick = closePanel;
-  shadow.getElementById("2all-btn-hide-bottom").onclick = closePanel;
+  var btnCloseHdr = shadow.getElementById("2all-btn-close-header");
+  if (btnCloseHdr) btnCloseHdr.onclick = closePanel;
+  var btnHideHdr = shadow.getElementById("2all-hdr-hide");
+  if (btnHideHdr) btnHideHdr.onclick = closePanel;
+  var btnHideBtm = shadow.getElementById("2all-btn-hide-bottom");
+  if (btnHideBtm) btnHideBtm.onclick = closePanel;
 
-  shadow.getElementById("2all-hdr-reset").onclick = function () { resetSettings(); };
-  shadow.getElementById("2all-btn-reset-bottom").onclick = function () { resetSettings(); };
+  var btnResetHdr = shadow.getElementById("2all-hdr-reset");
+  if (btnResetHdr) btnResetHdr.onclick = function () { resetSettings(); };
+  var btnResetBtm = shadow.getElementById("2all-btn-reset-bottom");
+  if (btnResetBtm) btnResetBtm.onclick = function () { resetSettings(); };
 
   // Statement Modal Toggle
-  shadow.getElementById("2all-hdr-statement").onclick = function () {
-    showStatementPopup();
-  };
+  var btnStmtHdr = shadow.getElementById("2all-hdr-statement");
+  if (btnStmtHdr) {
+    btnStmtHdr.onclick = function () {
+      showStatementPopup();
+    };
+  }
 
   function showStatementPopup() {
     statementModal.style.display = "block";
@@ -1664,6 +1678,7 @@
     state.highlightWord = false;
     state.highlightSentence = false;
     state.autoScroll = false;
+    state.voiceNavigation = false;
     saveState();
     applyEffects();
     renderPanelBody();
@@ -1741,96 +1756,61 @@
         }
       }, 50);
 
-      // 1.3 Quick Actions Label
-      var label = document.createElement("div");
-      label.style.cssText = "font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;margin-top:2px;";
-      label.innerText = "Quick Actions";
-      panelBody.appendChild(label);
+      // 1.4 Dedicated Menus Navigation Cards (Zero Duplicate Tools)
+      var menuLabel = document.createElement("div");
+      menuLabel.style.cssText = "font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;margin-top:4px;padding:0 2px;";
+      menuLabel.innerText = "Dedicated Menus";
+      panelBody.appendChild(menuLabel);
 
-      // 1.4 Quick Actions 2x2 Grid (Screenshot 2 Match)
-      var grid2x2 = document.createElement("div");
-      grid2x2.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:12px;";
+      var navList = document.createElement("div");
+      navList.style.cssText = "display:flex;flex-direction:column;gap:8px;";
 
-      // 1. Aa Readable Font
-      var isReadable = state.fontFamily === "readable" || state.readableFont;
-      var c1 = document.createElement("button");
-      c1.style.cssText = `border-radius:16px;padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;cursor:pointer;border:2px solid ${isReadable ? '#0091ff' : '#cbe2ff'};background:${isReadable ? 'rgba(224, 242, 254, 0.8)' : '#ffffff'};box-shadow:${isReadable ? '0 1px 3px rgba(0,0,0,0.05)' : 'none'};`;
-      c1.innerHTML = `
-        <span style="font-size:24px;font-weight:900;color:#0091ff;line-height:1;">Aa</span>
-        <span style="font-size:12px;font-weight:700;color:#262626;text-align:center;">Readable Font</span>
-      `;
-      c1.onclick = function () {
-        state.readableFont = !state.readableFont;
-        state.fontFamily = state.readableFont ? "readable" : "default";
-        saveState(); applyEffects(); renderPanelBody();
-      };
-      grid2x2.appendChild(c1);
-
-      // 2. Center Aligned
-      var isCenter = state.textAlignment === "center";
-      var c2 = document.createElement("button");
-      c2.style.cssText = `border-radius:16px;padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;cursor:pointer;border:2px solid ${isCenter ? '#0091ff' : '#cbe2ff'};background:${isCenter ? 'rgba(224, 242, 254, 0.8)' : '#ffffff'};box-shadow:${isCenter ? '0 1px 3px rgba(0,0,0,0.05)' : 'none'};`;
-      c2.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:center;height:24px;">
-          <svg width="26" height="21" viewBox="0 0 34 28" fill="none">
-            <rect x="10" y="1" width="14" height="4.5" rx="2.25" fill="#0091ff" />
-            <rect x="3" y="8.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
-            <rect x="7" y="16" width="20" height="4.5" rx="2.25" fill="#0091ff" />
-            <rect x="3" y="23.5" width="28" height="4.5" rx="2.25" fill="#0091ff" />
-          </svg>
+      // 1. Smart Profiles (Modes)
+      var nav1 = document.createElement("button");
+      nav1.style.cssText = "width:100%;background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all 0.15s;text-align:left;";
+      nav1.innerHTML = `
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#0f172a;">Smart Profiles (Modes)</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px;">1-click configurations (Epilepsy, ADHD, Blindness, etc.)</div>
         </div>
-        <span style="font-size:12px;font-weight:700;color:#262626;text-align:center;line-height:1.2;">Center Aligned</span>
-      `;
-      c2.onclick = function () {
-        state.textAlignment = isCenter ? "default" : "center";
-        saveState(); applyEffects(); renderPanelBody();
-      };
-      grid2x2.appendChild(c2);
-
-      // 3. High Contrast
-      var isHigh = state.isHighContrast;
-      var c3 = document.createElement("button");
-      c3.style.cssText = `border-radius:16px;padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;cursor:pointer;border:${isHigh ? '2px solid #2563eb' : '1px solid #e2e8f0'};background:${isHigh ? '#2563eb' : '#ffffff'};color:${isHigh ? '#ffffff' : '#334155'};box-shadow:${isHigh ? '0 4px 12px rgba(37,99,235,0.25)' : 'none'};`;
-      c3.innerHTML = `
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span style="font-size:12px;font-weight:700;">High Contrast</span>
-      `;
-      c3.onclick = function () {
-        state.isHighContrast = !state.isHighContrast;
-        saveState(); applyEffects(); renderPanelBody();
-      };
-      grid2x2.appendChild(c3);
-
-      // 4. Reading Mask
-      var isMask = state.readingMask;
-      var c4 = document.createElement("button");
-      c4.style.cssText = `border-radius:16px;padding:14px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;cursor:pointer;border:${isMask ? '2px solid #2563eb' : '1px solid #e2e8f0'};background:${isMask ? '#2563eb' : '#ffffff'};color:${isMask ? '#ffffff' : '#334155'};box-shadow:${isMask ? '0 4px 12px rgba(37,99,235,0.25)' : 'none'};`;
-      c4.innerHTML = `
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        <span style="font-size:12px;font-weight:700;">Reading Mask</span>
-      `;
-      c4.onclick = function () {
-        state.readingMask = !state.readingMask;
-        saveState(); applyEffects(); renderPanelBody();
-      };
-      grid2x2.appendChild(c4);
-
-      panelBody.appendChild(grid2x2);
-
-      // 1.5 Explore Smart Profiles Banner
-      var expBanner = document.createElement("div");
-      expBanner.style.cssText = "background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all 0.2s;margin-top:12px;";
-      expBanner.innerHTML = `
-        <div style="text-align:left;">
-          <div style="font-size:14px;font-weight:700;color:#0a1e3f;">Explore Smart Profiles</div>
-          <div style="font-size:12px;color:#64748b;margin-top:2px;">1-click accessibility configurations</div>
-        </div>
-        <div style="width:32px;height:32px;border-radius:50%;background:#ffffff;box-shadow:0 1px 3px rgba(0,0,0,0.08);display:flex;align-items:center;justify-content:center;">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        <div style="width:28px;height:28px;border-radius:50%;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </div>
       `;
-      expBanner.onclick = function () { switchTab("profiles"); };
-      panelBody.appendChild(expBanner);
+      nav1.onclick = function () { switchTab("profiles"); };
+      navList.appendChild(nav1);
+
+      // 2. Features (Typography & Reading)
+      var nav2 = document.createElement("button");
+      nav2.style.cssText = "width:100%;background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all 0.15s;text-align:left;";
+      nav2.innerHTML = `
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#0f172a;">Features (Typography & Reading)</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px;">Font scaling, read aloud, reading mask, focus tools</div>
+        </div>
+        <div style="width:28px;height:28px;border-radius:50%;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+      `;
+      nav2.onclick = function () { switchTab("features"); };
+      navList.appendChild(nav2);
+
+      // 3. Vision (Color & Contrast)
+      var nav3 = document.createElement("button");
+      nav3.style.cssText = "width:100%;background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all 0.15s;text-align:left;";
+      nav3.innerHTML = `
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#0f172a;">Vision (Color & Contrast)</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px;">Dark contrast, monochrome, saturation, color blindness</div>
+        </div>
+        <div style="width:28px;height:28px;border-radius:50%;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
+      `;
+      nav3.onclick = function () { switchTab("vision"); };
+      navList.appendChild(nav3);
+
+      panelBody.appendChild(navList);
     }
 
     // 2. MODES / PROFILES TAB (9 distinct profiles matching reference)
@@ -2319,66 +2299,7 @@
         }
       }
 
-      // Group 3: Color & Contrast Adjustments
-      var showMono = matchesQuery("Monochrome Mode", "grayscale black white color");
-      var showDark = matchesQuery("Dark Contrast Mode", "dark mode high contrast theme");
-      var showGroup3 = showMono || showDark;
 
-      if (showGroup3) {
-        hasAnyRendered = true;
-        var secHeading3 = document.createElement("div");
-        secHeading3.className = "feat-group-title";
-        secHeading3.innerText = "Color & Contrast Adjustments";
-        panelBody.appendChild(secHeading3);
-
-        var grid3 = document.createElement("div");
-        grid3.className = "feat-grid-2col";
-
-        if (showMono) {
-          var isMono = state.saturationMode === "monochrome" || state.monochrome;
-          var monoBtn = document.createElement("button");
-          monoBtn.className = "feat-tool-card " + (isMono ? "active" : "");
-          monoBtn.innerHTML = `
-            <div class="feat-tool-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                <line x1="1" y1="1" x2="23" y2="23"/>
-              </svg>
-            </div>
-            <span class="feat-tool-label">Monochrome Mode</span>
-          `;
-          monoBtn.onclick = function () {
-            state.saturationMode = isMono ? "normal" : "monochrome";
-            state.monochrome = (state.saturationMode === "monochrome");
-            saveState(); applyEffects(); renderPanelBody();
-          };
-          grid3.appendChild(monoBtn);
-        }
-
-        if (showDark) {
-          var isDark = state.isDarkMode || state.isHighContrast;
-          var darkBtn = document.createElement("button");
-          darkBtn.className = "feat-tool-card " + (isDark ? "active" : "");
-          darkBtn.innerHTML = `
-            <div class="feat-tool-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-              </svg>
-            </div>
-            <span class="feat-tool-label">Dark Contrast Mode</span>
-          `;
-          darkBtn.onclick = function () {
-            var next = !isDark;
-            state.isDarkMode = next;
-            state.isHighContrast = next;
-            state.isLightMode = false;
-            saveState(); applyEffects(); renderPanelBody();
-          };
-          grid3.appendChild(darkBtn);
-        }
-
-        panelBody.appendChild(grid3);
-      }
 
       // Group 4: 🔊 Speech & Reading
       var speechItems = [
@@ -2389,17 +2310,6 @@
           icon: `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
           iconColor: "#2563eb",
           onClick: function () { readSelectedText(); }
-        },
-        {
-          id: "autoReadSelection",
-          label: "Auto Read Selection",
-          type: "toggle",
-          value: state.autoReadSelection,
-          icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="m13 13 6 6"/></svg>`,
-          onClick: function () {
-            state.autoReadSelection = !state.autoReadSelection;
-            saveState(); renderPanelBody();
-          }
         },
         {
           id: "readEntirePage",
@@ -2474,9 +2384,10 @@
         {
           id: "voiceSettings",
           label: "Voice Settings",
-          type: "action",
+          type: "toggle",
+          value: state.isVoiceSettingsOpen,
           icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
-          iconColor: "#475569",
+          iconColor: state.isVoiceSettingsOpen ? "#ffffff" : "#475569",
           onClick: function () {
             state.isVoiceSettingsOpen = !state.isVoiceSettingsOpen;
             renderPanelBody();
@@ -2488,10 +2399,12 @@
           type: "toggle",
           value: state.voiceNavigation,
           icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
-          iconColor: "#2563eb",
+          iconColor: state.voiceNavigation ? "#ffffff" : "#2563eb",
           onClick: function () {
             state.voiceNavigation = !state.voiceNavigation;
-            saveState(); renderPanelBody();
+            saveState();
+            renderPanelBody();
+            applyEffects();
           }
         }
       ];
@@ -2525,90 +2438,122 @@
             if (!isDisabled && item.onClick) item.onClick();
           };
           grid4.appendChild(btn);
-        });
-        panelBody.appendChild(grid4);
 
-        // Expanded Voice Settings Configuration Box
-        if (state.isVoiceSettingsOpen) {
-          var voicePanel = document.createElement("div");
-          voicePanel.className = "feat-voice-panel";
-          voicePanel.innerHTML = `
-            <div style="font-size:12px;font-weight:800;color:#0f172a;display:flex;justify-content:space-between;align-items:center;">
-              <span>Voice Settings Configuration</span>
-              <button class="voice-panel-close" style="background:none;border:none;color:#94a3b8;font-size:16px;cursor:pointer;padding:0 4px;">&times;</button>
-            </div>
-            <!-- Speed -->
-            <div class="segmented-box" style="margin:0;padding:10px;">
-              <div class="segmented-header">
-                <span>Reading Speed</span>
-                <span style="font-size:11px;color:#0055ff;font-weight:700;">${state.speed || 1.0}x</span>
+          // Expanded Voice Settings Configuration Box placed DIRECTLY below Voice Settings setting inside the tool
+          if (item.id === "voiceSettings" && state.isVoiceSettingsOpen) {
+            var voicePanel = document.createElement("div");
+            voicePanel.className = "feat-voice-panel";
+            voicePanel.innerHTML = `
+              <div style="font-size:12.5px;font-weight:800;color:#0f172a;display:flex;justify-content:space-between;align-items:center;">
+                <span style="display:flex;align-items:center;gap:6px;">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0055ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  Voice Settings Parameters
+                </span>
+                <button class="voice-panel-close" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;padding:0 4px;line-height:1;">&times;</button>
               </div>
-              <div class="segmented-buttons-row">
-                ${[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(function(v){
-                  return `<button class="segmented-pill-btn ${(state.speed || 1.0)===v?'active':''}" data-sp="${v}">${v}x</button>`;
-                }).join("")}
+              <!-- Speed -->
+              <div class="segmented-box" style="margin:0;padding:10px;">
+                <div class="segmented-header">
+                  <span>Reading Speed</span>
+                  <span style="font-size:11px;color:#0055ff;font-weight:700;">${state.speed || 1.0}x</span>
+                </div>
+                <div class="segmented-buttons-row">
+                  ${[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(function(v){
+                    return `<button class="segmented-pill-btn ${(state.speed || 1.0)===v?'active':''}" data-sp="${v}">${v}x</button>`;
+                  }).join("")}
+                </div>
               </div>
-            </div>
-            <!-- Pitch -->
-            <div class="segmented-box" style="margin:0;padding:10px;">
-              <div class="segmented-header">
-                <span>Pitch</span>
-                <span style="font-size:11px;color:#0055ff;font-weight:700;text-transform:uppercase;">${state.pitch || 'normal'}</span>
+              <!-- Pitch -->
+              <div class="segmented-box" style="margin:0;padding:10px;">
+                <div class="segmented-header">
+                  <span>Pitch</span>
+                  <span style="font-size:11px;color:#0055ff;font-weight:700;text-transform:uppercase;">${state.pitch || 'normal'}</span>
+                </div>
+                <div class="segmented-buttons-row">
+                  ${["low", "normal", "high"].map(function(pVal){
+                    return `<button class="segmented-pill-btn ${(state.pitch || 'normal')===pVal?'active':''}" data-pch="${pVal}">${pVal.toUpperCase()}</button>`;
+                  }).join("")}
+                </div>
               </div>
-              <div class="segmented-buttons-row">
-                ${["low", "normal", "high"].map(function(pVal){
-                  return `<button class="segmented-pill-btn ${(state.pitch || 'normal')===pVal?'active':''}" data-pch="${pVal}">${pVal.toUpperCase()}</button>`;
-                }).join("")}
+              <!-- Voice Dropdown -->
+              <div class="segmented-box" style="margin:0;padding:10px;">
+                <div class="segmented-header">
+                  <span>Voice Selection</span>
+                </div>
+                <div style="padding-top:4px;">
+                  <select id="2all-voice-select-dropdown" style="width:100%;padding:8px 10px;border-radius:10px;border:1px solid #cbd5e1;background:#ffffff;font-size:11.5px;font-weight:600;color:#0f172a;outline:none;cursor:pointer;">
+                    <option value="">Default System Voice</option>
+                  </select>
+                </div>
               </div>
-            </div>
-            <!-- Voice Dropdown -->
-            <div class="segmented-box" style="margin:0;padding:10px;">
-              <div class="segmented-header">
-                <span>Voice Selection</span>
+              <!-- Volume Slider -->
+              <div class="segmented-box" style="margin:0;padding:10px;">
+                <div class="segmented-header">
+                  <span>Volume</span>
+                  <span id="2all-voice-volume-val" style="font-size:11px;color:#0055ff;font-weight:700;">${state.volume !== undefined ? state.volume : 100}%</span>
+                </div>
+                <div style="padding-top:4px;">
+                  <input id="2all-voice-volume-slider" type="range" min="0" max="100" value="${state.volume !== undefined ? state.volume : 100}" style="width:100%;accent-color:#0055ff;cursor:pointer;">
+                </div>
               </div>
-              <div style="padding-top:4px;">
-                <select id="2all-voice-select-dropdown" style="width:100%;padding:8px 10px;border-radius:10px;border:1px solid #cbd5e1;background:#ffffff;font-size:11.5px;font-weight:600;color:#0f172a;outline:none;cursor:pointer;">
-                  <option value="">Default System Voice</option>
-                </select>
-              </div>
-            </div>
-          `;
-          voicePanel.querySelector(".voice-panel-close").onclick = function () {
-            state.isVoiceSettingsOpen = false;
-            renderPanelBody();
-          };
-          voicePanel.querySelectorAll("[data-sp]").forEach(function(b){
-            b.onclick = function(){
-              state.speed = parseFloat(b.getAttribute("data-sp"));
-              saveState(); renderPanelBody();
+              <!-- Done Button -->
+              <button class="voice-panel-done-btn" style="width:100%;padding:9px;background:#0055ff;color:#ffffff;border:none;border-radius:10px;font-size:11.5px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(0,85,255,0.25);transition:background 0.15s;">Done</button>
+            `;
+            voicePanel.querySelector(".voice-panel-close").onclick = function () {
+              state.isVoiceSettingsOpen = false;
+              renderPanelBody();
             };
-          });
-          voicePanel.querySelectorAll("[data-pch]").forEach(function(b){
-            b.onclick = function(){
-              state.pitch = b.getAttribute("data-pch");
-              saveState(); renderPanelBody();
-            };
-          });
-          setTimeout(function () {
-            var vSelect = shadow.getElementById("2all-voice-select-dropdown");
-            if (vSelect && "speechSynthesis" in window) {
-              var voices = window.speechSynthesis.getVoices() || [];
-              vSelect.innerHTML = '<option value="">Default System Voice</option>';
-              voices.forEach(function (v) {
-                var opt = document.createElement("option");
-                opt.value = v.name;
-                opt.innerText = v.name + (v.lang ? " (" + v.lang + ")" : "");
-                if (state.voice === v.name) opt.selected = true;
-                vSelect.appendChild(opt);
-              });
-              vSelect.onchange = function () {
-                state.voice = vSelect.value;
+            var doneBtn = voicePanel.querySelector(".voice-panel-done-btn");
+            if (doneBtn) {
+              doneBtn.onclick = function () {
+                state.isVoiceSettingsOpen = false;
+                renderPanelBody();
+              };
+            }
+            var volSlider = voicePanel.querySelector('[id="2all-voice-volume-slider"]');
+            var volVal = voicePanel.querySelector('[id="2all-voice-volume-val"]');
+            if (volSlider) {
+              volSlider.oninput = function () {
+                var val = parseInt(volSlider.value);
+                state.volume = val;
+                if (volVal) volVal.innerText = val + "%";
                 saveState();
               };
             }
-          }, 30);
-          panelBody.appendChild(voicePanel);
-        }
+            voicePanel.querySelectorAll("[data-sp]").forEach(function(b){
+              b.onclick = function(){
+                state.speed = parseFloat(b.getAttribute("data-sp"));
+                saveState(); renderPanelBody();
+              };
+            });
+            voicePanel.querySelectorAll("[data-pch]").forEach(function(b){
+              b.onclick = function(){
+                state.pitch = b.getAttribute("data-pch");
+                saveState(); renderPanelBody();
+              };
+            });
+            setTimeout(function () {
+              var vSelect = shadow.getElementById("2all-voice-select-dropdown");
+              if (vSelect && "speechSynthesis" in window) {
+                var voices = window.speechSynthesis.getVoices() || [];
+                vSelect.innerHTML = '<option value="">Default System Voice</option>';
+                voices.forEach(function (v) {
+                  var opt = document.createElement("option");
+                  opt.value = v.name;
+                  opt.innerText = v.name + (v.lang ? " (" + v.lang + ")" : "");
+                  if (state.voice === v.name) opt.selected = true;
+                  vSelect.appendChild(opt);
+                });
+                vSelect.onchange = function () {
+                  state.voice = vSelect.value;
+                  saveState();
+                };
+              }
+            }, 30);
+            grid4.appendChild(voicePanel);
+          }
+        });
+        panelBody.appendChild(grid4);
       }
 
       // Group 5: Reading, Focus & Assistive Reading
@@ -2630,26 +2575,6 @@
           icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0l12.6 12.6z"/><line x1="14.5" y1="5.5" x2="17" y2="8"/><line x1="11.5" y1="8.5" x2="13" y2="10"/><line x1="8.5" y1="11.5" x2="11" y2="14"/><line x1="5.5" y1="14.5" x2="7" y2="16"/></svg>`,
           onClick: function () {
             state.readingRuler = !state.readingRuler;
-            saveState(); applyEffects(); renderPanelBody();
-          }
-        },
-        {
-          id: "readMode",
-          label: "Read Mode",
-          value: state.readMode,
-          icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
-          onClick: function () {
-            state.readMode = !state.readMode;
-            saveState(); applyEffects(); renderPanelBody();
-          }
-        },
-        {
-          id: "textToSpeech",
-          label: "Read Aloud (TTS)",
-          value: state.textToSpeech,
-          icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><circle cx="12" cy="10" r="3"/></svg>`,
-          onClick: function () {
-            state.textToSpeech = !state.textToSpeech;
             saveState(); applyEffects(); renderPanelBody();
           }
         }
@@ -2799,9 +2724,8 @@
 
       var showCurSize = matchesQuery("Cursor Size", "mouse pointer huge large");
       var showCurColor = matchesQuery("Cursor Pointer Style", "cursor pointer black white");
-      var showSatCtrl = matchesQuery("Saturation Control", "saturation monochrome high low");
       var filteredVisualToggles = visualItems.filter(function(item){ return matchesQuery(item.label, "orientation visual motion sounds hide"); });
-      var showGroup7 = filteredVisualToggles.length > 0 || showCurSize || showCurColor || showSatCtrl;
+      var showGroup7 = filteredVisualToggles.length > 0 || showCurSize || showCurColor;
 
       if (showGroup7) {
         hasAnyRendered = true;
@@ -2869,29 +2793,6 @@
             };
           });
           panelBody.appendChild(curStyleBox);
-        }
-
-        // Saturation Control
-        if (showSatCtrl) {
-          var satBox = document.createElement("div");
-          satBox.className = "segmented-box";
-          satBox.innerHTML = `
-            <div class="segmented-header">Saturation Control</div>
-            <div class="segmented-buttons-row">
-              <button class="segmented-pill-btn ${state.saturationMode==='normal'?'active':''}" data-sat="normal">Normal</button>
-              <button class="segmented-pill-btn ${state.saturationMode==='high'?'active':''}" data-sat="high">High</button>
-              <button class="segmented-pill-btn ${state.saturationMode==='low'?'active':''}" data-sat="low">Low</button>
-              <button class="segmented-pill-btn ${state.saturationMode==='monochrome'?'active':''}" data-sat="monochrome">Monochrome</button>
-            </div>
-          `;
-          satBox.querySelectorAll(".segmented-pill-btn").forEach(function(b){
-            b.onclick = function(){
-              state.saturationMode = b.getAttribute("data-sat");
-              state.monochrome = (state.saturationMode === "monochrome");
-              saveState(); applyEffects(); renderPanelBody();
-            };
-          });
-          panelBody.appendChild(satBox);
         }
       }
 
@@ -3428,12 +3329,12 @@
   // Unified Speech Dispatcher: Queues chunks cleanly without Chrome race conditions
   function speakChunks(chunks) {
     if (!("speechSynthesis" in window)) {
-      alert("Speech Synthesis (Text-to-Speech) is not supported in this browser.");
+      showVoiceCommandToast("Speech Synthesis (TTS) is not supported in this browser.", false);
       return;
     }
 
     if (!chunks || chunks.length === 0) {
-      alert("No readable text found to read.");
+      showVoiceCommandToast("No readable text found on this page.", false);
       return;
     }
 
@@ -3558,7 +3459,7 @@
 
   function readEntirePage() {
     if (!("speechSynthesis" in window)) {
-      alert("Speech Synthesis (Text-to-Speech) is not supported in this browser.");
+      showVoiceCommandToast("Speech Synthesis (TTS) is not supported in this browser.", false);
       return;
     }
 
@@ -3569,7 +3470,7 @@
 
     var chunks = getEntirePageChunks();
     if (!chunks || chunks.length === 0) {
-      alert("No readable text found on this page.");
+      showVoiceCommandToast("No readable text found on this page.", false);
       return;
     }
 
@@ -3581,7 +3482,7 @@
     var sel = window.getSelection();
     var text = (sel ? sel.toString() : "").trim();
     if (!text) {
-      alert("Please highlight/select some text on the page first.");
+      showVoiceCommandToast("Please highlight/select some text on the page first.", false);
       return;
     }
 
@@ -4072,6 +3973,366 @@
     }
   }
 
+  // ========================================================
+  // VOICE COMMAND NAVIGATION ENGINE (Web Speech Recognition)
+  // ========================================================
+  var voiceRecInstance = null;
+  var voiceNavRestartTimer = null;
+
+  function showVoiceCommandToast(message, isHeard) {
+    var toast = document.getElementById("2all-voice-command-toast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "2all-voice-command-toast";
+      toast.style.cssText = "position:fixed;top:68px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,0.95);color:#38bdf8;padding:7px 18px;border-radius:9999px;font-size:12px;font-weight:800;font-family:system-ui,-apple-system,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.35);border:1px solid rgba(56,189,248,0.7);z-index:2147483647;pointer-events:none;display:flex;align-items:center;gap:8px;backdrop-filter:blur(8px);transition:opacity 0.25s ease;";
+      document.body.appendChild(toast);
+    }
+    toast.innerHTML = (isHeard ? '<span style="font-size:14px;">✨</span> ' : '<span style="width:7px;height:7px;border-radius:50%;background:#38bdf8;display:inline-block;"></span> ') + message;
+    toast.style.display = "flex";
+    toast.style.opacity = "1";
+
+    if (window.__2ALL_VOICE_TOAST_TIMER__) clearTimeout(window.__2ALL_VOICE_TOAST_TIMER__);
+    window.__2ALL_VOICE_TOAST_TIMER__ = setTimeout(function () {
+      if (toast) {
+        toast.style.opacity = "0";
+        setTimeout(function () {
+          if (toast && toast.style.opacity === "0") toast.style.display = "none";
+        }, 250);
+      }
+    }, 3800);
+  }
+
+  function executeVoiceNavigationCommand(rawTranscript) {
+    if (!rawTranscript) return;
+    var transcript = rawTranscript.toLowerCase().trim();
+    console.log("[2all.ai Voice Navigation Command]:", transcript);
+
+    showVoiceCommandToast('Command: "' + rawTranscript + '"', true);
+
+    // 1. Scroll Commands
+    if (transcript.indexOf("scroll down") !== -1 || transcript === "down" || transcript.indexOf("page down") !== -1 || transcript.indexOf("go down") !== -1) {
+      window.scrollBy({ top: 450, behavior: "smooth" });
+      showVoiceCommandToast('Scrolled Down', true);
+      return;
+    }
+    if (transcript.indexOf("scroll up") !== -1 || transcript === "up" || transcript.indexOf("page up") !== -1 || transcript.indexOf("go up") !== -1) {
+      window.scrollBy({ top: -450, behavior: "smooth" });
+      showVoiceCommandToast('Scrolled Up', true);
+      return;
+    }
+    if (transcript.indexOf("top") !== -1 || transcript.indexOf("scroll to top") !== -1 || transcript.indexOf("go to top") !== -1) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      showVoiceCommandToast('Scrolled to Top', true);
+      return;
+    }
+    if (transcript.indexOf("bottom") !== -1 || transcript.indexOf("scroll to bottom") !== -1 || transcript.indexOf("go to bottom") !== -1) {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      showVoiceCommandToast('Scrolled to Bottom', true);
+      return;
+    }
+
+    // 2. Speech & Reading Controls
+    if (transcript.indexOf("read page") !== -1 || transcript.indexOf("read aloud") !== -1 || transcript.indexOf("read website") !== -1 || transcript.indexOf("start reading") !== -1) {
+      readEntirePage();
+      showVoiceCommandToast('Started Reading Page', true);
+      return;
+    }
+    if (transcript.indexOf("stop reading") !== -1 || transcript === "stop" || transcript.indexOf("pause reading") !== -1 || transcript === "pause") {
+      stopSpeaking();
+      showVoiceCommandToast('Stopped Reading', true);
+      return;
+    }
+
+    // 3. Widget Controls
+    if (transcript.indexOf("close menu") !== -1 || transcript.indexOf("close panel") !== -1 || transcript.indexOf("close widget") !== -1 || transcript.indexOf("close accessibility") !== -1) {
+      closePanel();
+      showVoiceCommandToast('Closed Accessibility Panel', true);
+      return;
+    }
+    if (transcript.indexOf("open menu") !== -1 || transcript.indexOf("open panel") !== -1 || transcript.indexOf("open widget") !== -1 || transcript.indexOf("open accessibility") !== -1) {
+      openPanel();
+      showVoiceCommandToast('Opened Accessibility Panel', true);
+      return;
+    }
+    if (transcript.indexOf("reset") !== -1 || transcript.indexOf("reset settings") !== -1 || transcript.indexOf("reset accessibility") !== -1) {
+      resetSettings();
+      showVoiceCommandToast('Reset All Settings', true);
+      return;
+    }
+
+    // 4. Contrast & Theme Controls
+    if (transcript.indexOf("dark mode") !== -1 || transcript.indexOf("dark contrast") !== -1) {
+      state.isDarkMode = !state.isDarkMode;
+      state.isLightMode = false;
+      state.isHighContrast = false;
+      saveState(); renderPanelBody(); applyEffects();
+      showVoiceCommandToast('Toggled Dark Mode', true);
+      return;
+    }
+    if (transcript.indexOf("high contrast") !== -1 || transcript === "contrast") {
+      state.isHighContrast = !state.isHighContrast;
+      state.isDarkMode = false;
+      state.isLightMode = false;
+      saveState(); renderPanelBody(); applyEffects();
+      showVoiceCommandToast('Toggled High Contrast', true);
+      return;
+    }
+
+    // 5. DOM Target Element Search & Navigation (links, buttons, headings, sections)
+    var cleanQuery = transcript
+      .replace(/^(go to|navigate to|open|click|jump to|show me|find|scroll to|press|select)\s+/i, "")
+      .replace(/\s+(page|button|link|section|tab)$/i, "")
+      .trim();
+
+    if (!cleanQuery) cleanQuery = transcript;
+
+    var targetElement = null;
+    var matchReason = "";
+
+    // 5a. Match element by id
+    var elById = document.getElementById(cleanQuery) || document.querySelector('[id*="' + cleanQuery + '"]');
+    if (elById && !elById.closest('[id="2all-ai-widget-host"]')) {
+      targetElement = elById;
+      matchReason = 'id "' + cleanQuery + '"';
+    }
+
+    // 5b. Match links and buttons by text or href
+    if (!targetElement) {
+      var clickables = Array.from(document.querySelectorAll("a, button, [role='button'], input[type='submit']"));
+      for (var i = 0; i < clickables.length; i++) {
+        var c = clickables[i];
+        if (c.closest('[id="2all-ai-widget-host"]')) continue;
+        var text = (c.innerText || c.getAttribute("aria-label") || c.getAttribute("title") || c.getAttribute("alt") || "").toLowerCase().trim();
+        var href = (c.getAttribute("href") || "").toLowerCase().trim();
+        if (text && (text === cleanQuery || text.indexOf(cleanQuery) !== -1 || cleanQuery.indexOf(text) !== -1)) {
+          targetElement = c;
+          matchReason = 'Link/Button "' + (c.innerText || cleanQuery).trim().substring(0, 25) + '"';
+          break;
+        }
+        if (href && href.indexOf(cleanQuery) !== -1) {
+          targetElement = c;
+          matchReason = 'Link: "' + href.substring(0, 25) + '"';
+          break;
+        }
+      }
+    }
+
+    // 5c. Match headings
+    if (!targetElement) {
+      var headings = Array.from(document.querySelectorAll("h1, h2, h3, h4, h5, h6, .heading, [class*='title']"));
+      for (var j = 0; j < headings.length; j++) {
+        var h = headings[j];
+        if (h.closest('[id="2all-ai-widget-host"]')) continue;
+        var hText = (h.innerText || "").toLowerCase().trim();
+        if (hText && (hText.indexOf(cleanQuery) !== -1 || cleanQuery.indexOf(hText) !== -1)) {
+          targetElement = h;
+          matchReason = 'Heading "' + h.innerText.trim().substring(0, 25) + '"';
+          break;
+        }
+      }
+    }
+
+    // 5d. Match sections
+    if (!targetElement) {
+      var sections = Array.from(document.querySelectorAll("section, main, article, footer, header, nav, div[class*='card']"));
+      for (var k = 0; k < sections.length; k++) {
+        var s = sections[k];
+        if (s.closest('[id="2all-ai-widget-host"]')) continue;
+        var sText = (s.innerText || "").toLowerCase();
+        if (sText && sText.indexOf(cleanQuery) !== -1 && s.children.length < 8) {
+          targetElement = s;
+          matchReason = 'Section "' + cleanQuery + '"';
+          break;
+        }
+      }
+    }
+
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      var prevOutline = targetElement.style.outline;
+      var prevOffset = targetElement.style.outlineOffset;
+      var prevTransition = targetElement.style.transition;
+      targetElement.style.outline = "3px solid #0055ff";
+      targetElement.style.outlineOffset = "3px";
+      targetElement.style.transition = "outline 0.3s ease";
+      setTimeout(function () {
+        targetElement.style.outline = prevOutline;
+        targetElement.style.outlineOffset = prevOffset;
+        targetElement.style.transition = prevTransition;
+      }, 3000);
+
+      var anchor = (targetElement.tagName.toLowerCase() === "a" ? targetElement : targetElement.closest("a") || targetElement.querySelector("a"));
+      var hrefAttr = anchor ? anchor.getAttribute("href") : null;
+
+      if (anchor && hrefAttr && hrefAttr !== "#" && hrefAttr.indexOf("javascript:") === -1) {
+        showVoiceCommandToast('Opening link "' + cleanQuery + '"...', true);
+        setTimeout(function () {
+          anchor.click();
+        }, 500);
+      } else if (targetElement.tagName.toLowerCase() === "button" || targetElement.getAttribute("role") === "button") {
+        showVoiceCommandToast('Clicked "' + (targetElement.innerText || cleanQuery).trim().substring(0, 25) + '"', true);
+        setTimeout(function () {
+          targetElement.click();
+        }, 400);
+      } else {
+        showVoiceCommandToast('Jumped to ' + matchReason, true);
+      }
+    } else {
+      showVoiceCommandToast('Heard: "' + rawTranscript + '"', true);
+    }
+  }
+
+  function updateVoiceNavigation() {
+    var banner = document.getElementById("2all-voice-nav-banner");
+    var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (state.voiceNavigation) {
+      // 1. Create or show Floating Voice Command Navigation Overlay Banner
+      if (!banner) {
+        banner = document.createElement("div");
+        banner.id = "2all-voice-nav-banner";
+        banner.style.cssText = "position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:2147483647;display:flex;align-items:center;gap:10px;background:rgba(15,23,42,0.96);color:#ffffff;padding:8px 16px;border-radius:9999px;border:1px solid rgba(59,130,246,0.5);box-shadow:0 12px 35px rgba(0,0,0,0.4);font-family:system-ui,-apple-system,sans-serif;font-size:12px;font-weight:700;backdrop-filter:blur(10px);user-select:none;transition:all 0.25s ease;";
+        banner.innerHTML = `
+          <div style="position:relative;display:flex;align-items:center;justify-content:center;width:12px;height:12px;">
+            <span style="position:absolute;width:10px;height:10px;border-radius:50%;background:#06b6d4;opacity:0.75;"></span>
+            <span style="position:relative;width:8px;height:8px;border-radius:50%;background:#06b6d4;"></span>
+          </div>
+          <span style="color:#93c5fd;font-size:11px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;">Voice Navigation Active</span>
+          <span style="color:#cbd5e1;font-size:11px;font-weight:500;" class="twoall-voice-hint">Say <strong style="color:#ffffff;">"scroll down"</strong>, <strong style="color:#ffffff;">"top"</strong>, <strong style="color:#ffffff;">"read page"</strong></span>
+          <form id="2all-voice-nav-form" style="display:flex;align-items:center;gap:5px;margin:0;padding:0;">
+            <input id="2all-voice-nav-input" type="text" placeholder="Type or say command..." style="background:rgba(30,41,59,0.9);color:#ffffff;border:1px solid #334155;border-radius:8px;padding:4px 10px;font-size:11px;outline:none;width:140px;" />
+            <button id="2all-voice-mic-btn" type="button" style="background:#0891b2;color:#ffffff;border:none;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:4px;" title="Click and speak">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              SPEAK
+            </button>
+            <button type="submit" style="background:#2563eb;color:#ffffff;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:800;cursor:pointer;">GO</button>
+          </form>
+          <button id="2all-voice-nav-close" style="background:none;border:none;color:#94a3b8;font-size:18px;font-weight:bold;cursor:pointer;padding:0 4px;margin-left:4px;line-height:1;" title="Turn off Voice Navigation">&times;</button>
+        `;
+        document.body.appendChild(banner);
+
+        var closeBtn = banner.querySelector('[id="2all-voice-nav-close"]');
+        if (closeBtn) {
+          closeBtn.onclick = function () {
+            state.voiceNavigation = false;
+            saveState();
+            renderPanelBody();
+            applyEffects();
+          };
+        }
+
+        var form = banner.querySelector('[id="2all-voice-nav-form"]');
+        var input = banner.querySelector('[id="2all-voice-nav-input"]');
+        if (form && input) {
+          form.onsubmit = function (e) {
+            e.preventDefault();
+            var val = input.value.trim();
+            if (val) {
+              executeVoiceNavigationCommand(val);
+              input.value = "";
+            }
+          };
+        }
+
+        var micBtn = banner.querySelector('[id="2all-voice-mic-btn"]');
+        if (micBtn) {
+          micBtn.onclick = function () {
+            showVoiceCommandToast("Listening for voice... Speak now!", false);
+            if (voiceRecInstance) {
+              try { voiceRecInstance.start(); } catch (e) {}
+            }
+          };
+        }
+      }
+      banner.style.display = "flex";
+
+      if (!SpeechRec) {
+        showVoiceCommandToast("Browser speech recognition API not available. You can use typed commands above.", false);
+        return;
+      }
+
+      // 2. Initialize SpeechRecognition Instance
+      if (!voiceRecInstance) {
+        try {
+          voiceRecInstance = new SpeechRec();
+          voiceRecInstance.continuous = false;
+          voiceRecInstance.interimResults = true;
+          voiceRecInstance.lang = "en-US";
+
+          voiceRecInstance.onstart = function () {
+            showVoiceCommandToast("Listening for voice commands...", false);
+          };
+
+          voiceRecInstance.onresult = function (event) {
+            var interim = "";
+            var finalSpeech = "";
+            for (var i = event.resultIndex; i < event.results.length; ++i) {
+              if (event.results[i].isFinal) {
+                finalSpeech += event.results[i][0].transcript;
+              } else {
+                interim += event.results[i][0].transcript;
+              }
+            }
+            if (interim.trim()) {
+              showVoiceCommandToast('Hearing: "' + interim.trim() + '"...', false);
+            }
+            if (finalSpeech.trim()) {
+              executeVoiceNavigationCommand(finalSpeech.trim());
+            }
+          };
+
+          voiceRecInstance.onerror = function (e) {
+            if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+              showVoiceCommandToast("Microphone access blocked. Please allow mic in browser.", false);
+            } else if (e.error === "audio-capture") {
+              showVoiceCommandToast("No microphone detected on your device.", false);
+            } else if (e.error !== "no-speech") {
+              console.warn("[2all.ai Voice Navigation Error]:", e.error);
+            }
+          };
+
+          voiceRecInstance.onend = function () {
+            if (state.voiceNavigation) {
+              if (voiceNavRestartTimer) clearTimeout(voiceNavRestartTimer);
+              voiceNavRestartTimer = setTimeout(function () {
+                try {
+                  if (state.voiceNavigation && voiceRecInstance) {
+                    voiceRecInstance.start();
+                  }
+                } catch (err) {}
+              }, 200);
+            }
+          };
+
+          voiceRecInstance.start();
+        } catch (err) {
+          console.error("[2all.ai Voice Navigation] Failed to start:", err);
+        }
+      }
+
+    } else {
+      // Deactivate Voice Navigation
+      if (banner) {
+        banner.style.display = "none";
+        try { banner.remove(); } catch (e) {}
+      }
+      var toast = document.getElementById("2all-voice-command-toast");
+      if (toast) {
+        toast.style.display = "none";
+        try { toast.remove(); } catch (e) {}
+      }
+      if (voiceNavRestartTimer) {
+        clearTimeout(voiceNavRestartTimer);
+        voiceNavRestartTimer = null;
+      }
+      if (voiceRecInstance) {
+        try { voiceRecInstance.stop(); } catch (e) {}
+        voiceRecInstance = null;
+      }
+    }
+  }
+
   function applyEffects() {
     ensureSvgFilters();
     updateGlobalStyle();
@@ -4081,6 +4342,7 @@
     updateTextToSpeech();
     updateMuteSounds();
     updateFocusHighlight();
+    updateVoiceNavigation();
   }
 
   // Initial Render & Apply (Always start on Home / dashboard tab like original site)

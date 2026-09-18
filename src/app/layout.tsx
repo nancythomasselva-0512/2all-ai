@@ -125,6 +125,38 @@ export default async function RootLayout({
   return (
     <html lang="en" className="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
+        {/* Strip browser-extension-injected attributes (like fdprocessedid) before React hydration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var observer = new MutationObserver(function(mutations) {
+                    for (var i = 0; i < mutations.length; i++) {
+                      var m = mutations[i];
+                      if (m.attributeName === "fdprocessedid" && m.target && m.target.removeAttribute) {
+                        m.target.removeAttribute("fdprocessedid");
+                      }
+                    }
+                  });
+                  observer.observe(document.documentElement, {
+                    attributes: true,
+                    subtree: true,
+                    attributeFilter: ["fdprocessedid"]
+                  });
+                  window.addEventListener("DOMContentLoaded", function() {
+                    document.querySelectorAll("[fdprocessedid]").forEach(function(el) {
+                      el.removeAttribute("fdprocessedid");
+                    });
+                    setTimeout(function() {
+                      observer.disconnect();
+                    }, 3500);
+                  });
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
