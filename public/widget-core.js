@@ -16,6 +16,33 @@
 
   var primaryColor = config.primaryColor || "#0055ff";
   var position = config.position || "bottom-right";
+  var size = config.size || "medium";
+
+  function hexToRgba(hex, alpha) {
+    if (!hex) return "rgba(0, 85, 255, " + alpha + ")";
+    var clean = String(hex).replace("#", "").trim();
+    if (clean.length === 3) clean = clean.split("").map(function (c) { return c + c; }).join("");
+    var num = parseInt(clean, 16);
+    if (isNaN(num)) return "rgba(0, 85, 255, " + alpha + ")";
+    return "rgba(" + ((num >> 16) & 255) + ", " + ((num >> 8) & 255) + ", " + (num & 255) + ", " + alpha + ")";
+  }
+
+  function adjustColor(hex, percent) {
+    if (!hex) return "#0041c2";
+    var clean = String(hex).replace("#", "").trim();
+    if (clean.length === 3) clean = clean.split("").map(function (c) { return c + c; }).join("");
+    var num = parseInt(clean, 16);
+    if (isNaN(num)) return "#0041c2";
+    var amt = Math.round(2.55 * percent);
+    var r = Math.min(255, Math.max(0, ((num >> 16) & 255) + amt));
+    var g = Math.min(255, Math.max(0, ((num >> 8) & 255) + amt));
+    var b = Math.min(255, Math.max(0, (num & 255) + amt));
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+
+  var primaryColorDark = adjustColor(primaryColor, -18);
+  var btnSize = size === "small" ? "48px" : size === "large" ? "64px" : "56px";
+  var iconSize = size === "small" ? "24px" : size === "large" ? "32px" : "28px";
 
   // Universal Accessibility State
   var state = {
@@ -386,13 +413,13 @@
 
     /* Trigger Button */
     .trigger-btn {
-      width: 56px;
-      height: 56px;
+      width: ${btnSize};
+      height: ${btnSize};
       border-radius: 50%;
-      background: linear-gradient(135deg, #0055ff 0%, #003edb 100%);
+      background: linear-gradient(135deg, ${primaryColor} 0%, ${primaryColorDark} 100%);
       color: #ffffff;
       border: 2px solid rgba(255, 255, 255, 0.35);
-      box-shadow: 0 10px 25px rgba(0, 85, 255, 0.45), 0 4px 10px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 10px 25px ${hexToRgba(primaryColor, 0.45)}, 0 4px 10px rgba(0, 0, 0, 0.15);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -402,9 +429,9 @@
     }
     .trigger-btn:hover {
       transform: scale(1.08);
-      box-shadow: 0 12px 30px rgba(0, 85, 255, 0.6);
+      box-shadow: 0 12px 30px ${hexToRgba(primaryColor, 0.6)};
     }
-    .trigger-btn svg { width: 28px; height: 28px; stroke: white; fill: none; stroke-width: 2.2; }
+    .trigger-btn svg { width: ${iconSize}; height: ${iconSize}; stroke: white; fill: none; stroke-width: 2.2; }
 
     /* Main Modal Panel Container (Larger, Spacious & Never Cut Off) */
     .panel-container {
@@ -416,9 +443,9 @@
       height: 680px;
       max-height: calc(100vh - 100px);
       background: #ffffff;
-      border: 1px solid rgba(0, 85, 255, 0.2);
+      border: 1px solid ${hexToRgba(primaryColor, 0.2)};
       border-radius: 28px;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(0, 85, 255, 0.08);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28), 0 0 0 1px ${hexToRgba(primaryColor, 0.08)};
       overflow: hidden;
       display: none;
       flex-direction: column;
@@ -438,7 +465,7 @@
 
     /* Top Royal Blue Header */
     .panel-header-blue {
-      background: linear-gradient(135deg, #0055ff 0%, #0041c2 100%);
+      background: linear-gradient(135deg, ${primaryColor} 0%, ${primaryColorDark} 100%);
       color: #ffffff;
       padding: 18px 20px 15px 20px;
       flex-shrink: 0;
@@ -500,7 +527,7 @@
 
     .header-action-pill {
       background: #ffffff;
-      color: #0055ff;
+      color: ${primaryColor};
       border: 1px solid #dbeafe;
       border-radius: 20px;
       padding: 8px 10px;
@@ -610,7 +637,7 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .search-input-field:focus { border-color: #0055ff; }
+    .search-input-field:focus { border-color: ${primaryColor}; }
     .search-input-field::placeholder { color: #94a3b8; font-weight: 500; }
 
     /* Panel Scrollable Body */
@@ -656,20 +683,20 @@
       width: 34px;
       height: 34px;
       border-radius: 10px;
-      background: #0055ff;
+      background: ${primaryColor};
       color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      box-shadow: 0 4px 10px rgba(0, 85, 255, 0.25);
+      box-shadow: 0 4px 10px ${hexToRgba(primaryColor, 0.25)};
     }
     .ai-banner-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; }
     .ai-banner-title { font-size: 12.5px; font-weight: 800; color: #1e3a8a; }
     .ai-banner-sub { font-size: 10.5px; color: #475569; font-weight: 600; margin-top: 1px; }
     .ai-banner-btn {
       background: #ffffff;
-      color: #0055ff;
+      color: ${primaryColor};
       border: 1px solid #bfdbfe;
       padding: 5px 10px;
       border-radius: 8px;
@@ -681,7 +708,7 @@
       transition: all 0.15s;
       flex-shrink: 0;
     }
-    .ai-banner-btn:hover { background: #0055ff; color: #ffffff; border-color: #0055ff; }
+    .ai-banner-btn:hover { background: ${primaryColor}; color: #ffffff; border-color: ${primaryColor}; }
 
     /* AI Suggestion Card (Screenshot 1) */
     .ai-suggestion-box {
@@ -698,7 +725,7 @@
       width: 32px;
       height: 32px;
       border-radius: 10px;
-      background: #0055ff;
+      background: ${primaryColor};
       color: #ffffff;
       display: flex;
       align-items: center;
@@ -724,7 +751,7 @@
     }
     .ai-sug-btn {
       background: #ffffff;
-      color: #0055ff;
+      color: ${primaryColor};
       border: 1px solid #bfdbfe;
       padding: 5px 12px;
       border-radius: 8px;
@@ -736,7 +763,7 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       transition: all 0.15s;
     }
-    .ai-sug-btn:hover { background: #0055ff; color: #ffffff; border-color: #0055ff; }
+    .ai-sug-btn:hover { background: ${primaryColor}; color: #ffffff; border-color: ${primaryColor}; }
 
     /* Section Label */
     .section-heading-text {
@@ -769,11 +796,11 @@
       transition: all 0.2s;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
-    .action-card-btn:hover { border-color: #0055ff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 85, 255, 0.12); }
+    .action-card-btn:hover { border-color: ${primaryColor}; transform: translateY(-1px); box-shadow: 0 4px 12px ${hexToRgba(primaryColor, 0.12)}; }
     .action-card-btn.active {
-      background: #eff6ff;
-      border-color: #0055ff;
-      box-shadow: 0 4px 14px rgba(0, 85, 255, 0.18);
+      background: ${hexToRgba(primaryColor, 0.08)};
+      border-color: ${primaryColor};
+      box-shadow: 0 4px 14px ${hexToRgba(primaryColor, 0.18)};
     }
     .action-card-icon-slot {
       height: 28px;
@@ -802,10 +829,10 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
       flex-shrink: 0;
     }
-    .explore-modes-banner:hover { border-color: #0055ff; transform: translateY(-1px); }
+    .explore-modes-banner:hover { border-color: ${primaryColor}; transform: translateY(-1px); }
     .explore-modes-title { font-size: 12px; font-weight: 800; color: #0f172a; }
     .explore-modes-sub { font-size: 10.5px; color: #64748b; font-weight: 500; margin-top: 1px; }
-    .explore-modes-arrow { font-size: 15px; font-weight: 900; color: #0055ff; }
+    .explore-modes-arrow { font-size: 15px; font-weight: 900; color: ${primaryColor}; }
 
     /* Bottom Action Bar (Reset Settings & Hide Forever) */
     .bottom-action-row {
@@ -820,7 +847,7 @@
     .btn-reset-bottom {
       flex: 1;
       padding: 8px 12px;
-      background: #0055ff;
+      background: ${primaryColor};
       color: #ffffff;
       font-size: 11.5px;
       font-weight: 800;
@@ -831,10 +858,10 @@
       align-items: center;
       justify-content: center;
       gap: 5px;
-      box-shadow: 0 2px 6px rgba(0, 85, 255, 0.2);
+      box-shadow: 0 2px 6px ${hexToRgba(primaryColor, 0.2)};
       transition: background 0.15s;
     }
-    .btn-reset-bottom:hover { background: #0045d6; }
+    .btn-reset-bottom:hover { background: ${primaryColorDark}; }
     .btn-reset-bottom svg { width: 13px; height: 13px; stroke-width: 2.5; }
 
     .btn-hide-bottom {
@@ -881,7 +908,7 @@
       transition: all 0.15s;
     }
     .nav-tab-btn:hover { background: #f8fafc; color: #0f172a; }
-    .nav-tab-btn.active { color: #2563eb; background: rgba(239, 246, 255, 0.85); font-weight: 800; }
+    .nav-tab-btn.active { color: ${primaryColor}; background: ${hexToRgba(primaryColor, 0.12)}; font-weight: 800; }
     .nav-tab-btn svg { width: 15px; height: 15px; stroke-width: 2.2; }
     .nav-tab-btn span { font-size: 9.5px; font-weight: 700; letter-spacing: -0.2px; font-family: 'Inter', sans-serif !important; }
 
@@ -901,9 +928,9 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
     .profile-card-item.active {
-      background: rgba(239, 246, 255, 0.9);
-      border: 2px solid #60a5fa;
-      box-shadow: 0 4px 14px rgba(0, 85, 255, 0.12);
+      background: ${hexToRgba(primaryColor, 0.08)};
+      border: 2px solid ${primaryColor};
+      box-shadow: 0 4px 14px ${hexToRgba(primaryColor, 0.12)};
       padding: 16px 18px;
     }
     .profile-card-header {
@@ -932,9 +959,9 @@
       transition: all 0.2s;
     }
     .profile-card-item.active .profile-icon-box {
-      background: #2563eb;
+      background: ${primaryColor};
       color: #ffffff;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 2px 6px ${hexToRgba(primaryColor, 0.35)};
     }
     .profile-icon-box svg {
       width: 22px;
@@ -973,7 +1000,7 @@
       align-items: center;
     }
     .toggle-switch-ui.active {
-      background: #2563eb;
+      background: ${primaryColor};
     }
     .toggle-knob-ui {
       width: 20px;
@@ -1012,7 +1039,7 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: #0055ff;
+      background: ${primaryColor};
       color: #ffffff;
       border: none;
       font-size: 16px;
@@ -1021,7 +1048,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 6px rgba(0, 85, 255, 0.3);
+      box-shadow: 0 2px 6px ${hexToRgba(primaryColor, 0.3)};
       transition: transform 0.1s;
     }
     .scale-step-btn:active { transform: scale(0.95); }
@@ -1064,12 +1091,12 @@
       text-align: center;
       transition: all 0.15s;
     }
-    .segmented-pill-btn:hover { border-color: #0055ff; }
+    .segmented-pill-btn:hover { border-color: ${primaryColor}; }
     .segmented-pill-btn.active {
-      background: #0055ff;
+      background: ${primaryColor};
       color: #ffffff;
-      border-color: #0055ff;
-      box-shadow: 0 2px 6px rgba(0, 85, 255, 0.25);
+      border-color: ${primaryColor};
+      box-shadow: 0 2px 6px ${hexToRgba(primaryColor, 0.25)};
     }
     .feat-voice-panel {
       background: #ffffff;
@@ -1129,10 +1156,10 @@
       background: #f1f5f9;
     }
     .feat-tool-card.active {
-      background: #2563eb !important;
-      border-color: #2563eb !important;
+      background: ${primaryColor} !important;
+      border-color: ${primaryColor} !important;
       color: #ffffff !important;
-      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+      box-shadow: 0 4px 14px ${hexToRgba(primaryColor, 0.28)};
     }
     .feat-tool-card.active svg {
       stroke: #ffffff !important;
@@ -1191,12 +1218,12 @@
       gap: 6px;
       transition: all 0.2s;
     }
-    .feat-card-item:hover { border-color: #0055ff; transform: translateY(-1px); }
-    .feat-card-item.active { background: #eff6ff; border-color: #0055ff; box-shadow: 0 4px 12px rgba(0, 85, 255, 0.12); }
+    .feat-card-item:hover { border-color: ${primaryColor}; transform: translateY(-1px); }
+    .feat-card-item.active { background: ${hexToRgba(primaryColor, 0.08)}; border-color: ${primaryColor}; box-shadow: 0 4px 12px ${hexToRgba(primaryColor, 0.12)}; }
     .feat-card-title { font-size: 12px; font-weight: 800; color: #0f172a; }
     .feat-card-desc { font-size: 10px; color: #64748b; line-height: 1.3; font-weight: 500; }
     .feat-card-status { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px; align-self: flex-start; text-transform: uppercase; background: #e2e8f0; color: #475569; }
-    .feat-card-item.active .feat-card-status { background: #0055ff; color: #ffffff; }
+    .feat-card-item.active .feat-card-status { background: ${primaryColor}; color: #ffffff; }
 
 
     /* Action bar button (Read Selected Text, Read Page, Stop) */
@@ -1212,7 +1239,7 @@
     }
     .action-row-btn {
       padding: 7px 14px;
-      background: #0055ff;
+      background: ${primaryColor};
       color: #ffffff;
       border: none;
       border-radius: 10px;
@@ -1260,7 +1287,7 @@
       font-size: 16px;
       font-weight: 800;
     }
-    .statement-title { font-size: 15px; font-weight: 800; color: #0055ff; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+    .statement-title { font-size: 15px; font-weight: 800; color: ${primaryColor}; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
     .statement-body-text { font-size: 11.5px; color: #475569; line-height: 1.5; margin-bottom: 12px; }
     .statement-highlight-box {
       background: #eff6ff;
@@ -1276,7 +1303,7 @@
     .statement-close-action {
       width: 100%;
       padding: 9px;
-      background: #0055ff;
+      background: ${primaryColor};
       color: #ffffff;
       font-size: 12px;
       font-weight: 800;
@@ -1317,7 +1344,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     .ai-chat-bubble.user {
-      background: #0055ff;
+      background: ${primaryColor};
       color: #ffffff;
       border-top-right-radius: 4px;
       align-self: flex-end;
@@ -1331,7 +1358,7 @@
     .ai-chip-pill {
       background: #ffffff;
       border: 1px solid #bfdbfe;
-      color: #0055ff;
+      color: ${primaryColor};
       font-size: 11px;
       font-weight: 700;
       padding: 6px 12px;
@@ -1340,7 +1367,7 @@
       text-align: center;
       transition: all 0.15s;
     }
-    .ai-chip-pill:hover { background: #0055ff; color: #ffffff; }
+    .ai-chip-pill:hover { background: ${primaryColor}; color: #ffffff; }
     .ai-chat-input-row {
       display: flex;
       gap: 8px;
@@ -1356,12 +1383,12 @@
       outline: none;
       color: #0f172a;
     }
-    .ai-chat-input-box:focus { border-color: #0055ff; }
+    .ai-chat-input-box:focus { border-color: ${primaryColor}; }
     .ai-chat-send-btn {
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: #0055ff;
+      background: ${primaryColor};
       color: #ffffff;
       border: none;
       cursor: pointer;
@@ -1421,7 +1448,7 @@
 
     <!-- Bottom Action Bar (Screenshot 2 Match) -->
     <div class="bottom-action-row" style="padding:10px 12px;background:#ffffff;border-top:1px solid #f1f5f9;display:flex;gap:8px;align-items:center;flex-shrink:0;">
-      <button class="btn-reset-bottom" id="2all-btn-reset-bottom" style="flex:1;padding:8px 12px;background:#2563eb;color:#ffffff;font-size:12px;font-weight:700;border-radius:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 1px 2px rgba(0,0,0,0.05);transition:all 0.15s;">
+      <button class="btn-reset-bottom" id="2all-btn-reset-bottom" style="flex:1;padding:8px 12px;background:${primaryColor};color:#ffffff;font-size:12px;font-weight:700;border-radius:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 1px 2px rgba(0,0,0,0.05);transition:all 0.15s;">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
         Reset Settings
       </button>
@@ -1556,7 +1583,7 @@
         <div class="statement-modal-box">
           <button class="statement-close-btn" id="2all-close-stmt">&times;</button>
           <div class="statement-title">
-            <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#0055ff;stroke-width:2.5;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:${primaryColor};stroke-width:2.5;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
             Accessibility Statement
           </div>
           <div class="statement-body-text">
@@ -1679,6 +1706,12 @@
     state.highlightSentence = false;
     state.autoScroll = false;
     state.voiceNavigation = false;
+    state.speed = 1.0;
+    state.pitch = "normal";
+    state.voice = "";
+    state.volume = 100;
+    state.isVoiceSettingsOpen = false;
+    stopSpeech();
     saveState();
     applyEffects();
     renderPanelBody();
@@ -1697,7 +1730,7 @@
       aiBanner.style.cssText = "background:linear-gradient(to right, #eff6ff, rgba(238, 242, 255, 0.8));border:1px solid rgba(191, 219, 254, 0.9);border-radius:16px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 1px 2px rgba(0,0,0,0.04);margin-bottom:8px;";
       aiBanner.innerHTML = `
         <div style="display:flex;align-items:center;gap:12px;">
-          <div style="width:36px;height:36px;border-radius:12px;background:#2563eb;color:#ffffff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 3px rgba(37,99,235,0.3);">
+          <div style="width:36px;height:36px;border-radius:12px;background:${primaryColor};color:#ffffff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 3px ${hexToRgba(primaryColor, 0.3)};">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
           </div>
           <div>
@@ -1705,7 +1738,7 @@
             <div style="font-size:11px;color:#475569;font-weight:500;margin-top:1px;">Your personal accessibility assistant</div>
           </div>
         </div>
-        <button id="2all-btn-start-chat" style="font-size:12px;font-weight:800;color:#2563eb;background:#ffffff;padding:4px 10px;border-radius:8px;border:1px solid #bfdbfe;cursor:pointer;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.04);transition:all 0.15s;">Start chat &gt;</button>
+        <button id="2all-btn-start-chat" style="font-size:12px;font-weight:800;color:${primaryColor};background:#ffffff;padding:4px 10px;border-radius:8px;border:1px solid #bfdbfe;cursor:pointer;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.04);transition:all 0.15s;">Start chat &gt;</button>
       `;
       panelBody.appendChild(aiBanner);
 
@@ -1722,7 +1755,7 @@
       aiSug.style.cssText = "background:#eff6ff;border:1px solid #dbeafe;border-radius:16px;padding:16px;position:relative;overflow:hidden;display:flex;gap:12px;margin-bottom:12px;";
       aiSug.innerHTML = `
         <svg style="position:absolute;top:0;right:0;padding:8px;opacity:0.1;pointer-events:none;" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
-        <div style="width:32px;height:32px;border-radius:50%;background:#2563eb;color:#ffffff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 4px rgba(37,99,235,0.25);">
+        <div style="width:32px;height:32px;border-radius:50%;background:${primaryColor};color:#ffffff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 4px ${hexToRgba(primaryColor, 0.25)};">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
         </div>
         <div style="position:relative;z-index:1;flex:1;">
@@ -1733,7 +1766,7 @@
           <div style="font-size:12px;color:#475569;margin:4px 0 12px 0;line-height:1.45;">
             Based on your activity, we recommend enabling the "Dyslexia Profile" for a smoother reading experience.
           </div>
-          <button id="2all-btn-apply-profile" style="font-size:10px;font-weight:700;letter-spacing:0.8px;background:#ffffff;border:1px solid #bfdbfe;color:#2563eb;padding:6px 12px;border-radius:8px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,0.04);transition:all 0.15s;">Apply Profile</button>
+          <button id="2all-btn-apply-profile" style="font-size:10px;font-weight:700;letter-spacing:0.8px;background:#ffffff;border:1px solid #bfdbfe;color:${primaryColor};padding:6px 12px;border-radius:8px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,0.04);transition:all 0.15s;">Apply Profile</button>
         </div>
       `;
       panelBody.appendChild(aiSug);
@@ -1773,7 +1806,7 @@
           <div style="font-size:13px;font-weight:700;color:#0f172a;">Smart Profiles (Modes)</div>
           <div style="font-size:11px;color:#64748b;margin-top:2px;">1-click configurations (Epilepsy, ADHD, Blindness, etc.)</div>
         </div>
-        <div style="width:28px;height:28px;border-radius:50%;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:${hexToRgba(primaryColor, 0.12)};color:${primaryColor};display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </div>
       `;
@@ -1788,7 +1821,7 @@
           <div style="font-size:13px;font-weight:700;color:#0f172a;">Features (Typography & Reading)</div>
           <div style="font-size:11px;color:#64748b;margin-top:2px;">Font scaling, read aloud, reading mask, focus tools</div>
         </div>
-        <div style="width:28px;height:28px;border-radius:50%;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:${hexToRgba(primaryColor, 0.12)};color:${primaryColor};display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </div>
       `;
@@ -1803,7 +1836,7 @@
           <div style="font-size:13px;font-weight:700;color:#0f172a;">Vision (Color & Contrast)</div>
           <div style="font-size:11px;color:#64748b;margin-top:2px;">Dark contrast, monochrome, saturation, color blindness</div>
         </div>
-        <div style="width:28px;height:28px;border-radius:50%;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:${hexToRgba(primaryColor, 0.12)};color:${primaryColor};display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </div>
       `;
@@ -2101,7 +2134,7 @@
           magCard.className = "feat-tool-card " + (isMagActive ? "active" : "");
           magCard.style.cssText = "width:100%;flex-direction:row;justify-content:center;gap:12px;padding:12px 16px;min-height:auto;border-radius:16px;";
           magCard.innerHTML = `
-            <div class="feat-tool-icon-wrap" style="width:32px;height:32px;border-radius:10px;background:${isMagActive ? '#1d4ed8' : '#eff6ff'};color:${isMagActive ? '#ffffff' : '#2563eb'};">
+            <div class="feat-tool-icon-wrap" style="width:32px;height:32px;border-radius:10px;background:${isMagActive ? primaryColorDark : hexToRgba(primaryColor, 0.12)};color:${isMagActive ? '#ffffff' : primaryColor};">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 <line x1="9" y1="10" x2="15" y2="10"/>
@@ -2128,7 +2161,7 @@
             var aaBtn = document.createElement("button");
             aaBtn.className = "feat-tool-card " + (isReadable ? "active" : "");
             aaBtn.innerHTML = `
-              <span style="font-size:24px;font-weight:900;color:${isReadable ? '#ffffff' : '#0091ff'};line-height:1;">Aa</span>
+              <span style="font-size:24px;font-weight:900;color:${isReadable ? '#ffffff' : primaryColor};line-height:1;">Aa</span>
               <span class="feat-tool-label">Readable Font</span>
             `;
             aaBtn.onclick = function () {
@@ -2146,10 +2179,10 @@
             centerBtn.innerHTML = `
               <div class="feat-tool-icon-wrap">
                 <svg width="26" height="21" viewBox="0 0 34 28" fill="none">
-                  <rect x="10" y="1" width="14" height="4.5" rx="2.25" fill="${isCenter ? '#ffffff' : '#0091ff'}" />
-                  <rect x="3" y="8.5" width="28" height="4.5" rx="2.25" fill="${isCenter ? '#ffffff' : '#0091ff'}" />
-                  <rect x="7" y="16" width="20" height="4.5" rx="2.25" fill="${isCenter ? '#ffffff' : '#0091ff'}" />
-                  <rect x="3" y="23.5" width="28" height="4.5" rx="2.25" fill="${isCenter ? '#ffffff' : '#0091ff'}" />
+                  <rect x="10" y="1" width="14" height="4.5" rx="2.25" fill="${isCenter ? '#ffffff' : primaryColor}" />
+                  <rect x="3" y="8.5" width="28" height="4.5" rx="2.25" fill="${isCenter ? '#ffffff' : primaryColor}" />
+                  <rect x="7" y="16" width="20" height="4.5" rx="2.25" fill="${isCenter ? '#ffffff' : primaryColor}" />
+                  <rect x="3" y="23.5" width="28" height="4.5" rx="2.25" fill="${isCenter ? '#ffffff' : primaryColor}" />
                 </svg>
               </div>
               <span class="feat-tool-label">Center Aligned</span>
@@ -2187,7 +2220,7 @@
           letterBox.innerHTML = `
             <div class="segmented-header">
               <span>Letter Spacing</span>
-              <span style="font-size:11px;color:#0055ff;font-weight:700;">${state.letterSpacing}px</span>
+              <span style="font-size:11px;color:${primaryColor};font-weight:700;">${state.letterSpacing}px</span>
             </div>
             <div class="segmented-buttons-row">
               ${[0, 1, 2, 3, 4, 5].map(function(v){
@@ -2211,7 +2244,7 @@
           wordBox.innerHTML = `
             <div class="segmented-header">
               <span>Word Spacing</span>
-              <span style="font-size:11px;color:#0055ff;font-weight:700;">${state.wordSpacing}em</span>
+              <span style="font-size:11px;color:${primaryColor};font-weight:700;">${state.wordSpacing}em</span>
             </div>
             <div class="segmented-buttons-row">
               ${[0, 0.1, 0.25, 0.5, 1].map(function(v){
@@ -2235,7 +2268,7 @@
           lineBox.innerHTML = `
             <div class="segmented-header">
               <span>Line Height</span>
-              <span style="font-size:11px;color:#0055ff;font-weight:700;">${state.lineHeight}x</span>
+              <span style="font-size:11px;color:${primaryColor};font-weight:700;">${state.lineHeight}x</span>
             </div>
             <div class="segmented-buttons-row">
               ${[1.5, 1.8, 2.0, 2.5].map(function(v){
@@ -2308,7 +2341,7 @@
           label: "Read Selected Text",
           type: "action",
           icon: `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
-          iconColor: "#2563eb",
+          iconColor: primaryColor,
           onClick: function () { readSelectedText(); }
         },
         {
@@ -2318,7 +2351,7 @@
           icon: state.speechStatus === "playing" ?
             `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>` :
             `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
-          iconColor: state.speechStatus === "playing" ? "#ffffff" : "#2563eb",
+          iconColor: state.speechStatus === "playing" ? "#ffffff" : primaryColor,
           onClick: function () { readEntirePage(); }
         },
         {
@@ -2399,7 +2432,7 @@
           type: "toggle",
           value: state.voiceNavigation,
           icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
-          iconColor: state.voiceNavigation ? "#ffffff" : "#2563eb",
+          iconColor: state.voiceNavigation ? "#ffffff" : primaryColor,
           onClick: function () {
             state.voiceNavigation = !state.voiceNavigation;
             saveState();
@@ -2446,7 +2479,7 @@
             voicePanel.innerHTML = `
               <div style="font-size:12.5px;font-weight:800;color:#0f172a;display:flex;justify-content:space-between;align-items:center;">
                 <span style="display:flex;align-items:center;gap:6px;">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0055ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="${primaryColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                   Voice Settings Parameters
                 </span>
                 <button class="voice-panel-close" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;padding:0 4px;line-height:1;">&times;</button>
@@ -2455,7 +2488,7 @@
               <div class="segmented-box" style="margin:0;padding:10px;">
                 <div class="segmented-header">
                   <span>Reading Speed</span>
-                  <span style="font-size:11px;color:#0055ff;font-weight:700;">${state.speed || 1.0}x</span>
+                  <span style="font-size:11px;color:${primaryColor};font-weight:700;">${state.speed || 1.0}x</span>
                 </div>
                 <div class="segmented-buttons-row">
                   ${[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(function(v){
@@ -2467,7 +2500,7 @@
               <div class="segmented-box" style="margin:0;padding:10px;">
                 <div class="segmented-header">
                   <span>Pitch</span>
-                  <span style="font-size:11px;color:#0055ff;font-weight:700;text-transform:uppercase;">${state.pitch || 'normal'}</span>
+                  <span style="font-size:11px;color:${primaryColor};font-weight:700;text-transform:uppercase;">${state.pitch || 'normal'}</span>
                 </div>
                 <div class="segmented-buttons-row">
                   ${["low", "normal", "high"].map(function(pVal){
@@ -2490,14 +2523,14 @@
               <div class="segmented-box" style="margin:0;padding:10px;">
                 <div class="segmented-header">
                   <span>Volume</span>
-                  <span id="2all-voice-volume-val" style="font-size:11px;color:#0055ff;font-weight:700;">${state.volume !== undefined ? state.volume : 100}%</span>
+                  <span id="2all-voice-volume-val" style="font-size:11px;color:${primaryColor};font-weight:700;">${state.volume !== undefined ? state.volume : 100}%</span>
                 </div>
                 <div style="padding-top:4px;">
-                  <input id="2all-voice-volume-slider" type="range" min="0" max="100" value="${state.volume !== undefined ? state.volume : 100}" style="width:100%;accent-color:#0055ff;cursor:pointer;">
+                  <input id="2all-voice-volume-slider" type="range" min="0" max="100" value="${state.volume !== undefined ? state.volume : 100}" style="width:100%;accent-color:${primaryColor};cursor:pointer;">
                 </div>
               </div>
               <!-- Done Button -->
-              <button class="voice-panel-done-btn" style="width:100%;padding:9px;background:#0055ff;color:#ffffff;border:none;border-radius:10px;font-size:11.5px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(0,85,255,0.25);transition:background 0.15s;">Done</button>
+              <button class="voice-panel-done-btn" style="width:100%;padding:9px;background:${primaryColor};color:#ffffff;border:none;border-radius:10px;font-size:11.5px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;box-shadow:0 2px 6px ${hexToRgba(primaryColor, 0.25)};transition:background 0.15s;">Done</button>
             `;
             voicePanel.querySelector(".voice-panel-close").onclick = function () {
               state.isVoiceSettingsOpen = false;
@@ -2512,44 +2545,62 @@
             }
             var volSlider = voicePanel.querySelector('[id="2all-voice-volume-slider"]');
             var volVal = voicePanel.querySelector('[id="2all-voice-volume-val"]');
+            var volLiveTimer = null;
             if (volSlider) {
               volSlider.oninput = function () {
                 var val = parseInt(volSlider.value);
                 state.volume = val;
                 if (volVal) volVal.innerText = val + "%";
                 saveState();
+                if (volLiveTimer) clearTimeout(volLiveTimer);
+                volLiveTimer = setTimeout(function () {
+                  applyLiveVoiceSettings();
+                }, 200);
+              };
+              volSlider.onchange = function () {
+                if (volLiveTimer) clearTimeout(volLiveTimer);
+                applyLiveVoiceSettings();
               };
             }
             voicePanel.querySelectorAll("[data-sp]").forEach(function(b){
               b.onclick = function(){
                 state.speed = parseFloat(b.getAttribute("data-sp"));
-                saveState(); renderPanelBody();
+                saveState();
+                renderPanelBody();
+                applyLiveVoiceSettings();
               };
             });
             voicePanel.querySelectorAll("[data-pch]").forEach(function(b){
               b.onclick = function(){
                 state.pitch = b.getAttribute("data-pch");
-                saveState(); renderPanelBody();
+                saveState();
+                renderPanelBody();
+                applyLiveVoiceSettings();
               };
             });
-            setTimeout(function () {
+            function populateVoiceDropdown() {
               var vSelect = shadow.getElementById("2all-voice-select-dropdown");
-              if (vSelect && "speechSynthesis" in window) {
-                var voices = window.speechSynthesis.getVoices() || [];
-                vSelect.innerHTML = '<option value="">Default System Voice</option>';
-                voices.forEach(function (v) {
-                  var opt = document.createElement("option");
-                  opt.value = v.name;
-                  opt.innerText = v.name + (v.lang ? " (" + v.lang + ")" : "");
-                  if (state.voice === v.name) opt.selected = true;
-                  vSelect.appendChild(opt);
-                });
-                vSelect.onchange = function () {
-                  state.voice = vSelect.value;
-                  saveState();
-                };
-              }
-            }, 30);
+              if (!vSelect || !("speechSynthesis" in window)) return;
+              var voices = window.speechSynthesis.getVoices() || [];
+              if (voices.length === 0) return;
+              vSelect.innerHTML = '<option value="">Default System Voice</option>';
+              voices.forEach(function (v) {
+                var opt = document.createElement("option");
+                opt.value = v.name;
+                opt.innerText = v.name + (v.lang ? " (" + v.lang + ")" : "");
+                if (state.voice === v.name) opt.selected = true;
+                vSelect.appendChild(opt);
+              });
+              vSelect.onchange = function () {
+                state.voice = vSelect.value;
+                saveState();
+                applyLiveVoiceSettings();
+              };
+            }
+            setTimeout(populateVoiceDropdown, 30);
+            if ("speechSynthesis" in window) {
+              window.speechSynthesis.onvoiceschanged = populateVoiceDropdown;
+            }
             grid4.appendChild(voicePanel);
           }
         });
@@ -2913,10 +2964,10 @@
       cbModes.forEach(function (cb) {
         var isAct = state.colorBlindMode === cb.value;
         var rBtn = document.createElement("button");
-        rBtn.style.cssText = `width:100%;text-align:left;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:14px;border:1px solid ${isAct ? '#0055ff' : '#e2e8f0'};background:${isAct ? '#eff6ff' : '#ffffff'};cursor:pointer;margin-bottom:6px;transition:all 0.15s;`;
+        rBtn.style.cssText = `width:100%;text-align:left;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:14px;border:1px solid ${isAct ? primaryColor : '#e2e8f0'};background:${isAct ? hexToRgba(primaryColor, 0.08) : '#ffffff'};cursor:pointer;margin-bottom:6px;transition:all 0.15s;`;
         rBtn.innerHTML = `
-          <span style="font-size:12.5px;font-weight:${isAct ? '800' : '600'};color:${isAct ? '#0055ff' : '#0f172a'};">${cb.label}</span>
-          <span style="width:18px;height:18px;border-radius:50%;border:2px solid ${isAct ? '#0055ff' : '#cbd5e1'};background:${isAct ? '#0055ff' : 'transparent'};display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:12.5px;font-weight:${isAct ? '800' : '600'};color:${isAct ? primaryColor : '#0f172a'};">${cb.label}</span>
+          <span style="width:18px;height:18px;border-radius:50%;border:2px solid ${isAct ? primaryColor : '#cbd5e1'};background:${isAct ? primaryColor : 'transparent'};display:flex;align-items:center;justify-content:center;">
             ${isAct ? '<span style="width:6px;height:6px;border-radius:50%;background:#ffffff;"></span>' : ''}
           </span>
         `;
@@ -2955,7 +3006,7 @@
           <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
             ${colorSwatches.map(function (c) {
               var isAct = state[stateKey] === c.id;
-              return `<button class="swatch-btn" data-color="${c.id}" style="width:28px;height:28px;border-radius:50%;border:1px solid #cbd5e1;background:${c.hex};cursor:pointer;box-shadow:${isAct ? '0 0 0 3px #0055ff' : 'none'};transform:${isAct ? 'scale(1.1)' : 'none'};transition:all 0.15s;"></button>`;
+              return `<button class="swatch-btn" data-color="${c.id}" style="width:28px;height:28px;border-radius:50%;border:1px solid #cbd5e1;background:${c.hex};cursor:pointer;box-shadow:${isAct ? ('0 0 0 3px ' + primaryColor) : 'none'};transform:${isAct ? 'scale(1.1)' : 'none'};transition:all 0.15s;"></button>`;
             }).join("")}
           </div>
           ${state[stateKey] !== "default" ? `<div style="text-align:center;margin-top:6px;"><button class="reset-swatch-btn" style="background:none;border:none;color:#64748b;font-size:11px;font-weight:700;text-decoration:underline;cursor:pointer;">Reset to Default</button></div>` : ""}
@@ -2963,6 +3014,10 @@
         card.querySelectorAll(".swatch-btn").forEach(function (btn) {
           btn.onclick = function () {
             state[stateKey] = btn.getAttribute("data-color");
+            if (stateKey === "bgColor") {
+              state.isDarkMode = false;
+              state.isLightMode = false;
+            }
             saveState(); applyEffects(); renderPanelBody();
           };
         });
@@ -3001,76 +3056,566 @@
     }
   }
 
-  function getAssistantResponse(text) {
-    var lower = text.toLowerCase().trim();
+  function executeAssistantAction(actionType) {
+    if (!actionType) return;
+    if (actionType === "open_vision" || actionType === "vision") {
+      state.activeTab = "vision";
+      saveState();
+      renderHeaderTabs();
+      renderPanelBody();
+    } else if (actionType === "read_page") {
+      readEntirePage();
+    } else if (actionType === "voice_nav") {
+      state.voiceNavigation = true;
+      saveState();
+      applyEffects();
+    } else if (actionType === "dark_contrast") {
+      state.isDarkMode = true;
+      state.isHighContrast = true;
+      saveState();
+      applyEffects();
+    } else if (actionType === "dark_bg") {
+      state.bgColor = "black";
+      saveState();
+      applyEffects();
+    } else if (actionType === "dyslexia") {
+      state.activeProfile = "dyslexia";
+      state.dyslexiaFont = true;
+      state.fontFamily = "dyslexic";
+      state.letterSpacing = 0.5;
+      state.wordSpacing = 0.05;
+      state.lineHeight = 1.6;
+      saveState();
+      applyEffects();
+    } else if (actionType === "reading_mask") {
+      state.readingMask = true;
+      saveState();
+      applyEffects();
+    } else if (actionType === "cognitive") {
+      state.activeProfile = "cognitive";
+      state.fontFamily = "lexend";
+      state.readableFont = true;
+      state.fontSize = 115;
+      state.lineHeight = 1.9;
+      state.letterSpacing = 0.5;
+      state.wordSpacing = 0.1;
+      state.reduceMotion = true;
+      state.stopAnimations = true;
+      state.highlightLinks = true;
+      state.highlightButtons = true;
+      state.readingRuler = true;
+      saveState();
+      applyEffects();
+    } else if (actionType === "screen_reader") {
+      state.activeProfile = "blind";
+      state.textToSpeech = true;
+      saveState();
+      applyEffects();
+    } else if (actionType === "motor") {
+      state.highlightButtons = true;
+      state.highlightLinks = true;
+      saveState();
+      applyEffects();
+    } else if (actionType === "stop_animations") {
+      state.stopAnimations = true;
+      state.reduceMotion = true;
+      saveState();
+      applyEffects();
+    } else if (actionType === "increase_font") {
+      state.fontSize = Math.min(200, (state.fontSize || 100) + 20);
+      saveState();
+      applyEffects();
+    } else if (actionType === "large_cursor") {
+      state.cursorSize = "large";
+      saveState();
+      applyEffects();
+    } else if (actionType === "mute_sounds") {
+      state.muteSounds = true;
+      saveState();
+      applyEffects();
+    } else if (actionType === "reset_settings") {
+      resetSettings();
+    } else if (actionType === "explore_all" || actionType === "open_features") {
+      state.activeTab = "features";
+      saveState();
+      renderHeaderTabs();
+      renderPanelBody();
+    }
+  }
 
-    if (lower.indexOf("voice") !== -1 || lower.indexOf("speech") !== -1 || lower.indexOf("tts") !== -1 || lower.indexOf("read aloud") !== -1) {
+  function getAssistantResponse(text) {
+    var lower = (text || "").toLowerCase().trim();
+
+    // 1. Color Blindness Filters (TOP PRIORITY - must evaluate before generic "list" or "blind"!)
+    var isColorBlind = (
+      lower.indexOf("color blind") !== -1 || lower.indexOf("colorblind") !== -1 ||
+      lower.indexOf("protanopia") !== -1 || lower.indexOf("deuteranopia") !== -1 ||
+      lower.indexOf("tritanopia") !== -1 || lower.indexOf("achromatopsia") !== -1 ||
+      lower.indexOf("monochrom") !== -1 || lower.indexOf("daltonism") !== -1 ||
+      lower.indexOf("color vision") !== -1 ||
+      (lower.indexOf("color") !== -1 && lower.indexOf("blind") !== -1)
+    );
+
+    if (isColorBlind) {
       return {
-        text: "🔊 **Voice & Speech Tools Available**:\n\n1️⃣ **Text-to-Speech (Read Aloud)**: Reads selected text or paragraphs out loud with natural voice synthesis.\n2️⃣ **Screen Reader Compatibility**: Full speech output support for NVDA, JAWS, VoiceOver & TalkBack.",
-        actionLabel: "Enable Text-to-Speech",
-        applyAction: function () { state.textToSpeech = true; saveState(); applyEffects(); }
+        text: "🎨 **Color Vision Deficiency (Color Blindness) Filters**:\n\n" +
+              "2all.ai provides 4 specialized vision compensation filters designed for different types of color blindness:\n\n" +
+              "• **Protanopia (Red-Blind / Red-Weak)**: Calibrates red wavelengths so you can easily distinguish reds from greens, browns, and dark tones.\n" +
+              "• **Deuteranopia (Green-Blind / Green-Weak)**: Adjusts green spectrum clarity for the most common form of color blindness.\n" +
+              "• **Tritanopia (Blue-Blind / Blue-Weak)**: Amplifies blue and yellow differentiation with balanced contrast tuning.\n" +
+              "• **Achromatopsia (Monochromacy / Total Color Blindness)**: Converts the entire page to ultra-crisp, high-contrast monochrome grayscale.\n\n" +
+              "You can test and apply any of these filters directly from the **Vision Tab**!",
+        actionLabel: "Open Vision Tab",
+        actionType: "open_vision",
+        applyAction: function () { executeAssistantAction("open_vision"); }
       };
     }
-    if (lower.indexOf("dyslexia") !== -1) {
+
+    // 2. Background, Title & Text Colors
+    var isBg = (
+      lower.indexOf("background") !== -1 || lower.indexOf("bg color") !== -1 ||
+      lower.indexOf("adjust bg") !== -1 || lower.indexOf("title color") !== -1 ||
+      lower.indexOf("text color") !== -1 || lower.indexOf("heading color") !== -1 ||
+      lower.indexOf("change color") !== -1 || lower.indexOf("bg tint") !== -1
+    );
+
+    if (isBg) {
       return {
-        text: "📚 **Dyslexia Friendly Mode** applies OpenDyslexic typography, expands letter/word spacing, and increases line heights to prevent letter flipping and improve reading speed.",
+        text: "🎨 **Adjusting Background & Text Colors**:\n\n" +
+              "You can customize page colors anytime in the **Vision** tab:\n" +
+              "• **Adjust Background Colors**: Choose from 8 accessible shades (White, Black, Blue, Green, Amber, Purple, Slate, Teal) to eliminate glare and eye fatigue.\n" +
+              "• **Adjust Title & Text Colors**: Pick high-contrast custom colors for headings and body paragraphs.\n" +
+              "• All backgrounds, sections, cards, and container gradients are styled live without breaking layouts!",
+        actionLabel: "Open Vision Tab",
+        actionType: "open_vision",
+        applyAction: function () { executeAssistantAction("open_vision"); }
+      };
+    }
+
+    // 3. Voice Navigation & Microphone Hands-Free Control
+    var isVoiceNav = (
+      lower.indexOf("voice navigation") !== -1 || lower.indexOf("voice command") !== -1 ||
+      lower.indexOf("microphone") !== -1 || lower.indexOf("mic") !== -1 ||
+      lower.indexOf("hands free") !== -1 || lower.indexOf("speak command") !== -1
+    );
+
+    if (isVoiceNav) {
+      return {
+        text: "🎙️ **Voice Navigation (Hands-Free Control)**:\n\n" +
+              "Speak natural voice commands into your microphone to control the website:\n" +
+              "• *\"Read page\"* or *\"Speak text\"* → Starts page narrator.\n" +
+              "• *\"Scroll down\"* / *\"Scroll up\"* → Smooth page navigation.\n" +
+              "• *\"Dark mode\"* / *\"Reset\"* → Toggles accessibility modes.\n" +
+              "• *\"Pricing\"* / *\"Contact\"* → Direct navigation.\n\n" +
+              "Click below to activate voice control!",
+        actionLabel: "Enable Voice Navigation",
+        actionType: "voice_nav",
+        applyAction: function () { executeAssistantAction("voice_nav"); }
+      };
+    }
+
+    // 4. Voice, Speech, Read Aloud & Text-to-Speech (TTS)
+    var isVoice = (
+      lower.indexOf("voice") !== -1 || lower.indexOf("speech") !== -1 || lower.indexOf("tts") !== -1 ||
+      lower.indexOf("read page") !== -1 || lower.indexOf("read aloud") !== -1 || lower.indexOf("text to speech") !== -1 ||
+      lower.indexOf("narrat") !== -1 || lower.indexOf("read text") !== -1 || lower.indexOf("listen") !== -1 ||
+      lower.indexOf("audio") !== -1 || lower.indexOf("speak") !== -1 ||
+      (lower.indexOf("read") !== -1 && lower.indexOf("ruler") === -1 && lower.indexOf("mask") === -1)
+    );
+
+    if (isVoice) {
+      return {
+        text: "🔊 **Voice & Reading Tools**:\n\n" +
+              "• **Read Entire Page**: Natural voice reading with real-time sentence highlight and auto-scroll.\n" +
+              "• **Read Selected Text**: Highlight any sentence or paragraph on the page to hear it spoken.\n" +
+              "• **Voice Settings Parameters**: Choose from available system voices (Google UK English, US English, etc.), adjust Reading Speed (0.5x to 2x), and pitch live!",
+        actionLabel: "Start Reading Page",
+        actionType: "read_page",
+        applyAction: function () { readEntirePage(); }
+      };
+    }
+
+    // 5. Dyslexia Mode & OpenDyslexic Typography
+    var isDyslexia = (
+      lower.indexOf("dyslexi") !== -1 || lower.indexOf("letter flip") !== -1 ||
+      lower.indexOf("opendyslexic") !== -1 || lower.indexOf("b/d/p/q") !== -1 ||
+      lower.indexOf("gravity font") !== -1
+    );
+
+    if (isDyslexia) {
+      return {
+        text: "📚 **Dyslexia Friendly Mode**:\n\n" +
+              "• Applies **OpenDyslexic** typography with heavy weighted gravity bottoms to prevent letter inversion and flipping (b/d/p/q).\n" +
+              "• Expands letter spacing (+0.5px), word spacing (+0.05em), and line height (1.6x) for effortless scanning and improved reading fluency.",
         actionLabel: "Enable Dyslexia Mode",
-        applyAction: function () {
-          state.activeProfile = "dyslexia";
-          state.dyslexiaFont = true;
-          state.fontFamily = "dyslexic";
-          state.letterSpacing = 0.5;
-          state.wordSpacing = 0.05;
-          state.lineHeight = 1.6;
-          saveState(); applyEffects();
-        }
+        actionType: "dyslexia",
+        applyAction: function () { executeAssistantAction("dyslexia"); }
       };
     }
-    if (lower.indexOf("contrast") !== -1 || lower.indexOf("dark") !== -1 || lower.indexOf("vision") !== -1) {
+
+    // 6. ADHD, Reading Mask & Ruler
+    var isAdhd = (
+      lower.indexOf("adhd") !== -1 || lower.indexOf("focus") !== -1 || lower.indexOf("distract") !== -1 ||
+      lower.indexOf("reading mask") !== -1 || lower.indexOf("reading ruler") !== -1 ||
+      lower.indexOf("mask") !== -1 || lower.indexOf("ruler") !== -1
+    );
+
+    if (isAdhd) {
       return {
-        text: "👁️ **High Contrast & Vision Modes** maximize contrast ratios and invert backgrounds for crystal clear readability.",
-        actionLabel: "Enable Dark Contrast",
-        applyAction: function () { state.isDarkMode = true; state.isHighContrast = true; saveState(); applyEffects(); }
+        text: "⚡ **ADHD & Focus Assistance**:\n\n" +
+              "• **Reading Mask**: Creates a clear horizontal reading spotlight that moves with your cursor while gently dimming the rest of the screen.\n" +
+              "• **Reading Ruler**: Provides a sharp line guide underneath your active reading position.\n" +
+              "• **Stop Animations**: Freezes moving banners, autoplay videos, and distracting GIFs.",
+        actionLabel: "Enable Reading Mask",
+        actionType: "reading_mask",
+        applyAction: function () { executeAssistantAction("reading_mask"); }
       };
     }
-    if (lower.indexOf("cognitive") !== -1 || lower.indexOf("adhd") !== -1) {
+
+    // 7. Cognitive & Learning Disabilities
+    var isCognitive = (
+      lower.indexOf("cogniti") !== -1 || lower.indexOf("autism") !== -1 ||
+      lower.indexOf("stroke") !== -1 || lower.indexOf("learning") !== -1 ||
+      lower.indexOf("memory") !== -1
+    );
+
+    if (isCognitive) {
       return {
-        text: "🧠 **Cognitive & ADHD Modes** simplify website visuals, stop distracting animations, and activate the focused Reading Mask and Ruler.",
+        text: "🧠 **Cognitive Disability Mode**:\n\n" +
+              "• Cleans visual clutter and stops moving animations.\n" +
+              "• Applies readable **Lexend** typography designed by educational researchers to increase reading comprehension.\n" +
+              "• Highlights action buttons, links, and headings with high-contrast outlines.",
         actionLabel: "Enable Cognitive Mode",
-        applyAction: function () {
-          state.activeProfile = "cognitive";
-          state.fontFamily = "lexend";
-          state.readableFont = true;
-          state.fontSize = 115;
-          state.lineHeight = 1.9;
-          state.letterSpacing = 0.5;
-          state.wordSpacing = 0.1;
-          state.reduceMotion = true;
-          state.stopAnimations = true;
-          state.highlightLinks = true;
-          state.highlightButtons = true;
-          state.readingRuler = true;
-          saveState(); applyEffects();
-        }
+        actionType: "cognitive",
+        applyAction: function () { executeAssistantAction("cognitive"); }
       };
     }
-    if (lower.indexOf("pricing") !== -1 || lower.indexOf("cost") !== -1 || lower.indexOf("plan") !== -1) {
+
+    // 8. Blindness & Screen Readers (Must exclude Color Blindness!)
+    var isBlind = !isColorBlind && (
+      lower.indexOf("screen reader") !== -1 || lower.indexOf("jaws") !== -1 ||
+      lower.indexOf("nvda") !== -1 || lower.indexOf("voiceover") !== -1 ||
+      lower.indexOf("talkback") !== -1 || lower.indexOf("blindness") !== -1 ||
+      lower.indexOf("blind") !== -1 || lower.indexOf("aria") !== -1
+    );
+
+    if (isBlind) {
       return {
-        text: "💰 **2all.ai Pricing Plans**:\n\n• **Standard Plan**: $49/mo for websites under 10k pageviews.\n• **Business Plan**: $99/mo with full automated AI remediation & monthly audit reports.\n• **Enterprise Plan**: Custom dedicated SLAs & legal protection support.\n\nAll plans include a **7-Day Free Trial**!"
+        text: "♿ **Blindness / Screen Reader Mode**:\n\n" +
+              "• Optimizes website DOM hierarchy and ARIA landmarks for JAWS, NVDA, VoiceOver & TalkBack.\n" +
+              "• Enables comprehensive keyboard navigation loops and automatically describes missing image alt tags.",
+        actionLabel: "Enable Screen Reader Mode",
+        actionType: "screen_reader",
+        applyAction: function () { executeAssistantAction("screen_reader"); }
       };
     }
-    if (lower.indexOf("wcag") !== -1 || lower.indexOf("ada") !== -1 || lower.indexOf("compliance") !== -1) {
+
+    // 9. Vision & High Contrast Modes
+    var isContrast = (
+      lower.indexOf("contrast") !== -1 || lower.indexOf("dark mode") !== -1 ||
+      lower.indexOf("light mode") !== -1 || lower.indexOf("vision") !== -1 ||
+      lower.indexOf("glare") !== -1 || lower.indexOf("invert") !== -1
+    );
+
+    if (isContrast) {
       return {
-        text: "⚖️ **ADA & WCAG 2.1 AA Compliance**:\n\n2all.ai automatically remediates your website's DOM structure, ARIA landmarks, image alt texts, and color contrast ratios to ensure WCAG 2.1 AA adherence and legal protection."
+        text: "👁️ **High Contrast & Vision Modes**:\n\n" +
+              "• **Dark Contrast**: Deep slate background (`#0f172a`) with crisp white typography to eliminate glare.\n" +
+              "• **Light Contrast**: Clean high-contrast white layout with deep black text.\n" +
+              "• **High Contrast Boost**: 150% contrast amplification for low-vision clarity.",
+        actionLabel: "Enable Dark Contrast",
+        actionType: "dark_contrast",
+        applyAction: function () { executeAssistantAction("dark_contrast"); }
       };
     }
-    if (lower.indexOf("install") !== -1 || lower.indexOf("code") !== -1 || lower.indexOf("script") !== -1) {
+
+    // 10. Motor Impairment & Keyboard Access
+    var isMotor = (
+      lower.indexOf("motor") !== -1 || lower.indexOf("keyboard") !== -1 ||
+      lower.indexOf("parkinson") !== -1 || lower.indexOf("mobility") !== -1 ||
+      lower.indexOf("tremor") !== -1
+    );
+
+    if (isMotor) {
       return {
-        text: "⚡ **2-Minute Installation**:\n\nJust copy and paste our single JavaScript snippet before the `</body>` tag on your website:\n```html\n<script src=\"https://2all.ai/widget.js\" async></script>\n```\nWorks with WordPress, Shopify, Next.js, React, Webflow, and HTML!"
+        text: "🎮 **Motor Impairment Assistance**:\n\n" +
+              "• Enlarges clickable targets and highlights active keyboard focus with prominent glow rings.\n" +
+              "• Provides Large (32px) and Huge (64px) cursor overlays.\n" +
+              "• Allows complete hands-free site navigation via Voice Navigation.",
+        actionLabel: "Highlight Buttons & Links",
+        actionType: "motor",
+        applyAction: function () { executeAssistantAction("motor"); }
       };
     }
+
+    // 11. Seizure Safety & Animation Stopping
+    var isSeizure = (
+      lower.indexOf("seizure") !== -1 || lower.indexOf("epilep") !== -1 ||
+      lower.indexOf("flashing") !== -1 || lower.indexOf("animation") !== -1 ||
+      lower.indexOf("motion") !== -1 || lower.indexOf("freeze") !== -1
+    );
+
+    if (isSeizure) {
+      return {
+        text: "🛡️ **Seizure Safe Mode**:\n\n" +
+              "• Instantly pauses and freezes all moving animations, autoplay videos, scrolling marquees, and flashing GIFs.\n" +
+              "• Eliminates photosensitive epileptic seizure risks and vestibular motion sickness.",
+        actionLabel: "Stop All Animations",
+        actionType: "stop_animations",
+        applyAction: function () { executeAssistantAction("stop_animations"); }
+      };
+    }
+
+    // 12. Font Sizing, Spacing & Text Scaling
+    var isFont = (
+      lower.indexOf("font") !== -1 || lower.indexOf("text size") !== -1 ||
+      lower.indexOf("zoom") !== -1 || lower.indexOf("scale") !== -1 ||
+      lower.indexOf("spacing") !== -1 || lower.indexOf("line height") !== -1
+    );
+
+    if (isFont) {
+      return {
+        text: "🔤 **Font Sizing & Spacing Adjustments**:\n\n" +
+              "• **Text Scaling**: Scale full website text up to **200%** dynamically.\n" +
+              "• **Line Height**: Increase line spacing up to **2.5x**.\n" +
+              "• **Letter & Word Spacing**: Widen space between individual letters and words.\n" +
+              "• **Text Alignment**: Left, Center, Right, or Justify.",
+        actionLabel: "Increase Text Size (+20%)",
+        actionType: "increase_font",
+        applyAction: function () { executeAssistantAction("increase_font"); }
+      };
+    }
+
+    // 13. Cursor & Mouse
+    var isCursor = (lower.indexOf("cursor") !== -1 || lower.indexOf("mouse") !== -1 || lower.indexOf("pointer") !== -1);
+    if (isCursor) {
+      return {
+        text: "🔍 **Cursor & Pointer Enhancements**:\n\n" +
+              "• Switch between **Normal**, **Large** (32px), and **Huge** (64px) high-contrast cursor pointers to easily track mouse movement across large monitors.",
+        actionLabel: "Enable Large Cursor",
+        actionType: "large_cursor",
+        applyAction: function () { executeAssistantAction("large_cursor"); }
+      };
+    }
+
+    // 14. Mute Sounds
+    var isMute = (lower.indexOf("mute") !== -1 || lower.indexOf("silence") !== -1 || lower.indexOf("quiet") !== -1 || lower.indexOf("stop sound") !== -1);
+    if (isMute) {
+      return {
+        text: "🔇 **Mute Website Sounds**:\n\n" +
+              "Instantly silences all background music, autoplay media, and HTML5 `<audio>` / `<video>` elements across the host page.",
+        actionLabel: "Mute All Sounds",
+        actionType: "mute_sounds",
+        applyAction: function () { executeAssistantAction("mute_sounds"); }
+      };
+    }
+
+    // 15. WCAG, ADA, EAA & Legal Compliance
+    var isCompliance = (
+      lower.indexOf("wcag") !== -1 || lower.indexOf("ada") !== -1 || lower.indexOf("law") !== -1 ||
+      lower.indexOf("legal") !== -1 || lower.indexOf("lawsuit") !== -1 || lower.indexOf("compliance") !== -1 ||
+      lower.indexOf("508") !== -1 || lower.indexOf("eaa") !== -1 || lower.indexOf("vpat") !== -1
+    );
+
+    if (isCompliance) {
+      return {
+        text: "⚖️ **ADA & WCAG 2.1 AA Compliance Protection**:\n\n" +
+              "• **Legal Standard**: Conforms with **ADA Title III**, **Section 508**, **EAA**, and **WCAG 2.1 Level AA**.\n" +
+              "• **Automated Remediation**: Patches missing alt text, ARIA landmarks, form labels, and color contrast.\n" +
+              "• **Audit Certificates**: Generates official VPAT statements and litigation defense records."
+      };
+    }
+
+    // 16. Installation & Embed Code
+    var isInstall = (
+      lower.indexOf("install") !== -1 || lower.indexOf("code") !== -1 || lower.indexOf("script") !== -1 ||
+      lower.indexOf("embed") !== -1 || lower.indexOf("setup") !== -1 || lower.indexOf("wordpress") !== -1 ||
+      lower.indexOf("shopify") !== -1 || lower.indexOf("webflow") !== -1 || lower.indexOf("how to add") !== -1
+    );
+
+    if (isInstall) {
+      var prodUrl = (typeof window !== "undefined" && window.location && window.location.hostname === "localhost")
+        ? "http://localhost:3000/loader.js"
+        : "https://2all-ai.mccmrfip.in/loader.js";
+      return {
+        text: "⚡ **Quick 2-Minute Installation**:\n\n" +
+              "Simply paste our script before the closing `</body>` tag on your website:\n\n" +
+              "```html\n<script src=\"" + prodUrl + "\" data-api-key=\"YOUR_KEY\" async></script>\n```\n\n" +
+              "Compatible with WordPress, Shopify, Next.js, React, Webflow, Squarespace, and custom HTML!"
+      };
+    }
+
+    // 17. Pricing & Plans
+    var isPricing = (
+      lower.indexOf("pricing") !== -1 || lower.indexOf("price") !== -1 || lower.indexOf("cost") !== -1 ||
+      lower.indexOf("plan") !== -1 || lower.indexOf("how much") !== -1 || lower.indexOf("buy") !== -1 ||
+      lower.indexOf("trial") !== -1 || lower.indexOf("subscription") !== -1 || lower.indexOf("pay") !== -1
+    );
+
+    if (isPricing) {
+      return {
+        text: "💰 **2all.ai Pricing Plans**:\n\n" +
+              "• **Standard**: $49/month (Under 10k pageviews/mo).\n" +
+              "• **Business**: $99/month (Automated AI remediation & monthly audit reports).\n" +
+              "• **Enterprise**: Custom dedicated SLA, custom widget branding & legal protection support.\n\n" +
+              "🎉 All plans include a **7-Day Free Trial** with no commitment!"
+      };
+    }
+
+    // 18. Account & Dashboard
+    var isAccount = (lower.indexOf("account") !== -1 || lower.indexOf("login") !== -1 || lower.indexOf("dashboard") !== -1 || lower.indexOf("portal") !== -1);
+    if (isAccount) {
+      return {
+        text: "🔑 **Client Portal & Dashboard**:\n\n" +
+              "Manage authorized domains, inspect accessibility scorecards, customize brand theme colors, and download VPAT compliance reports from your 2all.ai dashboard."
+      };
+    }
+
+    // 19. Support & Demo
+    var isSupport = (lower.indexOf("support") !== -1 || lower.indexOf("contact") !== -1 || lower.indexOf("email") !== -1 || lower.indexOf("demo") !== -1 || lower.indexOf("help desk") !== -1);
+    if (isSupport) {
+      return {
+        text: "📧 **24/7 Dedicated Support**:\n\n" +
+              "Our accessibility engineering specialists are here for you 24/7!\n" +
+              "• Email: **support@2all.ai**\n" +
+              "• Schedule a 1-on-1 personalized compliance audit demo anytime."
+      };
+    }
+
+    // 20. Reset Settings
+    var isReset = (lower.indexOf("reset") !== -1 || lower.indexOf("clear") !== -1 || lower.indexOf("default") !== -1 || lower.indexOf("restore") !== -1);
+    if (isReset) {
+      return {
+        text: "🔄 **Reset Accessibility Adjustments**:\n\n" +
+              "Click below or press the 'Reset Settings' button at the bottom of the panel to restore all website colors, typography, and modes back to normal.",
+        actionLabel: "Reset All Settings",
+        actionType: "reset_settings",
+        applyAction: function () { executeAssistantAction("reset_settings"); }
+      };
+    }
+
+    // 21. About 2all.ai
+    var isAbout = (lower.indexOf("what is 2all") !== -1 || lower.indexOf("who are you") !== -1 || lower.indexOf("who made") !== -1 || lower === "about");
+    if (isAbout) {
+      return {
+        text: "🤖 **About 2all.ai**:\n\n" +
+              "2all.ai is an enterprise AI-powered web accessibility platform designed to ensure digital equity for over 1 billion people with disabilities while protecting businesses from ADA Title III & WCAG compliance lawsuits."
+      };
+    }
+
+    // 22. Elderly / Seniors / Aging Eyes
+    var isElderly = (lower.indexOf("elderly") !== -1 || lower.indexOf("senior") !== -1 || lower.indexOf("aging") !== -1 || lower.indexOf("old age") !== -1 || lower.indexOf("grand") !== -1);
+    if (isElderly) {
+      return {
+        text: "👵 **Senior & Low-Vision Reading Comfort**:\n\n" +
+              "For elderly visitors experiencing presbyopia, cataracts, or eye fatigue:\n" +
+              "• **Text Scaling**: Magnify text up to 200% without breaking layouts.\n" +
+              "• **High Contrast / Dark Mode**: Crisp typography with zero glare.\n" +
+              "• **Large Pointers**: High-visibility 32px/64px cursors.\n" +
+              "• **Text-To-Speech**: Natural voice reading with word highlighting.",
+        actionLabel: "Increase Text Size (+20%)",
+        actionType: "increase_font",
+        applyAction: function () { executeAssistantAction("increase_font"); }
+      };
+    }
+
+    // 23. Performance / Speed / SEO
+    var isSpeed = (lower.indexOf("speed") !== -1 || lower.indexOf("performance") !== -1 || lower.indexOf("slow") !== -1 || lower.indexOf("seo") !== -1 || lower.indexOf("load time") !== -1);
+    if (isSpeed) {
+      return {
+        text: "⚡ **High-Speed & Zero Impact Architecture**:\n\n" +
+              "• **Ultra-Lightweight**: Under 20KB gzipped, loaded asynchronously via CDN (`async defer`).\n" +
+              "• **Zero PageSpeed Impact**: Operates without blocking the main DOM thread.\n" +
+              "• **SEO Boost**: Fixes missing image alt tags and structural ARIA landmarks, improving search ranking.",
+        actionLabel: "Explore All Features",
+        actionType: "explore_all",
+        applyAction: function () { executeAssistantAction("explore_all"); }
+      };
+    }
+
+    // 24. Clarity InfoTech / Host Website
+    var isClarity = (lower.indexOf("clarity") !== -1 || lower.indexOf("this site") !== -1 || lower.indexOf("this website") !== -1);
+    if (isClarity) {
+      return {
+        text: "🏢 **Website Accessibility Integration**:\n\n" +
+              "This website is powered by **2all.ai** to guarantee complete digital inclusion, WCAG 2.1 AA adherence, and ADA compliance for all users and assistive devices.\n\n" +
+              "You can customize any colors, fonts, voice reading, and focus tools directly on this page!",
+        actionLabel: "Explore Features",
+        actionType: "explore_all",
+        applyAction: function () { executeAssistantAction("explore_all"); }
+      };
+    }
+
+    // 25. Greetings
+    var isGreeting = (
+      lower === "hi" || lower === "hello" || lower === "hey" ||
+      lower.indexOf("hi ") === 0 || lower.indexOf("hello ") === 0 || lower.indexOf("hey ") === 0 ||
+      lower.indexOf("good morning") !== -1 || lower.indexOf("good afternoon") !== -1
+    );
+    if (isGreeting) {
+      return {
+        text: "👋 **Hello! How can I assist you today?**\n\n" +
+              "I can help you navigate this website or activate accessibility adjustments:\n" +
+              "• Say *\"give color blindness list\"* to see vision filters.\n" +
+              "• Say *\"read page\"* to start voice narration.\n" +
+              "• Say *\"dark mode\"* or *\"change colors\"* for visual contrast.\n" +
+              "• Say *\"dyslexia\"* or *\"adhd\"* for specialized reading modes.",
+        actionLabel: "List All Tools",
+        actionType: "all_tools",
+        applyAction: function () { handleUserChatMessage("list all tools"); }
+      };
+    }
+
+    // 26. Complete Tools Suite Listing (ONLY fires when explicitly asking for all tools / features / menu / overview)
+    var isAllTools = (
+      lower.indexOf("all tools") !== -1 || lower.indexOf("list the tools") !== -1 ||
+      lower.indexOf("list all") !== -1 || lower.indexOf("list of tools") !== -1 ||
+      lower.indexOf("what tools") !== -1 || lower.indexOf("what features") !== -1 ||
+      lower.indexOf("what can you do") !== -1 || lower.indexOf("what do you do") !== -1 ||
+      lower.indexOf("capabilities") !== -1 || lower.indexOf("overview") !== -1 ||
+      lower === "tools" || lower === "features" || lower === "list" || lower === "menu" || lower === "help"
+    );
+
+    if (isAllTools) {
+      return {
+        text: "🛠️ **2all.ai Complete Accessibility Tools Suite**:\n\n" +
+              "🔊 **1. Speech & Audio**\n" +
+              "• **Read Entire Page / Selection**: Natural Text-to-Speech narrator with real-time sentence highlighting.\n" +
+              "• **Voice Navigation**: Hands-free voice commands (\"read page\", \"dark mode\", etc.).\n" +
+              "• **Voice Settings**: Multi-voice selection, pitch tuning, and speed up to 2x.\n\n" +
+              "👁️ **2. Vision & Color Customization**\n" +
+              "• **Adjust Background Colors**: 8 high-comfort tints (White, Black, Blue, Amber, Green, etc.).\n" +
+              "• **Adjust Title & Text Colors**: Custom contrast palettes for headings and body text.\n" +
+              "• **Dark, Light & High Contrast**: Instant contrast enhancement.\n" +
+              "• **Color Blindness**: Filters for Protanopia, Deuteranopia, Tritanopia & Monochromacy.\n\n" +
+              "🔤 **3. Typography & Layout**\n" +
+              "• **Dyslexia Friendly Mode**: OpenDyslexic weighted gravity typography.\n" +
+              "• **Text Scaling**: Zoom text up to 200% without breaking layouts.\n" +
+              "• **Letter / Word Spacing & Line Height**: Eliminates visual text crowding.\n\n" +
+              "🎯 **4. Focus & Motor Navigation**\n" +
+              "• **Reading Mask & Ruler**: Horizontal line spotlighting for ADHD and focus.\n" +
+              "• **Big / Huge Cursor**: High-visibility 32px & 64px pointers.\n" +
+              "• **Highlight Links & Buttons**: Prominent interactive navigation guides.\n" +
+              "• **Stop Animations & Hide Images**: Freeze motion distractions.",
+        actionLabel: "Open Vision Tab",
+        actionType: "open_vision",
+        applyAction: function () { executeAssistantAction("open_vision"); }
+      };
+    }
+
+    // 27. Universal Dynamic Contextual Fallback (Answers ANY other question)
     return {
-      text: `🤖 Regarding "${text}": 2all.ai provides automated AI accessibility remediation, ADA compliance tools, voice text-to-speech, and specialized reading profiles.\n\nFeel free to ask about **pricing**, **installation**, **voice tools**, **WCAG laws**, or **support**!`
+      text: "💡 **2all.ai Accessibility Assistant**:\n\n" +
+            "Regarding: *\"" + text + "\"*\n\n" +
+            "2all.ai provides instant accessibility adjustments directly on this page:\n" +
+            "• **Vision**: 4 Color Blindness filters (Protanopia, Deuteranopia, Tritanopia, Grayscale), 8 background tints, and contrast modes.\n" +
+            "• **Audio**: Text-to-speech page narrator with natural voices and hands-free microphone voice navigation.\n" +
+            "• **Reading**: OpenDyslexic typography, ADHD Reading Mask & Ruler, and text scaling up to 200%.\n" +
+            "• **Motor**: Enlarged cursors, clickable target highlights, and keyboard navigation rings.\n\n" +
+            "You can ask me to activate any feature or explain how it works!",
+      actionLabel: "Explore All Features",
+      actionType: "explore_all",
+      applyAction: function () { executeAssistantAction("explore_all"); }
     };
   }
 
@@ -3087,12 +3632,16 @@
       b.className = "ai-chat-bubble " + m.type;
       var formatted = m.text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br/>");
       b.innerHTML = formatted;
-      if (m.actionLabel && m.applyAction) {
+      if (m.actionLabel && (m.applyAction || m.actionType)) {
         var aBtn = document.createElement("button");
-        aBtn.style.cssText = "margin-top:8px;display:block;padding:6px 12px;background:#0055ff;color:#ffffff;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;";
+        aBtn.style.cssText = "margin-top:8px;display:block;padding:6px 12px;background:" + primaryColor + ";color:#ffffff;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;";
         aBtn.innerText = m.actionLabel + " ✨";
         aBtn.onclick = function () {
-          m.applyAction();
+          if (typeof m.applyAction === "function") {
+            m.applyAction();
+          } else if (m.actionType) {
+            executeAssistantAction(m.actionType);
+          }
           renderPanelBody();
         };
         b.appendChild(aBtn);
@@ -3103,10 +3652,12 @@
 
     chipsBox.innerHTML = "";
     var suggestions = [
-      "Voice related tool?",
+      "give color blindness list",
+      "How to read page aloud?",
+      "Change background colors",
+      "Dyslexia & ADHD modes",
       "Pricing plans?",
-      "How to install?",
-      "WCAG Compliance law?"
+      "WCAG 2.1 Compliance law?"
     ];
     suggestions.forEach(function (s) {
       var chip = document.createElement("div");
@@ -3146,11 +3697,12 @@
         type: "bot",
         text: reply.text,
         actionLabel: reply.actionLabel,
-        applyAction: reply.applyAction
+        applyAction: reply.applyAction,
+        actionType: reply.actionType
       });
       saveState();
       renderChatMessages();
-    }, 350);
+    }, 300);
   }
 
   // -------------------------------------------------------------
@@ -3207,6 +3759,9 @@
 
   var speechKeepAliveTimer = null;
   var speechUtterancesQueue = [];
+  var currentSpeechChunks = [];
+  var currentSpeechChunkIndex = 0;
+  var speechDispatchTimer = null;
 
   function clearSpeechKeepAlive() {
     if (speechKeepAliveTimer) {
@@ -3326,8 +3881,19 @@
     return allChunks;
   }
 
+  // Live voice settings updater: instantly re-applies speed, pitch, voice, and volume to currently reading text
+  function applyLiveVoiceSettings() {
+    if (!("speechSynthesis" in window)) return;
+    if (state.speechStatus !== "playing" && state.speechStatus !== "paused") return;
+    if (!currentSpeechChunks || currentSpeechChunks.length === 0) return;
+
+    var isPaused = (state.speechStatus === "paused");
+    var targetIdx = Math.max(0, Math.min(currentSpeechChunkIndex, currentSpeechChunks.length - 1));
+    speakChunks(currentSpeechChunks, targetIdx, isPaused);
+  }
+
   // Unified Speech Dispatcher: Queues chunks cleanly without Chrome race conditions
-  function speakChunks(chunks) {
+  function speakChunks(chunks, startIndex, startPaused) {
     if (!("speechSynthesis" in window)) {
       showVoiceCommandToast("Speech Synthesis (TTS) is not supported in this browser.", false);
       return;
@@ -3336,6 +3902,15 @@
     if (!chunks || chunks.length === 0) {
       showVoiceCommandToast("No readable text found on this page.", false);
       return;
+    }
+
+    currentSpeechChunks = chunks;
+    var startIdx = (typeof startIndex === "number" && startIndex >= 0 && startIndex < chunks.length) ? startIndex : 0;
+    currentSpeechChunkIndex = startIdx;
+
+    if (speechDispatchTimer) {
+      clearTimeout(speechDispatchTimer);
+      speechDispatchTimer = null;
     }
 
     clearSpeechKeepAlive();
@@ -3348,7 +3923,7 @@
       } catch (e) {}
     }
 
-    state.speechStatus = "playing";
+    state.speechStatus = startPaused ? "paused" : "playing";
     renderPanelBody();
 
     function executeSpeechQueue() {
@@ -3366,7 +3941,10 @@
       speechUtterancesQueue = [];
       window.__2all_speech_queue = speechUtterancesQueue;
 
-      chunks.forEach(function (item, index) {
+      var chunksToPlay = chunks.slice(startIdx);
+
+      chunksToPlay.forEach(function (item, relIndex) {
+        var absIndex = startIdx + relIndex;
         var chunkText = (item && typeof item === "object") ? item.text : item;
         var targetEl = (item && typeof item === "object") ? item.el : null;
         var utt = new SpeechSynthesisUtterance(chunkText);
@@ -3382,6 +3960,7 @@
 
         // Auto Scroll & Sentence Highlight Trigger on Start
         utt.onstart = function () {
+          currentSpeechChunkIndex = absIndex;
           clearSpeechHighlights();
           if (targetEl) {
             if (state.autoScroll && typeof targetEl.scrollIntoView === "function") {
@@ -3393,15 +3972,15 @@
               currentSpeechEl = targetEl;
               originalSpeechOutline = targetEl.style.outline || "";
               originalSpeechBg = targetEl.style.backgroundColor || "";
-              targetEl.style.outline = "2px solid #2563eb";
-              targetEl.style.backgroundColor = "rgba(37, 99, 235, 0.08)";
+              targetEl.style.outline = "2px solid " + primaryColor;
+              targetEl.style.backgroundColor = hexToRgba(primaryColor, 0.08);
               targetEl.style.borderRadius = "4px";
               targetEl.style.transition = "background-color 0.2s, outline 0.2s";
             }
           }
         };
 
-        if (index === chunks.length - 1) {
+        if (relIndex === chunksToPlay.length - 1) {
           utt.onend = function () {
             clearSpeechHighlights();
             clearSpeechKeepAlive();
@@ -3409,6 +3988,8 @@
             speechUtterancesQueue = [];
             window.__2all_speech_queue = [];
             activeUtterance = null;
+            currentSpeechChunks = [];
+            currentSpeechChunkIndex = 0;
             renderPanelBody();
           };
         } else {
@@ -3421,12 +4002,14 @@
           clearSpeechHighlights();
           if (err && (err.error === "canceled" || err.error === "interrupted")) return;
           console.warn("[2all.ai TTS] Utterance error:", err);
-          if (index === chunks.length - 1) {
+          if (relIndex === chunksToPlay.length - 1) {
             clearSpeechKeepAlive();
             state.speechStatus = "stopped";
             speechUtterancesQueue = [];
             window.__2all_speech_queue = [];
             activeUtterance = null;
+            currentSpeechChunks = [];
+            currentSpeechChunkIndex = 0;
             renderPanelBody();
           }
         };
@@ -3442,8 +4025,15 @@
           window.speechSynthesis.speak(u);
         });
 
-        window.speechSynthesis.resume();
-        startSpeechKeepAlive();
+        if (startPaused) {
+          try {
+            window.speechSynthesis.pause();
+          } catch (e) {}
+          state.speechStatus = "paused";
+        } else {
+          window.speechSynthesis.resume();
+          startSpeechKeepAlive();
+        }
       } else {
         state.speechStatus = "stopped";
         renderPanelBody();
@@ -3451,7 +4041,7 @@
     }
 
     if (wasSpeaking) {
-      setTimeout(executeSpeechQueue, 60);
+      speechDispatchTimer = setTimeout(executeSpeechQueue, 60);
     } else {
       executeSpeechQueue();
     }
@@ -3474,7 +4064,7 @@
       return;
     }
 
-    speakChunks(chunks);
+    speakChunks(chunks, 0, false);
   }
 
   function readSelectedText() {
@@ -3494,7 +4084,7 @@
       return { text: c, el: targetEl };
     });
 
-    speakChunks(items);
+    speakChunks(items, 0, false);
   }
 
   function pauseSpeech() {
@@ -3520,6 +4110,10 @@
   function stopSpeech() {
     clearSpeechHighlights();
     clearSpeechKeepAlive();
+    if (speechDispatchTimer) {
+      clearTimeout(speechDispatchTimer);
+      speechDispatchTimer = null;
+    }
     if ("speechSynthesis" in window) {
       try {
         window.speechSynthesis.cancel();
@@ -3528,6 +4122,8 @@
     speechUtterancesQueue = [];
     window.__2all_speech_queue = [];
     activeUtterance = null;
+    currentSpeechChunks = [];
+    currentSpeechChunkIndex = 0;
     state.speechStatus = "stopped";
     renderPanelBody();
   }
@@ -3659,23 +4255,132 @@
       `;
     }
 
-    // 7. Custom Colors
+    // 7. Custom Colors & Background Adjustments
+    var bgHexMap = {
+      blue: "#dbeafe",
+      purple: "#f3e8ff",
+      red: "#fee2e2",
+      orange: "#fef3c7",
+      teal: "#ccfbf1",
+      green: "#dcfce7",
+      white: "#ffffff",
+      black: "#0f172a"
+    };
+
+    if (state.bgColor && state.bgColor !== "default" && bgHexMap[state.bgColor]) {
+      var chosenBg = bgHexMap[state.bgColor];
+      var isDarkBg = (state.bgColor === "black");
+
+      css += `
+        html,
+        body,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]),
+        main,
+        section,
+        article,
+        header,
+        footer,
+        nav,
+        aside,
+        form,
+        .container,
+        [class*="container"],
+        [class*="wrapper"],
+        [class*="section"],
+        [class*="content"],
+        [class*="Card"],
+        [class*="card"],
+        [class*="bg-"],
+        [id*="content"],
+        [id*="main"],
+        [id*="app"],
+        [id*="root"],
+        [id="__next"] {
+          background-color: ${chosenBg} !important;
+          background-image: none !important;
+        }
+      `;
+
+      if (isDarkBg) {
+        css += `
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) p,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) span,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h1,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h2,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h3,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h4,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h5,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h6,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) li,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) a,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) label,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) strong,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) b,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) td,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) th {
+            color: #f8fafc !important;
+          }
+          section, article, header, footer, main, nav, form, .card, [class*="card"] {
+            border-color: #334155 !important;
+          }
+        `;
+      } else {
+        css += `
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) p,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) span,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) li,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) label,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) strong,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) b,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) td,
+          body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) th {
+            color: #0f172a !important;
+          }
+        `;
+      }
+    }
+
     var colorHexMap = {
       blue: "#0070f3", purple: "#7928ca", red: "#e00000", orange: "#f5a623",
       teal: "#00b4d8", green: "#10b981", white: "#ffffff", black: "#000000"
     };
+
     if (state.textColor && state.textColor !== "default" && colorHexMap[state.textColor]) {
-      css += `p, span, a, li, label, strong, td, th { color: ${colorHexMap[state.textColor]} !important; }`;
+      css += `
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) p,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) span,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) a,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) li,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) label,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) strong,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) b,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) td,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) th {
+          color: ${colorHexMap[state.textColor]} !important;
+          -webkit-text-fill-color: ${colorHexMap[state.textColor]} !important;
+        }
+      `;
     }
+
     if (state.titleColor && state.titleColor !== "default" && colorHexMap[state.titleColor]) {
-      css += `h1, h2, h3, h4, h5, h6 { color: ${colorHexMap[state.titleColor]} !important; }`;
-    }
-    var bgHexMap = {
-      blue: "#eff6ff", purple: "#faf5ff", red: "#fef2f2", orange: "#fff7ed",
-      teal: "#f0fdfa", green: "#f0fdf4", white: "#ffffff", black: "#0f172a"
-    };
-    if (state.bgColor && state.bgColor !== "default" && bgHexMap[state.bgColor]) {
-      css += `html, body { background-color: ${bgHexMap[state.bgColor]} !important; }`;
+      css += `
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h1,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h2,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h3,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h4,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h5,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h6,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h1 *,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h2 *,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h3 *,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h4 *,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h5 *,
+        body > *:not([id="2all-ai-widget-host"]):not([id^="2all-"]) h6 * {
+          color: ${colorHexMap[state.titleColor]} !important;
+          -webkit-text-fill-color: ${colorHexMap[state.titleColor]} !important;
+          background-image: none !important;
+        }
+      `;
     }
 
     // 8. Highlights
@@ -3683,16 +4388,16 @@
       css += `a, a * { background-color: #fef08a !important; color: #854d0e !important; text-decoration: underline !important; font-weight: 800 !important; }`;
     }
     if (state.highlightHeadings) {
-      css += `h1, h2, h3, h4, h5, h6 { border-bottom: 3px solid #0055ff !important; padding-bottom: 3px !important; background-color: rgba(0, 85, 255, 0.08) !important; }`;
+      css += `h1, h2, h3, h4, h5, h6 { border-bottom: 3px solid ${primaryColor} !important; padding-bottom: 3px !important; background-color: ${hexToRgba(primaryColor, 0.08)} !important; }`;
     }
     if (state.highlightButtons) {
       css += `button, [role="button"], input[type="submit"], input[type="button"], a.btn { outline: 3px solid #16a34a !important; outline-offset: 3px !important; }`;
     }
     if (state.highlightFocus) {
-      css += `*:focus, *:focus-visible, .twoall-focused-target { outline: 4px solid #0055ff !important; outline-offset: 4px !important; box-shadow: 0 0 0 6px rgba(0, 85, 255, 0.35), 0 0 18px rgba(0, 85, 255, 0.45) !important; border-radius: 8px !important; transition: outline 0.15s ease, box-shadow 0.15s ease !important; }`;
+      css += `*:focus, *:focus-visible, .twoall-focused-target { outline: 4px solid ${primaryColor} !important; outline-offset: 4px !important; box-shadow: 0 0 0 6px ${hexToRgba(primaryColor, 0.35)}, 0 0 18px ${hexToRgba(primaryColor, 0.45)} !important; border-radius: 8px !important; transition: outline 0.15s ease, box-shadow 0.15s ease !important; }`;
     }
     if (state.highlightHover) {
-      css += `a:hover, button:hover, [role="button"]:hover, input:hover, select:hover { outline: 3px solid #0055ff !important; outline-offset: 2px !important; }`;
+      css += `a:hover, button:hover, [role="button"]:hover, input:hover, select:hover { outline: 3px solid ${primaryColor} !important; outline-offset: 2px !important; }`;
     }
 
     // 9. Hide Images & Stop Animations
@@ -3800,7 +4505,7 @@
       if (!popup) {
         popup = document.createElement("div");
         popup.id = "2all-text-magnifier-popup";
-        popup.style.cssText = "position:fixed;pointer-events:none;z-index:2147483647;background:#0f172a;color:#ffffff;padding:12px 18px;border-radius:14px;font-size:20px;font-weight:700;box-shadow:0 12px 35px rgba(0,0,0,0.45);border:2px solid #0055ff;display:none;max-width:380px;word-break:break-word;line-height:1.4;";
+        popup.style.cssText = "position:fixed;pointer-events:none;z-index:2147483647;background:#0f172a;color:#ffffff;padding:12px 18px;border-radius:14px;font-size:20px;font-weight:700;box-shadow:0 12px 35px rgba(0,0,0,0.45);border:2px solid " + primaryColor + ";display:none;max-width:380px;word-break:break-word;line-height:1.4;";
         document.body.appendChild(popup);
       }
 
@@ -3848,7 +4553,7 @@
           if (!state.textToSpeech) return;
           var target = e.target;
           if (target && target.innerText && target.innerText.trim() && !target.closest('[id="2all-ai-widget-host"]')) {
-            target.style.outline = "2px dashed #0055ff";
+            target.style.outline = "2px dashed " + primaryColor;
             target.style.outlineOffset = "3px";
             target.style.cursor = "pointer";
           }
@@ -3916,7 +4621,7 @@
       if (!toast) {
         toast = document.createElement("div");
         toast.id = "2all-focus-highlight-toast";
-        toast.style.cssText = "position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#0055ff;color:#ffffff;padding:8px 20px;border-radius:9999px;font-size:12px;font-weight:800;font-family:sans-serif;box-shadow:0 8px 25px rgba(0,85,255,0.45);z-index:2147483647;pointer-events:none;display:flex;align-items:center;gap:8px;";
+        toast.style.cssText = "position:fixed;top:24px;left:50%;transform:translateX(-50%);background:" + primaryColor + ";color:#ffffff;padding:8px 20px;border-radius:9999px;font-size:12px;font-weight:800;font-family:sans-serif;box-shadow:0 8px 25px " + hexToRgba(primaryColor, 0.45) + ";z-index:2147483647;pointer-events:none;display:flex;align-items:center;gap:8px;";
         toast.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:#ffffff;display:inline-block;"></span> Focus Highlight Active — Click any element or press Tab';
         document.body.appendChild(toast);
       }
@@ -4153,7 +4858,7 @@
       var prevOutline = targetElement.style.outline;
       var prevOffset = targetElement.style.outlineOffset;
       var prevTransition = targetElement.style.transition;
-      targetElement.style.outline = "3px solid #0055ff";
+      targetElement.style.outline = "3px solid " + primaryColor;
       targetElement.style.outlineOffset = "3px";
       targetElement.style.transition = "outline 0.3s ease";
       setTimeout(function () {
@@ -4206,7 +4911,7 @@
               <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
               SPEAK
             </button>
-            <button type="submit" style="background:#2563eb;color:#ffffff;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:800;cursor:pointer;">GO</button>
+            <button type="submit" style="background:${primaryColor};color:#ffffff;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:800;cursor:pointer;">GO</button>
           </form>
           <button id="2all-voice-nav-close" style="background:none;border:none;color:#94a3b8;font-size:18px;font-weight:bold;cursor:pointer;padding:0 4px;margin-left:4px;line-height:1;" title="Turn off Voice Navigation">&times;</button>
         `;

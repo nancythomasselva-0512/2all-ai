@@ -187,7 +187,7 @@ export default function AccessibilityPanel() {
         {activeTab === "dashboard" && <DashboardSection setActiveTab={setActiveTab} searchQuery={searchQuery} />}
         {activeTab === "features" && <CoreFeaturesSection searchQuery={searchQuery} />}
         {activeTab === "vision" && <ColorVisionSection searchQuery={searchQuery} />}
-        {activeTab === "ai" && <AIAssistantSection />}
+        {activeTab === "ai" && <AIAssistantSection setActiveTab={setActiveTab} />}
       </div>
 
       {/* Statement Modal Overlay */}

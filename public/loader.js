@@ -45,8 +45,8 @@
     }
   }
   if (!apiUrl) {
-    if (typeof window !== "undefined" && window.location && (window.location.port === "3000" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
-      apiUrl = window.location.origin;
+    if (typeof window !== "undefined" && window.location && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+      apiUrl = window.location.port === "3000" ? window.location.origin : "http://localhost:3000";
     } else {
       apiUrl = "https://2all-ai.mccmrfip.in";
     }
@@ -60,7 +60,9 @@
     "&domain=" +
     encodeURIComponent(domain || window.location.hostname) +
     "&url=" +
-    encodeURIComponent(window.location.href);
+    encodeURIComponent(window.location.href) +
+    "&_t=" +
+    new Date().getTime();
 
   function loadCore(scriptPath) {
     if (window.__2ALL_CORE_INJECTED__) return;

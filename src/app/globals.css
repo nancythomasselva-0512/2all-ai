@@ -750,15 +750,59 @@ body.a11y-light-mode,
 .a11y-titlecolor-teal #app-content h1, .a11y-titlecolor-teal #app-content h2, .a11y-titlecolor-teal #app-content h3, .a11y-titlecolor-teal #app-content h4 { color: #0d9488 !important; }
 
 /* Custom Background Colors */
-.a11y-bgcolor-black #app-content { background-color: #0f172a !important; }
-.a11y-bgcolor-white #app-content { background-color: #ffffff !important; }
-.a11y-bgcolor-yellow #app-content { background-color: #fef9c3 !important; }
-.a11y-bgcolor-blue #app-content { background-color: #eff6ff !important; }
-.a11y-bgcolor-green #app-content { background-color: #f0fdf4 !important; }
-.a11y-bgcolor-red #app-content { background-color: #fef2f2 !important; }
-.a11y-bgcolor-purple #app-content { background-color: #faf5ff !important; }
-.a11y-bgcolor-orange #app-content { background-color: #fff7ed !important; }
-.a11y-bgcolor-teal #app-content { background-color: #f0fdfa !important; }
+.a11y-bgcolor-black #app-content,
+.a11y-bgcolor-black #app-content main,
+.a11y-bgcolor-black #app-content section,
+.a11y-bgcolor-black #app-content div[class*="bg-"],
+.a11y-bgcolor-black #app-content div[class*="card"] { background-color: #0f172a !important; background-image: none !important; color: #f8fafc !important; }
+
+.a11y-bgcolor-white #app-content,
+.a11y-bgcolor-white #app-content main,
+.a11y-bgcolor-white #app-content section,
+.a11y-bgcolor-white #app-content div[class*="bg-"],
+.a11y-bgcolor-white #app-content div[class*="card"] { background-color: #ffffff !important; background-image: none !important; color: #0f172a !important; }
+
+.a11y-bgcolor-yellow #app-content,
+.a11y-bgcolor-yellow #app-content main,
+.a11y-bgcolor-yellow #app-content section,
+.a11y-bgcolor-yellow #app-content div[class*="bg-"],
+.a11y-bgcolor-yellow #app-content div[class*="card"] { background-color: #fef3c7 !important; background-image: none !important; color: #0f172a !important; }
+
+.a11y-bgcolor-blue #app-content,
+.a11y-bgcolor-blue #app-content main,
+.a11y-bgcolor-blue #app-content section,
+.a11y-bgcolor-blue #app-content div[class*="bg-"],
+.a11y-bgcolor-blue #app-content div[class*="card"] { background-color: #dbeafe !important; background-image: none !important; color: #0f172a !important; }
+
+.a11y-bgcolor-green #app-content,
+.a11y-bgcolor-green #app-content main,
+.a11y-bgcolor-green #app-content section,
+.a11y-bgcolor-green #app-content div[class*="bg-"],
+.a11y-bgcolor-green #app-content div[class*="card"] { background-color: #dcfce7 !important; background-image: none !important; color: #0f172a !important; }
+
+.a11y-bgcolor-red #app-content,
+.a11y-bgcolor-red #app-content main,
+.a11y-bgcolor-red #app-content section,
+.a11y-bgcolor-red #app-content div[class*="bg-"],
+.a11y-bgcolor-red #app-content div[class*="card"] { background-color: #fee2e2 !important; background-image: none !important; color: #0f172a !important; }
+
+.a11y-bgcolor-purple #app-content,
+.a11y-bgcolor-purple #app-content main,
+.a11y-bgcolor-purple #app-content section,
+.a11y-bgcolor-purple #app-content div[class*="bg-"],
+.a11y-bgcolor-purple #app-content div[class*="card"] { background-color: #f3e8ff !important; background-image: none !important; color: #0f172a !important; }
+
+.a11y-bgcolor-orange #app-content,
+.a11y-bgcolor-orange #app-content main,
+.a11y-bgcolor-orange #app-content section,
+.a11y-bgcolor-orange #app-content div[class*="bg-"],
+.a11y-bgcolor-orange #app-content div[class*="card"] { background-color: #fef3c7 !important; background-image: none !important; color: #0f172a !important; }
+
+.a11y-bgcolor-teal #app-content,
+.a11y-bgcolor-teal #app-content main,
+.a11y-bgcolor-teal #app-content section,
+.a11y-bgcolor-teal #app-content div[class*="bg-"],
+.a11y-bgcolor-teal #app-content div[class*="card"] { background-color: #ccfbf1 !important; background-image: none !important; color: #0f172a !important; }
 
 /* Global Accessibility Protection: Never distort the accessibility panel or chat widget */
 #accessibility-panel,
