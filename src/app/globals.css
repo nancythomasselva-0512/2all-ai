@@ -73,11 +73,15 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   color: #1e293b !important; /* Slate-800 */
 }
 
-/* Floating Chat Popover & Accessibility Panel Typography */
+/* Floating Chat Popover, Accessibility Panel, and Super Admin Dashboard Typography */
 #accessibility-panel,
 #accessibility-panel *,
 .alex-chat-popover,
-.alex-chat-popover * {
+.alex-chat-popover *,
+.super-admin-typography,
+.super-admin-typography *,
+.admin-console,
+.admin-console * {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 

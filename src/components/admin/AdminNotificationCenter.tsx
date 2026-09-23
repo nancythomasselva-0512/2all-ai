@@ -51,12 +51,29 @@ interface ProjectType {
 interface Props {
   users?: UserType[];
   projects?: ProjectType[];
+  markAllRead?: boolean;
+  onToggleMarkAllRead?: (read?: boolean) => void;
 }
 
-export default function AdminNotificationCenter({ users = [], projects = [] }: Props) {
+export default function AdminNotificationCenter({ 
+  users = [], 
+  projects = [],
+  markAllRead: controlledMarkAllRead,
+  onToggleMarkAllRead
+}: Props) {
   const [filterCategory, setFilterCategory] = useState<"ALL" | "DEMO" | "SIGNUPS" | "PAYMENTS" | "PROJECTS">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-  const [markAllRead, setMarkAllRead] = useState(false);
+  const [localMarkAllRead, setLocalMarkAllRead] = useState(false);
+
+  const markAllRead = controlledMarkAllRead !== undefined ? controlledMarkAllRead : localMarkAllRead;
+
+  const handleToggleMarkRead = () => {
+    const nextVal = !markAllRead;
+    setLocalMarkAllRead(nextVal);
+    if (onToggleMarkAllRead) {
+      onToggleMarkAllRead(nextVal);
+    }
+  };
 
   // CONSTRUCT UNIFIED REAL-TIME NOTIFICATIONS FEED FROM DATABASE RECORDS
   const systemNotifications = useMemo(() => {
@@ -154,7 +171,7 @@ export default function AdminNotificationCenter({ users = [], projects = [] }: P
             <div className="flex items-center gap-2 shrink-0">
               <button
                 type="button"
-                onClick={() => setMarkAllRead(!markAllRead)}
+                onClick={handleToggleMarkRead}
                 className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-black rounded-2xl border border-slate-700 shadow-md transition-all cursor-pointer flex items-center gap-2"
               >
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />

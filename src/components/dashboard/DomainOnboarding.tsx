@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import PageHelpTooltip from "@/components/ui/PageHelpTooltip";
 import {
@@ -117,6 +117,8 @@ export default function DomainOnboarding({
   const [domainSearch, setDomainSearch] = useState("");
   const [domainStatusFilter, setDomainStatusFilter] = useState("all");
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+  const statusDropdownRef = useRef<HTMLDivElement>(null);
 
   // Modal states
   const [activeModal, setActiveModal] = useState<{
@@ -177,9 +179,51 @@ export default function DomainOnboarding({
     return () => clearInterval(interval);
   }, [fetchFreshDomains]);
 
+  // Real-time calculation of domain counts per status
+  const statusCounts = useMemo(() => {
+    let expired = 0;
+    let trial = 0;
+    let active = 0;
+    let pending = 0;
+    const now = new Date();
+
+    domains.forEach((d) => {
+      const createdAtDate = d.createdAt ? new Date(d.createdAt) : new Date();
+      const endDate = d.expiresAt
+        ? new Date(d.expiresAt)
+        : new Date(createdAtDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const isExpired = now > endDate;
+      const isVerified = d.verified || d.status === "ACTIVE" || d.status === "VERIFIED";
+
+      if (isVerified) {
+        active++;
+      } else if (isExpired) {
+        expired++;
+      } else {
+        trial++;
+      }
+      if (!isVerified) {
+        pending++;
+      }
+    });
+
+    return {
+      all: domains.length,
+      ACTIVE: active,
+      TRIAL: trial,
+      EXPIRED: expired,
+      PENDING: pending
+    };
+  }, [domains]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = () => setOpenDropdownId(null);
+    const handleClickOutside = (e: MouseEvent) => {
+      setOpenDropdownId(null);
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) {
+        setIsStatusDropdownOpen(false);
+      }
+    };
     window.addEventListener("click", handleClickOutside);
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
@@ -528,22 +572,82 @@ export default function DomainOnboarding({
               />
             </div>
 
-            {/* Status Dropdown */}
-            <div className="relative min-w-[140px]">
-              <select
-                value={domainStatusFilter}
-                onChange={(e) => setDomainStatusFilter(e.target.value)}
-                className="w-full appearance-none px-4 py-2.5 pr-8 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-[#0066ff] focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer font-sans"
-              >
-                <option value="all">Status ⌄</option>
-                <option value="all">All statuses</option>
-                <option value="EXPIRED">Expired</option>
-                <option value="TRIAL">7-day trial</option>
-                <option value="ACTIVE">Active / Verified</option>
-                <option value="PENDING">Pending</option>
-              </select>
-              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
+            {/* Custom Modern SaaS Status Filter Dropdown */}
+            {(() => {
+              const statusFilterOptions = [
+                { value: "all", label: "All statuses", color: "bg-slate-400", count: statusCounts.all },
+                { value: "ACTIVE", label: "Active / Verified", color: "bg-emerald-500", count: statusCounts.ACTIVE },
+                { value: "TRIAL", label: "7-day trial", color: "bg-amber-500", count: statusCounts.TRIAL },
+                { value: "EXPIRED", label: "Expired", color: "bg-rose-500", count: statusCounts.EXPIRED },
+                { value: "PENDING", label: "Pending", color: "bg-blue-500", count: statusCounts.PENDING },
+              ];
+              const currentStatusOption = statusFilterOptions.find(o => o.value === domainStatusFilter) || statusFilterOptions[0];
+
+              return (
+                <div ref={statusDropdownRef} className="relative min-w-[170px]" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    type="button"
+                    onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
+                    className={`w-full flex items-center justify-between gap-2.5 px-4 py-2.5 bg-white border rounded-xl text-xs font-black transition-all cursor-pointer shadow-xs ${
+                      isStatusDropdownOpen 
+                        ? "border-[#0066ff] ring-2 ring-blue-100 text-[#0066ff]" 
+                        : domainStatusFilter !== "all" 
+                        ? "border-blue-300 text-blue-900 bg-blue-50/40" 
+                        : "border-slate-200 text-slate-700 hover:border-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <span className={`w-2 h-2 rounded-full shrink-0 ${currentStatusOption.color}`} />
+                      <span className="truncate">{currentStatusOption.label}</span>
+                    </div>
+                    <ChevronDown className={`w-4 h-4 shrink-0 text-slate-400 transition-transform duration-200 ${isStatusDropdownOpen ? "rotate-180 text-[#0066ff]" : ""}`} />
+                  </button>
+
+                  {/* Dropdown Popover Menu */}
+                  {isStatusDropdownOpen && (
+                    <div className="absolute left-0 mt-2 w-60 rounded-2xl bg-white border border-slate-200/90 shadow-2xl p-1.5 z-50 text-left animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Filter Status</span>
+                        <span className="text-[10px] font-bold text-slate-400">{domains.length} total</span>
+                      </div>
+                      <div className="py-1 space-y-0.5">
+                        {statusFilterOptions.map((opt) => {
+                          const isSelected = domainStatusFilter === opt.value;
+                          return (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => {
+                                setDomainStatusFilter(opt.value);
+                                setIsStatusDropdownOpen(false);
+                              }}
+                              className={`w-full px-3 py-2 rounded-xl text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer border-none ${
+                                isSelected
+                                  ? "bg-blue-50 text-[#0066ff] font-extrabold"
+                                  : "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <span className={`w-2 h-2 rounded-full shrink-0 ${opt.color}`} />
+                                <span>{opt.label}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${
+                                  isSelected ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"
+                                }`}>
+                                  {opt.count}
+                                </span>
+                                {isSelected && <Check className="w-3.5 h-3.5 text-[#0066ff] stroke-[3]" />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
 
           {(domainSearch || domainStatusFilter !== "all") && (
