@@ -5,7 +5,13 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { Mail, AlertCircle, ShieldCheck, ArrowRight, CheckCircle2 } from "lucide-react";
+import {
+  EnvelopeIcon as Mail,
+  ExclamationCircleIcon as AlertCircle,
+  ShieldCheckIcon as ShieldCheck,
+  ArrowRightIcon as ArrowRight,
+  CheckCircleIcon as CheckCircle2
+} from "@heroicons/react/24/solid";
 
 export default function DemandLetterGuidePage() {
   return (

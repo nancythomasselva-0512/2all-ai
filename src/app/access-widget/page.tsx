@@ -4,9 +4,20 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  ArrowRight, Check, CheckCircle2, Shield, Zap, Globe2,
-  BarChart3, FileText, Users, Eye, Lock, Settings, ChevronDown
-} from "lucide-react";
+  ArrowRightIcon as ArrowRight,
+  CheckIcon as Check,
+  CheckCircleIcon as CheckCircle2,
+  ShieldCheckIcon as Shield,
+  BoltIcon as Zap,
+  GlobeAltIcon as Globe2,
+  ChartBarIcon as BarChart3,
+  DocumentTextIcon as FileText,
+  UserGroupIcon as Users,
+  EyeIcon as Eye,
+  LockClosedIcon as Lock,
+  Cog6ToothIcon as Settings,
+  ChevronDownIcon as ChevronDown
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import DemoModal from "@/components/marketing/DemoModal";
 import Navbar from "@/components/marketing/Navbar";

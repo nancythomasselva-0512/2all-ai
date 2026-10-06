@@ -3,33 +3,33 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Users,
-  Globe,
-  Award,
-  DollarSign,
-  TrendingUp,
-  ShieldCheck,
-  UserCheck,
-  CreditCard,
-  Zap,
-  PieChart as PieIcon,
-  Crown,
-  Activity,
-  Calendar,
-  Filter,
-  Search,
-  RotateCcw,
-  SlidersHorizontal,
-  Check,
-  Sparkles,
-  ArrowUpRight,
-  MoreHorizontal,
-  ExternalLink,
-  Layers,
-  MapPin,
-  Flame,
-  ChevronDown
-} from "lucide-react";
+  UserGroupIcon as Users,
+  GlobeAltIcon as Globe,
+  TrophyIcon as Award,
+  CurrencyDollarIcon as DollarSign,
+  ArrowTrendingUpIcon as TrendingUp,
+  ShieldCheckIcon as ShieldCheck,
+  UserIcon as UserCheck,
+  CreditCardIcon as CreditCard,
+  BoltIcon as Zap,
+  ChartPieIcon as PieIcon,
+  TrophyIcon as Crown,
+  ChartBarIcon as Activity,
+  CalendarDaysIcon as Calendar,
+  FunnelIcon as Filter,
+  MagnifyingGlassIcon as Search,
+  ArrowPathIcon as RotateCcw,
+  AdjustmentsHorizontalIcon as SlidersHorizontal,
+  CheckIcon as Check,
+  SparklesIcon as Sparkles,
+  ArrowUpRightIcon as ArrowUpRight,
+  EllipsisHorizontalIcon as MoreHorizontal,
+  ArrowTopRightOnSquareIcon as ExternalLink,
+  Square3Stack3DIcon as Layers,
+  MapPinIcon as MapPin,
+  FireIcon as Flame,
+  ChevronDownIcon as ChevronDown
+} from "@heroicons/react/24/solid";
 import {
   AreaChart,
   Area,
@@ -237,10 +237,21 @@ export default function AdminDashboardPage({
       }
 
       if (searchQuery.trim() !== "") {
-        const q = searchQuery.toLowerCase();
+        const q = searchQuery.toLowerCase().trim();
         const matchName = u.name?.toLowerCase().includes(q) ?? false;
         const matchEmail = u.email?.toLowerCase().includes(q) ?? false;
-        if (!matchName && !matchEmail) return false;
+        const matchPhone = u.phone?.toLowerCase().includes(q) ?? false;
+        const matchPlan = u.plan?.toLowerCase().includes(q) ?? false;
+        const matchRole = u.role?.toLowerCase().includes(q) ?? false;
+        const matchPayment = u.paymentStatus?.toLowerCase().includes(q) ?? false;
+        const matchDomain = projects.some(
+          (p: any) =>
+            (p.user?.email === u.email || p.userId === u.id) &&
+            ((p.url || "").toLowerCase().includes(q) || (p.name || "").toLowerCase().includes(q))
+        );
+        if (!matchName && !matchEmail && !matchPhone && !matchPlan && !matchRole && !matchPayment && !matchDomain) {
+          return false;
+        }
       }
 
       if (planFilter !== "ALL") {
@@ -266,7 +277,7 @@ export default function AdminDashboardPage({
 
       return true;
     });
-  }, [users, timeframe, searchQuery, planFilter, paymentFilter, roleFilter]);
+  }, [users, projects, timeframe, searchQuery, planFilter, paymentFilter, roleFilter]);
 
   // DYNAMICALLY FILTERED PROJECTS DATASET
   const filteredProjects = useMemo(() => {
@@ -288,11 +299,12 @@ export default function AdminDashboardPage({
       }
 
       if (searchQuery.trim() !== "") {
-        const q = searchQuery.toLowerCase();
-        const matchName = p.name.toLowerCase().includes(q);
-        const matchUrl = p.url.toLowerCase().includes(q);
-        const matchUser = p.user?.email?.toLowerCase().includes(q) ?? false;
-        if (!matchName && !matchUrl && !matchUser) return false;
+        const q = searchQuery.toLowerCase().trim();
+        const matchName = p.name?.toLowerCase().includes(q) ?? false;
+        const matchUrl = p.url?.toLowerCase().includes(q) ?? false;
+        const matchUserEmail = p.user?.email?.toLowerCase().includes(q) ?? false;
+        const matchUserName = p.user?.name?.toLowerCase().includes(q) ?? false;
+        if (!matchName && !matchUrl && !matchUserEmail && !matchUserName) return false;
       }
 
       return true;
@@ -602,7 +614,7 @@ export default function AdminDashboardPage({
   }, [proUsers, enterpriseUsers, starterUsers, freeUsers]);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300 text-left font-sans bg-slate-50/50 p-2 sm:p-4 rounded-3xl">
+    <div className="space-y-8 animate-in fade-in duration-300 text-left super-admin-typography">
 
       {/* HEADER BANNER WITH EXTREMELY VISIBLE CONTROLS */}
       <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-blue-950 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-2xl border border-slate-800">
@@ -671,14 +683,26 @@ export default function AdminDashboardPage({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
               <div className="lg:col-span-4 relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Search by name, email, or domain..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all shadow-inner"
+                  autoComplete="off"
+                  spellCheck={false}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-8 py-2.5 text-xs font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all shadow-inner"
                 />
+                {searchQuery.trim() !== "" && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs font-black cursor-pointer bg-transparent border-none p-0.5"
+                    title="Clear search"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
 
               <div className="lg:col-span-3">
@@ -726,188 +750,195 @@ export default function AdminDashboardPage({
         </div>
       </div>
 
-      {/* TOP REAL-DATA METRIC CARDS BAR (6 CLICKABLE INTERACTIVE KPI TABS) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">
-        
-        {/* Card 1: Total Users (Clickable Tab to User Database) */}
-        <button
-          type="button"
-          onClick={() => goToMenu("users")}
-          title="Click to open User Database"
-          className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-blue-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
-        >
-          <div className="flex items-center justify-between gap-1.5">
-            <span className="text-[11px] font-black text-slate-600 uppercase tracking-wider truncate group-hover:text-blue-600 transition-colors">
-              Total Users
-            </span>
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-blue-50 border border-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-sm">
-              <Users className="w-4 h-4 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-baseline justify-between gap-1">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
-                {totalUsers}
+      {/* TOP REAL-DATA METRIC CARDS BAR (3 ABOVE & 3 BELOW) */}
+      <div className="space-y-4">
+        {/* ROW 1: 3 CARDS ABOVE */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          {/* Card 1: Total Users (Clickable Tab to User Database) */}
+          <button
+            type="button"
+            onClick={() => goToMenu("users")}
+            title="Click to open User Database"
+            className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-blue-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
+          >
+            <div className="flex items-start justify-between gap-2 min-h-[32px]">
+              <span className="text-xs font-black text-slate-600 uppercase tracking-wider group-hover:text-blue-600 transition-colors leading-tight">
+                Total Users
               </span>
-              <span className="text-xs font-bold text-slate-400 group-hover:text-blue-600 transition-colors shrink-0">
-                ↗
-              </span>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-blue-50 border border-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-sm">
+                <Users className="w-4 h-4 stroke-[2.5]" />
+              </div>
             </div>
-            <p className="text-[11px] font-extrabold text-blue-600 mt-2 truncate">
-              ● 100% Real Accounts
-            </p>
-          </div>
-        </button>
+            <div>
+              <div className="flex items-baseline justify-between gap-1">
+                <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
+                  {totalUsers}
+                </span>
+                <span className="text-xs font-bold text-slate-400 group-hover:text-blue-600 transition-colors shrink-0">
+                  ↗
+                </span>
+              </div>
+              <p className="text-xs font-extrabold text-blue-600 mt-2">
+                ● 100% Real Accounts
+              </p>
+            </div>
+          </button>
 
-        {/* Card 2: Free Tier Users (Clickable Tab to User Database) */}
-        <button
-          type="button"
-          onClick={() => goToMenu("users")}
-          title="Click to open User Database"
-          className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-slate-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
-        >
-          <div className="flex items-center justify-between gap-1.5">
-            <span className="text-[11px] font-black text-slate-600 uppercase tracking-wider truncate group-hover:text-slate-900 transition-colors">
-              Free Users
-            </span>
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-slate-100 border border-slate-200 text-slate-600 group-hover:bg-slate-700 group-hover:text-white group-hover:shadow-sm">
-              <UserCheck className="w-4 h-4 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-baseline justify-between gap-1">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
-                {freeUsers}
+          {/* Card 2: Free Tier Users (Clickable Tab to User Database) */}
+          <button
+            type="button"
+            onClick={() => goToMenu("users")}
+            title="Click to open User Database"
+            className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-slate-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
+          >
+            <div className="flex items-start justify-between gap-2 min-h-[32px]">
+              <span className="text-xs font-black text-slate-600 uppercase tracking-wider group-hover:text-slate-900 transition-colors leading-tight">
+                Free Users
               </span>
-              <span className="text-xs font-bold text-slate-400 group-hover:text-slate-700 transition-colors shrink-0">
-                ↗
-              </span>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-slate-100 border border-slate-200 text-slate-600 group-hover:bg-slate-700 group-hover:text-white group-hover:shadow-sm">
+                <UserCheck className="w-4 h-4 stroke-[2.5]" />
+              </div>
             </div>
-            <p className="text-[11px] font-bold text-slate-500 mt-2 truncate">
-              {totalUsers > 0 ? `${Math.round((freeUsers / totalUsers) * 100)}% of total users` : "0% of total users"}
-            </p>
-          </div>
-        </button>
+            <div>
+              <div className="flex items-baseline justify-between gap-1">
+                <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
+                  {freeUsers}
+                </span>
+                <span className="text-xs font-bold text-slate-400 group-hover:text-slate-700 transition-colors shrink-0">
+                  ↗
+                </span>
+              </div>
+              <p className="text-xs font-bold text-slate-500 mt-2">
+                {totalUsers > 0 ? `${Math.round((freeUsers / totalUsers) * 100)}% of total users` : "0% of total users"}
+              </p>
+            </div>
+          </button>
 
-        {/* Card 3: Paid Subscribers (Clickable Tab to User Database) */}
-        <button
-          type="button"
-          onClick={() => goToMenu("users")}
-          title="Click to open User Database"
-          className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-indigo-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
-        >
-          <div className="flex items-center justify-between gap-1.5">
-            <span className="text-[11px] font-black text-slate-600 uppercase tracking-wider truncate group-hover:text-indigo-600 transition-colors">
-              Paid Subscribers
-            </span>
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-indigo-50 border border-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white group-hover:shadow-sm">
-              <Crown className="w-4 h-4 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-baseline justify-between gap-1">
-              <span className="text-2xl sm:text-3xl font-black text-indigo-950 tracking-tight leading-none">
-                {paidUsersCount}
+          {/* Card 3: Paid Subscribers (Clickable Tab to User Database) */}
+          <button
+            type="button"
+            onClick={() => goToMenu("users")}
+            title="Click to open User Database"
+            className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-indigo-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
+          >
+            <div className="flex items-start justify-between gap-2 min-h-[32px]">
+              <span className="text-xs font-black text-slate-600 uppercase tracking-wider group-hover:text-indigo-600 transition-colors leading-tight">
+                Paid Subscribers
               </span>
-              <span className="text-xs font-bold text-slate-400 group-hover:text-indigo-600 transition-colors shrink-0">
-                ↗
-              </span>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-indigo-50 border border-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white group-hover:shadow-sm">
+                <Crown className="w-4 h-4 stroke-[2.5]" />
+              </div>
             </div>
-            <p className="text-[11px] font-bold text-indigo-600 mt-2 truncate">
-              PRO ({proUsers}) | ENT ({enterpriseUsers})
-            </p>
-          </div>
-        </button>
+            <div>
+              <div className="flex items-baseline justify-between gap-1">
+                <span className="text-2xl sm:text-3xl font-black text-indigo-950 tracking-tight leading-none">
+                  {paidUsersCount}
+                </span>
+                <span className="text-xs font-bold text-slate-400 group-hover:text-indigo-600 transition-colors shrink-0">
+                  ↗
+                </span>
+              </div>
+              <p className="text-xs font-bold text-indigo-600 mt-2">
+                PRO ({proUsers}) | ENT ({enterpriseUsers})
+              </p>
+            </div>
+          </button>
+        </div>
 
-        {/* Card 4: Active Accounts (Clickable Tab to License Owner Info) */}
-        <button
-          type="button"
-          onClick={() => goToMenu("license-owner")}
-          title="Click to open License Owner Info"
-          className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-emerald-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
-        >
-          <div className="flex items-center justify-between gap-1.5">
-            <span className="text-[11px] font-black text-slate-600 uppercase tracking-wider truncate group-hover:text-emerald-600 transition-colors">
-              Active Accounts
-            </span>
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-emerald-50 border border-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white group-hover:shadow-sm">
-              <Zap className="w-4 h-4 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-baseline justify-between gap-1">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
-                {activeUsers}
-              </span>
-              <span className="text-xs font-bold text-slate-400 group-hover:text-emerald-600 transition-colors shrink-0">
-                ↗
-              </span>
-            </div>
-            <p className="text-[11px] font-bold text-emerald-600 mt-2 truncate">
-              ● Retained (30 Days)
-            </p>
-          </div>
-        </button>
+        {/* ROW 2: 3 CARDS BELOW */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        {/* Card 5: Monitored Workspaces (Clickable Tab to Customer Workspace) */}
-        <button
-          type="button"
-          onClick={() => goToMenu("domains")}
-          title="Click to open Customer Workspace"
-          className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-cyan-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
-        >
-          <div className="flex items-center justify-between gap-1.5">
-            <span className="text-[11px] font-black text-slate-600 uppercase tracking-wider truncate group-hover:text-cyan-600 transition-colors">
-              Active Domains
-            </span>
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-cyan-50 border border-cyan-100 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white group-hover:shadow-sm">
-              <Globe className="w-4 h-4 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-baseline justify-between gap-1">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
-                {totalMonitoredDomains}
+          {/* Card 4: Active Accounts (Clickable Tab to License Owner Info) */}
+          <button
+            type="button"
+            onClick={() => goToMenu("license-owner")}
+            title="Click to open License Owner Info"
+            className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-emerald-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
+          >
+            <div className="flex items-start justify-between gap-2 min-h-[32px]">
+              <span className="text-xs font-black text-slate-600 uppercase tracking-wider group-hover:text-emerald-600 transition-colors leading-tight">
+                Active Accounts
               </span>
-              <span className="text-xs font-bold text-slate-400 group-hover:text-cyan-600 transition-colors shrink-0">
-                ↗
-              </span>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-emerald-50 border border-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white group-hover:shadow-sm">
+                <Zap className="w-4 h-4 stroke-[2.5]" />
+              </div>
             </div>
-            <p className="text-[11px] font-bold text-cyan-600 mt-2 truncate">
-              {filteredProjects.length} Projects Integrated
-            </p>
-          </div>
-        </button>
+            <div>
+              <div className="flex items-baseline justify-between gap-1">
+                <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
+                  {activeUsers}
+                </span>
+                <span className="text-xs font-bold text-slate-400 group-hover:text-emerald-600 transition-colors shrink-0">
+                  ↗
+                </span>
+              </div>
+              <p className="text-xs font-bold text-emerald-600 mt-2">
+                ● Retained (30 Days)
+              </p>
+            </div>
+          </button>
 
-        {/* Card 6: Estimated Revenue Yield (Clickable Tab to Payments Gateway) */}
-        <button
-          type="button"
-          onClick={() => goToMenu("payments")}
-          title="Click to open Payments Gateway"
-          className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-amber-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
-        >
-          <div className="flex items-center justify-between gap-1.5">
-            <span className="text-[11px] font-black text-slate-600 uppercase tracking-wider truncate group-hover:text-amber-600 transition-colors">
-              Est. Monthly MRR
-            </span>
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-amber-50 border border-amber-100 text-amber-600 group-hover:bg-amber-600 group-hover:text-white group-hover:shadow-sm">
-              <DollarSign className="w-4 h-4 stroke-[2.5]" />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-baseline justify-between gap-1">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
-                ${calculatedMRR}
+          {/* Card 5: Monitored Workspaces (Clickable Tab to Customer Workspace) */}
+          <button
+            type="button"
+            onClick={() => goToMenu("domains")}
+            title="Click to open Customer Workspace"
+            className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-cyan-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
+          >
+            <div className="flex items-start justify-between gap-2 min-h-[32px]">
+              <span className="text-xs font-black text-slate-600 uppercase tracking-wider group-hover:text-cyan-600 transition-colors leading-tight">
+                Active Domains
               </span>
-              <span className="text-xs font-bold text-slate-400 group-hover:text-amber-600 transition-colors shrink-0">
-                ↗
-              </span>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-cyan-50 border border-cyan-100 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white group-hover:shadow-sm">
+                <Globe className="w-4 h-4 stroke-[2.5]" />
+              </div>
             </div>
-            <p className="text-[11px] font-bold text-amber-600 mt-2 truncate">
-              Live Subscription MRR
-            </p>
-          </div>
-        </button>
+            <div>
+              <div className="flex items-baseline justify-between gap-1">
+                <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
+                  {totalMonitoredDomains}
+                </span>
+                <span className="text-xs font-bold text-slate-400 group-hover:text-cyan-600 transition-colors shrink-0">
+                  ↗
+                </span>
+              </div>
+              <p className="text-xs font-bold text-cyan-600 mt-2">
+                {filteredProjects.length} Projects Integrated
+              </p>
+            </div>
+          </button>
+
+          {/* Card 6: Estimated Revenue Yield (Clickable Tab to Payments Gateway) */}
+          <button
+            type="button"
+            onClick={() => goToMenu("payments")}
+            title="Click to open Payments Gateway"
+            className="w-full text-left bg-white rounded-2xl p-4 sm:p-5 shadow-sm space-y-2.5 transition-all cursor-pointer border border-slate-200/90 hover:border-amber-500 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden"
+          >
+            <div className="flex items-start justify-between gap-2 min-h-[32px]">
+              <span className="text-xs font-black text-slate-600 uppercase tracking-wider group-hover:text-amber-600 transition-colors leading-tight">
+                Est. Monthly MRR
+              </span>
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all bg-amber-50 border border-amber-100 text-amber-600 group-hover:bg-amber-600 group-hover:text-white group-hover:shadow-sm">
+                <DollarSign className="w-4 h-4 stroke-[2.5]" />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-baseline justify-between gap-1">
+                <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
+                  ${calculatedMRR}
+                </span>
+                <span className="text-xs font-bold text-slate-400 group-hover:text-amber-600 transition-colors shrink-0">
+                  ↗
+                </span>
+              </div>
+              <p className="text-xs font-bold text-amber-600 mt-2">
+                Live Subscription MRR
+              </p>
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* SECTION 1: TOP REVENUE & RADAR REPORT ROW */}

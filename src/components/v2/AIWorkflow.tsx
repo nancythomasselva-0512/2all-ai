@@ -1,7 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FileText, Cpu, Globe, Mic, CheckCircle } from "lucide-react";
+import { 
+  DocumentTextIcon as FileText, 
+  CpuChipIcon as Cpu, 
+  GlobeAltIcon as Globe, 
+  MicrophoneIcon as Mic, 
+  CheckCircleIcon as CheckCircle 
+} from "@heroicons/react/24/solid";
 
 export default function AIWorkflow() {
   const steps = [

@@ -1,7 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Globe, Shield, Handshake, CheckCircle2, ArrowRight } from "lucide-react";
+import { 
+  GlobeAltIcon as Globe, 
+  ShieldCheckIcon as Shield, 
+  UserGroupIcon as Handshake, 
+  CheckCircleIcon as CheckCircle2, 
+  ArrowRightIcon as ArrowRight 
+} from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 export default function AudienceSection() {

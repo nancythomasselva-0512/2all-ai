@@ -5,7 +5,16 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { Check, Copy, ArrowRight, ShieldCheck, Zap, Laptop, Code2, Sparkles } from "lucide-react";
+import {
+  CheckIcon as Check,
+  DocumentDuplicateIcon as Copy,
+  ArrowRightIcon as ArrowRight,
+  ShieldCheckIcon as ShieldCheck,
+  BoltIcon as Zap,
+  ComputerDesktopIcon as Laptop,
+  CodeBracketIcon as Code2,
+  SparklesIcon as Sparkles
+} from "@heroicons/react/24/solid";
 
 export default function WordPressIntegrationPage() {
   const [copied, setCopied] = useState(false);

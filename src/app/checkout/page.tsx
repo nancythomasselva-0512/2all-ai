@@ -4,7 +4,14 @@ import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession, SessionProvider } from "next-auth/react";
 import Link from "next/link";
-import { Loader2, CreditCard, ShieldCheck, ArrowLeft, AlertCircle, Info } from "lucide-react";
+import {
+  ArrowPathIcon as Loader2,
+  CreditCardIcon as CreditCard,
+  ShieldCheckIcon as ShieldCheck,
+  ArrowLeftIcon as ArrowLeft,
+  ExclamationCircleIcon as AlertCircle,
+  InformationCircleIcon as Info
+} from "@heroicons/react/24/solid";
 import Logo from "@/components/ui/Logo";
 
 // Helper to dynamically load external scripts

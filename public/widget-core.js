@@ -5,6 +5,15 @@
  * Matches Reference Implementation 1:1 Across Home, Modes, Features, Vision, AI Assist.
  */
 (function () {
+  if (window.__2ALL_REVOKED__ || (window.__2ALL_CONFIG__ && (window.__2ALL_CONFIG__.revoked || window.__2ALL_CONFIG__.disabled))) {
+    console.warn("[2all.ai] Accessibility widget execution aborted: API key is revoked.");
+    var existingRoot = document.getElementById("2all-accessibility-widget-root") || document.querySelector(".twoall-widget-container");
+    if (existingRoot && existingRoot.parentNode) {
+      existingRoot.parentNode.removeChild(existingRoot);
+    }
+    return;
+  }
+
   if (window.__2ALL_CORE_INITIALIZED__) return;
   window.__2ALL_CORE_INITIALIZED__ = true;
 

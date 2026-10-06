@@ -3,15 +3,15 @@
 import React from "react";
 import Link from "next/link";
 import { 
-  Info, 
-  ArrowLeftRight, 
-  Briefcase, 
-  Heart,
-  Headphones,
-  TrendingUp,
-  ArrowRight,
-  Play
-} from "lucide-react";
+  InformationCircleIcon as Info, 
+  ArrowsRightLeftIcon as ArrowLeftRight, 
+  BriefcaseIcon as Briefcase, 
+  HeartIcon as Heart,
+  SpeakerWaveIcon as Headphones,
+  ArrowTrendingUpIcon as TrendingUp,
+  ArrowRightIcon as ArrowRight,
+  PlayIcon as Play
+} from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MegamenuProps {

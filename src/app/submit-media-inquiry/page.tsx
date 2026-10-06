@@ -5,7 +5,13 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { Mail, Send, CheckCircle2, Download, Newspaper } from "lucide-react";
+import {
+  EnvelopeIcon as Mail,
+  PaperAirplaneIcon as Send,
+  CheckCircleIcon as CheckCircle2,
+  ArrowDownTrayIcon as Download,
+  NewspaperIcon as Newspaper
+} from "@heroicons/react/24/solid";
 
 export default function SubmitMediaInquiryPage() {
   const [submitted, setSubmitted] = useState(false);

@@ -3,7 +3,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAccessibility } from "@/context/AccessibilityContext";
-import { Send, Bot, Sparkles, User, HelpCircle, Volume2, ShieldCheck, DollarSign, Code2, Mail } from "lucide-react";
+import { 
+  PaperAirplaneIcon as Send, 
+  CpuChipIcon as Bot, 
+  SparklesIcon as Sparkles, 
+  UserIcon as User, 
+  QuestionMarkCircleIcon as HelpCircle, 
+  SpeakerWaveIcon as Volume2, 
+  ShieldCheckIcon as ShieldCheck, 
+  CurrencyDollarIcon as DollarSign, 
+  CodeBracketIcon as Code2, 
+  EnvelopeIcon as Mail 
+} from "@heroicons/react/24/solid";
 
 interface AIAssistantSectionProps {
   setActiveTab?: (tab: any) => void;

@@ -65,6 +65,7 @@
     new Date().getTime();
 
   function loadCore(scriptPath) {
+    if (window.__2ALL_REVOKED__) return;
     if (window.__2ALL_CORE_INJECTED__) return;
     window.__2ALL_CORE_INJECTED__ = true;
     var fullScriptUrl = scriptPath.indexOf("http") === 0 ? scriptPath : ((apiUrl || "") + scriptPath);
@@ -82,35 +83,52 @@
   xhr.open("GET", bootstrapUrl, true);
   xhr.timeout = 5000;
   xhr.ontimeout = function () {
-    console.warn("[2all.ai] Bootstrap timed out, loading standalone widget.");
-    loadCore("/widget-core.js");
+    console.warn("[2all.ai] Bootstrap timed out.");
+    if (domain === "localhost" || domain === "127.0.0.1") {
+      loadCore("/widget-core.js");
+    }
   };
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
+      if (xhr.status === 403 || xhr.status === 401) {
+        window.__2ALL_REVOKED__ = true;
+        var errRes = null;
+        try { errRes = JSON.parse(xhr.responseText); } catch(e) {}
+        console.warn("[2all.ai] Accessibility widget disabled: " + ((errRes && errRes.message) || "API key has been revoked by the administrator."));
+        return;
+      }
+
       if (xhr.status === 200) {
         try {
           var res = JSON.parse(xhr.responseText);
+          if (res.revoked || res.error === "REVOKED_API_KEY" || res.error === "DOMAIN_KEY_REVOKED" || res.status === "REVOKED") {
+            window.__2ALL_REVOKED__ = true;
+            console.warn("[2all.ai] Accessibility widget disabled: " + (res.message || "API key has been revoked."));
+            return;
+          }
           if (res.success) {
             window.__2ALL_CONFIG__ = res.config || {};
             window.__2ALL_TENANT__ = res.tenantId;
             window.__2ALL_DOMAIN__ = res.domain;
             loadCore(res.scriptUrl || "/widget-core.js");
           } else {
-            console.warn("[2all.ai]", res.message || res.error);
-            loadCore("/widget-core.js");
+            console.warn("[2all.ai] Accessibility widget halted:", res.message || res.error);
+            return;
           }
         } catch (e) {
-          loadCore("/widget-core.js");
+          console.warn("[2all.ai] Failed to parse bootstrap response:", e);
         }
       } else {
-        console.warn("[2all.ai] Bootstrap returned " + xhr.status + ", loading standalone widget.");
-        loadCore("/widget-core.js");
+        console.warn("[2all.ai] Bootstrap returned " + xhr.status + ". Widget disabled.");
       }
     }
   };
   try {
     xhr.send();
   } catch (err) {
-    loadCore("/widget-core.js");
+    console.warn("[2all.ai] Bootstrap connection error:", err);
+    if (domain === "localhost" || domain === "127.0.0.1") {
+      loadCore("/widget-core.js");
+    }
   }
 })();

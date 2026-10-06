@@ -4,17 +4,17 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
-  Globe,
-  Accessibility,
-  MessageSquare,
-  Check,
-  Loader2,
-  ChevronRight,
-  ChevronLeft,
-  Eye,
-  EyeOff,
-  CheckCircle2
-} from "lucide-react";
+  GlobeAltIcon as Globe,
+  UserCircleIcon as Accessibility,
+  ChatBubbleOvalLeftEllipsisIcon as MessageSquare,
+  CheckIcon as Check,
+  ArrowPathIcon as Loader2,
+  ChevronRightIcon as ChevronRight,
+  ChevronLeftIcon as ChevronLeft,
+  EyeIcon as Eye,
+  EyeSlashIcon as EyeOff,
+  CheckCircleIcon as CheckCircle2
+} from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 import { signIn } from "next-auth/react";
 import Logo from "@/components/ui/Logo";

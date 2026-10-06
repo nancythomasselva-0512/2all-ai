@@ -1,14 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import DomainOnboarding from "@/components/dashboard/DomainOnboarding";
+import DomainOnboarding, { UserAccountInfo } from "@/components/dashboard/DomainOnboarding";
 
 interface DomainsClientProps {
   initialDomains: any[];
   userName: string;
+  accountInfo?: UserAccountInfo;
 }
 
-export default function DomainsClient({ initialDomains, userName }: DomainsClientProps) {
+export default function DomainsClient({ initialDomains, userName, accountInfo }: DomainsClientProps) {
   const router = useRouter();
 
   const handleDomainClick = (domain: any) => {
@@ -19,6 +20,7 @@ export default function DomainsClient({ initialDomains, userName }: DomainsClien
     <DomainOnboarding
       initialDomains={initialDomains}
       userName={userName}
+      accountInfo={accountInfo}
       onDomainClick={handleDomainClick}
     />
   );

@@ -5,7 +5,13 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { Layers, ShieldCheck, CheckCircle2, ArrowRight, BookOpen } from "lucide-react";
+import {
+  Square3Stack3DIcon as Layers,
+  ShieldCheckIcon as ShieldCheck,
+  CheckCircleIcon as CheckCircle2,
+  ArrowRightIcon as ArrowRight,
+  BookOpenIcon as BookOpen
+} from "@heroicons/react/24/solid";
 
 export default function WcagGuidelinesPage() {
   const principles = [

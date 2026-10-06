@@ -5,26 +5,26 @@ import Navbar from '@/components/marketing/Navbar';
 import Footer from '@/components/marketing/Footer';
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Users, 
-  Sparkles, 
-  LineChart, 
-  Globe, 
-  Search, 
-  Award, 
-  FileText, 
-  CheckCircle, 
-  ArrowRight, 
-  ShieldCheck, 
-  TrendingUp, 
-  HeartHandshake,
-  Cpu,
-  Layers,
-  Check,
-  CheckCircle2,
-  Lock,
-  ChevronRight
-} from 'lucide-react';
+import {
+  UserGroupIcon as Users,
+  SparklesIcon as Sparkles,
+  ChartBarIcon as LineChart,
+  GlobeAltIcon as Globe,
+  MagnifyingGlassIcon as Search,
+  TrophyIcon as Award,
+  DocumentTextIcon as FileText,
+  CheckCircleIcon as CheckCircle,
+  ArrowRightIcon as ArrowRight,
+  ShieldCheckIcon as ShieldCheck,
+  ArrowTrendingUpIcon as TrendingUp,
+  HeartIcon as HeartHandshake,
+  CpuChipIcon as Cpu,
+  Square3Stack3DIcon as Layers,
+  CheckIcon as Check,
+  CheckCircleIcon as CheckCircle2,
+  LockClosedIcon as Lock,
+  ChevronRightIcon as ChevronRight
+} from "@heroicons/react/24/solid";
 
 export default function PlatformPage() {
   const [activeSupportDetail, setActiveSupportDetail] = useState(0);

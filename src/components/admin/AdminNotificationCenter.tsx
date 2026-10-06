@@ -2,30 +2,30 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import {
-  Bell,
-  BellRing,
-  CheckCircle2,
-  Clock,
-  Calendar,
-  UserPlus,
-  CreditCard,
-  Globe,
-  Search,
-  Filter,
-  Check,
-  RotateCcw,
-  Sparkles,
-  ExternalLink,
-  Zap,
-  Crown,
-  ShieldCheck,
-  Video,
-  Mail,
-  Phone,
-  User,
-  SlidersHorizontal,
-  Inbox
-} from "lucide-react";
+  BellIcon as Bell,
+  BellAlertIcon as BellRing,
+  CheckCircleIcon as CheckCircle2,
+  ClockIcon as Clock,
+  CalendarDaysIcon as Calendar,
+  UserPlusIcon as UserPlus,
+  CreditCardIcon as CreditCard,
+  GlobeAltIcon as Globe,
+  MagnifyingGlassIcon as Search,
+  FunnelIcon as Filter,
+  CheckIcon as Check,
+  ArrowPathIcon as RotateCcw,
+  SparklesIcon as Sparkles,
+  ArrowTopRightOnSquareIcon as ExternalLink,
+  BoltIcon as Zap,
+  TrophyIcon as Crown,
+  ShieldCheckIcon as ShieldCheck,
+  VideoCameraIcon as Video,
+  EnvelopeIcon as Mail,
+  PhoneIcon as Phone,
+  UserIcon as User,
+  AdjustmentsHorizontalIcon as SlidersHorizontal,
+  InboxIcon as Inbox
+} from "@heroicons/react/24/solid";
 import AdminDemoRequestsManager from "./AdminDemoRequestsManager";
 
 interface UserType {
@@ -64,85 +64,118 @@ export default function AdminNotificationCenter({
   const [filterCategory, setFilterCategory] = useState<"ALL" | "DEMO" | "SIGNUPS" | "PAYMENTS" | "PROJECTS">("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [localMarkAllRead, setLocalMarkAllRead] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const markAllRead = controlledMarkAllRead !== undefined ? controlledMarkAllRead : localMarkAllRead;
 
-  const handleToggleMarkRead = () => {
+  const fetchNotifications = async () => {
+    try {
+      const res = await fetch("/api/admin/notifications");
+      if (res.ok) {
+        const data = await res.json();
+        setNotifications(data.notifications || []);
+      }
+    } catch (e) {
+      console.error("Failed to load notifications:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const handleToggleMarkRead = async () => {
     const nextVal = !markAllRead;
     setLocalMarkAllRead(nextVal);
     if (onToggleMarkAllRead) {
       onToggleMarkAllRead(nextVal);
     }
+    try {
+      await fetch("/api/admin/notifications", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ read: nextVal }),
+      });
+      fetchNotifications();
+    } catch (e) {
+      console.error("Failed to update notification read status:", e);
+    }
   };
 
-  // CONSTRUCT UNIFIED REAL-TIME NOTIFICATIONS FEED FROM DATABASE RECORDS
+  // REAL INCOMING NOTIFICATIONS LIST ONLY
   const systemNotifications = useMemo(() => {
-    const list: any[] = [];
+    return notifications.map((n) => {
+      const isUnread = markAllRead ? false : !n.read;
+      const badgeBg =
+        n.type === "PAYMENT"
+          ? "bg-purple-100 text-purple-700 border-purple-200"
+          : n.type === "DEMO"
+          ? "bg-amber-100 text-amber-700 border-amber-200"
+          : n.type === "PROJECT"
+          ? "bg-cyan-100 text-cyan-700 border-cyan-200"
+          : "bg-blue-100 text-blue-700 border-blue-200";
 
-    // 1. User Signup Notifications
-    users.forEach((u) => {
-      const planUpper = (u.plan || "FREE").toUpperCase();
-      const isPaid = u.paymentStatus === "PAID" || planUpper === "PRO" || planUpper === "ENTERPRISE";
-      
-      list.push({
-        id: `user-${u.id}`,
-        type: isPaid ? "PAYMENT" : "SIGNUP",
-        category: "User Registration",
-        title: isPaid ? `New Paid Subscription: ${planUpper} Plan` : `New User Signup: ${u.name || "Customer"}`,
-        description: `Account created for ${u.email} on ${planUpper} plan. Status: ${isPaid ? "PAID" : "Active Free Tier"}.`,
-        user: { name: u.name, email: u.email, phone: u.phone },
-        plan: planUpper,
-        timestamp: u.createdAt,
-        unread: !markAllRead,
-        badgeBg: isPaid ? "bg-purple-100 text-purple-700 border-purple-200" : "bg-blue-100 text-blue-700 border-blue-200",
-        icon: isPaid ? Crown : UserPlus
-      });
+      const icon =
+        n.type === "PAYMENT"
+          ? Crown
+          : n.type === "DEMO"
+          ? Calendar
+          : n.type === "PROJECT"
+          ? Globe
+          : UserPlus;
+
+      return {
+        ...n,
+        unread: isUnread,
+        badgeBg,
+        icon,
+      };
     });
-
-    // 2. Project Asset Notifications
-    projects.forEach((p) => {
-      list.push({
-        id: `proj-${p.id}`,
-        type: "PROJECT",
-        category: "Project Asset",
-        title: `New Project Integrated: ${p.name}`,
-        description: `Domain URL ${p.url} monitored under account ${p.user?.email || "Unknown"}.`,
-        user: p.user,
-        url: p.url,
-        timestamp: p.createdAt,
-        unread: !markAllRead,
-        badgeBg: "bg-cyan-100 text-cyan-700 border-cyan-200",
-        icon: Globe
-      });
-    });
-
-    // Sort notifications newest first
-    return list.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }, [users, projects, markAllRead]);
+  }, [notifications, markAllRead]);
 
   // FILTERED NOTIFICATIONS LIST
   const filteredNotifications = useMemo(() => {
     return systemNotifications.filter((n) => {
+      if (filterCategory === "DEMO" && n.type !== "DEMO") return false;
       if (filterCategory === "SIGNUPS" && n.type !== "SIGNUP") return false;
       if (filterCategory === "PAYMENTS" && n.type !== "PAYMENT") return false;
       if (filterCategory === "PROJECTS" && n.type !== "PROJECT") return false;
 
       if (searchQuery.trim() !== "") {
-        const q = searchQuery.toLowerCase();
-        const matchTitle = n.title.toLowerCase().includes(q);
-        const matchDesc = n.description.toLowerCase().includes(q);
+        const q = searchQuery.toLowerCase().trim();
+        const matchTitle = n.title?.toLowerCase().includes(q) ?? false;
+        const matchDesc = n.description?.toLowerCase().includes(q) ?? false;
         const matchEmail = n.user?.email?.toLowerCase().includes(q) ?? false;
-        if (!matchTitle && !matchDesc && !matchEmail) return false;
+        const matchName = n.user?.name?.toLowerCase().includes(q) ?? false;
+        const matchPhone = n.user?.phone?.toLowerCase().includes(q) ?? false;
+        const matchUrl = n.url?.toLowerCase().includes(q) ?? false;
+        const matchCategory = n.category?.toLowerCase().includes(q) ?? false;
+        const matchType = n.type?.toLowerCase().includes(q) ?? false;
+        if (
+          !matchTitle &&
+          !matchDesc &&
+          !matchEmail &&
+          !matchName &&
+          !matchPhone &&
+          !matchUrl &&
+          !matchCategory &&
+          !matchType
+        ) {
+          return false;
+        }
       }
 
       return true;
     });
   }, [systemNotifications, filterCategory, searchQuery]);
 
-  const totalUnreadCount = markAllRead ? 0 : filteredNotifications.length;
+  const totalUnreadCount = markAllRead ? 0 : filteredNotifications.filter((n) => n.unread).length;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300 text-left font-sans bg-slate-50/50 p-2 sm:p-4 rounded-3xl">
+    <div className="space-y-8 animate-in fade-in duration-300 text-left super-admin-typography bg-slate-50/50 p-2 sm:p-4 pb-6 rounded-3xl">
 
       {/* HEADER BANNER */}
       <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-blue-950 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-2xl border border-slate-800">
@@ -172,20 +205,23 @@ export default function AdminNotificationCenter({
               <button
                 type="button"
                 onClick={handleToggleMarkRead}
+                suppressHydrationWarning
                 className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-black rounded-2xl border border-slate-700 shadow-md transition-all cursor-pointer flex items-center gap-2"
               >
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                {markAllRead ? "Mark as Unread" : "Mark All as Read"}
+                <span suppressHydrationWarning>
+                  {markAllRead ? "Mark as Unread" : "Mark All as Read"}
+                </span>
               </button>
             </div>
           </div>
 
           {/* CATEGORY TAB FILTERS BAR */}
-          <div className="bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-slate-700/80 shadow-xl space-y-3">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="bg-slate-900/80 backdrop-blur-md px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl border border-slate-700/80 shadow-xl overflow-x-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex flex-row items-center justify-between gap-2 sm:gap-3 flex-nowrap overflow-x-hidden">
               
-              {/* Category Pills */}
-              <div className="flex flex-wrap items-center gap-2">
+              {/* Category Pills (Strictly in one straight row, no wrapping, no scrollbar) */}
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 flex-nowrap">
                 {[
                   { id: "ALL", label: "All Feeds", icon: Inbox },
                   { id: "DEMO", label: "Demo Bookings", icon: Calendar },
@@ -200,29 +236,39 @@ export default function AdminNotificationCenter({
                       key={cat.id}
                       type="button"
                       onClick={() => setFilterCategory(cat.id as any)}
-                      className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer flex items-center gap-2 border ${
+                      className={`px-2 sm:px-2.5 lg:px-3 py-1.5 text-[11px] sm:text-xs font-black rounded-xl transition-all cursor-pointer flex items-center gap-1 sm:gap-1.5 border whitespace-nowrap shrink-0 select-none ${
                         isActive
                           ? "bg-blue-600 text-white shadow-lg shadow-blue-500/50 border-blue-400"
                           : "bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white border-slate-700"
                       }`}
                     >
-                      <Icon className="w-3.5 h-3.5" />
-                      {cat.label}
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span>{cat.label}</span>
                     </button>
                   );
                 })}
               </div>
 
-              {/* Search Bar */}
-              <div className="relative w-full sm:w-64">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              {/* Search Bar (Straight row alignment on the right) */}
+              <div className="relative min-w-[130px] max-w-[220px] flex-1 shrink">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Search notifications..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-xs font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 shadow-inner"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-8 pr-7 py-1.5 text-xs font-bold text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 shadow-inner"
                 />
+                {searchQuery.trim() !== "" && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs font-black cursor-pointer bg-transparent border-none p-0.5"
+                    title="Clear search"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
 
             </div>
@@ -237,12 +283,12 @@ export default function AdminNotificationCenter({
             <Calendar className="w-5 h-5 text-blue-600" />
             <h3 className="text-base font-black text-slate-900 tracking-tight">Enterprise Client Demo & Meeting Slots</h3>
           </div>
-          <AdminDemoRequestsManager />
+          <AdminDemoRequestsManager searchQuery={searchQuery} />
         </div>
       )}
 
       {/* SECTION 2: REAL-TIME SYSTEM ACTIVITY & TELEMETRY FEEDS */}
-      {(filterCategory === "ALL" || filterCategory === "SIGNUPS" || filterCategory === "PAYMENTS" || filterCategory === "PROJECTS") && (
+      {(filterCategory === "ALL" || filterCategory === "DEMO" || filterCategory === "SIGNUPS" || filterCategory === "PAYMENTS" || filterCategory === "PROJECTS") && (
         <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-[0_10px_30px_rgba(0,0,0,0.03)] space-y-6">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div>

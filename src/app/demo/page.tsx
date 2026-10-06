@@ -4,7 +4,17 @@ import React, { useState, useEffect } from "react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
-import { CheckCircle2, Loader2, Sparkles, ShieldCheck, Mail, Phone, Calendar, ChevronDown, Clock } from "lucide-react";
+import {
+  CheckCircleIcon as CheckCircle2,
+  ArrowPathIcon as Loader2,
+  SparklesIcon as Sparkles,
+  ShieldCheckIcon as ShieldCheck,
+  EnvelopeIcon as Mail,
+  PhoneIcon as Phone,
+  CalendarDaysIcon as Calendar,
+  ChevronDownIcon as ChevronDown,
+  ClockIcon as Clock
+} from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
 
 export default function DemoPage() {

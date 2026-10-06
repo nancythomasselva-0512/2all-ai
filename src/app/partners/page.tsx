@@ -5,7 +5,13 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { Handshake, Award, Users, ArrowRight, DollarSign } from "lucide-react";
+import {
+  UserGroupIcon as Handshake,
+  TrophyIcon as Award,
+  UserGroupIcon as Users,
+  ArrowRightIcon as ArrowRight,
+  CurrencyDollarIcon as DollarSign
+} from "@heroicons/react/24/solid";
 
 export default function PartnersPortalPage() {
   return (

@@ -5,7 +5,11 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, BookOpen, HelpCircle } from "lucide-react";
+import {
+  MagnifyingGlassIcon as Search,
+  BookOpenIcon as BookOpen,
+  QuestionMarkCircleIcon as HelpCircle
+} from "@heroicons/react/24/solid";
 
 export default function GlossaryPage() {
   const [searchQuery, setSearchQuery] = useState("");

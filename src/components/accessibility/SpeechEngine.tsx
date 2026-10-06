@@ -2,7 +2,16 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { useAccessibility } from "@/context/AccessibilityContext";
-import { Play, Pause, Square, X, Volume2, Settings2, Mic, Sparkles } from "lucide-react";
+import { 
+  PlayIcon as Play, 
+  PauseIcon as Pause, 
+  StopIcon as Square, 
+  XMarkIcon as X, 
+  SpeakerWaveIcon as Volume2, 
+  Cog6ToothIcon as Settings2, 
+  MicrophoneIcon as Mic, 
+  SparklesIcon as Sparkles 
+} from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 
@@ -806,13 +815,47 @@ export default function SpeechEngine() {
       "sign up": "/register",
       "admin": "/admin/dashboard",
       "admin dashboard": "/admin/dashboard",
-      "super admin": "/super-admin/dashboard"
+      "super admin": "/super-admin/dashboard",
+      "super admin dashboard": "/super-admin/dashboard",
+
+      // Admin & Super Admin Specific Tabs
+      "payments gateway": "/admin/dashboard?tab=payments",
+      "payment gateway": "/admin/dashboard?tab=payments",
+      "payments": "/admin/dashboard?tab=payments",
+      "payment": "/admin/dashboard?tab=payments",
+      "billing": "/admin/dashboard?tab=payments",
+      "api keys": "/admin/dashboard?tab=api-keys",
+      "api keys console": "/admin/dashboard?tab=api-keys",
+      "api key": "/admin/dashboard?tab=api-keys",
+      "installation keys": "/admin/dashboard?tab=api-keys",
+      "accessibility suite": "/admin/dashboard?tab=accessibility",
+      "accessibility suite console": "/admin/dashboard?tab=accessibility",
+      "accessibility console": "/admin/dashboard?tab=accessibility",
+      "user database": "/admin/dashboard?tab=users",
+      "users": "/admin/dashboard?tab=users",
+      "customer workspace": "/admin/dashboard?tab=domains",
+      "workspace": "/admin/dashboard?tab=domains",
+      "domains": "/admin/dashboard?tab=domains",
+      "license owner info": "/admin/dashboard?tab=license-owner",
+      "license owner": "/admin/dashboard?tab=license-owner",
+      "plans and feature matrix": "/admin/dashboard?tab=plans",
+      "feature matrix": "/admin/dashboard?tab=plans",
+      "sections builder": "/admin/dashboard?tab=sections",
+      "website sections": "/admin/dashboard?tab=sections",
+      "branding and email config": "/admin/dashboard?tab=branding",
+      "dynamic email templates": "/admin/dashboard?tab=dynamic-templates",
+      "email templates": "/admin/dashboard?tab=dynamic-templates",
+      "theme manager": "/admin/dashboard?tab=theme",
+      "website builder": "/admin/dashboard?tab=website",
+      "navigation builder": "/admin/dashboard?tab=navigation",
+      "notification": "/admin/dashboard?tab=notification",
+      "notifications": "/admin/dashboard?tab=notification"
     };
 
     // 1. Direct key match check (cleanQuery or transcript)
     let targetRoute = PAGE_ROUTES[cleanQuery] || PAGE_ROUTES[transcript];
 
-    // 2. Substring / Keyword fallback matching
+    // 2. Substring / Keyword fallback matching for page routes
     if (!targetRoute) {
       if (/\b(home|homepage|landing|start|index)\b/i.test(transcript) || /\b(home|homepage|landing|start|index)\b/i.test(cleanQuery)) {
         targetRoute = "/";
@@ -827,37 +870,17 @@ export default function SpeechEngine() {
       }
     }
 
-    // 3. Execute Route Navigation if target identified
-    if (targetRoute) {
-      if (targetRoute === "/") {
-        updateSetting("lastVoiceCommand", `Voice Command Heard: "${rawTranscript}" ➔ Opening Home Page...`);
-        setTimeout(() => {
-          if (window.location.pathname !== "/") {
-            window.location.href = "/";
-          } else {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }
-        }, 400);
-        return;
-      }
-
-      updateSetting("lastVoiceCommand", `Voice Command Heard: "${rawTranscript}" ➔ Opening ${targetRoute}...`);
-      setTimeout(() => {
-        window.location.href = targetRoute;
-      }, 400);
-      return;
-    }
-
     if (!cleanQuery) {
       updateSetting("lastVoiceCommand", `Voice Command Heard: "${rawTranscript}"`);
       return;
     }
 
-    // 3. UNIVERSAL TOKENIZED DOM ELEMENT SEARCH ALGORITHM
+    // 3. FIRST: UNIVERSAL TOKENIZED ON-PAGE ELEMENT SEARCH ALGORITHM
+    // If an interactive element, tab, button, or link exists on the current page, highlight & activate it immediately!
     let targetElement: HTMLElement | null = null;
     let matchReason = "";
 
-    const stopWords = new Set(["the", "a", "an", "and", "or", "to", "for", "in", "on", "of", "with", "is", "it", "at", "by"]);
+    const stopWords = new Set(["the", "a", "an", "and", "or", "to", "for", "in", "on", "of", "with", "is", "it", "at", "by", "go", "open"]);
     const words = cleanQuery.split(/\s+/).filter((w: string) => w.length > 2 && !stopWords.has(w));
     const searchCandidates = Array.from(new Set([cleanQuery, ...words]));
 
@@ -872,24 +895,26 @@ export default function SpeechEngine() {
         break;
       }
 
-      const headings = Array.from(document.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6, .font-heading"));
-      for (const h of headings) {
-        const text = (h.innerText || "").toLowerCase();
-        if (text.includes(q)) {
-          targetElement = h;
-          matchReason = `Heading: "${h.innerText.trim().substring(0, 25)}..."`;
+      // Check clickables (links, buttons, tabs, input triggers)
+      const clickables = Array.from(document.querySelectorAll<HTMLElement>("a, button, [role='button'], [role='tab'], input[type='submit'], input[type='button']"));
+      for (const c of clickables) {
+        const text = (c.innerText || c.getAttribute("aria-label") || c.getAttribute("title") || c.getAttribute("alt") || "").toLowerCase();
+        const href = (c.getAttribute("href") || "").toLowerCase();
+        const dataTab = (c.getAttribute("data-tab") || "").toLowerCase();
+        if (text.includes(q) || href.includes(q) || dataTab === q || dataTab.includes(q)) {
+          targetElement = c;
+          matchReason = `Link/Button: "${(c.innerText || q).trim().substring(0, 30)}"`;
           break;
         }
       }
       if (targetElement) break;
 
-      const clickables = Array.from(document.querySelectorAll<HTMLElement>("a, button, [role='button'], input[type='submit']"));
-      for (const c of clickables) {
-        const text = (c.innerText || c.getAttribute("aria-label") || c.getAttribute("title") || c.getAttribute("alt") || "").toLowerCase();
-        const href = (c.getAttribute("href") || "").toLowerCase();
-        if (text.includes(q) || href.includes(q)) {
-          targetElement = c;
-          matchReason = `Link/Button: "${(c.innerText || q).trim().substring(0, 25)}"`;
+      const headings = Array.from(document.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6, .font-heading"));
+      for (const h of headings) {
+        const text = (h.innerText || "").toLowerCase();
+        if (text.includes(q)) {
+          targetElement = h;
+          matchReason = `Heading: "${h.innerText.trim().substring(0, 30)}..."`;
           break;
         }
       }
@@ -918,29 +943,78 @@ export default function SpeechEngine() {
     }
 
     if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      // Find actionable element (button, link, input, tab, or element itself)
+      const actionable = (
+        (targetElement.tagName.toLowerCase() === "a" || targetElement.tagName.toLowerCase() === "button")
+          ? targetElement
+          : targetElement.closest("button, a, [role='button'], [role='tab'], input, select, textarea, summary") ||
+            targetElement.querySelector("button, a, [role='button'], [role='tab'], input, select, textarea, summary") ||
+            targetElement
+      ) as HTMLElement;
 
-      targetElement.classList.add("ring-4", "ring-blue-500", "ring-offset-4", "rounded-xl", "transition-all", "duration-500");
+      // Automatically highlight the matched option
+      actionable.scrollIntoView({ behavior: "smooth", block: "center" });
+      actionable.classList.add("ring-4", "ring-blue-500", "ring-offset-4", "rounded-xl", "transition-all", "duration-500", "shadow-xl");
       setTimeout(() => {
-        targetElement?.classList.remove("ring-4", "ring-blue-500", "ring-offset-4", "rounded-xl");
-      }, 3500);
+        actionable?.classList.remove("ring-4", "ring-blue-500", "ring-offset-4", "rounded-xl", "shadow-xl");
+      }, 4500);
 
-      const anchor = (targetElement.tagName.toLowerCase() === "a" 
-        ? targetElement 
-        : targetElement.closest("a") || targetElement.querySelector("a")) as HTMLAnchorElement | null;
+      // Automatically redirect or activate the matched option
+      const anchor = (actionable.tagName.toLowerCase() === "a" ? actionable : actionable.closest("a") || actionable.querySelector("a")) as HTMLAnchorElement | null;
       const href = anchor?.getAttribute("href");
 
-      if (anchor && href && href.startsWith("/") && href !== "#" && !href.startsWith("#")) {
-        updateSetting("lastVoiceCommand", `Opening page "${cleanQuery}" (${href})...`);
+      if (anchor && href && href !== "#") {
+        updateSetting("lastVoiceCommand", `Opening "${cleanQuery}" (${href})...`);
         setTimeout(() => {
           anchor.click();
-        }, 600);
+          if (href.startsWith("http://") || href.startsWith("https://") || href.startsWith("/")) {
+            window.location.href = href;
+          }
+        }, 500);
+      } else if (
+        actionable.tagName.toLowerCase() === "button" || 
+        actionable.getAttribute("role") === "button" || 
+        actionable.getAttribute("role") === "tab" ||
+        typeof (actionable as any).click === "function"
+      ) {
+        updateSetting("lastVoiceCommand", `Navigating to "${cleanQuery}" (${matchReason})...`);
+        setTimeout(() => {
+          actionable.click();
+          actionable.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
+        }, 500);
+      } else if (actionable.tagName.toLowerCase() === "input" || actionable.tagName.toLowerCase() === "textarea" || actionable.tagName.toLowerCase() === "select") {
+        updateSetting("lastVoiceCommand", `Focused on "${cleanQuery}"`);
+        setTimeout(() => {
+          actionable.focus();
+        }, 400);
       } else {
         updateSetting("lastVoiceCommand", `Jumped to "${cleanQuery}" (${matchReason})`);
       }
-    } else {
-      updateSetting("lastVoiceCommand", `Voice Command Heard: "${rawTranscript}"`);
+      return;
     }
+
+    // 4. SECOND: Fallback to Page Route Navigation if no local on-page element was matched
+    if (targetRoute) {
+      if (targetRoute === "/") {
+        updateSetting("lastVoiceCommand", `Opening Home Page...`);
+        setTimeout(() => {
+          if (window.location.pathname !== "/") {
+            window.location.href = "/";
+          } else {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        }, 400);
+        return;
+      }
+
+      updateSetting("lastVoiceCommand", `Opening ${targetRoute}...`);
+      setTimeout(() => {
+        window.location.href = targetRoute;
+      }, 400);
+      return;
+    }
+
+    updateSetting("lastVoiceCommand", `Voice Command Heard: "${rawTranscript}"`);
   };
 
   // ========================================================

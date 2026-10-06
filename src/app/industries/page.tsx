@@ -4,7 +4,15 @@ import Navbar from "@/components/marketing/Navbar";
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ChevronRight, ShoppingCart, HeartPulse, GraduationCap, Building2, Scale, Search } from "lucide-react";
+import {
+  ChevronRightIcon as ChevronRight,
+  ShoppingCartIcon as ShoppingCart,
+  HeartIcon as HeartPulse,
+  AcademicCapIcon as GraduationCap,
+  BuildingOffice2Icon as Building2,
+  ScaleIcon as Scale,
+  MagnifyingGlassIcon as Search
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import DemoModal from "@/components/marketing/DemoModal";

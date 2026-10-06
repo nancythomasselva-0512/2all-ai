@@ -66,16 +66,18 @@ export async function POST(req: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const assignedRole = role === "SUPER_ADMIN" ? "SUPER_ADMIN" : "ADMIN";
+    const assignedRole = role === "SUPER_ADMIN" ? "SUPER_ADMIN" : role === "CUSTOMER" ? "CUSTOMER" : "ADMIN";
+    const defaultPlan = assignedRole === "CUSTOMER" ? "FREE" : "PRO";
+    const defaultPayment = assignedRole === "CUSTOMER" ? "TRIAL" : "PAID";
 
     const newAdmin = await prisma.user.create({
       data: {
-        name: name || "Admin Staff",
+        name: name || (assignedRole === "CUSTOMER" ? "New Client" : "Admin Staff"),
         email: cleanEmail,
         password: hashedPassword,
         role: assignedRole,
-        plan: "PRO",
-        paymentStatus: "PAID",
+        plan: defaultPlan,
+        paymentStatus: defaultPayment,
       },
     });
 

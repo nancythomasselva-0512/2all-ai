@@ -20,6 +20,13 @@ export async function GET() {
           email: true,
         },
       },
+      domain: {
+        select: {
+          id: true,
+          domain: true,
+          websiteName: true,
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
   });

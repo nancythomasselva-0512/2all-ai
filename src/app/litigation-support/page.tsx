@@ -5,10 +5,23 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Check, FileText, FileSearch, HelpCircle, ArrowRight,
-  ShieldAlert, MessagesSquare, FileSignature, MonitorCheck,
-  ChevronDown, X, Sparkles, Activity, ShieldCheck, Lock, Play
-} from "lucide-react";
+  CheckIcon as Check,
+  DocumentTextIcon as FileText,
+  DocumentMagnifyingGlassIcon as FileSearch,
+  QuestionMarkCircleIcon as HelpCircle,
+  ArrowRightIcon as ArrowRight,
+  ShieldExclamationIcon as ShieldAlert,
+  ChatBubbleLeftRightIcon as MessagesSquare,
+  DocumentCheckIcon as FileSignature,
+  ComputerDesktopIcon as MonitorCheck,
+  ChevronDownIcon as ChevronDown,
+  XMarkIcon as X,
+  SparklesIcon as Sparkles,
+  ChartBarIcon as Activity,
+  ShieldCheckIcon as ShieldCheck,
+  LockClosedIcon as Lock,
+  PlayIcon as Play
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import DemoModal from "@/components/marketing/DemoModal";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";

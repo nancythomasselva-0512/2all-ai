@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { SparklesIcon as Sparkles, ArrowRightIcon as ArrowRight, CpuChipIcon as BotIcon } from "@heroicons/react/24/solid";
 import { useAccessibility } from "@/context/AccessibilityContext";
 
 const stagger = {
@@ -87,18 +87,5 @@ export default function DashboardSection({ setActiveTab, searchQuery }: { setAct
       </motion.div>
 
     </motion.div>
-  );
-}
-
-function BotIcon(props: any) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M12 8V4H8" />
-      <rect width="16" height="12" x="4" y="8" rx="2" />
-      <path d="M2 14h2" />
-      <path d="M20 14h2" />
-      <path d="M15 13v2" />
-      <path d="M9 13v2" />
-    </svg>
   );
 }

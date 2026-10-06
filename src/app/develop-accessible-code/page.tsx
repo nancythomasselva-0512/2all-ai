@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Terminal, Code2, GitMerge, Box } from "lucide-react";
+import {
+  CommandLineIcon as Terminal,
+  CodeBracketIcon as Code2,
+  ArrowPathRoundedSquareIcon as GitMerge,
+  CubeIcon as Box
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import Navbar from "@/components/marketing/Navbar";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";

@@ -34,6 +34,21 @@ export async function POST(req: Request) {
     requests.unshift(newRequest);
     await fs.writeFile(dataPath, JSON.stringify(requests, null, 2), "utf-8");
 
+    // Store real incoming notification
+    try {
+      const { addNotification } = await import("@/lib/notifications");
+      await addNotification({
+        type: "DEMO",
+        category: "Demo Request",
+        title: `New Client Demo Booking: ${name}`,
+        description: meetingSlot ? `Requested meeting slot: ${meetingSlot} for website ${website}` : `Demo requested for website ${website}`,
+        user: { name, email, phone },
+        url: website,
+      });
+    } catch (notifErr) {
+      console.warn("Failed to store demo notification:", notifErr);
+    }
+
     // Trigger SMTP notification (non-blocking)
     try {
       const { sendDemoNotificationEmail, getAdminEmail } = await import("@/lib/mail");

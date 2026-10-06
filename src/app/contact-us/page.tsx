@@ -5,7 +5,13 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { motion } from "framer-motion";
-import { Mail, MapPin, Phone, Send, CheckCircle2 } from "lucide-react";
+import {
+  EnvelopeIcon as Mail,
+  MapPinIcon as MapPin,
+  PhoneIcon as Phone,
+  PaperAirplaneIcon as Send,
+  CheckCircleIcon as CheckCircle2
+} from "@heroicons/react/24/solid";
 
 export default function ContactUsPage() {
   const [formData, setFormData] = useState({ name: "", email: "", siteUrl: "", message: "" });

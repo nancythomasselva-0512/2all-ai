@@ -5,7 +5,12 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { Sparkles, Globe, Heart, ArrowRight } from "lucide-react";
+import {
+  SparklesIcon as Sparkles,
+  GlobeAltIcon as Globe,
+  HeartIcon as Heart,
+  ArrowRightIcon as ArrowRight
+} from "@heroicons/react/24/solid";
 
 export default function Gaad2026Page() {
   return (

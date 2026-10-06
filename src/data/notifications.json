@@ -1,0 +1,92 @@
+[
+  {
+    "id": "notif-demo-2p0i8n1",
+    "type": "DEMO",
+    "category": "Demo Request",
+    "title": "New Client Demo Booking: thomas selva",
+    "description": "Requested meeting slot: Tomorrow, 10:00 AM for website https://mom.mccmrfip.in/",
+    "user": {
+      "name": "thomas selva",
+      "email": "praveen.n.natarajan@gmail.com",
+      "phone": "+91 07904327290"
+    },
+    "url": "https://mom.mccmrfip.in/",
+    "timestamp": "2026-07-30T08:10:05.608Z",
+    "read": true
+  },
+  {
+    "id": "notif-demo-5arbxnc",
+    "type": "DEMO",
+    "category": "Demo Request",
+    "title": "New Client Demo Booking: NANCY NARMADHA THOMAS",
+    "description": "Demo requested for website https://aiplatfom.tekquora.in/",
+    "user": {
+      "name": "NANCY NARMADHA THOMAS",
+      "email": "nancynarmadha512@gmail.com",
+      "phone": "+91 07904327211"
+    },
+    "url": "https://aiplatfom.tekquora.in/",
+    "timestamp": "2026-07-30T07:16:32.637Z",
+    "read": true
+  },
+  {
+    "id": "notif-demo-48s2jkw",
+    "type": "DEMO",
+    "category": "Demo Request",
+    "title": "New Client Demo Booking: Nancy Narmadha T",
+    "description": "Demo requested for website https://aiplatfom.tekquora.in/",
+    "user": {
+      "name": "Nancy Narmadha T",
+      "email": "sabinathomas03@gmail.com",
+      "phone": "+91 09876543210"
+    },
+    "url": "https://aiplatfom.tekquora.in/",
+    "timestamp": "2026-07-30T07:08:24.206Z",
+    "read": true
+  },
+  {
+    "id": "notif-demo-pki1z2t",
+    "type": "DEMO",
+    "category": "Demo Request",
+    "title": "New Client Demo Booking: narmadha",
+    "description": "Demo requested for website https://aiplatfom.tekquora.in/",
+    "user": {
+      "name": "narmadha",
+      "email": "praveenrock2609@gmail.com",
+      "phone": "+91 9876543210"
+    },
+    "url": "https://aiplatfom.tekquora.in/",
+    "timestamp": "2026-07-30T06:56:30.472Z",
+    "read": true
+  },
+  {
+    "id": "notif-demo-8m0qr7e",
+    "type": "DEMO",
+    "category": "Demo Request",
+    "title": "New Client Demo Booking: Praveen",
+    "description": "Demo requested for website https://mom.mccmrfip.in/",
+    "user": {
+      "name": "Praveen",
+      "email": "praveen.natarajan.in@gmail.com",
+      "phone": "+91 9600097807"
+    },
+    "url": "https://mom.mccmrfip.in/",
+    "timestamp": "2026-07-30T06:49:10.269Z",
+    "read": true
+  },
+  {
+    "id": "notif-demo-p4tqq40",
+    "type": "DEMO",
+    "category": "Demo Request",
+    "title": "New Client Demo Booking: nancy",
+    "description": "Demo requested for website https://aiplatfom.tekquora.in/",
+    "user": {
+      "name": "nancy",
+      "email": "nancynarmadha512@gmail.com",
+      "phone": "+91 7904327211"
+    },
+    "url": "https://aiplatfom.tekquora.in/",
+    "timestamp": "2026-07-30T06:36:11.775Z",
+    "read": true
+  }
+]

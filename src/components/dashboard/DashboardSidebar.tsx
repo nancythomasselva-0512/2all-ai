@@ -4,17 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
-  Accessibility,
-  LayoutDashboard,
-  FolderKanban,
-  FileBarChart2,
-  Bell,
-  CreditCard,
-  Settings,
-  KeyRound,
-  LogOut,
-  ChevronRight,
-} from "lucide-react";
+  UserCircleIcon as Accessibility,
+  Squares2X2Icon as LayoutDashboard,
+  FolderIcon as FolderKanban,
+  DocumentChartBarIcon as FileBarChart2,
+  BellIcon as Bell,
+  CreditCardIcon as CreditCard,
+  Cog6ToothIcon as Settings,
+  KeyIcon as KeyRound,
+  ArrowRightOnRectangleIcon as LogOut,
+  ChevronRightIcon as ChevronRight
+} from "@heroicons/react/24/solid";
 import { cn } from "@/lib/utils";
 
 const navItems = [

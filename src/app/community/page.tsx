@@ -6,20 +6,20 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import DemoModal from "@/components/marketing/DemoModal";
-import { 
-  Check, 
-  Search, 
-  ChevronDown, 
-  ChevronUp, 
-  Users, 
-  Heart, 
-  Globe2, 
-  Volume2, 
-  Play, 
-  HelpCircle,
-  Sparkles,
-  ArrowRight
-} from "lucide-react";
+import {
+  CheckIcon as Check,
+  MagnifyingGlassIcon as Search,
+  ChevronDownIcon as ChevronDown,
+  ChevronUpIcon as ChevronUp,
+  UserGroupIcon as Users,
+  HeartIcon as Heart,
+  GlobeAltIcon as Globe2,
+  SpeakerWaveIcon as Volume2,
+  PlayIcon as Play,
+  QuestionMarkCircleIcon as HelpCircle,
+  SparklesIcon as Sparkles,
+  ArrowRightIcon as ArrowRight
+} from "@heroicons/react/24/solid";
 
 export default function CommunityPage() {
   const [searchQuery, setSearchQuery] = useState("");

@@ -1,7 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Check, Copy, Code, Sparkles, Maximize2, Minimize2, Globe, ShieldCheck, AlertCircle, RefreshCw, Eye, Palette, Layout, Sliders, Save, Send, ShieldAlert, Loader2 } from "lucide-react";
+import {
+  CheckIcon as Check,
+  DocumentDuplicateIcon as Copy,
+  CodeBracketIcon as Code,
+  SparklesIcon as Sparkles,
+  ArrowsPointingOutIcon as Maximize2,
+  ArrowsPointingInIcon as Minimize2,
+  GlobeAltIcon as Globe,
+  ShieldCheckIcon as ShieldCheck,
+  ExclamationCircleIcon as AlertCircle,
+  ArrowPathIcon as RefreshCw,
+  EyeIcon as Eye,
+  PaintBrushIcon as Palette,
+  Squares2X2Icon as Layout,
+  AdjustmentsHorizontalIcon as Sliders,
+  ArrowDownOnSquareIcon as Save,
+  PaperAirplaneIcon as Send,
+  ShieldExclamationIcon as ShieldAlert,
+  ArrowPathIcon as Loader2
+} from "@heroicons/react/24/solid";
 
 interface ApiKey {
   id: string;

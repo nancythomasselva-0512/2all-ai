@@ -2,20 +2,20 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { 
-  X, 
-  MessageSquarePlus, 
-  Type, 
-  Link as LinkIcon, 
-  AlignCenter, 
-  ArrowUp,
-  RotateCcw,
-  EyeOff,
-  Sparkles,
-  Check,
-  Info,
-  Sliders,
-  CheckCircle2
-} from "lucide-react";
+  XMarkIcon as X, 
+  ChatBubbleBottomCenterTextIcon as MessageSquarePlus, 
+  DocumentTextIcon as Type, 
+  LinkIcon as LinkIcon, 
+  Bars3BottomLeftIcon as AlignCenter, 
+  ArrowUpIcon as ArrowUp,
+  ArrowPathIcon as RotateCcw,
+  EyeSlashIcon as EyeOff,
+  SparklesIcon as Sparkles,
+  CheckIcon as Check,
+  InformationCircleIcon as Info,
+  AdjustmentsHorizontalIcon as Sliders,
+  CheckCircleIcon as CheckCircle2
+} from "@heroicons/react/24/solid";
 
 interface CharacterTransform {
   translateX: number;

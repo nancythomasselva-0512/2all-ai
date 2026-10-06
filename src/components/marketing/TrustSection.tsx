@@ -2,7 +2,15 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Accessibility, Check, Star, Globe, Shield, Sparkles, Award } from "lucide-react";
+import { 
+  UserCircleIcon as Accessibility, 
+  CheckIcon as Check, 
+  StarIcon as Star, 
+  GlobeAltIcon as Globe, 
+  ShieldCheckIcon as Shield, 
+  SparklesIcon as Sparkles, 
+  TrophyIcon as Award 
+} from "@heroicons/react/24/solid";
 import siteConfig from "@/data/site-config.json";
 
 function Counter({ value, suffix }: { value: number, suffix: string }) {

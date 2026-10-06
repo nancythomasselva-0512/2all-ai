@@ -5,7 +5,14 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { CheckSquare, Square, ShieldCheck, ArrowRight, CheckCircle2, Download } from "lucide-react";
+import {
+  CheckCircleIcon as CheckSquare,
+  StopIcon as Square,
+  ShieldCheckIcon as ShieldCheck,
+  ArrowRightIcon as ArrowRight,
+  CheckCircleIcon as CheckCircle2,
+  ArrowDownTrayIcon as Download
+} from "@heroicons/react/24/solid";
 
 export default function AdaChecklistPage() {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});

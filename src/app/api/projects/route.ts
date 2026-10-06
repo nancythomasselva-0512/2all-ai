@@ -10,7 +10,13 @@ export async function GET() {
   const projects = await prisma.project.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
-    include: { scans: { take: 1, orderBy: { createdAt: "desc" } } },
+    include: {
+      scans: {
+        take: 1,
+        orderBy: { createdAt: "desc" },
+        include: { issues: true },
+      },
+    },
   });
 
   return NextResponse.json(projects);

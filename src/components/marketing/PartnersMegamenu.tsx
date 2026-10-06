@@ -3,12 +3,12 @@
 import React from "react";
 import Link from "next/link";
 import { 
-  Building2, 
-  Cpu, 
-  Globe2,
-  TrendingUp,
-  ArrowRight
-} from "lucide-react";
+  BuildingOffice2Icon as Building2, 
+  CpuChipIcon as Cpu, 
+  GlobeAltIcon as Globe2, 
+  ArrowTrendingUpIcon as TrendingUp, 
+  ArrowRightIcon as ArrowRight 
+} from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MegamenuProps {

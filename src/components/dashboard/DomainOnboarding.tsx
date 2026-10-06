@@ -2,33 +2,37 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import PageHelpTooltip from "@/components/ui/PageHelpTooltip";
 import {
-  Globe,
-  Plus,
-  Search,
-  Check,
-  AlertCircle,
-  RefreshCw,
-  Trash2,
-  Key,
-  Code,
-  BarChart3,
-  Eye,
-  Sliders,
-  UploadCloud,
-  FileText,
-  ShieldCheck,
-  Download,
-  Copy,
-  ExternalLink,
-  X,
-  Lock,
-  CheckCircle2,
-  AlertTriangle,
-  ShieldAlert,
-  ChevronDown
-} from "lucide-react";
+  GlobeAltIcon as Globe,
+  PlusIcon as Plus,
+  MagnifyingGlassIcon as Search,
+  CheckIcon as Check,
+  ExclamationCircleIcon as AlertCircle,
+  ArrowPathIcon as RefreshCw,
+  TrashIcon as Trash2,
+  KeyIcon as Key,
+  CodeBracketIcon as Code,
+  ChartBarIcon as BarChart3,
+  EyeIcon as Eye,
+  AdjustmentsHorizontalIcon as Sliders,
+  CloudArrowUpIcon as UploadCloud,
+  DocumentTextIcon as FileText,
+  ShieldCheckIcon as ShieldCheck,
+  ArrowDownTrayIcon as Download,
+  DocumentDuplicateIcon as Copy,
+  ArrowTopRightOnSquareIcon as ExternalLink,
+  XMarkIcon as X,
+  LockClosedIcon as Lock,
+  CheckCircleIcon as CheckCircle2,
+  ExclamationTriangleIcon as AlertTriangle,
+  ShieldExclamationIcon as ShieldAlert,
+  ChevronDownIcon as ChevronDown,
+  ClockIcon as Clock,
+  SparklesIcon as Sparkles,
+  CreditCardIcon as CreditCard
+} from "@heroicons/react/24/solid";
 
 interface ApiKeyType {
   id: string;
@@ -99,10 +103,30 @@ export const getDomainApiKeysCount = (d: DomainType): number => {
   return 0;
 };
 
+export interface UserAccountInfo {
+  id?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  plan?: string;
+  rawPlan?: string;
+  paymentStatus?: string;
+  isPaid?: boolean;
+  isTrialActive?: boolean;
+  isTrialExpired?: boolean;
+  trialDaysRemaining?: number;
+  trialStartDate?: string;
+  trialEndDate?: string;
+  trialProgressPercent?: number;
+  quotaLimit?: number;
+  activeLicensesCount?: number;
+}
+
 interface DomainOnboardingProps {
   initialDomains: DomainType[];
   userName?: string;
   isAdmin?: boolean;
+  accountInfo?: UserAccountInfo;
   onDomainClick?: (domain: DomainType) => void;
 }
 
@@ -110,6 +134,7 @@ export default function DomainOnboarding({
   initialDomains = [],
   userName = "Customer",
   isAdmin = false,
+  accountInfo,
   onDomainClick,
 }: DomainOnboardingProps) {
   const router = useRouter();
@@ -215,6 +240,27 @@ export default function DomainOnboarding({
       PENDING: pending
     };
   }, [domains]);
+
+  // Memoized user account, purchase, free trial, and quota information
+  const currentAccountInfo: UserAccountInfo = useMemo(() => {
+    if (accountInfo) return accountInfo;
+    const isPaid = isAdmin;
+    return {
+      name: userName,
+      plan: isAdmin ? "ENTERPRISE" : "7-Day Free Trial",
+      rawPlan: isAdmin ? "ENTERPRISE" : "NONE",
+      paymentStatus: isAdmin ? "PAID" : "UNPAID",
+      isPaid,
+      isTrialActive: !isPaid,
+      isTrialExpired: false,
+      trialDaysRemaining: 7,
+      trialStartDate: new Date().toISOString(),
+      trialEndDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      trialProgressPercent: 14,
+      quotaLimit: isAdmin ? 999 : 1,
+      activeLicensesCount: domains.length,
+    };
+  }, [accountInfo, isAdmin, userName, domains.length]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -523,6 +569,93 @@ export default function DomainOnboarding({
         </div>
       )}
 
+      {/* ========================================================= */}
+      {/* SUBSCRIPTION & FREE TRIAL STATUS BANNER (TOP HERO ALERT)  */}
+      {/* ========================================================= */}
+      {currentAccountInfo.isTrialExpired ? (
+        <div className="rounded-2xl bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 text-white p-4 sm:p-5 shadow-lg shadow-rose-600/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-rose-500/40">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20">
+              <AlertTriangle className="w-6 h-6 text-amber-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-extrabold text-sm sm:text-base tracking-tight">Free Trial Has Expired</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-white text-rose-700 font-black text-[10px] uppercase tracking-wider shadow-xs">
+                  Action Required
+                </span>
+              </div>
+              <p className="text-xs text-rose-100 font-medium mt-0.5">
+                Your 7-day trial ended on {new Date(currentAccountInfo.trialEndDate || "").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}. Upgrade your license to restore live accessibility compliance and active widget protections.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2.5 self-end sm:self-auto shrink-0">
+            <Link
+              href="/pricing"
+              className="px-4 py-2 bg-white hover:bg-slate-50 text-rose-700 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer no-underline uppercase tracking-wider"
+            >
+              Activate Paid License ↗
+            </Link>
+          </div>
+        </div>
+      ) : currentAccountInfo.isTrialActive ? (
+        <div className="rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white p-4 sm:p-5 shadow-lg shadow-blue-500/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-blue-400/30">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20">
+              <Sparkles className="w-6 h-6 text-amber-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-extrabold text-sm sm:text-base tracking-tight">7-Day Free Trial Active</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-900 font-black text-[10px] uppercase tracking-wider shadow-xs flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-900 animate-ping inline-block" />
+                  {currentAccountInfo.trialDaysRemaining} {currentAccountInfo.trialDaysRemaining === 1 ? "Day" : "Days"} Left
+                </span>
+              </div>
+              <p className="text-xs text-blue-100 font-medium mt-0.5">
+                Full WCAG 2.1 AA accessibility features, screen-reader optimizer, and AI compliance engine unlocked. No credit card charged during trial.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2.5 self-end sm:self-auto shrink-0">
+            <Link
+              href="/pricing"
+              className="px-4 py-2 bg-white hover:bg-slate-50 text-blue-700 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer no-underline uppercase tracking-wider"
+            >
+              Upgrade to Pro Plan ↗
+            </Link>
+          </div>
+        </div>
+      ) : currentAccountInfo.isPaid ? (
+        <div className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4 sm:p-5 shadow-lg shadow-emerald-500/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-emerald-400/30">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20">
+              <ShieldCheck className="w-6 h-6 text-emerald-200" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-extrabold text-sm sm:text-base tracking-tight">{currentAccountInfo.plan} Subscription Active</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-400 text-slate-900 font-black text-[10px] uppercase tracking-wider shadow-xs">
+                  Paid &amp; Verified
+                </span>
+              </div>
+              <p className="text-xs text-emerald-100 font-medium mt-0.5">
+                Continuous compliance monitoring and automated remediation enabled for all registered domain licenses.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2.5 self-end sm:self-auto shrink-0">
+            <Link
+              href="/pricing"
+              className="px-4 py-2 bg-white/20 hover:bg-white/30 border border-white/40 text-white font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer no-underline uppercase tracking-wider"
+            >
+              Manage Subscription ↗
+            </Link>
+          </div>
+        </div>
+      ) : null}
+
       {/* HEADER SECTION - ACCESSIBE STYLE */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2 px-1">
         <div>
@@ -557,6 +690,202 @@ export default function DomainOnboarding({
 
       {/* MAIN CONTAINER CARD - CLEAN WHITE ACCESSIBE DASHBOARD DESIGN */}
       <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-sm min-h-[500px]">
+        {/* ========================================================= */}
+        {/* PURCHASE, FREE TRIAL & CURRENT STATUS OVERVIEW KPI CARDS  */}
+        {/* ========================================================= */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-6 mb-6 border-b border-slate-100">
+          {/* Card 1: Purchase & Subscription Plan */}
+          <div className="bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between transition-all group">
+            <div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <CreditCard className="w-3.5 h-3.5 text-blue-600" />
+                  Purchase &amp; Plan
+                </span>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                    currentAccountInfo.isPaid
+                      ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                      : currentAccountInfo.isTrialExpired
+                      ? "bg-rose-100 text-rose-800 border border-rose-200"
+                      : "bg-blue-100 text-blue-800 border border-blue-200"
+                  }`}
+                >
+                  {currentAccountInfo.isPaid
+                    ? "Paid Plan"
+                    : currentAccountInfo.isTrialExpired
+                    ? "Expired"
+                    : "Trial Plan"}
+                </span>
+              </div>
+              <div className="mt-3">
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
+                  {currentAccountInfo.isPaid
+                    ? `${currentAccountInfo.plan} Plan`
+                    : currentAccountInfo.isTrialExpired
+                    ? "Trial Expired"
+                    : "7-Day Free Trial"}
+                </h3>
+                <p className="text-xs text-slate-500 font-medium mt-1 leading-snug">
+                  {currentAccountInfo.isPaid
+                    ? "Commercial license with active WCAG 2.1 AA protections"
+                    : currentAccountInfo.isTrialExpired
+                    ? "Trial has ended. Upgrade to keep widget accessibility active."
+                    : "All premium features unlocked during 7-day trial period."}
+                </p>
+              </div>
+            </div>
+            <div className="pt-3 mt-3 border-t border-slate-200/60 flex items-center justify-between text-xs">
+              <span className="text-[11px] text-slate-400 font-bold">Billing:</span>
+              <span
+                className={`font-black uppercase text-[11px] ${
+                  currentAccountInfo.isPaid
+                    ? "text-emerald-700"
+                    : currentAccountInfo.isTrialExpired
+                    ? "text-rose-700"
+                    : "text-blue-700"
+                }`}
+              >
+                {currentAccountInfo.isPaid
+                  ? "Paid (Active)"
+                  : currentAccountInfo.isTrialExpired
+                  ? "Action Required"
+                  : "Trial Active"}
+              </span>
+            </div>
+          </div>
+
+          {/* Card 2: Free Trial & Validity Countdown */}
+          <div className="bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between transition-all group">
+            <div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-amber-500" />
+                  Free Trial &amp; Validity
+                </span>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                    currentAccountInfo.isPaid
+                      ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                      : currentAccountInfo.isTrialExpired
+                      ? "bg-rose-100 text-rose-800 border border-rose-200"
+                      : "bg-amber-100 text-amber-800 border border-amber-200"
+                  }`}
+                >
+                  {currentAccountInfo.isPaid
+                    ? "Active"
+                    : currentAccountInfo.isTrialExpired
+                    ? "0d left"
+                    : `${currentAccountInfo.trialDaysRemaining}d remaining`}
+                </span>
+              </div>
+              <div className="mt-3">
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
+                  {currentAccountInfo.isPaid
+                    ? "Full License Active"
+                    : currentAccountInfo.isTrialExpired
+                    ? "0 Days Remaining"
+                    : `${currentAccountInfo.trialDaysRemaining} Days Remaining`}
+                </h3>
+                {/* Visual Progress Bar */}
+                <div className="mt-2.5 w-full">
+                  <div className="h-2 w-full bg-slate-200/80 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-500 ${
+                        currentAccountInfo.isPaid
+                          ? "bg-emerald-500 w-full"
+                          : currentAccountInfo.isTrialExpired
+                          ? "bg-rose-500 w-full"
+                          : "bg-gradient-to-r from-blue-500 to-indigo-600"
+                      }`}
+                      style={{
+                        width: currentAccountInfo.isPaid
+                          ? "100%"
+                          : currentAccountInfo.isTrialExpired
+                          ? "100%"
+                          : `${Math.max(10, currentAccountInfo.trialProgressPercent || 20)}%`,
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between mt-1.5 text-[10px] text-slate-400 font-bold">
+                    <span>
+                      {currentAccountInfo.isPaid
+                        ? "Unlimited validity"
+                        : `Day ${Math.min(7, Math.max(1, 7 - (currentAccountInfo.trialDaysRemaining || 0) + 1))} of 7`}
+                    </span>
+                    <span>
+                      Ends:{" "}
+                      {new Date(currentAccountInfo.trialEndDate || "").toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="pt-3 mt-3 border-t border-slate-200/60 flex items-center justify-between text-xs">
+              <span className="text-[11px] text-slate-400 font-bold">Term:</span>
+              <Link href="/pricing" className="text-[11px] font-black text-blue-600 hover:text-blue-800 no-underline">
+                {currentAccountInfo.isPaid ? "Manage Billing →" : "Upgrade Plan →"}
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 3: Current Status & License Quota */}
+          <div className="bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between transition-all group">
+            <div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Globe className="w-3.5 h-3.5 text-emerald-600" />
+                  Status &amp; Licenses
+                </span>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                    domains.length > 0
+                      ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                      : "bg-slate-200/80 text-slate-700"
+                  }`}
+                >
+                  {domains.length > 0 ? "Configured" : "No Websites"}
+                </span>
+              </div>
+              <div className="mt-3">
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
+                  {domains.length} of{" "}
+                  {currentAccountInfo.quotaLimit && currentAccountInfo.quotaLimit >= 999
+                    ? "∞"
+                    : currentAccountInfo.quotaLimit || 1}{" "}
+                  Licenses Used
+                </h3>
+                <p className="text-xs text-slate-500 font-medium mt-1 leading-snug">
+                  {domains.length === 0
+                    ? "Click '+ Add new website' to register your domain."
+                    : `${statusCounts.ACTIVE} active • ${statusCounts.PENDING} pending verification`}
+                </p>
+              </div>
+            </div>
+            <div className="pt-3 mt-3 border-t border-slate-200/60 flex items-center justify-between text-xs">
+              <span className="text-[11px] text-slate-400 font-bold">Account:</span>
+              <span
+                className={`font-black uppercase text-[11px] ${
+                  currentAccountInfo.isPaid
+                    ? "text-emerald-700"
+                    : currentAccountInfo.isTrialExpired
+                    ? "text-rose-700"
+                    : "text-emerald-700"
+                }`}
+              >
+                {currentAccountInfo.isPaid
+                  ? "Active (Paid)"
+                  : currentAccountInfo.isTrialExpired
+                  ? "Trial Expired"
+                  : "Active (Trial)"}
+              </span>
+            </div>
+          </div>
+        </div>
         {/* SEARCH & STATUS FILTER ROW */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
           <div className="flex flex-wrap items-center gap-3 flex-1">
@@ -747,29 +1076,52 @@ export default function DomainOnboarding({
 
                     {/* End Date */}
                     <td className="py-4 px-4 text-xs font-medium text-slate-600 font-sans">
-                      {formattedEndDate}
+                      {currentAccountInfo.isPaid ? (
+                        <span className="inline-flex items-center gap-1 text-slate-700 font-bold">
+                          Annual / Ongoing
+                        </span>
+                      ) : isExpired || currentAccountInfo.isTrialExpired ? (
+                        <span className="text-rose-600 font-bold">
+                          Expired ({formattedEndDate})
+                        </span>
+                      ) : (
+                        <span>
+                          {formattedEndDate}{" "}
+                          <span className="text-amber-700 font-bold text-[11px] block mt-0.5">
+                            ({currentAccountInfo.trialDaysRemaining}d remaining)
+                          </span>
+                        </span>
+                      )}
                     </td>
 
                     {/* Status Badge */}
                     <td className="py-4 px-4">
-                      {isExpired ? (
+                      {isExpired || currentAccountInfo.isTrialExpired ? (
                         <span className="inline-flex items-center px-3 py-1 rounded-md bg-[#fee2e2] text-[#991b1b] text-xs font-bold font-sans">
                           Expired
                         </span>
-                      ) : isVerified ? (
+                      ) : currentAccountInfo.isPaid ? (
                         <span className="inline-flex items-center px-3 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-bold font-sans">
-                          Active
+                          Active (Paid)
+                        </span>
+                      ) : isVerified ? (
+                        <span className="inline-flex items-center px-3 py-1 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold font-sans">
+                          7-Day Trial ({currentAccountInfo.trialDaysRemaining}d left)
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-3 py-1 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold font-sans">
-                          7-day trial
+                        <span className="inline-flex items-center px-3 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold font-sans">
+                          Pending Verification
                         </span>
                       )}
                     </td>
 
                     {/* Plan */}
                     <td className="py-4 px-4 text-xs font-medium text-slate-600 font-sans">
-                      {isExpired ? "-" : isVerified ? (d.plan || "Standard") : "7-day trial"}
+                      {isExpired || currentAccountInfo.isTrialExpired
+                        ? "-"
+                        : currentAccountInfo.isPaid
+                        ? currentAccountInfo.plan || d.plan || "Pro"
+                        : "7-Day Free Trial"}
                     </td>
 
                     {/* Action Column */}
@@ -1000,8 +1352,60 @@ export default function DomainOnboarding({
 
               {filteredDomains.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-16 text-center text-slate-500 text-sm font-semibold font-sans no-scale">
-                    No website licenses matching your search or filters. Click &quot;Add new website&quot; above to register a domain.
+                  <td colSpan={6} className="py-12 px-4 text-center">
+                    {domains.length === 0 ? (
+                      <div className="max-w-md mx-auto flex flex-col items-center py-6">
+                        <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200/60 flex items-center justify-center text-blue-600 mb-4 shadow-xs">
+                          <Globe className="w-8 h-8" />
+                        </div>
+                        <h4 className="text-base font-black text-slate-900 tracking-tight">
+                          No website licenses registered yet
+                        </h4>
+                        <p className="text-xs text-slate-500 font-medium mt-2 leading-relaxed text-center">
+                          {currentAccountInfo.isPaid
+                            ? `Your ${currentAccountInfo.plan} subscription is active! Click below to register your website domain and generate your accessibility embed snippet.`
+                            : `Your account is active on the 7-day free trial (${currentAccountInfo.trialDaysRemaining} days remaining). Register your website domain to activate your first license and install the accessibility widget.`}
+                        </p>
+                        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                          <button
+                            onClick={() => {
+                              setWebsiteName("");
+                              setDomainName("");
+                              setEnvironment("Production");
+                              setVerificationMethod("META");
+                              setNotes("");
+                              setFormError(null);
+                              setActiveModal({ type: "add" });
+                            }}
+                            className="px-5 py-2.5 rounded-xl bg-[#0066ff] hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer border-none flex items-center gap-2 font-sans"
+                          >
+                            <Plus className="w-4 h-4 stroke-[3]" />
+                            Add new website
+                          </button>
+                          <Link
+                            href="/dashboard/install"
+                            className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-extrabold text-xs transition-all no-underline shadow-xs flex items-center gap-1.5"
+                          >
+                            Quick Install Guide ↗
+                          </Link>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="py-8">
+                        <p className="text-slate-500 text-sm font-semibold font-sans mb-3">
+                          No website licenses matching your search &quot;{domainSearch}&quot; or selected filter.
+                        </p>
+                        <button
+                          onClick={() => {
+                            setDomainSearch("");
+                            setDomainStatusFilter("all");
+                          }}
+                          className="px-4 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold border-none cursor-pointer transition-colors"
+                        >
+                          Clear search &amp; filters
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               )}

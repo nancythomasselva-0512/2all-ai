@@ -262,6 +262,15 @@
       "isCustom": false
     },
     {
+      "id": "accessibleTooltips",
+      "title": "Accessible Tooltip Engine",
+      "description": "Display WCAG accessible tooltips on mouse hover and keyboard focus via aria-label, title, or visible text",
+      "category": "Focus & Reading",
+      "icon": "Info",
+      "enabled": true,
+      "isCustom": false
+    },
+    {
       "id": "reduceMotion",
       "title": "Reduce Motion",
       "description": "Disable CSS animations and marquee effects",

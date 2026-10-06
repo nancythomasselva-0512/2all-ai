@@ -2,25 +2,25 @@
 
 import { useState, useEffect } from "react";
 import {
-  Plus,
-  Trash2,
-  Edit3,
-  Check,
-  X,
-  CreditCard,
-  Save,
-  CheckSquare,
-  Square,
-  Star,
-  Sparkles,
-  Loader2,
-  Sliders,
-  Type,
-  Mic,
-  Eye,
-  Focus,
-  Volume2
-} from "lucide-react";
+  PlusIcon as Plus,
+  TrashIcon as Trash2,
+  PencilSquareIcon as Edit3,
+  CheckIcon as Check,
+  XMarkIcon as X,
+  CreditCardIcon as CreditCard,
+  ArrowDownOnSquareIcon as Save,
+  CheckCircleIcon as CheckSquare,
+  StopIcon as Square,
+  StarIcon as Star,
+  SparklesIcon as Sparkles,
+  ArrowPathIcon as Loader2,
+  AdjustmentsHorizontalIcon as Sliders,
+  DocumentTextIcon as Type,
+  MicrophoneIcon as Mic,
+  EyeIcon as Eye,
+  ViewfinderCircleIcon as Focus,
+  SpeakerWaveIcon as Volume2
+} from "@heroicons/react/24/solid";
 
 export interface PlanItem {
   id: string;
@@ -215,7 +215,7 @@ export default function AdminPlansManager() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200 text-left">
+    <div className="space-y-6 animate-in fade-in duration-200 text-left pb-6">
       {/* Toast Notification */}
       {toastMessage && (
         <div

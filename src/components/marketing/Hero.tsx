@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles, Accessibility } from "lucide-react";
 import Link from "next/link";
 import siteConfig from "@/data/site-config.json";
 

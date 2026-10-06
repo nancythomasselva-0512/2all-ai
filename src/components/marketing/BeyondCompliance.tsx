@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, TrendingUp, Award } from "lucide-react";
+import { UserGroupIcon as Users, ArrowTrendingUpIcon as TrendingUp, TrophyIcon as Award } from "@heroicons/react/24/solid";
 
 export default function BeyondCompliance() {
   const points = [

@@ -3,21 +3,21 @@
 import React from "react";
 import Link from "next/link";
 import {
-  FileText,
-  Users,
-  ShieldCheck,
-  Sparkles,
-  Search,
-  Code,
-  Globe,
-  User,
-  Activity,
-  LayoutGrid,
-  ChevronRight,
-  TrendingUp,
-  Play,
-  ClipboardCheck
-} from "lucide-react";
+  DocumentTextIcon as FileText,
+  UserGroupIcon as Users,
+  ShieldCheckIcon as ShieldCheck,
+  SparklesIcon as Sparkles,
+  MagnifyingGlassIcon as Search,
+  CodeBracketIcon as Code,
+  GlobeAltIcon as Globe,
+  UserIcon as User,
+  ChartBarIcon as Activity,
+  Squares2X2Icon as LayoutGrid,
+  ChevronRightIcon as ChevronRight,
+  ArrowTrendingUpIcon as TrendingUp,
+  PlayIcon as Play,
+  ClipboardDocumentCheckIcon as ClipboardCheck
+} from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MegamenuProps {

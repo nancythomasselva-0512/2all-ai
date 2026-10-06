@@ -13,11 +13,20 @@ export default async function AdminDashboardPage(props: { searchParams?: Promise
   const tab = searchParams?.tab || "overview";
   const session = await auth();
 
-  // Auth check — only ADMIN or SUPER_ADMIN can access
+  // Strict role separation: Admin and Super Admin must not collapse/mix
   const user = session?.user;
-  const isAdmin = user && ((user as any)?.role === "ADMIN" || (user as any)?.role === "SUPER_ADMIN");
+  const userRole = (user as any)?.role;
 
-  if (!isAdmin) {
+  // Super Admin belongs exclusively to /super-admin/dashboard
+  if (userRole === "SUPER_ADMIN") {
+    const targetUrl = tab && tab !== "overview" 
+      ? `/super-admin/dashboard?tab=${encodeURIComponent(tab)}`
+      : "/super-admin/dashboard";
+    redirect(targetUrl);
+  }
+
+  // Non-admins must authenticate at /admin/login
+  if (userRole !== "ADMIN") {
     redirect("/admin/login");
   }
 
@@ -155,15 +164,28 @@ export default async function AdminDashboardPage(props: { searchParams?: Promise
     console.error("Could not load config file in Admin Dashboard, using defaults.");
   }
 
+  // Ensure fresh Admin profile
+  let adminProfile = user;
+  if (user?.email) {
+    const dbAdmin = await prisma.user.findUnique({
+      where: { email: user.email },
+      select: { id: true, name: true, email: true, role: true }
+    });
+    if (dbAdmin) {
+      adminProfile = dbAdmin as any;
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-slate-50 super-admin-typography">
       <AdminDashboard
         initialUsers={users as any}
         initialProjects={projects as any}
         initialDomains={domains as any}
         initialConfig={config}
-        currentUser={user as any}
+        currentUser={adminProfile as any}
         initialTab={tab}
+        isSuperAdminView={false}
       />
     </div>
   );

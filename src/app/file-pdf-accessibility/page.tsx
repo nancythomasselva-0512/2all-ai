@@ -6,7 +6,16 @@ import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FileText, CheckCircle2, ShieldCheck, Zap, ArrowRight, FileCheck, Layers, Sparkles } from "lucide-react";
+import {
+  DocumentTextIcon as FileText,
+  CheckCircleIcon as CheckCircle2,
+  ShieldCheckIcon as ShieldCheck,
+  BoltIcon as Zap,
+  ArrowRightIcon as ArrowRight,
+  DocumentCheckIcon as FileCheck,
+  Square3Stack3DIcon as Layers,
+  SparklesIcon as Sparkles
+} from "@heroicons/react/24/solid";
 
 export default function FilePdfAccessibilityPage() {
   const features = [

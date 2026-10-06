@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, ChevronDown, HelpCircle, X, Check } from "lucide-react";
+import { 
+  ArrowRightIcon as ArrowRight, 
+  SparklesIcon as Sparkles, 
+  ChevronDownIcon as ChevronDown, 
+  QuestionMarkCircleIcon as HelpCircle, 
+  XMarkIcon as X, 
+  CheckIcon as Check 
+} from "@heroicons/react/24/solid";
 
 export default function PricingSection() {
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("yearly");

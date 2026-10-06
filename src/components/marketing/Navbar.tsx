@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import Link from "next/link";
-import { ChevronDown, Sparkles } from "lucide-react";
+import { ChevronDownIcon as ChevronDown, SparklesIcon as Sparkles } from "@heroicons/react/24/solid";
 import Logo from "@/components/ui/Logo";
 
 // Import Megamenus

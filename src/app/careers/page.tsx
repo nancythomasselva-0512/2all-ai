@@ -5,7 +5,15 @@ import Navbar from '@/components/marketing/Navbar';
 import Footer from '@/components/marketing/Footer';
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Workflow, Users, Box, Heart, Puzzle, Check } from "lucide-react";
+import {
+  ArrowRightIcon as ArrowRight,
+  ArrowPathIcon as Workflow,
+  UserGroupIcon as Users,
+  CubeIcon as Box,
+  HeartIcon as Heart,
+  PuzzlePieceIcon as Puzzle,
+  CheckIcon as Check
+} from "@heroicons/react/24/solid";
 import Link from 'next/link';
 
 export default function CareersPage() {

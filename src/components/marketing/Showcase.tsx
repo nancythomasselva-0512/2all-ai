@@ -10,7 +10,7 @@ import {
   useReducedMotion, 
   animate 
 } from "framer-motion";
-import { Check, Accessibility, Sparkles } from "lucide-react";
+import { CheckIcon as Check, UserCircleIcon as Accessibility, SparklesIcon as Sparkles } from "@heroicons/react/24/solid";
 
 export default function Showcase() {
   const [phase, setPhase] = useState(0); // 0: Dashboard/Auto-Fix, 1: Mobile scan, 2: Desktop scan
@@ -178,6 +178,8 @@ export default function Showcase() {
               <div className="relative w-full h-[320px] bg-slate-950 overflow-hidden flex items-center justify-center">
                 <video
                   src="/images/hand%20animation.mp4"
+                  aria-label="Demonstration video showing AI Smart Touch Target Correction on mobile interface"
+                  title="Mobile Smart Touch Target Correction Video"
                   autoPlay
                   loop
                   muted
@@ -547,6 +549,8 @@ export default function Showcase() {
             <div className="flex-1 bg-slate-950 relative overflow-hidden text-white flex items-center justify-center">
               <video
                 src="/images/hero-animation%20(1).mp4"
+                aria-label="Demonstration video showing 2all.ai automated accessibility scanner and real-time fixes"
+                title="Desktop 2all.ai Accessibility Scanner Video"
                 autoPlay
                 loop
                 muted

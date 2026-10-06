@@ -4,20 +4,20 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
-  ChevronLeft,
-  CreditCard,
-  FileText,
-  Code,
-  BarChart3,
-  ShieldCheck,
-  User,
-  Award,
-  Globe,
-  Rocket,
-  HelpCircle,
-  ArrowUpRight,
-  Check,
-} from "lucide-react";
+  ChevronLeftIcon as ChevronLeft,
+  CreditCardIcon as CreditCard,
+  DocumentTextIcon as FileText,
+  CodeBracketIcon as Code,
+  ChartBarIcon as BarChart3,
+  ShieldCheckIcon as ShieldCheck,
+  UserIcon as User,
+  TrophyIcon as Award,
+  GlobeAltIcon as Globe,
+  RocketLaunchIcon as Rocket,
+  QuestionMarkCircleIcon as HelpCircle,
+  ArrowUpRightIcon as ArrowUpRight,
+  CheckIcon as Check
+} from "@heroicons/react/24/solid";
 import InstallCodeBlock from "@/components/dashboard/InstallCodeBlock";
 import PageHelpTooltip from "@/components/ui/PageHelpTooltip";
 import DemoModal from "@/components/marketing/DemoModal";

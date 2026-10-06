@@ -3,21 +3,21 @@
 import React from "react";
 import Link from "next/link";
 import { 
-  ShieldCheck, 
-  ArrowLeftRight, 
-  Sparkles, 
-  BookOpen, 
-  Accessibility, 
-  Book, 
-  FileText, 
-  BadgeCheck, 
-  Star, 
-  HelpCircle, 
-  Mail, 
-  Lock,
-  TrendingUp,
-  ArrowRight
-} from "lucide-react";
+  ShieldCheckIcon as ShieldCheck, 
+  ArrowsRightLeftIcon as ArrowLeftRight, 
+  SparklesIcon as Sparkles, 
+  BookOpenIcon as BookOpen, 
+  UserCircleIcon as Accessibility, 
+  BookOpenIcon as Book, 
+  DocumentTextIcon as FileText, 
+  CheckBadgeIcon as BadgeCheck, 
+  StarIcon as Star, 
+  QuestionMarkCircleIcon as HelpCircle, 
+  EnvelopeIcon as Mail, 
+  LockClosedIcon as Lock, 
+  ArrowTrendingUpIcon as TrendingUp, 
+  ArrowRightIcon as ArrowRight 
+} from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface MegamenuProps {

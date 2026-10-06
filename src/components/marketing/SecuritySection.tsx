@@ -1,7 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ShieldCheck, Lock, Shield, ArrowRight } from "lucide-react";
+import { 
+  ShieldCheckIcon as ShieldCheck, 
+  LockClosedIcon as Lock, 
+  ShieldCheckIcon as Shield, 
+  ArrowRightIcon as ArrowRight 
+} from "@heroicons/react/24/solid";
 
 export default function SecuritySection() {
   const securityFeatures = [

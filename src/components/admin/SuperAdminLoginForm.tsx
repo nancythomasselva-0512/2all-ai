@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { signIn, signOut } from "next-auth/react";
-import { Lock, Mail, Loader2, Key, Crown, ShieldAlert } from "lucide-react";
+import { 
+  LockClosedIcon as Lock, 
+  EnvelopeIcon as Mail, 
+  ArrowPathIcon as Loader2, 
+  KeyIcon as Key, 
+  TrophyIcon as Crown, 
+  ShieldExclamationIcon as ShieldAlert 
+} from "@heroicons/react/24/solid";
 import Logo from "@/components/ui/Logo";
 
 export default function SuperAdminLoginForm({ errorMsg }: { errorMsg?: string }) {

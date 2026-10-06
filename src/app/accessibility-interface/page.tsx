@@ -5,16 +5,16 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { motion } from "framer-motion";
-import { 
-  Sparkles, 
-  Eye, 
-  Settings, 
-  Accessibility, 
-  HelpCircle,
-  Lightbulb,
-  CheckCircle,
-  ArrowRight
-} from "lucide-react";
+import {
+  SparklesIcon as Sparkles,
+  EyeIcon as Eye,
+  Cog6ToothIcon as Settings,
+  UserCircleIcon as Accessibility,
+  QuestionMarkCircleIcon as HelpCircle,
+  LightBulbIcon as Lightbulb,
+  CheckCircleIcon as CheckCircle,
+  ArrowRightIcon as ArrowRight
+} from "@heroicons/react/24/solid";
 import DyslexiaSimulation from "@/components/accessibility/DyslexiaSimulation";
 
 export default function AccessibilityInterfacePage() {

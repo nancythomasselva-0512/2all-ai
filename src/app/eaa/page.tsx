@@ -5,7 +5,13 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { Globe2, ShieldCheck, AlertCircle, ArrowRight, CheckCircle2 } from "lucide-react";
+import {
+  GlobeAltIcon as Globe2,
+  ShieldCheckIcon as ShieldCheck,
+  ExclamationCircleIcon as AlertCircle,
+  ArrowRightIcon as ArrowRight,
+  CheckCircleIcon as CheckCircle2
+} from "@heroicons/react/24/solid";
 
 export default function EaaCompliancePage() {
   const eaaPillars = [

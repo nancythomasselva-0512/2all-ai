@@ -52,17 +52,91 @@ async function handleBootstrap(req: Request) {
     let rawDomain = (domain || requestHost || "yourwebsite.com").trim().toLowerCase();
     let cleanDomain = rawDomain.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").split(":")[0];
 
-    // 1. Validate API Key if provided, or allow fallback
+    // 1. Validate API Key if provided
     let keyRecord: any = null;
     if (apiKey && apiKey !== "demo" && apiKey !== "DEMO") {
       keyRecord = await prisma.apiKey.findUnique({
         where: { key: apiKey },
-        include: { user: true },
+        include: { user: true, domain: true },
       });
+
+      // Enforce Revocation: If key is revoked, forbid loading widget immediately!
+      if (keyRecord && keyRecord.status === "REVOKED") {
+        return NextResponse.json(
+          {
+            success: false,
+            revoked: true,
+            status: "REVOKED",
+            error: "REVOKED_API_KEY",
+            message: "This API key has been revoked by the administrator. The accessibility widget is disabled.",
+          },
+          {
+            status: 403,
+            headers: {
+              ...CORS_HEADERS,
+              "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+            },
+          }
+        );
+      }
+
+      // If invalid/unknown non-demo key provided, reject with 403
+      if (!keyRecord) {
+        return NextResponse.json(
+          {
+            success: false,
+            revoked: true,
+            error: "INVALID_API_KEY",
+            message: "Invalid API key provided. The accessibility widget is disabled.",
+          },
+          {
+            status: 403,
+            headers: {
+              ...CORS_HEADERS,
+              "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+            },
+          }
+        );
+      }
     }
 
-    // If keyRecord found, update lastUsedAt
-    if (keyRecord) {
+    // 1b. Check if the domain itself is registered and has all keys revoked (e.g. Fugo)
+    if (cleanDomain && !["localhost", "127.0.0.1", "example.com", "yourwebsite.com"].includes(cleanDomain)) {
+      const domainKeys = await prisma.apiKey.findMany({
+        where: {
+          OR: [
+            { domainName: cleanDomain },
+            { domain: { domain: cleanDomain } },
+            { domain: { canonicalDomain: cleanDomain } },
+          ],
+        },
+      });
+
+      if (domainKeys.length > 0) {
+        const hasActiveKey = domainKeys.some((k: any) => k.status === "ACTIVE");
+        if (!hasActiveKey) {
+          return NextResponse.json(
+            {
+              success: false,
+              revoked: true,
+              status: "REVOKED",
+              error: "DOMAIN_KEY_REVOKED",
+              message: `The API key for ${cleanDomain} has been revoked. The accessibility widget is disabled.`,
+            },
+            {
+              status: 403,
+              headers: {
+                ...CORS_HEADERS,
+                "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+              },
+            }
+          );
+        }
+      }
+    }
+
+    // If active keyRecord found, update lastUsedAt
+    if (keyRecord && keyRecord.status === "ACTIVE") {
       prisma.apiKey.update({ where: { id: keyRecord.id }, data: { lastUsedAt: new Date() } }).catch(() => {});
     }
 

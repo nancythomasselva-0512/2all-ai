@@ -3,10 +3,16 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { 
-  BookOpen, EyeOff, BrainCircuit, ScanFace, 
-  Glasses, MonitorSpeaker, GraduationCap, Moon,
-  ZapOff, Accessibility
-} from "lucide-react";
+  BoltSlashIcon,
+  EyeSlashIcon,
+  FaceSmileIcon,
+  SparklesIcon,
+  SpeakerWaveIcon,
+  BookOpenIcon,
+  AcademicCapIcon,
+  MoonIcon,
+  HandRaisedIcon
+} from "@heroicons/react/24/solid";
 import { useAccessibility, ProfileType } from "@/context/AccessibilityContext";
 
 const stagger = {
@@ -23,63 +29,63 @@ const profiles = [
   { 
     id: "seizure", 
     label: "Epilepsy Safe Mode", 
-    icon: ZapOff, 
+    icon: BoltSlashIcon, 
     desc: "Dampens color and removes blinks",
     detail: "This mode enables people with epilepsy to use the website safely by eliminating the risk of seizures that result from flashing or blinking animations and risky color combinations."
   },
   { 
     id: "low-vision", 
     label: "Visually Impaired Mode", 
-    icon: Glasses, 
+    icon: EyeSlashIcon, 
     desc: "Improves website's visuals",
     detail: "This mode adjusts the website for the convenience of users with visual impairments such as Degrading Eyesight, Tunnel Vision, Cataract, Glaucoma, and others."
   },
   { 
     id: "cognitive", 
     label: "Cognitive Disability Mode", 
-    icon: ScanFace, 
+    icon: FaceSmileIcon, 
     desc: "Helps to focus on specific content",
     detail: "Assists users with cognitive disabilities such as Autism, Dyslexia, CVA, and others to focus on the essential elements of the website more easily."
   },
   { 
     id: "adhd", 
     label: "ADHD Friendly Mode", 
-    icon: BrainCircuit, 
+    icon: SparklesIcon, 
     desc: "Reduces distractions and improve focus",
     detail: "Significantly reduces distractions and noise, helping people with ADHD and Neurodevelopmental disorders to browse, read, and focus on the essential elements of the website."
   },
   { 
     id: "blind", 
     label: "Blindness Mode", 
-    icon: MonitorSpeaker, 
+    icon: SpeakerWaveIcon, 
     desc: "Allows to use the site with screen reader",
     detail: "Optimizes the site for compatibility with screen-readers such as JAWS, NVDA, VoiceOver, and TalkBack."
   },
   { 
     id: "dyslexia", 
     label: "Dyslexia Friendly", 
-    icon: BookOpen, 
+    icon: BookOpenIcon, 
     desc: "Enhances readability for dyslexia",
     detail: "Applies specialized typography and letter/word spacing to increase reading speed and reduce reading errors for users with dyslexia."
   },
   { 
     id: "reading", 
     label: "Reading Mode", 
-    icon: GraduationCap, 
+    icon: AcademicCapIcon, 
     desc: "Improves reading comprehension",
     detail: "Highlights paragraph structure and simplifies reading alignment for clearer text focus."
   },
   { 
     id: "night", 
     label: "Night Mode", 
-    icon: Moon, 
+    icon: MoonIcon, 
     desc: "Reduces eye strain in low light",
     detail: "Switches interface to dark themes to reduce blue light exposure and prevent eye fatigue."
   },
   { 
     id: "motor-impaired", 
     label: "Keyboard Nav / Motor Impaired", 
-    icon: Accessibility, 
+    icon: HandRaisedIcon, 
     desc: "Optimizes focus & keyboard controls",
     detail: "Enlarges interactive target areas and boosts keyboard focus indicators for easier navigation."
   }

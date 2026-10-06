@@ -4,11 +4,31 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAccessibility } from "@/context/AccessibilityContext";
 import { 
-  Type, AlignLeft, AlignCenter, Search, Link, MousePointer2,
-  Video, Maximize, Target, Hash, Expand, BetweenHorizonalEnd,
-  MonitorSpeaker, ShieldAlert, Play, Pause, Square, Settings, BookOpen,
-  MessageSquarePlus, Minus, Plus, Mic, Volume2, X
-} from "lucide-react";
+  PlayIcon,
+  PauseIcon,
+  StopIcon,
+  BookOpenIcon,
+  Cog6ToothIcon,
+  MicrophoneIcon,
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
+  InformationCircleIcon,
+  ArrowsPointingOutIcon,
+  ViewfinderCircleIcon,
+  CursorArrowRaysIcon,
+  CursorArrowRippleIcon,
+  LinkIcon,
+  HashtagIcon,
+  ShieldExclamationIcon,
+  EyeSlashIcon,
+  FilmIcon,
+  PlusIcon,
+  MinusIcon,
+  XMarkIcon,
+  Bars3BottomLeftIcon,
+  BarsArrowUpIcon,
+  ArrowsRightLeftIcon,
+} from "@heroicons/react/24/solid";
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -41,17 +61,17 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
         { 
           id: "letterSpacing", label: "Letter Spacing", type: "range", 
           min: 0, max: 5, step: 0.5, value: state.letterSpacing,
-          icon: <AlignLeft className="w-4 h-4" />, suffix: "px"
+          icon: <Bars3BottomLeftIcon className="w-4 h-4" />, suffix: "px"
         },
         { 
           id: "wordSpacing", label: "Word Spacing", type: "range", 
           min: 0, max: 2, step: 0.1, value: state.wordSpacing,
-          icon: <BetweenHorizonalEnd className="w-4 h-4" />, suffix: "em"
+          icon: <ArrowsRightLeftIcon className="w-4 h-4" />, suffix: "em"
         },
         { 
           id: "lineHeight", label: "Line Height", type: "range", 
           min: 1, max: 3, step: 0.1, value: state.lineHeight,
-          icon: <Expand className="w-4 h-4" />, suffix: "x"
+          icon: <BarsArrowUpIcon className="w-4 h-4" />, suffix: "x"
         },
         { 
           id: "fontFamily", label: "Readable Fonts", type: "select",
@@ -88,7 +108,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
               (window as any).__a11yStartSelectedReading();
             }
           },
-          icon: <Play className="w-5 h-5 text-blue-600" />
+          icon: <PlayIcon className="w-5 h-5 text-blue-600" />
         },
         {
           id: "readEntirePage",
@@ -99,7 +119,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
               (window as any).__a11yStartPageReading();
             }
           },
-          icon: <BookOpen className="w-5 h-5 text-blue-600" />
+          icon: <BookOpenIcon className="w-5 h-5 text-blue-600" />
         },
         {
           id: "pauseReading",
@@ -110,7 +130,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
               (window as any).__a11yPauseReading();
             }
           },
-          icon: <Pause className="w-5 h-5 text-amber-600" />,
+          icon: <PauseIcon className="w-5 h-5 text-amber-600" />,
           disabled: state.speechStatus !== "playing"
         },
         {
@@ -122,7 +142,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
               (window as any).__a11yResumeReading();
             }
           },
-          icon: <Play className="w-5 h-5 text-emerald-600" />,
+          icon: <PlayIcon className="w-5 h-5 text-emerald-600" />,
           disabled: state.speechStatus !== "paused"
         },
         {
@@ -134,7 +154,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
               (window as any).__a11yStopReading();
             }
           },
-          icon: <Square className="w-5 h-5 text-rose-600" />,
+          icon: <StopIcon className="w-5 h-5 text-rose-600" />,
           disabled: state.speechStatus === "stopped"
         },
         {
@@ -142,21 +162,21 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
           label: "Highlight Word",
           type: "toggle",
           value: state.highlightWord,
-          icon: <Target className="w-5 h-5" />
+          icon: <ViewfinderCircleIcon className="w-5 h-5" />
         },
         {
           id: "highlightSentence",
           label: "Highlight Sentence",
           type: "toggle",
           value: state.highlightSentence,
-          icon: <Hash className="w-5 h-5" />
+          icon: <HashtagIcon className="w-5 h-5" />
         },
         {
           id: "autoScroll",
           label: "Auto Scroll",
           type: "toggle",
           value: state.autoScroll,
-          icon: <Expand className="w-5 h-5" />
+          icon: <ArrowsPointingOutIcon className="w-5 h-5" />
         },
         {
           id: "voiceSettings",
@@ -164,42 +184,43 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
           type: "toggle",
           value: state.isVoiceSettingsOpen,
           onClick: () => updateSetting("isVoiceSettingsOpen", !state.isVoiceSettingsOpen),
-          icon: <Settings className="w-5 h-5" />
+          icon: <Cog6ToothIcon className="w-5 h-5" />
         },
         {
           id: "voiceNavigation",
           label: "Voice Navigation",
           type: "toggle",
           value: state.voiceNavigation,
-          icon: <Mic className="w-5 h-5 text-blue-600" />
+          icon: <MicrophoneIcon className="w-5 h-5" />
         }
       ]
     },
     {
       title: "Reading, Focus & Assistive Reading",
       items: [
-        { id: "readingMask", label: "Reading Mask", type: "toggle", value: state.readingMask, icon: <Maximize className="w-5 h-5" /> },
-        { id: "readingRuler", label: "Reading Ruler", type: "toggle", value: state.readingRuler, icon: <Target className="w-5 h-5" /> },
+        { id: "accessibleTooltips", label: "Accessible Tooltips", type: "toggle", value: state.accessibleTooltips, icon: <InformationCircleIcon className="w-5 h-5" /> },
+        { id: "readingMask", label: "Reading Mask", type: "toggle", value: state.readingMask, icon: <ArrowsPointingOutIcon className="w-5 h-5" /> },
+        { id: "readingRuler", label: "Reading Ruler", type: "toggle", value: state.readingRuler, icon: <ViewfinderCircleIcon className="w-5 h-5" /> },
       ]
     },
     {
       title: "Highlights & Outlines",
       items: [
-        { id: "highlightLinks", label: "Highlight Links", type: "toggle", value: state.highlightLinks, icon: <Link className="w-5 h-5" /> },
-        { id: "highlightHeadings", label: "Highlight Headings", type: "toggle", value: state.highlightHeadings, icon: <Hash className="w-5 h-5" /> },
-        { id: "highlightButtons", label: "Highlight Buttons", type: "toggle", value: state.highlightButtons, icon: <MousePointer2 className="w-5 h-5" /> },
-        { id: "highlightFocus", label: "Focus Highlight", type: "toggle", value: state.highlightFocus, icon: <ShieldAlert className="w-5 h-5" /> },
-        { id: "highlightHover", label: "Highlight Hover", type: "toggle", value: state.highlightHover, icon: <Target className="w-5 h-5" /> },
+        { id: "highlightLinks", label: "Highlight Links", type: "toggle", value: state.highlightLinks, icon: <LinkIcon className="w-5 h-5" /> },
+        { id: "highlightHeadings", label: "Highlight Headings", type: "toggle", value: state.highlightHeadings, icon: <HashtagIcon className="w-5 h-5" /> },
+        { id: "highlightButtons", label: "Highlight Buttons", type: "toggle", value: state.highlightButtons, icon: <CursorArrowRippleIcon className="w-5 h-5" /> },
+        { id: "highlightFocus", label: "Focus Highlight", type: "toggle", value: state.highlightFocus, icon: <ShieldExclamationIcon className="w-5 h-5" /> },
+        { id: "highlightHover", label: "Highlight Hover", type: "toggle", value: state.highlightHover, icon: <CursorArrowRaysIcon className="w-5 h-5" /> },
       ]
     },
     {
       title: "Orientation & Visual Adjustments",
       items: [
-        { id: "hideImages", label: "Hide Images", type: "toggle", value: state.hideImages, icon: <Video className="w-5 h-5" /> },
-        { id: "muteSounds", label: "Mute Sounds", type: "toggle", value: state.muteSounds, icon: <ShieldAlert className="w-5 h-5" /> },
-        { id: "reduceMotion", label: "Reduce Motion", type: "toggle", value: state.reduceMotion, icon: <Video className="w-5 h-5" /> },
+        { id: "hideImages", label: "Hide Images", type: "toggle", value: state.hideImages, icon: <EyeSlashIcon className="w-5 h-5" /> },
+        { id: "muteSounds", label: "Mute Sounds", type: "toggle", value: state.muteSounds, icon: <SpeakerXMarkIcon className="w-5 h-5" /> },
+        { id: "reduceMotion", label: "Reduce Motion", type: "toggle", value: state.reduceMotion, icon: <FilmIcon className="w-5 h-5" /> },
         { 
-          id: "cursorSize", label: "Cursor Size", type: "select", value: state.cursorSize, icon: <MousePointer2 className="w-5 h-5" />,
+          id: "cursorSize", label: "Cursor Size", type: "select", value: state.cursorSize, icon: <CursorArrowRippleIcon className="w-5 h-5" />,
           options: [
             { value: "normal", label: "Normal" },
             { value: "large", label: "Large" },
@@ -207,7 +228,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
           ]
         },
         { 
-          id: "cursorColor", label: "Cursor Pointer Style", type: "select", value: state.cursorColor, icon: <MousePointer2 className="w-5 h-5" />,
+          id: "cursorColor", label: "Cursor Pointer Style", type: "select", value: state.cursorColor, icon: <CursorArrowRippleIcon className="w-5 h-5" />,
           options: [
             { value: "default", label: "Default" },
             { value: "black", label: "Big Black" },
@@ -240,7 +261,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
                   className="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg flex items-center justify-center border border-blue-500 shadow-md shadow-blue-500/20 cursor-pointer transition-all active:scale-95"
                   aria-label="Decrease content scaling"
                 >
-                  <Minus className="w-4 h-4 stroke-[3]" />
+                  <MinusIcon className="w-4 h-4 stroke-[2]" />
                 </button>
 
                 {/* Center Label */}
@@ -254,7 +275,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
                   className="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg flex items-center justify-center border border-blue-500 shadow-md shadow-blue-500/20 cursor-pointer transition-all active:scale-95"
                   aria-label="Increase content scaling"
                 >
-                  <Plus className="w-4 h-4 stroke-[3]" />
+                  <PlusIcon className="w-4 h-4 stroke-[2]" />
                 </button>
               </div>
             </div>
@@ -273,7 +294,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
               <div className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-sm transition-colors ${
                 state.textMagnifier ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-600 border border-blue-100'
               }`}>
-                <MessageSquarePlus className="w-4 h-4 stroke-[2]" />
+                <ViewfinderCircleIcon className="w-4 h-4" />
               </div>
               <span className="text-xs font-bold">Text Magnifier</span>
             </button>
@@ -362,9 +383,15 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
                   <React.Fragment key={item.id}>
                     <button
                       onClick={() => (item.onClick ? item.onClick() : updateSetting(item.id as any, !isActive))}
-                      className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all duration-300 cursor-pointer ${isActive ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-blue-300'}`}
+                      className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                        isActive 
+                          ? 'bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20' 
+                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-blue-300'
+                      }`}
                     >
-                      {item.icon}
+                      <div className={`transition-colors ${isActive ? 'text-white' : 'text-blue-600'}`}>
+                        {item.icon}
+                      </div>
                       <span className="text-[11px] font-bold text-center leading-tight">{item.label}</span>
                     </button>
 
@@ -381,7 +408,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
                         <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
                           <div className="flex items-center gap-2">
                             <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100 shadow-2xs">
-                              <Volume2 className="w-3.5 h-3.5 stroke-[2.2]" />
+                              <SpeakerWaveIcon className="w-3.5 h-3.5" />
                             </div>
                             <div>
                               <h4 className="text-xs font-black text-slate-900 leading-tight">Voice Settings</h4>
@@ -393,7 +420,7 @@ export default function CoreFeaturesSection({ searchQuery }: { searchQuery: stri
                             className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors border-none bg-transparent cursor-pointer"
                             aria-label="Close Voice Settings"
                           >
-                            <X className="w-4 h-4 stroke-[2.5]" />
+                            <XMarkIcon className="w-4 h-4" />
                           </button>
                         </div>
 

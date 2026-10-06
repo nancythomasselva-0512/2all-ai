@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, ArrowRight } from "lucide-react";
+import { CheckIcon as Check, ArrowRightIcon as ArrowRight } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 interface ComplianceSectionProps {

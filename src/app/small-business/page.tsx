@@ -5,9 +5,17 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  ArrowRight, Check, Shield, Zap, Target,
-  TrendingUp, Users, HeartHandshake, ChevronDown, Star
-} from "lucide-react";
+  ArrowRightIcon as ArrowRight,
+  CheckIcon as Check,
+  ShieldCheckIcon as Shield,
+  BoltIcon as Zap,
+  ViewfinderCircleIcon as Target,
+  ArrowTrendingUpIcon as TrendingUp,
+  UserGroupIcon as Users,
+  HeartIcon as HeartHandshake,
+  ChevronDownIcon as ChevronDown,
+  StarIcon as Star
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import DemoModal from "@/components/marketing/DemoModal";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";

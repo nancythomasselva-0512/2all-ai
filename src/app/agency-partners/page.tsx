@@ -5,7 +5,14 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { Users, ShieldCheck, DollarSign, ArrowRight, CheckCircle2, Award } from "lucide-react";
+import {
+  UserGroupIcon as Users,
+  ShieldCheckIcon as ShieldCheck,
+  CurrencyDollarIcon as DollarSign,
+  ArrowRightIcon as ArrowRight,
+  CheckCircleIcon as CheckCircle2,
+  TrophyIcon as Award
+} from "@heroicons/react/24/solid";
 
 export default function AgencyPartnersPage() {
   const benefits = [

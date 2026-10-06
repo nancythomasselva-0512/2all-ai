@@ -2,28 +2,28 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  Layers,
-  Plus,
-  Edit2,
-  Trash2,
-  Check,
-  Eye,
-  EyeOff,
-  Search,
-  ArrowUp,
-  ArrowDown,
-  Image as ImageIcon,
-  Video,
-  Palette,
-  Type,
-  Link as LinkIcon,
-  ChevronDown,
-  ChevronUp,
-  Sparkles,
-  Upload,
-  Copy,
-  ExternalLink
-} from "lucide-react";
+  Square3Stack3DIcon as Layers,
+  PlusIcon as Plus,
+  PencilSquareIcon as Edit2,
+  TrashIcon as Trash2,
+  CheckIcon as Check,
+  EyeIcon as Eye,
+  EyeSlashIcon as EyeOff,
+  MagnifyingGlassIcon as Search,
+  ArrowUpIcon as ArrowUp,
+  ArrowDownIcon as ArrowDown,
+  PhotoIcon as ImageIcon,
+  VideoCameraIcon as Video,
+  PaintBrushIcon as Palette,
+  DocumentTextIcon as Type,
+  LinkIcon as LinkIcon,
+  ChevronDownIcon as ChevronDown,
+  ChevronUpIcon as ChevronUp,
+  SparklesIcon as Sparkles,
+  ArrowUpTrayIcon as Upload,
+  DocumentDuplicateIcon as Copy,
+  ArrowTopRightOnSquareIcon as ExternalLink
+} from "@heroicons/react/24/solid";
 
 export interface WebsiteSectionItem {
   id: string;
@@ -249,15 +249,25 @@ function ImageUploadInput({ label, value, onChange, placeholder = "/images/hero_
   };
 
   return (
-    <div className="space-y-1.5">
-      <label className="block text-[11px] font-bold text-slate-600 uppercase">{label}</label>
-      <div className="flex items-center gap-2">
+    <div className="space-y-1 min-w-0">
+      <div className="flex items-center justify-between gap-1">
+        <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider truncate">{label}</label>
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="text-[10px] font-bold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-none p-0 shrink-0"
+        >
+          <Upload className="w-3 h-3" /> Upload File
+        </button>
+      </div>
+
+      <div className="relative flex items-center min-w-0">
         <input
           type="text"
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-grow bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-20 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
 
         <input
@@ -271,20 +281,21 @@ function ImageUploadInput({ label, value, onChange, placeholder = "/images/hero_
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer border-none uppercase tracking-wider shrink-0"
+          className="absolute right-1 px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black rounded-lg shadow-xs transition-all flex items-center gap-1 cursor-pointer border-none uppercase tracking-wider"
+          title="Upload image from computer"
         >
-          <Upload className="w-3.5 h-3.5" /> Upload Photo
+          <Upload className="w-3 h-3" /> Upload
         </button>
       </div>
 
       {value && (
-        <div className="mt-1 flex items-center gap-2 p-1.5 bg-slate-100/90 rounded-xl border border-slate-200/80 w-fit">
-          <img src={value} alt="Preview" className="w-8 h-8 object-contain rounded-lg border border-slate-200 bg-white" />
-          <span className="text-[10px] font-bold text-slate-500 max-w-[140px] truncate">{value}</span>
+        <div className="mt-1 flex items-center gap-2 p-1.5 bg-slate-100/90 rounded-xl border border-slate-200/80 w-fit max-w-full">
+          <img src={value} alt="Preview" className="w-6 h-6 object-contain rounded-lg border border-slate-200 bg-white shrink-0" />
+          <span className="text-[10px] font-bold text-slate-500 truncate max-w-[130px]">{value}</span>
           <button
             type="button"
             onClick={() => onChange("")}
-            className="text-[10px] text-red-500 font-black hover:underline cursor-pointer border-none bg-transparent"
+            className="text-[10px] text-red-500 font-black hover:underline cursor-pointer border-none bg-transparent shrink-0"
           >
             Clear
           </button>
@@ -483,15 +494,18 @@ export default function AdminSectionsManager() {
 
   const filteredSections = sections.filter(sec => {
     const matchesCat = selectedCategory === "All Categories" || sec.category === selectedCategory;
+    if (!searchQuery.trim()) return matchesCat;
+    const q = searchQuery.toLowerCase().trim();
     const matchesSearch =
-      sec.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sec.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sec.badgeText.toLowerCase().includes(searchQuery.toLowerCase());
+      (sec.title?.toLowerCase().includes(q) ?? false) ||
+      (sec.subtitle?.toLowerCase().includes(q) ?? false) ||
+      (sec.badgeText?.toLowerCase().includes(q) ?? false) ||
+      (sec.category?.toLowerCase().includes(q) ?? false);
     return matchesCat && matchesSearch;
   });
 
   return (
-    <div className="space-y-6 text-left animate-in fade-in duration-200">
+    <div className="space-y-6 text-left animate-in fade-in duration-200 pb-6">
 
       {/* Toast Notification */}
       {toastMessage && (
@@ -534,14 +548,24 @@ export default function AdminSectionsManager() {
       {/* Filter & Search Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
         <div className="relative flex-grow max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
           <input
             type="text"
             placeholder="Search sections by title, subtitle, or badge..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-8 py-2 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+          {searchQuery.trim() !== "" && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-black cursor-pointer bg-transparent border-none p-0.5"
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
@@ -863,21 +887,23 @@ export default function AdminSectionsManager() {
                   <ImageIcon className="w-4 h-4 text-purple-600" /> Photo Upload & Video Embed URL
                 </span>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <ImageUploadInput
-                    label="Photo / Image URL"
-                    value={editingSection.imageUrl}
-                    onChange={(val) => setEditingSection({ ...editingSection, imageUrl: val })}
-                    placeholder="/images/hero_banner.png"
-                  />
-                  <div className="space-y-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-w-0">
+                  <div className="min-w-0">
+                    <ImageUploadInput
+                      label="Photo / Image URL"
+                      value={editingSection.imageUrl}
+                      onChange={(val) => setEditingSection({ ...editingSection, imageUrl: val })}
+                      placeholder="/images/hero_banner.png"
+                    />
+                  </div>
+                  <div className="space-y-1 min-w-0">
                     <label className="block text-[11px] font-bold text-slate-600 uppercase">Video Embed URL (YouTube/MP4)</label>
                     <input
                       type="text"
                       placeholder="https://www.youtube.com/embed/..."
                       value={editingSection.videoUrl}
                       onChange={(e) => setEditingSection({ ...editingSection, videoUrl: e.target.value })}
-                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-800"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
                 </div>
@@ -972,7 +998,7 @@ export default function AdminSectionsManager() {
       {/* ADD SECTION MODAL */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-xl w-full shadow-2xl space-y-5 text-left animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl space-y-5 text-left animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-lg font-bold text-[#0a1e3f]">Add New Website Section</h3>
               <button
@@ -1051,21 +1077,23 @@ export default function AdminSectionsManager() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <ImageUploadInput
-                  label="Photo / Image URL"
-                  value={newImageUrl}
-                  onChange={(val) => setNewImageUrl(val)}
-                  placeholder="/images/hero_banner.png"
-                />
-                <div className="space-y-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+                <div className="min-w-0">
+                  <ImageUploadInput
+                    label="Photo / Image URL"
+                    value={newImageUrl}
+                    onChange={(val) => setNewImageUrl(val)}
+                    placeholder="/images/hero_banner.png"
+                  />
+                </div>
+                <div className="space-y-1 min-w-0">
                   <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Video Embed URL</label>
                   <input
                     type="text"
                     placeholder="https://www.youtube.com/embed/..."
                     value={newVideoUrl}
                     onChange={(e) => setNewVideoUrl(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
               </div>

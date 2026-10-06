@@ -63,6 +63,7 @@ export function calculateAccessibilityScore(s: AccessibilityState): number {
     s.hideImages ||
     s.readMode ||
     s.textMagnifier || 
+    s.accessibleTooltips ||
     s.textToSpeech || 
     s.autoReadSelection ||
     s.readingMode !== "none" ||
@@ -111,6 +112,7 @@ interface AccessibilityState {
   titleColor: "default" | "black" | "white" | "yellow" | "blue" | "green" | "red" | "purple" | "orange" | "teal";
   bgColor: "default" | "black" | "white" | "yellow" | "blue" | "green" | "red" | "purple" | "orange" | "teal";
   highlightFocus: boolean;
+  accessibleTooltips: boolean;
   textToSpeech: boolean;
   textMagnifier: boolean;
   textAlignment: TextAlignment;
@@ -176,6 +178,7 @@ const defaultState: AccessibilityState = {
   titleColor: "default",
   bgColor: "default",
   highlightFocus: false,
+  accessibleTooltips: false,
   textToSpeech: false,
   textMagnifier: false,
   textAlignment: "default",
@@ -267,6 +270,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     toggleClass("a11y-highlight-headings", s.highlightHeadings);
     toggleClass("a11y-highlight-buttons", s.highlightButtons);
     toggleClass("a11y-highlight-focus", s.highlightFocus);
+    toggleClass("a11y-accessible-tooltips", s.accessibleTooltips);
     toggleClass("a11y-highlight-hover", s.highlightHover);
     toggleClass("a11y-hide-images", s.hideImages);
     toggleClass("a11y-read-mode", s.readMode);

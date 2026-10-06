@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useAccessibility } from "@/context/AccessibilityContext";
-import { Moon, EyeOff, Droplet, Sun, Eye } from "lucide-react";
+import { MoonIcon as Moon, EyeSlashIcon as EyeOff, SparklesIcon as Droplet, SunIcon as Sun, EyeIcon as Eye } from "@heroicons/react/24/solid";
 
 const stagger = {
   hidden: { opacity: 0 },

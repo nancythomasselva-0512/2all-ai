@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Globe, ArrowRight, Loader2 } from "lucide-react";
+import {
+  GlobeAltIcon as Globe,
+  ArrowRightIcon as ArrowRight,
+  ArrowPathIcon as Loader2
+} from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
 
 export default function NewProjectPage() {

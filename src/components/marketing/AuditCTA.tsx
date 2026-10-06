@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Globe, FileText, CheckCircle2, ShieldAlert } from "lucide-react";
+import { 
+  ArrowRightIcon as ArrowRight, 
+  GlobeAltIcon as Globe, 
+  DocumentTextIcon as FileText, 
+  CheckCircleIcon as CheckCircle2, 
+  ShieldExclamationIcon as ShieldAlert 
+} from "@heroicons/react/24/solid";
 import siteConfig from "@/data/site-config.json";
 
 export default function AuditCTA() {

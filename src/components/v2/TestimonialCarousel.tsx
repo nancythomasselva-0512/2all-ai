@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Star } from "lucide-react";
+import { StarIcon as Star } from "@heroicons/react/24/solid";
 import Image from "next/image";
 
 const testimonials = [

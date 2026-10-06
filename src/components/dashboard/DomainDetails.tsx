@@ -3,34 +3,34 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
-  Globe,
-  ShieldCheck,
-  Copy,
-  Check,
-  RefreshCw,
-  Trash2,
-  KeyRound,
-  Code,
-  Sliders,
-  BarChart3,
-  FileText,
-  AlertCircle,
-  CheckCircle2,
-  ExternalLink,
-  Activity,
-  ChevronRight,
-  Eye,
-  EyeOff,
-  Save,
-  Send,
-  Download,
-  Zap,
-  Monitor,
-  Smartphone,
-  Package,
-  List,
-} from "lucide-react";
+  ArrowLeftIcon as ArrowLeft,
+  GlobeAltIcon as Globe,
+  ShieldCheckIcon as ShieldCheck,
+  DocumentDuplicateIcon as Copy,
+  CheckIcon as Check,
+  ArrowPathIcon as RefreshCw,
+  TrashIcon as Trash2,
+  KeyIcon as KeyRound,
+  CodeBracketIcon as Code,
+  AdjustmentsHorizontalIcon as Sliders,
+  ChartBarIcon as BarChart3,
+  DocumentTextIcon as FileText,
+  ExclamationCircleIcon as AlertCircle,
+  CheckCircleIcon as CheckCircle2,
+  ArrowTopRightOnSquareIcon as ExternalLink,
+  ChartBarIcon as Activity,
+  ChevronRightIcon as ChevronRight,
+  EyeIcon as Eye,
+  EyeSlashIcon as EyeOff,
+  ArrowDownOnSquareIcon as Save,
+  PaperAirplaneIcon as Send,
+  ArrowDownTrayIcon as Download,
+  BoltIcon as Zap,
+  ComputerDesktopIcon as Monitor,
+  DevicePhoneMobileIcon as Smartphone,
+  ArchiveBoxIcon as Package,
+  ListBulletIcon as List
+} from "@heroicons/react/24/solid";
 
 interface ApiKeyType {
   id: string;
@@ -242,6 +242,15 @@ export default function DomainDetails({ domain: initialDomain, userName }: Domai
     if (res.ok) {
       setKeys(keys.map((k) => k.id === id ? { ...k, status: "REVOKED" } : k));
       showToast("API key revoked.");
+    }
+  };
+
+  const handleUnrevoke = async (id: string) => {
+    if (!confirm("Reactivate and unrevoke this API key? The widget using this key will resume working.")) return;
+    const res = await fetch(`/api/api-keys/${id}/unrevoke`, { method: "POST" });
+    if (res.ok) {
+      setKeys(keys.map((k) => k.id === id ? { ...k, status: "ACTIVE" } : k));
+      showToast("API key reactivated successfully.");
     }
   };
 
@@ -681,7 +690,7 @@ export default function DomainDetails({ domain: initialDomain, userName }: Domai
                                 >
                                   {copiedKeyId === k.id ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                                 </button>
-                                {k.status === "ACTIVE" && (
+                                {k.status === "ACTIVE" ? (
                                   <>
                                     <button
                                       onClick={() => handleCopyScript(k.id, k.key)}
@@ -706,6 +715,14 @@ export default function DomainDetails({ domain: initialDomain, userName }: Domai
                                       <Trash2 className="w-4 h-4" />
                                     </button>
                                   </>
+                                ) : (
+                                  <button
+                                    onClick={() => handleUnrevoke(k.id)}
+                                    className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors border-none bg-transparent cursor-pointer"
+                                    title="Unrevoke (Reactivate) Key"
+                                  >
+                                    <Check className="w-4 h-4 stroke-[2.5]" />
+                                  </button>
                                 )}
                               </div>
                             </td>

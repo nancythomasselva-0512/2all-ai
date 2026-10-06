@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { User, Bell, Shield, Save, CheckCircle2 } from "lucide-react";
+import {
+  UserIcon as User,
+  BellIcon as Bell,
+  ShieldCheckIcon as Shield,
+  ArrowDownOnSquareIcon as Save,
+  CheckCircleIcon as CheckCircle2
+} from "@heroicons/react/24/solid";
 import PageHelpTooltip from "@/components/ui/PageHelpTooltip";
 
 export default function SettingsPage() {

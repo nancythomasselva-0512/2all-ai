@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { signIn, signOut } from "next-auth/react";
-import { Lock, Mail, Loader2, Shield, ShieldAlert, Crown, UserCheck } from "lucide-react";
+import { 
+  LockClosedIcon as Lock, 
+  EnvelopeIcon as Mail, 
+  ArrowPathIcon as Loader2, 
+  ShieldCheckIcon as Shield, 
+  ShieldExclamationIcon as ShieldAlert, 
+  TrophyIcon as Crown, 
+  UserIcon as UserCheck 
+} from "@heroicons/react/24/solid";
 import Logo from "@/components/ui/Logo";
 
 export default function AdminLoginForm({ errorMsg }: { errorMsg?: string }) {

@@ -5,16 +5,16 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { motion } from "framer-motion";
-import { 
-  ShieldCheck, 
-  Scale, 
-  Globe2, 
-  FileText, 
-  CheckCircle2, 
-  ArrowRight,
-  HelpCircle,
-  AlertCircle
-} from "lucide-react";
+import {
+  ShieldCheckIcon as ShieldCheck,
+  ScaleIcon as Scale,
+  GlobeAltIcon as Globe2,
+  DocumentTextIcon as FileText,
+  CheckCircleIcon as CheckCircle2,
+  ArrowRightIcon as ArrowRight,
+  QuestionMarkCircleIcon as HelpCircle,
+  ExclamationCircleIcon as AlertCircle
+} from "@heroicons/react/24/solid";
 
 export default function CompliancePage() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);

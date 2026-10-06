@@ -24,9 +24,24 @@ export async function GET() {
           
           if (cleanDomain) {
             const existingDom = await db.domain.findFirst({
-              where: { domain: cleanDomain }
+              where: {
+                OR: [{ domain: cleanDomain }, { canonicalDomain: cleanDomain }],
+              },
             });
-            if (existingDom) continue;
+
+            if (existingDom) {
+              if (existingDom.userId !== userId) {
+                await db.domain.update({
+                  where: { id: existingDom.id },
+                  data: { userId, status: "ACTIVE", verified: true },
+                });
+                await db.apiKey.updateMany({
+                  where: { domainId: existingDom.id },
+                  data: { userId, status: "ACTIVE" },
+                });
+              }
+              continue;
+            }
 
             const verificationToken = `2all-verify-${Math.random().toString(36).substring(2, 15)}-${Math.random().toString(36).substring(2, 15)}`;
             const newDom = await db.domain.create({

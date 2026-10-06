@@ -5,16 +5,16 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { motion } from "framer-motion";
-import { 
-  Sparkles, 
-  Cpu, 
-  Eye, 
-  Binary, 
-  ArrowRight,
-  Zap,
-  Activity,
-  Maximize2
-} from "lucide-react";
+import {
+  SparklesIcon as Sparkles,
+  CpuChipIcon as Cpu,
+  EyeIcon as Eye,
+  CodeBracketSquareIcon as Binary,
+  ArrowRightIcon as ArrowRight,
+  BoltIcon as Zap,
+  ChartBarIcon as Activity,
+  ArrowsPointingOutIcon as Maximize2
+} from "@heroicons/react/24/solid";
 
 export default function ArtificialIntelligencePage() {
   const steps = [

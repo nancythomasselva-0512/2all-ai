@@ -3,21 +3,21 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { 
-  FileText, 
-  Layout, 
-  ShieldCheck, 
-  Users, 
-  Search, 
-  Sparkles, 
-  Code,
-  ArrowRight,
-  ChevronRight,
-  PhoneCall,
-  CheckCircle2,
-  Menu,
-  X
-} from "lucide-react";
+import {
+  DocumentTextIcon as FileText,
+  Squares2X2Icon as Layout,
+  ShieldCheckIcon as ShieldCheck,
+  UserGroupIcon as Users,
+  MagnifyingGlassIcon as Search,
+  SparklesIcon as Sparkles,
+  CodeBracketIcon as Code,
+  ArrowRightIcon as ArrowRight,
+  ChevronRightIcon as ChevronRight,
+  PhoneIcon as PhoneCall,
+  CheckCircleIcon as CheckCircle2,
+  Bars3Icon as Menu,
+  XMarkIcon as X
+} from "@heroicons/react/24/solid";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import DemoModal from "@/components/marketing/DemoModal";

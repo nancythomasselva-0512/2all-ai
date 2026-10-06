@@ -4,9 +4,19 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Check, ArrowRight, Heart, Sparkles, Shield, Users, Globe, Scale,
-  Award, Zap, Star, Activity
-} from "lucide-react";
+  CheckIcon as Check,
+  ArrowRightIcon as ArrowRight,
+  HeartIcon as Heart,
+  SparklesIcon as Sparkles,
+  ShieldCheckIcon as Shield,
+  UserGroupIcon as Users,
+  GlobeAltIcon as Globe,
+  ScaleIcon as Scale,
+  TrophyIcon as Award,
+  BoltIcon as Zap,
+  StarIcon as Star,
+  ChartBarIcon as Activity
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import DemoModal from "@/components/marketing/DemoModal";
 import Navbar from "@/components/marketing/Navbar";

@@ -1,7 +1,12 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { notFound } from "next/navigation";
-import { Globe, ArrowLeft, AlertTriangle, ShieldCheck } from "lucide-react";
+import {
+  GlobeAltIcon as Globe,
+  ArrowLeftIcon as ArrowLeft,
+  ExclamationTriangleIcon as AlertTriangle,
+  ShieldCheckIcon as ShieldCheck
+} from "@heroicons/react/24/solid";
 import Link from "next/link";
 import ScanButton from "@/components/dashboard/ScanButton";
 import IssueList from "@/components/dashboard/IssueList";

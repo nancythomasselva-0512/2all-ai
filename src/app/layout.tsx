@@ -83,50 +83,103 @@ export default async function RootLayout({
       --brand-primary: ${primaryColorHex};
     }
 
-    /* Global Dynamic Theme Overrides */
-    .bg-blue-600,
-    .bg-blue-700,
-    .bg-\\[\\#004bff\\],
-    .bg-\\[\\#0052ff\\],
-    .bg-blue-500 {
+    /* Global Dynamic Theme Overrides for Customer Website (excluding Admin Console & Color Swatches) */
+    body:not(:has(.admin-console-root)) .bg-blue-600:not(.theme-color-swatch),
+    body:not(:has(.admin-console-root)) .bg-blue-700:not(.theme-color-swatch),
+    body:not(:has(.admin-console-root)) .bg-\\[\\#004bff\\]:not(.theme-color-swatch),
+    body:not(:has(.admin-console-root)) .bg-\\[\\#0052ff\\]:not(.theme-color-swatch),
+    body:not(:has(.admin-console-root)) .bg-blue-500:not(.theme-color-swatch) {
       background-color: ${primaryColorHex} !important;
     }
 
-    .hover\\:bg-blue-700:hover,
-    .hover\\:bg-blue-600:hover,
-    .hover\\:bg-\\[\\#0039cc\\]:hover,
-    .hover\\:bg-blue-800:hover {
+    body:not(:has(.admin-console-root)) .hover\\:bg-blue-700:hover,
+    body:not(:has(.admin-console-root)) .hover\\:bg-blue-600:hover,
+    body:not(:has(.admin-console-root)) .hover\\:bg-\\[\\#0039cc\\]:hover,
+    body:not(:has(.admin-console-root)) .hover\\:bg-blue-800:hover {
       filter: brightness(0.9) !important;
     }
 
-    .text-blue-600,
-    .text-blue-500,
-    .text-blue-700,
-    .text-\\[\\#004bff\\],
-    .text-\\[\\#0052ff\\] {
+    body:not(:has(.admin-console-root)) .text-blue-600,
+    body:not(:has(.admin-console-root)) .text-blue-500,
+    body:not(:has(.admin-console-root)) .text-blue-700,
+    body:not(:has(.admin-console-root)) .text-\\[\\#004bff\\],
+    body:not(:has(.admin-console-root)) .text-\\[\\#0052ff\\] {
       color: ${primaryColorHex} !important;
     }
 
-    .border-blue-600,
-    .border-blue-500,
-    .border-blue-400,
-    .border-\\[\\#004bff\\],
-    .border-\\[\\#0052ff\\] {
+    body:not(:has(.admin-console-root)) .border-blue-600,
+    body:not(:has(.admin-console-root)) .border-blue-500,
+    body:not(:has(.admin-console-root)) .border-blue-400,
+    body:not(:has(.admin-console-root)) .border-\\[\\#004bff\\],
+    body:not(:has(.admin-console-root)) .border-\\[\\#0052ff\\] {
       border-color: ${primaryColorHex} !important;
     }
 
-    .focus\\:ring-blue-500:focus,
-    .focus\\:ring-blue-600:focus,
-    .focus\\:ring-\\[\\#004bff\\]:focus {
+    body:not(:has(.admin-console-root)) .focus\\:ring-blue-500:focus,
+    body:not(:has(.admin-console-root)) .focus\\:ring-blue-600:focus,
+    body:not(:has(.admin-console-root)) .focus\\:ring-\\[\\#004bff\\]:focus {
       --tw-ring-color: ${primaryColorHex} !important;
+    }
+
+    /* Preserve original dedicated Blue inside Admin Console & Theme Swatches */
+    .theme-color-swatch-blue {
+      background-color: #004bff !important;
+    }
+    .admin-console-root .bg-blue-600,
+    .admin-console-root button.bg-blue-600,
+    .admin-console-root a.bg-blue-600 {
+      background-color: #2563eb !important;
+    }
+    .admin-console-root .bg-blue-700,
+    .admin-console-root button.bg-blue-700 {
+      background-color: #1d4ed8 !important;
+    }
+    .admin-console-root .bg-\\[\\#004bff\\],
+    .admin-console-root button.bg-\\[\\#004bff\\] {
+      background-color: #004bff !important;
+    }
+    .admin-console-root .text-blue-600 {
+      color: #2563eb !important;
+    }
+    .admin-console-root .text-blue-500 {
+      color: #3b82f6 !important;
+    }
+    .admin-console-root .text-blue-700 {
+      color: #1d4ed8 !important;
+    }
+    .admin-console-root .text-\\[\\#004bff\\] {
+      color: #004bff !important;
+    }
+    .admin-console-root .border-blue-600 {
+      border-color: #2563eb !important;
+    }
+    .admin-console-root .border-blue-500 {
+      border-color: #3b82f6 !important;
+    }
+    .admin-console-root .border-blue-400 {
+      border-color: #60a5fa !important;
+    }
+    .admin-console-root .border-\\[\\#004bff\\] {
+      border-color: #004bff !important;
     }
   `;
 
   return (
     <html lang="en" className="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+        {/* Dynamic Global Theme Injector */}
+        <style dangerouslySetInnerHTML={{ __html: dynamicThemeCss }} />
+        {/* Inject Custom CSS */}
+        {customCss && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
+      </head>
+      <body className={`${inter.variable} antialiased`} suppressHydrationWarning>
         {/* Strip browser-extension-injected attributes (like fdprocessedid) before React hydration */}
-        <script
+        <Script
+          id="strip-extension-attrs"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -157,15 +210,6 @@ export default async function RootLayout({
             `,
           }}
         />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        {/* Dynamic Global Theme Injector */}
-        <style dangerouslySetInnerHTML={{ __html: dynamicThemeCss }} />
-        {/* Inject Custom CSS */}
-        {customCss && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
-      </head>
-      <body className={`${inter.variable} antialiased`} suppressHydrationWarning>
         {/* Inject Tracking Scripts */}
         {trackingScripts && <div dangerouslySetInnerHTML={{ __html: trackingScripts }} style={{ display: "none" }} />}
         

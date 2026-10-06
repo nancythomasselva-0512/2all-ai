@@ -1,14 +1,14 @@
 import { auth } from "@/lib/auth";
 import Link from "next/link";
-import { 
-  CheckCircle2, 
-  FolderClosed, 
-  Code2, 
-  Scale, 
-  ChevronRight, 
-  ChevronLeft,
-  ArrowUpRight
-} from "lucide-react";
+import {
+  CheckCircleIcon as CheckCircle2,
+  FolderIcon as FolderClosed,
+  CodeBracketIcon as Code2,
+  ScaleIcon as Scale,
+  ChevronRightIcon as ChevronRight,
+  ChevronLeftIcon as ChevronLeft,
+  ArrowUpRightIcon as ArrowUpRight
+} from "@heroicons/react/24/solid";
 
 import PageHelpTooltip from "@/components/ui/PageHelpTooltip";
 

@@ -1,6 +1,14 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
-import { Plus, Globe, ScanSearch, AlertTriangle, ChevronRight, ShieldCheck, ShieldAlert } from "lucide-react";
+import {
+  PlusIcon as Plus,
+  GlobeAltIcon as Globe,
+  MagnifyingGlassIcon as ScanSearch,
+  ExclamationTriangleIcon as AlertTriangle,
+  ChevronRightIcon as ChevronRight,
+  ShieldCheckIcon as ShieldCheck,
+  ShieldExclamationIcon as ShieldAlert
+} from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 export default async function ProjectsPage() {

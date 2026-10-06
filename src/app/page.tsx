@@ -3,7 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import {
+  Bars3Icon as Menu,
+  XMarkIcon as X
+} from "@heroicons/react/24/solid";
 import Showcase from "@/components/marketing/Showcase";
 import TrustSection from "@/components/marketing/TrustSection";
 import AudienceSection from "@/components/marketing/AudienceSection";

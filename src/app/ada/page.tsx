@@ -5,7 +5,14 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { Scale, ShieldCheck, AlertTriangle, ArrowRight, CheckCircle2, FileText } from "lucide-react";
+import {
+  ScaleIcon as Scale,
+  ShieldCheckIcon as ShieldCheck,
+  ExclamationTriangleIcon as AlertTriangle,
+  ArrowRightIcon as ArrowRight,
+  CheckCircleIcon as CheckCircle2,
+  DocumentTextIcon as FileText
+} from "@heroicons/react/24/solid";
 
 export default function AdaCompliancePage() {
   const pillars = [

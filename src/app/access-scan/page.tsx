@@ -4,10 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Check, ChevronDown, Activity, ShieldCheck,
-  Search, Lock, ArrowRight, BarChart3,
-  Shield, FileText
-} from "lucide-react";
+  CheckIcon as Check,
+  ChevronDownIcon as ChevronDown,
+  ChartBarIcon as Activity,
+  ShieldCheckIcon as ShieldCheck,
+  MagnifyingGlassIcon as Search,
+  LockClosedIcon as Lock,
+  ArrowRightIcon as ArrowRight,
+  ChartBarIcon as BarChart3,
+  ShieldCheckIcon as Shield,
+  DocumentTextIcon as FileText
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import DemoModal from "@/components/marketing/DemoModal";
 import Navbar from "@/components/marketing/Navbar";

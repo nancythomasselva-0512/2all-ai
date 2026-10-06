@@ -4,7 +4,15 @@ import Navbar from "@/components/marketing/Navbar";
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Search, Shield, ChevronRight, Users, Play, Target } from "lucide-react";
+import {
+  CheckIcon as Check,
+  MagnifyingGlassIcon as Search,
+  ShieldCheckIcon as Shield,
+  ChevronRightIcon as ChevronRight,
+  UserGroupIcon as Users,
+  PlayIcon as Play,
+  ViewfinderCircleIcon as Target
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import DemoModal from "@/components/marketing/DemoModal";

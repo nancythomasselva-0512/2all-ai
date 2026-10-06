@@ -1,12 +1,22 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAccessibility } from "@/context/AccessibilityContext";
 import { 
-  LayoutDashboard, UserCircle, Settings2, 
-  Palette, Bot, Search, RefreshCcw, X, EyeOff, ShieldCheck, Zap
-} from "lucide-react";
+  Squares2X2Icon as LayoutDashboard, 
+  UserCircleIcon as UserCircle, 
+  AdjustmentsHorizontalIcon as Settings2, 
+  PaintBrushIcon as Palette, 
+  CpuChipIcon as Bot, 
+  MagnifyingGlassIcon as Search, 
+  ArrowPathIcon as RefreshCcw, 
+  XMarkIcon as X, 
+  EyeSlashIcon as EyeOff, 
+  ShieldCheckIcon as ShieldCheck, 
+  BoltIcon as Zap
+} from "@heroicons/react/24/solid";
 
 // Sections
 import DashboardSection from "./sections/DashboardSection";
@@ -29,7 +39,7 @@ const tabKeywords: Record<Tab, string[]> = {
     "font", "size", "letter spacing", "word spacing", "line height", "readable",
     "alignment", "text", "speech", "read aloud", "tts", "voice", "magnifier",
     "reading mask", "reading ruler", "highlight", "link", "heading", "button",
-    "focus", "motion", "cursor", "saturation", "monochrome"
+    "focus", "motion", "cursor", "saturation", "monochrome", "tooltip", "tooltips", "accessible tooltip"
   ],
   vision: [
     "contrast", "dark mode", "light mode", "color blind", "blue",
@@ -94,6 +104,8 @@ export default function AccessibilityPanel() {
   };
 
   const [showStatementModal, setShowStatementModal] = useState(false);
+  const pathname = usePathname();
+  const isLeftSide = typeof window !== "undefined" && localStorage.getItem("2all_widget_side") === "left";
 
   return (
     <motion.div

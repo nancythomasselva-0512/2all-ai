@@ -3,23 +3,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Bell,
-  HelpCircle,
-  ChevronDown,
-  LayoutDashboard,
-  Globe,
-  BarChart3,
-  Settings,
-  LogOut,
-  BookOpen,
-  FileText,
-  MessageSquare,
-  Mail,
-  Check,
-  Sparkles,
-  ShieldCheck,
-  AlertTriangle
-} from "lucide-react";
+  BellIcon as Bell,
+  QuestionMarkCircleIcon as HelpCircle,
+  ChevronDownIcon as ChevronDown,
+  Squares2X2Icon as LayoutDashboard,
+  GlobeAltIcon as Globe,
+  ChartBarIcon as BarChart3,
+  Cog6ToothIcon as Settings,
+  ArrowRightOnRectangleIcon as LogOut,
+  BookOpenIcon as BookOpen,
+  DocumentTextIcon as FileText,
+  ChatBubbleOvalLeftEllipsisIcon as MessageSquare,
+  EnvelopeIcon as Mail,
+  CheckIcon as Check,
+  SparklesIcon as Sparkles,
+  ShieldCheckIcon as ShieldCheck,
+  ExclamationTriangleIcon as AlertTriangle
+} from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import Logo from "@/components/ui/Logo";

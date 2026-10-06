@@ -5,7 +5,14 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { LifeBuoy, Mail, MessageSquare, BookOpen, ArrowRight, ShieldCheck } from "lucide-react";
+import {
+  LifebuoyIcon as LifeBuoy,
+  EnvelopeIcon as Mail,
+  ChatBubbleOvalLeftEllipsisIcon as MessageSquare,
+  BookOpenIcon as BookOpen,
+  ArrowRightIcon as ArrowRight,
+  ShieldCheckIcon as ShieldCheck
+} from "@heroicons/react/24/solid";
 
 export default function TechSupportPage() {
   const channels = [

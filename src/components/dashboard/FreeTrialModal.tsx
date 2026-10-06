@@ -3,7 +3,12 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X, Globe, Check, Loader2 } from "lucide-react";
+import {
+  XMarkIcon as X,
+  GlobeAltIcon as Globe,
+  CheckIcon as Check,
+  ArrowPathIcon as Loader2
+} from "@heroicons/react/24/solid";
 
 export default function FreeTrialModal() {
   const searchParams = useSearchParams();

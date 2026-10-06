@@ -6,20 +6,20 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import DemoModal from "@/components/marketing/DemoModal";
-import { 
-  Check, 
-  ChevronDown, 
-  ChevronUp, 
-  Shield, 
-  Zap, 
-  Globe2, 
-  Sparkles, 
-  ArrowRight, 
-  Code, 
-  Terminal, 
-  ArrowLeftRight,
-  Accessibility
-} from "lucide-react";
+import {
+  CheckIcon as Check,
+  ChevronDownIcon as ChevronDown,
+  ChevronUpIcon as ChevronUp,
+  ShieldCheckIcon as Shield,
+  BoltIcon as Zap,
+  GlobeAltIcon as Globe2,
+  SparklesIcon as Sparkles,
+  ArrowRightIcon as ArrowRight,
+  CodeBracketIcon as Code,
+  CommandLineIcon as Terminal,
+  ArrowsRightLeftIcon as ArrowLeftRight,
+  UserCircleIcon as Accessibility
+} from "@heroicons/react/24/solid";
 
 export default function WhyChoose2allAiPage() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);

@@ -4,7 +4,16 @@ import Navbar from "@/components/marketing/Navbar";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronRight, Puzzle, Settings, Download, Globe, CheckCircle } from "lucide-react";
+import {
+  Bars3Icon as Menu,
+  XMarkIcon as X,
+  ChevronRightIcon as ChevronRight,
+  PuzzlePieceIcon as Puzzle,
+  Cog6ToothIcon as Settings,
+  ArrowDownTrayIcon as Download,
+  GlobeAltIcon as Globe,
+  CheckCircleIcon as CheckCircle
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 

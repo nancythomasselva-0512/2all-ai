@@ -2,28 +2,30 @@
 
 import { useState, useEffect } from "react";
 import {
-  Plus,
-  Trash2,
-  Edit2,
-  Check,
-  X,
-  Sliders,
-  ShieldCheck,
-  Save,
-  Mic,
-  Volume2,
-  Eye,
-  Moon,
-  Sparkles,
-  Focus,
-  Ruler,
-  Type,
-  Loader2,
-  Info,
-  Sun,
-  Palette,
-  VolumeX
-} from "lucide-react";
+  PlusIcon as Plus,
+  TrashIcon as Trash2,
+  PencilSquareIcon as Edit2,
+  CheckIcon as Check,
+  XMarkIcon as X,
+  AdjustmentsHorizontalIcon as Sliders,
+  ShieldCheckIcon as ShieldCheck,
+  ArrowDownOnSquareIcon as Save,
+  MicrophoneIcon as Mic,
+  SpeakerWaveIcon as Volume2,
+  EyeIcon as Eye,
+  MoonIcon as Moon,
+  SparklesIcon as Sparkles,
+  ViewfinderCircleIcon as Focus,
+  Bars3BottomLeftIcon as Ruler,
+  DocumentTextIcon as Type,
+  ArrowPathIcon as Loader2,
+  InformationCircleIcon as Info,
+  SunIcon as Sun,
+  PaintBrushIcon as Palette,
+  SpeakerXMarkIcon as VolumeX,
+  MagnifyingGlassIcon as Search
+} from "@heroicons/react/24/solid";
+import { useAccessibility } from "@/context/AccessibilityContext";
 
 export interface AccessibilityFeatureItem {
   id: string;
@@ -36,6 +38,7 @@ export interface AccessibilityFeatureItem {
 }
 
 export default function AdminAccessibilityMenuManager() {
+  const { togglePanel } = useAccessibility();
   const [features, setFeatures] = useState<AccessibilityFeatureItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -187,6 +190,7 @@ export default function AdminAccessibilityMenuManager() {
       case "Type": return <Type className="w-4 h-4 text-rose-600" />;
       case "Palette": return <Palette className="w-4 h-4 text-pink-600" />;
       case "VolumeX": return <VolumeX className="w-4 h-4 text-red-600" />;
+      case "Info": return <Info className="w-4 h-4 text-blue-600" />;
       default: return <Sparkles className="w-4 h-4 text-blue-600" />;
     }
   };
@@ -198,14 +202,20 @@ export default function AdminAccessibilityMenuManager() {
   const categories = ["All", "Speech & Reading", "Typography", "Visual & Color", "Focus & Reading"];
 
   const filteredFeatures = features.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          item.description.toLowerCase().includes(searchQuery.toLowerCase());
+    if (!searchQuery.trim()) {
+      return selectedCategory === "All" || item.category === selectedCategory;
+    }
+    const q = searchQuery.toLowerCase().trim();
+    const matchesSearch =
+      (item.title?.toLowerCase().includes(q) ?? false) || 
+      (item.description?.toLowerCase().includes(q) ?? false) ||
+      (item.category?.toLowerCase().includes(q) ?? false);
     const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-200 text-left">
+    <div className="space-y-6 animate-in fade-in duration-200 text-left pb-6">
       {/* Toast Notification */}
       {toastMessage && (
         <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 text-sm font-black transition-all animate-in fade-in slide-in-from-top-4 ${
@@ -231,12 +241,22 @@ export default function AdminAccessibilityMenuManager() {
             </p>
           </div>
 
-          <button
-            onClick={handleOpenAddModal}
-            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-600/30 transition-all flex items-center gap-2 cursor-pointer border-none uppercase tracking-wider shrink-0"
-          >
-            <Plus className="w-4 h-4 stroke-[3]" /> Add New Tool
-          </button>
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+            <button
+              type="button"
+              onClick={togglePanel}
+              className="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs rounded-xl border border-white/20 transition-all flex items-center gap-2 cursor-pointer uppercase tracking-wider shadow-sm"
+              title="Preview the visitor Accessibility Widget Panel"
+            >
+              <Eye className="w-4 h-4 text-cyan-300" /> Preview Menu Panel
+            </button>
+            <button
+              onClick={handleOpenAddModal}
+              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl shadow-md shadow-blue-600/30 transition-all flex items-center gap-2 cursor-pointer border-none uppercase tracking-wider shrink-0"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" /> Add New Tool
+            </button>
+          </div>
         </div>
       </div>
 
@@ -244,13 +264,24 @@ export default function AdminAccessibilityMenuManager() {
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
         {/* Search Input */}
         <div className="relative flex-grow max-w-md">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
           <input
             type="text"
             placeholder="Search tools by title or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-8 py-2 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+          {searchQuery.trim() !== "" && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-black cursor-pointer bg-transparent border-none p-0.5"
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         {/* Category Filter Pills */}
@@ -311,7 +342,7 @@ export default function AdminAccessibilityMenuManager() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
+                <div className="flex items-center gap-3 self-end sm:self-center shrink-0 pr-24 sm:pr-32 md:pr-36">
                   {/* Enable/Disable Toggle */}
                   <button
                     onClick={() => handleToggleEnabled(item.id)}
@@ -531,7 +562,19 @@ export default function AdminAccessibilityMenuManager() {
                 </div>
               </div>
 
-              <div className="pt-4 flex gap-3">
+              <div className="pt-4 flex flex-col sm:flex-row gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const idToDelete = editingItem.id;
+                    setEditingItem(null);
+                    handleDelete(idToDelete);
+                  }}
+                  className="px-4 py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-sm rounded-xl border border-red-200 transition-colors cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4 text-red-500" />
+                  Delete Tool
+                </button>
                 <button
                   type="button"
                   onClick={() => setEditingItem(null)}

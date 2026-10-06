@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const COLOR_PRESETS: Record<string, string> = {
   blue: "#004bff",
@@ -15,6 +16,8 @@ const COLOR_PRESETS: Record<string, string> = {
 
 export default function DynamicThemeInjector({ initialColor = "#004bff" }: { initialColor?: string }) {
   const [primaryColor, setPrimaryColor] = useState(initialColor);
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith("/admin") || pathname?.startsWith("/super-admin");
 
   useEffect(() => {
     const fetchLatestConfig = async () => {
@@ -48,50 +51,105 @@ export default function DynamicThemeInjector({ initialColor = "#004bff" }: { ini
       document.head.appendChild(styleTag);
     }
 
+    if (isAdminRoute) {
+      // Inside Admin & Super Admin Consoles, strictly preserve original blue branding & theme swatches
+      styleTag.innerHTML = `
+        :root {
+          --brand-primary: ${primaryColor};
+        }
+        .theme-color-swatch-blue {
+          background-color: #004bff !important;
+        }
+        .admin-console-root .bg-blue-600,
+        .admin-console-root button.bg-blue-600,
+        .admin-console-root a.bg-blue-600 {
+          background-color: #2563eb !important;
+        }
+        .admin-console-root .bg-blue-700,
+        .admin-console-root button.bg-blue-700 {
+          background-color: #1d4ed8 !important;
+        }
+        .admin-console-root .bg-\\[\\#004bff\\],
+        .admin-console-root button.bg-\\[\\#004bff\\] {
+          background-color: #004bff !important;
+        }
+        .admin-console-root .text-blue-600 {
+          color: #2563eb !important;
+        }
+        .admin-console-root .text-blue-500 {
+          color: #3b82f6 !important;
+        }
+        .admin-console-root .text-blue-700 {
+          color: #1d4ed8 !important;
+        }
+        .admin-console-root .text-\\[\\#004bff\\] {
+          color: #004bff !important;
+        }
+        .admin-console-root .border-blue-600 {
+          border-color: #2563eb !important;
+        }
+        .admin-console-root .border-blue-500 {
+          border-color: #3b82f6 !important;
+        }
+        .admin-console-root .border-blue-400 {
+          border-color: #60a5fa !important;
+        }
+        .admin-console-root .border-\\[\\#004bff\\] {
+          border-color: #004bff !important;
+        }
+      `;
+      return;
+    }
+
     styleTag.innerHTML = `
       :root {
         --brand-primary: ${primaryColor};
       }
 
-      /* Global Dynamic Theme Overrides for Customer Side */
-      .bg-blue-600,
-      .bg-blue-700,
-      .bg-\\[\\#004bff\\],
-      .bg-\\[\\#0052ff\\],
-      .bg-blue-500 {
+      /* Global Dynamic Theme Overrides for Customer Side (excluding Admin Console and Swatches) */
+      body:not(:has(.admin-console-root)) .bg-blue-600:not(.theme-color-swatch),
+      body:not(:has(.admin-console-root)) .bg-blue-700:not(.theme-color-swatch),
+      body:not(:has(.admin-console-root)) .bg-\\[\\#004bff\\]:not(.theme-color-swatch),
+      body:not(:has(.admin-console-root)) .bg-\\[\\#0052ff\\]:not(.theme-color-swatch),
+      body:not(:has(.admin-console-root)) .bg-blue-500:not(.theme-color-swatch) {
         background-color: ${primaryColor} !important;
       }
 
-      .hover\\:bg-blue-700:hover,
-      .hover\\:bg-blue-600:hover,
-      .hover\\:bg-\\[\\#0039cc\\]:hover,
-      .hover\\:bg-blue-800:hover {
+      body:not(:has(.admin-console-root)) .hover\\:bg-blue-700:hover,
+      body:not(:has(.admin-console-root)) .hover\\:bg-blue-600:hover,
+      body:not(:has(.admin-console-root)) .hover\\:bg-\\[\\#0039cc\\]:hover,
+      body:not(:has(.admin-console-root)) .hover\\:bg-blue-800:hover {
         filter: brightness(0.9) !important;
       }
 
-      .text-blue-600,
-      .text-blue-500,
-      .text-blue-700,
-      .text-\\[\\#004bff\\],
-      .text-\\[\\#0052ff\\] {
+      body:not(:has(.admin-console-root)) .text-blue-600,
+      body:not(:has(.admin-console-root)) .text-blue-500,
+      body:not(:has(.admin-console-root)) .text-blue-700,
+      body:not(:has(.admin-console-root)) .text-\\[\\#004bff\\],
+      body:not(:has(.admin-console-root)) .text-\\[\\#0052ff\\] {
         color: ${primaryColor} !important;
       }
 
-      .border-blue-600,
-      .border-blue-500,
-      .border-blue-400,
-      .border-\\[\\#004bff\\],
-      .border-\\[\\#0052ff\\] {
+      body:not(:has(.admin-console-root)) .border-blue-600,
+      body:not(:has(.admin-console-root)) .border-blue-500,
+      body:not(:has(.admin-console-root)) .border-blue-400,
+      body:not(:has(.admin-console-root)) .border-\\[\\#004bff\\],
+      body:not(:has(.admin-console-root)) .border-\\[\\#0052ff\\] {
         border-color: ${primaryColor} !important;
       }
 
-      .shadow-blue-500\\/20,
-      .shadow-blue-500\\/30,
-      .shadow-blue-600\\/30 {
+      body:not(:has(.admin-console-root)) .shadow-blue-500\\/20,
+      body:not(:has(.admin-console-root)) .shadow-blue-500\\/30,
+      body:not(:has(.admin-console-root)) .shadow-blue-600\\/30 {
         box-shadow: 0 10px 25px -5px ${primaryColor}40 !important;
       }
+
+      /* Color Swatches must never be overridden */
+      .theme-color-swatch-blue {
+        background-color: #004bff !important;
+      }
     `;
-  }, [primaryColor]);
+  }, [primaryColor, isAdminRoute]);
 
   return null;
 }

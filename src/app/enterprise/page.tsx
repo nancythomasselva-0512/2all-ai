@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Lock, Headset, BarChart, ArrowRight, ShieldCheck, Cpu, Layers } from "lucide-react";
+import {
+  LockClosedIcon as Lock,
+  SpeakerWaveIcon as Headset,
+  ChartBarIcon as BarChart,
+  ArrowRightIcon as ArrowRight,
+  ShieldCheckIcon as ShieldCheck,
+  CpuChipIcon as Cpu,
+  Square3Stack3DIcon as Layers
+} from "@heroicons/react/24/solid";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";

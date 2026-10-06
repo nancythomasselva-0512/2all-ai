@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Mail, Save, Code, CheckCircle2, Info, Type, Sparkles, AlertCircle } from "lucide-react";
+import { 
+  EnvelopeIcon as Mail, 
+  ArrowDownOnSquareIcon as Save, 
+  CodeBracketIcon as Code, 
+  CheckCircleIcon as CheckCircle2, 
+  InformationCircleIcon as Info, 
+  DocumentTextIcon as Type, 
+  SparklesIcon as Sparkles, 
+  ExclamationCircleIcon as AlertCircle 
+} from "@heroicons/react/24/solid";
 
 interface TemplateItem {
   subject: string;
@@ -240,7 +249,7 @@ export default function AdminEmailTemplatesEditor() {
   };
 
   return (
-    <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-6 text-left font-sans">
+    <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-6 text-left super-admin-typography">
       
       {/* Toast Alert */}
       {toast && (
@@ -365,7 +374,7 @@ export default function AdminEmailTemplatesEditor() {
         <div className="bg-slate-100 p-6 rounded-3xl border border-slate-200 flex justify-center">
           
           {/* Real Email Card Container */}
-          <div className="w-full max-w-[600px] bg-white rounded-2xl border border-slate-200 shadow-md p-6 space-y-5 text-left font-sans">
+          <div className="w-full max-w-[600px] bg-white rounded-2xl border border-slate-200 shadow-md p-6 space-y-5 text-left super-admin-typography">
             
             {/* Header: Brand Name + Editable Badge */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">

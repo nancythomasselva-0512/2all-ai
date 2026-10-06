@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDownIcon as ChevronDown, Bars3Icon as Menu, XMarkIcon as X } from "@heroicons/react/24/solid";
 
 export default function ModernNavbar() {
   const [scrolled, setScrolled] = useState(false);

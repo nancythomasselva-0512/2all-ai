@@ -2,19 +2,19 @@
 
 import { useState, useEffect, useRef } from "react";
 import { 
-  Search, 
-  Copy, 
-  Check, 
-  ChevronDown, 
-  RefreshCw, 
-  Trash2, 
-  Activity, 
-  Code2, 
-  KeyRound,
-  ShieldCheck,
-  ExternalLink,
-  User
-} from "lucide-react";
+  MagnifyingGlassIcon as Search, 
+  DocumentDuplicateIcon as Copy, 
+  CheckIcon as Check, 
+  ChevronDownIcon as ChevronDown, 
+  ArrowPathIcon as RefreshCw, 
+  TrashIcon as Trash2, 
+  ChartBarIcon as Activity, 
+  CodeBracketIcon as Code2, 
+  KeyIcon as KeyRound,
+  ShieldCheckIcon as ShieldCheck,
+  ArrowTopRightOnSquareIcon as ExternalLink,
+  UserIcon as User
+} from "@heroicons/react/24/solid";
 
 interface ApiKey {
   id: string;
@@ -29,6 +29,11 @@ interface ApiKey {
     name?: string | null;
     email?: string | null;
   };
+  domain?: {
+    id?: string;
+    domain?: string;
+    websiteName?: string;
+  } | null;
 }
 
 interface Domain {
@@ -185,6 +190,24 @@ export default function AdminApiKeysPanel() {
     }
   };
 
+  const handleUnrevokeKey = async (id: string) => {
+    if (!confirm("Reactivate and unrevoke this API key? The accessibility widget for this domain will immediately resume functioning on the live website.")) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/api-keys/${id}/unrevoke`, { method: "POST" });
+      if (res.ok) {
+        setKeys(keys.map((k) => (k.id === id ? { ...k, status: "ACTIVE" } : k)));
+        setActiveDropdownId(null);
+      } else {
+        alert("Failed to unrevoke API key.");
+      }
+    } catch (e) {
+      console.error("Failed to unrevoke key:", e);
+      alert("Error unrevoking API key.");
+    }
+  };
+
   const handleDeleteKey = async (id: string) => {
     if (!confirm("Are you sure you want to permanently delete this API key? This action cannot be undone.")) {
       return;
@@ -210,19 +233,75 @@ export default function AdminApiKeysPanel() {
     }
   };
 
-  const filteredKeys = keys.filter(k => {
+  const filteredKeys = keys.filter((k) => {
     if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      k.name.toLowerCase().includes(q) ||
-      k.key.toLowerCase().includes(q) ||
-      (k.domainName && k.domainName.toLowerCase().includes(q)) ||
-      k.status.toLowerCase().includes(q)
-    );
+    const q = searchQuery.toLowerCase().trim();
+
+    // 1. Customer Name and Email (Column 2: CUSTOMER)
+    const customerName = (k.user?.name || "").toLowerCase();
+    const customerEmail = (k.user?.email || "").toLowerCase();
+
+    // 2. Domain matching (Column 3: DOMAIN)
+    // Matches direct domainName, relational domain, looked-up domain via domainId, or website name
+    const matchedDomObj = domains.find((d) => d.id === k.domainId || d.domain === k.domainName);
+    const directDomain = (k.domainName || "").toLowerCase();
+    const relDomain = (k.domain?.domain || "").toLowerCase();
+    const relWebName = (k.domain?.websiteName || "").toLowerCase();
+    const lookedUpDomain = (matchedDomObj?.domain || "").toLowerCase();
+    const lookedUpWebName = (matchedDomObj?.websiteName || "").toLowerCase();
+
+    // Clean domain helper: removes http://, https://, www., and trailing slashes for resilient matching
+    const cleanUrl = (url: string) => url.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").trim();
+    const cleanQ = cleanUrl(q);
+    const cleanDirect = cleanUrl(directDomain);
+    const cleanRel = cleanUrl(relDomain);
+    const cleanLookedUp = cleanUrl(lookedUpDomain);
+
+    const matchCustomer = customerName.includes(q) || customerEmail.includes(q);
+
+    const matchDomain =
+      directDomain.includes(q) ||
+      relDomain.includes(q) ||
+      relWebName.includes(q) ||
+      lookedUpDomain.includes(q) ||
+      lookedUpWebName.includes(q) ||
+      (cleanQ !== "" && (
+        cleanDirect.includes(cleanQ) ||
+        cleanRel.includes(cleanQ) ||
+        cleanLookedUp.includes(cleanQ)
+      ));
+
+    // 3. Key label name and Key code (Column 1: PUBLIC KEY)
+    const keyLabel = (k.name || "").toLowerCase();
+    const keyCode = (k.key || "").toLowerCase();
+    const matchKey = keyLabel.includes(q) || keyCode.includes(q);
+
+    // 4. Status (Column 4: STATUS)
+    const statusVal = (k.status || "").toLowerCase();
+    const matchStatus = statusVal.includes(q);
+
+    // 5. Multi-term search (e.g. "Franklin Raj" or "mcc edu" or "clarity vercel")
+    const words = q.split(/\s+/).filter(Boolean);
+    const matchAllWords = words.length > 1 && words.every((word) => {
+      const cleanWord = cleanUrl(word);
+      return (
+        customerName.includes(word) ||
+        customerEmail.includes(word) ||
+        directDomain.includes(word) ||
+        relDomain.includes(word) ||
+        lookedUpDomain.includes(word) ||
+        (cleanWord !== "" && (cleanDirect.includes(cleanWord) || cleanRel.includes(cleanWord) || cleanLookedUp.includes(cleanWord))) ||
+        keyLabel.includes(word) ||
+        keyCode.includes(word) ||
+        statusVal.includes(word)
+      );
+    });
+
+    return matchCustomer || matchDomain || matchKey || matchStatus || matchAllWords;
   });
 
   return (
-    <div className="space-y-8 select-none font-sans pb-32">
+    <div className="space-y-8 select-none super-admin-typography pb-32">
       
       {/* Top Header & Status Badges */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -250,16 +329,41 @@ export default function AdminApiKeysPanel() {
         </div>
       </div>
 
-      {/* Global Search Bar */}
-      <div className="relative">
-        <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-        <input 
-          type="text"
-          placeholder="Search customers, domains, API keys, reports, and settings"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 shadow-sm transition-all"
-        />
+      {/* Global Search Bar with generous breathing space */}
+      <div className="pt-2 pb-2 my-2">
+        <div className="relative flex items-center">
+          <Search className="w-5 h-5 text-slate-400 absolute left-4.5 pointer-events-none" />
+          <input 
+            type="text"
+            placeholder="Search customers, domains, API keys, reports, and settings"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            autoComplete="off"
+            spellCheck={false}
+            className="w-full pl-12 pr-36 py-3.5 bg-white border border-slate-200/90 rounded-2xl text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 shadow-sm hover:border-slate-300 transition-all"
+          />
+          <div className="absolute right-4 flex items-center gap-2">
+            {searchQuery.trim() !== "" ? (
+              <>
+                <span className="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200/70 rounded-lg">
+                  {filteredKeys.length} {filteredKeys.length === 1 ? "result" : "results"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 text-xs font-black flex items-center justify-center transition-colors cursor-pointer border-none"
+                  title="Clear search"
+                >
+                  ✕
+                </button>
+              </>
+            ) : (
+              <span className="text-xs font-bold text-slate-400 hidden sm:inline">
+                {keys.length} {keys.length === 1 ? "key" : "keys"}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Two Column Action Section */}
@@ -354,10 +458,23 @@ export default function AdminApiKeysPanel() {
             <div className="w-14 h-14 bg-blue-50 text-[#0052ff] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-100">
               <KeyRound className="w-7 h-7" />
             </div>
-            <h3 className="text-sm font-bold text-slate-800 mb-1">No API Keys Found</h3>
+            <h3 className="text-sm font-bold text-slate-800 mb-1">
+              {searchQuery.trim() ? `No API Keys matching "${searchQuery}"` : "No API Keys Found"}
+            </h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Create a new public installation key above to link any customer domain and unlock the embed script.
+              {searchQuery.trim()
+                ? "Try searching by customer name, email address, website domain, or key label."
+                : "Create a new public installation key above to link any customer domain and unlock the embed script."}
             </p>
+            {searchQuery.trim() && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-extrabold transition-colors cursor-pointer border-none shadow-sm"
+              >
+                Clear Search Filter
+              </button>
+            )}
           </div>
         ) : (
           <div className="w-full overflow-x-auto">
@@ -515,15 +632,26 @@ export default function AdminApiKeysPanel() {
                                   Rotate API Key
                                 </button>
 
-                                <button
-                                  type="button"
-                                  onClick={() => handleRevokeKey(k.id)}
-                                  disabled={k.status !== "ACTIVE"}
-                                  className={`w-full px-4 py-2 text-xs sm:text-sm font-bold text-amber-600 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
-                                >
-                                  <Trash2 className="w-3.5 h-3.5 text-amber-500" />
-                                  Revoke API Key
-                                </button>
+                                {k.status === "REVOKED" ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUnrevokeKey(k.id)}
+                                    className="w-full px-4 py-2 text-xs sm:text-sm font-bold text-emerald-700 hover:bg-emerald-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left"
+                                  >
+                                    <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5]" />
+                                    Unrevoke API Key
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRevokeKey(k.id)}
+                                    disabled={k.status !== "ACTIVE"}
+                                    className={`w-full px-4 py-2 text-xs sm:text-sm font-bold text-amber-600 hover:bg-amber-50 flex items-center gap-2.5 cursor-pointer border-none bg-transparent text-left ${k.status !== "ACTIVE" ? "opacity-40 pointer-events-none" : ""}`}
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5 text-amber-500" />
+                                    Revoke API Key
+                                  </button>
+                                )}
 
                                 <button
                                   type="button"

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { CheckIcon as Check } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import siteConfig from "@/data/site-config.json";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Zap, Globe, Rocket } from "lucide-react";
+import { BoltIcon as Zap, GlobeAltIcon as Globe, RocketLaunchIcon as Rocket } from "@heroicons/react/24/solid";
 
 const features = [
   {

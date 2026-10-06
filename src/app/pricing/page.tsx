@@ -3,21 +3,21 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { 
-  Check, 
-  HelpCircle, 
-  ArrowRight, 
-  ChevronRight, 
-  ChevronDown, 
-  ChevronUp, 
-  ShieldCheck, 
-  Sparkles,
-  Info,
-  DollarSign,
-  Star,
-  Menu,
-  X
-} from "lucide-react";
+import {
+  CheckIcon as Check,
+  QuestionMarkCircleIcon as HelpCircle,
+  ArrowRightIcon as ArrowRight,
+  ChevronRightIcon as ChevronRight,
+  ChevronDownIcon as ChevronDown,
+  ChevronUpIcon as ChevronUp,
+  ShieldCheckIcon as ShieldCheck,
+  SparklesIcon as Sparkles,
+  InformationCircleIcon as Info,
+  CurrencyDollarIcon as DollarSign,
+  StarIcon as Star,
+  Bars3Icon as Menu,
+  XMarkIcon as X
+} from "@heroicons/react/24/solid";
 import Navbar from "@/components/marketing/Navbar";
 import Logo from "@/components/ui/Logo";
 import Footer from "@/components/marketing/Footer";

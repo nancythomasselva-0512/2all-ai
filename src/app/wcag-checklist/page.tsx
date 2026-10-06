@@ -5,7 +5,12 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { CheckSquare, Square, ShieldCheck, ArrowRight } from "lucide-react";
+import {
+  CheckCircleIcon as CheckSquare,
+  StopIcon as Square,
+  ShieldCheckIcon as ShieldCheck,
+  ArrowRightIcon as ArrowRight
+} from "@heroicons/react/24/solid";
 
 export default function WcagChecklistPage() {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});

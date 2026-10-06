@@ -5,7 +5,14 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { Check, Copy, ArrowRight, ShoppingBag, ShieldCheck, Zap } from "lucide-react";
+import {
+  CheckIcon as Check,
+  DocumentDuplicateIcon as Copy,
+  ArrowRightIcon as ArrowRight,
+  ShoppingBagIcon as ShoppingBag,
+  ShieldCheckIcon as ShieldCheck,
+  BoltIcon as Zap
+} from "@heroicons/react/24/solid";
 
 export default function ShopifyIntegrationPage() {
   const [copied, setCopied] = useState(false);

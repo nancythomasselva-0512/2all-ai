@@ -6,7 +6,12 @@ import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Loader2, ChevronRight } from "lucide-react";
+import {
+  EyeIcon as Eye,
+  EyeSlashIcon as EyeOff,
+  ArrowPathIcon as Loader2,
+  ChevronRightIcon as ChevronRight
+} from "@heroicons/react/24/solid";
 import Logo from "@/components/ui/Logo";
 
 function LoginForm() {

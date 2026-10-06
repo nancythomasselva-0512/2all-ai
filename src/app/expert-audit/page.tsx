@@ -4,7 +4,12 @@ import Navbar from "@/components/marketing/Navbar";
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { CheckCircle, FileSearch, ShieldCheck, PenTool } from "lucide-react";
+import {
+  CheckCircleIcon as CheckCircle,
+  DocumentMagnifyingGlassIcon as FileSearch,
+  ShieldCheckIcon as ShieldCheck,
+  PencilIcon as PenTool
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import DemoModal from "@/components/marketing/DemoModal";

@@ -5,13 +5,13 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { motion } from "framer-motion";
-import { 
-  BadgeCheck, 
-  Quote, 
-  ArrowRight,
-  TrendingUp,
-  Percent
-} from "lucide-react";
+import {
+  CheckBadgeIcon as BadgeCheck,
+  ChatBubbleBottomCenterTextIcon as Quote,
+  ArrowRightIcon as ArrowRight,
+  ArrowTrendingUpIcon as TrendingUp,
+  ReceiptPercentIcon as Percent
+} from "@heroicons/react/24/solid";
 
 export default function CaseStudiesPage() {
   const caseStudies = [

@@ -5,7 +5,12 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { Cpu, ShieldCheck, ArrowRight, Layers } from "lucide-react";
+import {
+  CpuChipIcon as Cpu,
+  ShieldCheckIcon as ShieldCheck,
+  ArrowRightIcon as ArrowRight,
+  Square3Stack3DIcon as Layers
+} from "@heroicons/react/24/solid";
 
 export default function PlatformPartnersPage() {
   return (

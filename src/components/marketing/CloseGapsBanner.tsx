@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRightIcon as ArrowRight } from "@heroicons/react/24/solid";
 
 export default function CloseGapsBanner() {
   const [url, setUrl] = useState("");

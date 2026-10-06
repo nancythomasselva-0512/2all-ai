@@ -5,15 +5,15 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { motion } from "framer-motion";
-import { 
-  Search, 
-  HelpCircle, 
-  BookOpen, 
-  Settings, 
-  Lock, 
-  ArrowRight,
-  MessageSquare
-} from "lucide-react";
+import {
+  MagnifyingGlassIcon as Search,
+  QuestionMarkCircleIcon as HelpCircle,
+  BookOpenIcon as BookOpen,
+  Cog6ToothIcon as Settings,
+  LockClosedIcon as Lock,
+  ArrowRightIcon as ArrowRight,
+  ChatBubbleOvalLeftEllipsisIcon as MessageSquare
+} from "@heroicons/react/24/solid";
 
 export default function HelpCenterPage() {
   const [searchQuery, setSearchQuery] = useState("");

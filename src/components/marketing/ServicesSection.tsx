@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, Headphones, Scale, ArrowRight, X, CheckCircle2 } from "lucide-react";
+import { 
+  BookOpenIcon as BookOpen, 
+  SpeakerWaveIcon as Headphones, 
+  ScaleIcon as Scale, 
+  ArrowRightIcon as ArrowRight, 
+  XMarkIcon as X, 
+  CheckCircleIcon as CheckCircle2 
+} from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 export default function ServicesSection() {

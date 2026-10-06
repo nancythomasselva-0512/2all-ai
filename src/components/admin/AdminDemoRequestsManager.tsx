@@ -1,7 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Calendar, Video, CheckCircle2, Clock, Send, Mail, Globe, Phone, User, ExternalLink, Loader2 } from "lucide-react";
+import { 
+  CalendarDaysIcon as Calendar, 
+  VideoCameraIcon as Video, 
+  CheckCircleIcon as CheckCircle2, 
+  ClockIcon as Clock, 
+  PaperAirplaneIcon as Send, 
+  EnvelopeIcon as Mail, 
+  GlobeAltIcon as Globe, 
+  PhoneIcon as Phone, 
+  UserIcon as User, 
+  ArrowTopRightOnSquareIcon as ExternalLink, 
+  ArrowPathIcon as Loader2 
+} from "@heroicons/react/24/solid";
 
 interface DemoRequest {
   id: string;
@@ -14,7 +26,11 @@ interface DemoRequest {
   createdAt: string;
 }
 
-export default function AdminDemoRequestsManager() {
+interface AdminDemoRequestsManagerProps {
+  searchQuery?: string;
+}
+
+export default function AdminDemoRequestsManager({ searchQuery = "" }: AdminDemoRequestsManagerProps) {
   const [requests, setRequests] = useState<DemoRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSlotMap, setSelectedSlotMap] = useState<Record<string, string>>({});
@@ -38,6 +54,24 @@ export default function AdminDemoRequestsManager() {
   useEffect(() => {
     fetchDemoRequests();
   }, []);
+
+  const filteredRequests = React.useMemo(() => {
+    if (!searchQuery || !searchQuery.trim()) return requests;
+    const q = searchQuery.toLowerCase().trim();
+    // Broad match keywords that relate to all demo requests
+    if (["demo", "demos", "demo booking", "demo request", "lead", "leads", "meeting", "slot"].includes(q)) {
+      return requests;
+    }
+    return requests.filter((req) => {
+      const matchName = (req.name || "").toLowerCase().includes(q);
+      const matchEmail = (req.email || "").toLowerCase().includes(q);
+      const matchPhone = (req.phone || "").toLowerCase().includes(q);
+      const matchWebsite = (req.website || "").toLowerCase().includes(q);
+      const matchSlot = (req.meetingSlot || "").toLowerCase().includes(q);
+      const matchStatus = (req.status || "").toLowerCase().includes(q);
+      return matchName || matchEmail || matchPhone || matchWebsite || matchSlot || matchStatus;
+    });
+  }, [requests, searchQuery]);
 
   const handleAssignSlot = async (requestId: string) => {
     const slot = selectedSlotMap[requestId] || "Tomorrow, 10:00 AM";
@@ -67,7 +101,7 @@ export default function AdminDemoRequestsManager() {
   };
 
   return (
-    <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-6 text-left font-sans">
+    <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-6 text-left super-admin-typography">
       
       {/* Toast message */}
       {toast && (
@@ -89,7 +123,9 @@ export default function AdminDemoRequestsManager() {
           <p className="text-xs text-slate-500 font-medium">Manage booked client demos, assign meeting slots, and dispatch single unified emails with working Google Meet links.</p>
         </div>
         <span className="px-3 py-1 bg-blue-50 text-blue-700 font-extrabold text-xs rounded-full border border-blue-200 shrink-0">
-          {requests.length} Total Leads
+          {searchQuery.trim()
+            ? `${filteredRequests.length} of ${requests.length} Leads`
+            : `${requests.length} Total Leads`}
         </span>
       </div>
 
@@ -98,13 +134,15 @@ export default function AdminDemoRequestsManager() {
           <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
           Loading Demo Requests...
         </div>
-      ) : requests.length === 0 ? (
+      ) : filteredRequests.length === 0 ? (
         <div className="py-12 text-center text-slate-400 font-bold text-xs">
-          No demo requests received yet.
+          {requests.length === 0
+            ? "No demo requests received yet."
+            : `No demo requests matching "${searchQuery}". Try a different name, email, phone, or website.`}
         </div>
       ) : (
         <div className="space-y-4">
-          {requests.map((req) => {
+          {filteredRequests.map((req) => {
             const isSkipped = !req.meetingSlot || req.meetingSlot.toLowerCase().includes("skipped");
             const meetRoomId = req.email.replace(/[^a-zA-Z0-9]/g, "").substring(0, 10) || "demo";
             const meetLink = `https://meet.google.com/2all-ai-demo-${meetRoomId}`;

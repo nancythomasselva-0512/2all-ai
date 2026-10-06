@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ScanSearch, Loader2 } from "lucide-react";
+import {
+  MagnifyingGlassIcon as ScanSearch,
+  ArrowPathIcon as Loader2
+} from "@heroicons/react/24/solid";
 
 export default function ScanButton({ projectId }: { projectId: string }) {
   const router = useRouter();

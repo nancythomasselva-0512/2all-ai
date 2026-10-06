@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X, CheckCircle2, Loader2, ChevronDown, Calendar, Clock } from "lucide-react";
+import { 
+  XMarkIcon as X, 
+  CheckCircleIcon as CheckCircle2, 
+  ArrowPathIcon as Loader2, 
+  ChevronDownIcon as ChevronDown, 
+  CalendarDaysIcon as Calendar, 
+  ClockIcon as Clock 
+} from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface DemoModalProps {

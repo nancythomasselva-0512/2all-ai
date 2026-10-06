@@ -4,7 +4,13 @@ import Navbar from "@/components/marketing/Navbar";
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ChevronDown, CheckCircle2, FileText, ArrowRight, Check } from "lucide-react";
+import {
+  ChevronDownIcon as ChevronDown,
+  CheckCircleIcon as CheckCircle2,
+  DocumentTextIcon as FileText,
+  ArrowRightIcon as ArrowRight,
+  CheckIcon as Check
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import DemoModal from "@/components/marketing/DemoModal";

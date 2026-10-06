@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Sparkles } from "lucide-react";
+import { CheckIcon as Check, SparklesIcon as Sparkles } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 export default function PricingV2() {

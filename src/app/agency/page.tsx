@@ -5,27 +5,27 @@ import Navbar from '@/components/marketing/Navbar';
 import Footer from '@/components/marketing/Footer';
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Users, 
-  Sparkles, 
-  LineChart, 
-  Globe, 
-  Search, 
-  Award, 
-  FileText, 
-  CheckCircle, 
-  ArrowRight, 
-  ChevronRight,
-  ShieldCheck, 
-  TrendingUp, 
-  HeartHandshake,
-  Play,
-  Check,
-  CheckCircle2,
-  DollarSign,
-  Briefcase,
-  HelpCircle
-} from 'lucide-react';
+import {
+  UserGroupIcon as Users,
+  SparklesIcon as Sparkles,
+  ChartBarIcon as LineChart,
+  GlobeAltIcon as Globe,
+  MagnifyingGlassIcon as Search,
+  TrophyIcon as Award,
+  DocumentTextIcon as FileText,
+  CheckCircleIcon as CheckCircle,
+  ArrowRightIcon as ArrowRight,
+  ChevronRightIcon as ChevronRight,
+  ShieldCheckIcon as ShieldCheck,
+  ArrowTrendingUpIcon as TrendingUp,
+  HeartIcon as HeartHandshake,
+  PlayIcon as Play,
+  CheckIcon as Check,
+  CheckCircleIcon as CheckCircle2,
+  CurrencyDollarIcon as DollarSign,
+  BriefcaseIcon as Briefcase,
+  QuestionMarkCircleIcon as HelpCircle
+} from "@heroicons/react/24/solid";
 
 export default function AgencyPage() {
   const [activePartnerDetail, setActivePartnerDetail] = useState(0);

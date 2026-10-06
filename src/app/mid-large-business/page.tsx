@@ -4,7 +4,17 @@ import Navbar from "@/components/marketing/Navbar";
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Shield, Lock, FileText, Settings, Users, Monitor, Award, Star } from "lucide-react";
+import {
+  CheckIcon as Check,
+  ShieldCheckIcon as Shield,
+  LockClosedIcon as Lock,
+  DocumentTextIcon as FileText,
+  Cog6ToothIcon as Settings,
+  UserGroupIcon as Users,
+  ComputerDesktopIcon as Monitor,
+  TrophyIcon as Award,
+  StarIcon as Star
+} from "@heroicons/react/24/solid";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import DemoModal from "@/components/marketing/DemoModal";

@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { Sparkles, Terminal, Volume2 } from "lucide-react";
+import { SparklesIcon as Sparkles, CommandLineIcon as Terminal, SpeakerWaveIcon as Volume2 } from "@heroicons/react/24/solid";
 
 export default function AIDemoWorkspace() {
   const [step, setStep] = useState(0);

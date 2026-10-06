@@ -5,7 +5,14 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
-import { ShieldCheck, Lock, Server, FileCheck, CheckCircle2, ArrowRight } from "lucide-react";
+import {
+  ShieldCheckIcon as ShieldCheck,
+  LockClosedIcon as Lock,
+  ServerStackIcon as Server,
+  DocumentCheckIcon as FileCheck,
+  CheckCircleIcon as CheckCircle2,
+  ArrowRightIcon as ArrowRight
+} from "@heroicons/react/24/solid";
 
 export default function TrustCenterPage() {
   const securityItems = [

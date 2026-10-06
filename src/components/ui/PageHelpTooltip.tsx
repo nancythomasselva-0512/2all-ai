@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { HelpCircle, Info, X, CheckCircle2 } from "lucide-react";
+import { 
+  QuestionMarkCircleIcon as HelpCircle, 
+  InformationCircleIcon as Info, 
+  XMarkIcon as X, 
+  CheckCircleIcon as CheckCircle2 
+} from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface PageHelpTooltipProps {

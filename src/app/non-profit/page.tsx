@@ -6,22 +6,22 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import DemoModal from "@/components/marketing/DemoModal";
-import { 
-  Check, 
-  Search, 
-  ChevronDown, 
-  ChevronUp, 
-  Users, 
-  Heart, 
-  Globe2, 
-  ShieldCheck, 
-  Sparkles,
-  ArrowRight,
-  Gift,
-  Award,
-  FileCheck,
-  CheckCircle2
-} from "lucide-react";
+import {
+  CheckIcon as Check,
+  MagnifyingGlassIcon as Search,
+  ChevronDownIcon as ChevronDown,
+  ChevronUpIcon as ChevronUp,
+  UserGroupIcon as Users,
+  HeartIcon as Heart,
+  GlobeAltIcon as Globe2,
+  ShieldCheckIcon as ShieldCheck,
+  SparklesIcon as Sparkles,
+  ArrowRightIcon as ArrowRight,
+  GiftIcon as Gift,
+  TrophyIcon as Award,
+  DocumentCheckIcon as FileCheck,
+  CheckCircleIcon as CheckCircle2
+} from "@heroicons/react/24/solid";
 
 export default function NonProfitPage() {
   const [searchQuery, setSearchQuery] = useState("");

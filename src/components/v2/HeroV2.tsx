@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Play, Sparkles } from "lucide-react";
+import { ArrowRightIcon as ArrowRight, PlayIcon as Play, SparklesIcon as Sparkles } from "@heroicons/react/24/solid";
 
 export default function HeroV2() {
   return (

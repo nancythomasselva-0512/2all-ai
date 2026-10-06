@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import {
+  ChevronDownIcon as ChevronDown,
+  ChevronUpIcon as ChevronUp,
+  ArrowTopRightOnSquareIcon as ExternalLink
+} from "@heroicons/react/24/solid";
 
 interface Issue {
   id: string;
