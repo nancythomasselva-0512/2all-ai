@@ -164,10 +164,15 @@ export default function DomainDetails({ domain: initialDomain, userName }: Domai
         const res = await fetch("/api/widget-config");
         if (res.ok) {
           const data = await res.json();
-          if (data.draftConfig && Object.keys(data.draftConfig).length > 0) {
-            setWidgetConfig((prev) => ({ ...prev, ...data.draftConfig }));
+          const activeCfg = (data.publishedConfig && Object.keys(data.publishedConfig).length > 0)
+            ? data.publishedConfig
+            : data.draftConfig;
+          if (activeCfg && Object.keys(activeCfg).length > 0) {
+            setWidgetConfig((prev) => ({ ...prev, ...activeCfg }));
           }
-          if (data.publishedAt) setLastPublished(data.publishedAt);
+          if (data.lastPublishedAt || data.publishedAt) {
+            setLastPublished(data.lastPublishedAt || data.publishedAt);
+          }
         }
       } catch (_) {}
     };
@@ -328,7 +333,7 @@ export default function DomainDetails({ domain: initialDomain, userName }: Domai
   };
 
   const isVerified = domain.verified || domain.status === "ACTIVE" || domain.status === "VERIFIED";
-  const isPublished = domain.widgetStatus === "PUBLISHED";
+  const isPublished = domain.widgetStatus === "PUBLISHED" || Boolean(lastPublished) || Boolean(domain.user?.widgetConfigs?.[0]?.lastPublishedAt);
   const activeKeys = keys.filter((k) => k.status === "ACTIVE");
   const firstActiveKey = activeKeys[0];
 

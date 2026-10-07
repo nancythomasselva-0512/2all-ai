@@ -25,7 +25,7 @@ export default async function DomainDetailPage(props: { params: Promise<{ id: st
             name: true,
             email: true,
             widgetConfigs: {
-              select: { id: true, publishedConfig: true, draftConfig: true },
+              select: { id: true, publishedConfig: true, draftConfig: true, lastPublishedAt: true },
             },
           },
         },
@@ -44,11 +44,17 @@ export default async function DomainDetailPage(props: { params: Promise<{ id: st
   }
 
   const userName = session.user.name || "Customer";
+  const userCfg = domain.user?.widgetConfigs?.[0];
+  const isDomainPublished = Boolean(userCfg?.lastPublishedAt) || domain.widgetStatus === "PUBLISHED";
+  const formattedDomain = {
+    ...domain,
+    widgetStatus: isDomainPublished ? "PUBLISHED" : "DRAFT"
+  };
 
   return (
     <div className="w-full">
       <DomainDetails
-        domain={JSON.parse(JSON.stringify(domain))}
+        domain={JSON.parse(JSON.stringify(formattedDomain))}
         userName={userName}
       />
     </div>

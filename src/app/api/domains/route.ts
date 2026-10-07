@@ -105,7 +105,7 @@ export async function GET() {
             name: true,
             email: true,
             apiKeys: { select: { id: true, name: true, key: true, status: true, domainId: true, domainName: true, createdAt: true } },
-            widgetConfigs: { select: { id: true, publishedConfig: true, draftConfig: true } },
+            widgetConfigs: { select: { id: true, publishedConfig: true, draftConfig: true, lastPublishedAt: true } },
           },
         },
       },
@@ -138,8 +138,12 @@ export async function GET() {
       }
     }
 
+    const userCfg = d.user?.widgetConfigs?.[0];
+    const isDomainPublished = Boolean(userCfg?.lastPublishedAt) || d.widgetStatus === "PUBLISHED";
+
     return {
       ...d,
+      widgetStatus: isDomainPublished ? "PUBLISHED" : (d.widgetStatus || "DRAFT"),
       apiKeys: matchingKeys,
       _count: { apiKeys: matchingKeys.length },
       apiKeysCount: matchingKeys.length

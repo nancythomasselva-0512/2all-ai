@@ -146,7 +146,7 @@ export default async function DomainsPage() {
               orderBy: { createdAt: "desc" },
             },
             widgetConfigs: {
-              select: { id: true, publishedConfig: true, draftConfig: true },
+              select: { id: true, publishedConfig: true, draftConfig: true, lastPublishedAt: true },
             },
           },
         },
@@ -203,10 +203,19 @@ export default async function DomainsPage() {
     activeLicensesCount: domains.length,
   };
 
+  const formattedDomains = (domains || []).map((d: any) => {
+    const userCfg = d.user?.widgetConfigs?.[0];
+    const isDomainPublished = Boolean(userCfg?.lastPublishedAt) || d.widgetStatus === "PUBLISHED";
+    return {
+      ...d,
+      widgetStatus: isDomainPublished ? "PUBLISHED" : (d.widgetStatus || "DRAFT"),
+    };
+  });
+
   return (
     <div className="w-full">
       <DomainsClient
-        initialDomains={JSON.parse(JSON.stringify(domains))}
+        initialDomains={JSON.parse(JSON.stringify(formattedDomains))}
         userName={userName}
         accountInfo={accountInfo}
       />

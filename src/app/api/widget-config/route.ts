@@ -35,6 +35,7 @@ export async function GET() {
         userId,
         draftConfig: defaultJson,
         publishedConfig: defaultJson,
+        lastPublishedAt: new Date(),
       },
     });
   }

@@ -204,8 +204,11 @@ export default function InstallCodeBlock({
       const confRes = await fetch("/api/widget-config");
       if (confRes.ok) {
         const confData = await confRes.json();
-        if (confData.draftConfig && Object.keys(confData.draftConfig).length > 0) {
-          setConfig((prev) => ({ ...prev, ...confData.draftConfig }));
+        const activeCfg = (confData.publishedConfig && Object.keys(confData.publishedConfig).length > 0)
+          ? confData.publishedConfig
+          : confData.draftConfig;
+        if (activeCfg && Object.keys(activeCfg).length > 0) {
+          setConfig((prev) => ({ ...prev, ...activeCfg }));
         }
       }
     } catch (e: any) {
